@@ -34,6 +34,9 @@
     <DeterministicSourcePaths>true</DeterministicSourcePaths>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="CometFlavor" Version="0.1.0" />
+  </ItemGroup>
+  <ItemGroup>
     <SourceRoot Include="$(MSBuildThisFileDirectory)" />
   </ItemGroup>
 
