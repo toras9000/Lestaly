@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace Lestaly.Extensions;
+namespace Lestaly;
 
 /// <summary>
 /// 文字列と正規表現関連の拡張メソッド
