@@ -20,8 +20,4 @@
     <ProjectReference Include="..\src\Lestaly.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Extensions\" />
-  </ItemGroup>
-
 </Project>
