@@ -210,6 +210,227 @@ public static class EnumerableDataExtensions
         }
     }
 
+    /// <summary>シーケンスデータをExcelファイルとして保存する。</summary>
+    /// <typeparam name="TSource">シーケンスの要素型</typeparam>
+    /// <param name="self">保存対象シーケンス</param>
+    /// <param name="filePath">保存ファイルパス</param>
+    /// <returns>書き込み処理タスク</returns>
+    public static void SaveToExcel<TSource>(this IEnumerable<TSource> self, string filePath)
+    {
+        self.SaveToExcel(filePath, new SaveToExcelOptions());
+    }
+
+    /// <summary>シーケンスデータをExcelファイルとして保存する。</summary>
+    /// <typeparam name="TSource">シーケンスの要素型</typeparam>
+    /// <param name="self">保存対象シーケンス</param>
+    /// <param name="filePath">保存ファイルパス</param>
+    /// <param name="options">保存オプション</param>
+    /// <returns>書き込み処理タスク</returns>
+    public static void SaveToExcel<TSource>(this IEnumerable<TSource> self, string filePath, SaveToExcelOptions options)
+    {
+        // パラメータチェック
+        if (self == null) throw new ArgumentNullException(nameof(self));
+        if (filePath == null) throw new ArgumentNullException(nameof(filePath));
+        if (options == null) throw new ArgumentNullException(nameof(options));
+
+        if (options.RowOffset < 0) throw new ArgumentOutOfRangeException(nameof(options.RowOffset));
+        if (options.ColumnOffset < 0) throw new ArgumentOutOfRangeException(nameof(options.ColumnOffset));
+
+        // 出力対象カラムを収集
+        var columns = collectTypeColumns<TSource>(options);
+
+        // 出力対象カラムが無ければエラーとする。
+        if (columns.Length <= 0) throw new NotSupportedException("No members");
+
+        // 値の出力デリゲートを作成
+        var exporters = columns
+            .Select(column => new { column, writer = makeCellWriter(column, options), })
+            .ToArray();
+
+        // 出力ブック作成
+        var book = new XLWorkbook();
+        var sheet = book.AddWorksheet(options.Sheet.WhenWhite("Sheet1"));
+
+        // 出力の基準セル取得
+        var baseCell = sheet.Cell(1 + options.RowOffset, 1 + options.ColumnOffset);
+
+        // ヘッダ出力
+        var headerCell = baseCell;
+        for (var i = 0; i < exporters.Length; i++)
+        {
+            headerCell.CellRight(i).SetValue<string>(exporters[i].column.Caption);
+        }
+
+        // データ出力
+        var dataCell = baseCell;
+        foreach (var data in self)
+        {
+            dataCell = dataCell.CellBelow();
+            for (var i = 0; i < exporters.Length; i++)
+            {
+                var cell = dataCell.CellRight(i);
+                var value = exporters[i].column.Getter(data);
+                var writer = exporters[i].writer;
+                writer(cell, value);
+            }
+        }
+
+        // 出力した範囲取得
+        var dataRange = sheet.Range(baseCell, dataCell.CellRight(exporters.Length - 1));
+
+        // テーブルまたはフィルタの設定
+        if (options.TableDefine)
+        {
+            dataRange.CreateTable(options.TableName.WhenWhite("Table1"));
+        }
+        else if (options.AutoFilter)
+        {
+            dataRange.SetAutoFilter();
+        }
+
+        // カラムサイズ調整
+        if (options.AdjustToContents)
+        {
+            foreach (var column in dataRange.Columns())
+            {
+                column.WorksheetColumn().AdjustToContents();
+            }
+        }
+
+        // ファイルに保存
+        book.SaveAs(filePath);
+    }
+
+
+    /// <summary>シーケンスデータをCSV(Charactor Separated Field)として保存する。</summary>
+    /// <typeparam name="TSource">シーケンスの要素型</typeparam>
+    /// <param name="self">保存対象シーケンス</param>
+    /// <param name="filePath">保存ファイルパス</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>書き込み処理タスク</returns>
+    public static Task SaveToExcelAsync<TSource>(this IAsyncEnumerable<TSource> self, string filePath, CancellationToken cancelToken = default)
+    {
+        return self.SaveToExcelAsync(filePath, new SaveToExcelOptions(), cancelToken);
+    }
+
+    /// <summary>シーケンスデータをExcelファイルとして保存する。</summary>
+    /// <typeparam name="TSource">シーケンスの要素型</typeparam>
+    /// <param name="self">保存対象シーケンス</param>
+    /// <param name="filePath">保存ファイルパス</param>
+    /// <param name="options">保存オプション</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>書き込み処理タスク</returns>
+    public static async Task SaveToExcelAsync<TSource>(this IAsyncEnumerable<TSource> self, string filePath, SaveToExcelOptions options, CancellationToken cancelToken = default)
+    {
+        // パラメータチェック
+        if (self == null) throw new ArgumentNullException(nameof(self));
+        if (filePath == null) throw new ArgumentNullException(nameof(filePath));
+        if (options == null) throw new ArgumentNullException(nameof(options));
+
+        if (options.RowOffset < 0) throw new ArgumentOutOfRangeException(nameof(options.RowOffset));
+        if (options.ColumnOffset < 0) throw new ArgumentOutOfRangeException(nameof(options.ColumnOffset));
+
+        // 出力対象カラムを収集
+        var columns = collectTypeColumns<TSource>(options);
+
+        // 出力対象カラムが無ければエラーとする。
+        if (columns.Length <= 0) throw new NotSupportedException("No members");
+
+        // 値の出力デリゲートを作成
+        var exporters = columns
+            .Select(column => new { column, writer = makeCellWriter(column, options), })
+            .ToArray();
+
+        // 出力ブック作成
+        var book = new XLWorkbook();
+        var sheet = book.AddWorksheet(options.Sheet.WhenWhite("Sheet1"));
+
+        // 出力の基準セル取得
+        var baseCell = sheet.Cell(1 + options.RowOffset, 1 + options.ColumnOffset);
+
+        // ヘッダ出力
+        var headerCell = baseCell;
+        for (var i = 0; i < exporters.Length; i++)
+        {
+            headerCell.CellRight(i).SetValue<string>(exporters[i].column.Caption);
+        }
+
+        // データ出力
+        var dataCell = baseCell;
+        await foreach (var data in self.ConfigureAwait(false))
+        {
+            dataCell = dataCell.CellBelow();
+            for (var i = 0; i < exporters.Length; i++)
+            {
+                var cell = dataCell.CellRight(i);
+                var value = exporters[i].column.Getter(data);
+                var writer = exporters[i].writer;
+                writer(cell, value);
+            }
+        }
+
+        // 出力した範囲取得
+        var dataRange = sheet.Range(baseCell, dataCell.CellRight(exporters.Length - 1));
+
+        // テーブルまたはフィルタの設定
+        if (options.TableDefine)
+        {
+            dataRange.CreateTable(options.TableName.WhenWhite("Table1"));
+        }
+        else if (options.AutoFilter)
+        {
+            dataRange.SetAutoFilter();
+        }
+
+        // カラムサイズ調整
+        if (options.AdjustToContents)
+        {
+            foreach (var column in dataRange.Columns())
+            {
+                column.WorksheetColumn().AdjustToContents();
+            }
+        }
+
+        // ファイルに保存
+        book.SaveAs(filePath);
+    }
+
+    /// <summary>Excelファイル保存用のセルにカラム値を書き込むデリゲートを作成する</summary>
+    /// <typeparam name="TSource">カラムの所属型</typeparam>
+    /// <param name="column">カラム情報</param>
+    /// <param name="options">保存オプション</param>
+    /// <returns>セル書き込みデリゲート</returns>
+    private static Action<IXLCell, object?> makeCellWriter<TSource>(TypeColumn<TSource> column, SaveToExcelOptions options)
+    {
+        if (options.AutoLink)
+        {
+            switch (column.MemberType)
+            {
+            case var t when t.IsAssignableTo(typeof(Uri)):
+                return (cell, value) =>
+                {
+                    if (value != null) cell.SetHyperlink(new XLHyperlink((Uri)value));
+                    cell.Value = value;
+                };
+            case var t when t.IsAssignableTo(typeof(FileSystemInfo)):
+                return (cell, value) =>
+                {
+                    var info = (FileSystemInfo?)value;
+                    if (info != null) cell.SetHyperlink(new XLHyperlink(info.FullName));
+                    cell.Value = info?.FullName;
+                };
+            default:
+                break;
+            }
+        }
+
+        switch (column.MemberType)
+        {
+        default:
+            return (cell, value) => cell.Value = value;
+        }
+    }
+
     /// <summary>型のメンバをカラムとして取り扱うための情報を収集する</summary>
     /// <typeparam name="TSource">対象の型</typeparam>
     /// <param name="options">型のカラム収集設定</param>
