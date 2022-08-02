@@ -13,7 +13,6 @@ namespace Lestaly;
 /// </summary>
 public static class EnumerableDataExtensions
 {
-
     /// <summary>シーケンス要素を並列に処理する非同期シーケンスに変換する</summary>
     /// <typeparam name="TSource">ソースシーケンスの要素型</typeparam>
     /// <typeparam name="TResult">結果シーケンスの要素型</typeparam>
@@ -24,6 +23,19 @@ public static class EnumerableDataExtensions
     public static IAsyncEnumerable<TResult> ToParallelAsync<TSource, TResult>(this IEnumerable<TSource> self, Func<TSource, TResult> transform, CancellationToken cancelToken = default)
     {
         return self.toParallelAsync(parallels: 4, ordered: false, options => new TransformBlock<TSource, TResult>(transform, options), cancelToken);
+    }
+
+    /// <summary>シーケンス要素を並列に処理する非同期シーケンスに変換する</summary>
+    /// <typeparam name="TSource">ソースシーケンスの要素型</typeparam>
+    /// <typeparam name="TResult">結果シーケンスの要素型</typeparam>
+    /// <param name="self">ソースシーケンス</param>
+    /// <param name="parallels">並列実行数</param>
+    /// <param name="transform">要素の処理デリゲート。並列実行される。</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>非同期シーケンス</returns>
+    public static IAsyncEnumerable<TResult> ToParallelAsync<TSource, TResult>(this IEnumerable<TSource> self, int parallels, Func<TSource, TResult> transform, CancellationToken cancelToken = default)
+    {
+        return self.toParallelAsync(parallels, ordered: false, options => new TransformBlock<TSource, TResult>(transform, options), cancelToken);
     }
 
     /// <summary>シーケンス要素を並列に処理する非同期シーケンスに変換する</summary>
@@ -50,6 +62,19 @@ public static class EnumerableDataExtensions
     public static IAsyncEnumerable<TResult> ToParallelAsync<TSource, TResult>(this IEnumerable<TSource> self, Func<TSource, Task<TResult>> transform, CancellationToken cancelToken = default)
     {
         return self.toParallelAsync(parallels: 4, ordered: false, options => new TransformBlock<TSource, TResult>(transform, options), cancelToken);
+    }
+
+    /// <summary>シーケンス要素を並列に処理する非同期シーケンスに変換する</summary>
+    /// <typeparam name="TSource">ソースシーケンスの要素型</typeparam>
+    /// <typeparam name="TResult">結果シーケンスの要素型</typeparam>
+    /// <param name="self">ソースシーケンス</param>
+    /// <param name="parallels">並列実行数</param>
+    /// <param name="transform">要素の処理デリゲート。並列実行される。</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>非同期シーケンス</returns>
+    public static IAsyncEnumerable<TResult> ToParallelAsync<TSource, TResult>(this IEnumerable<TSource> self, int parallels, Func<TSource, Task<TResult>> transform, CancellationToken cancelToken = default)
+    {
+        return self.toParallelAsync(parallels, ordered: false, options => new TransformBlock<TSource, TResult>(transform, options), cancelToken);
     }
 
     /// <summary>シーケンス要素を並列に処理する非同期シーケンスに変換する</summary>
