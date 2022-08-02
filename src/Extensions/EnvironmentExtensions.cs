@@ -1,4 +1,4 @@
-﻿namespace Lestaly.Extensions;
+﻿namespace Lestaly;
 
 /// <summary>
 /// Environment関連の拡張メソッド
