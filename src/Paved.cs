@@ -8,6 +8,9 @@ public class PavedOptions
     /// <summary>エラー発生時に一時停止するか否か</summary>
     public bool PauseOnError { get; set; } = true;
 
+    /// <summary>キャンセル発生時に一時停止するか否か</summary>
+    public bool PauseOnCancel { get; set; } = true;
+
     /// <summary>処理終了後に一時停止するか否か</summary>
     public bool PauseOnExit { get; set; } = false;
 
@@ -44,6 +47,10 @@ public static class Paved
         }
         catch (OperationCanceledException)
         {
+            // キャンセル発生時の一時停止フラグを評価
+            pause = options?.PauseOnCancel == true;
+
+            ConsoleWig.WriteLineColord(ConsoleColor.Yellow, "Operation cancelled.");
         }
         catch (Exception ex)
         {
