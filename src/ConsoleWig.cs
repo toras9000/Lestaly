@@ -1,4 +1,6 @@
-﻿namespace Lestaly;
+﻿using System.Text;
+
+namespace Lestaly;
 
 /// <summary>
 /// コンソール関連のユーティリティ
@@ -50,4 +52,57 @@ public static class ConsoleWig
         return Console.ReadLine();
     }
 
+    /// <summary>入力エコー無しで1行分のキー入力を読み取る</summary>
+    /// <returns>読み取った行テキスト</returns>
+    public static string ReadLineIntercepted()
+    {
+        var buff = new StringBuilder();
+        while (true)
+        {
+            var info = Console.ReadKey(intercept: true);
+            if (info.Key == ConsoleKey.Enter) break;
+            buff.Append(info.KeyChar);
+        }
+        return buff.ToString();
+    }
+
+    /// <summary>出力テキスト色を設定して区間を作成する</summary>
+    /// <param name="color">色</param>
+    /// <returns>設定区間。Disposeすると元の値を復元する。</returns>
+    public static Period ForegroundColorPeriod(ConsoleColor color)
+    {
+        var original = Console.ForegroundColor;
+        Console.ForegroundColor = color;
+        return new Period(() => Console.ForegroundColor = original);
+    }
+
+    /// <summary>出力エンコーディングを設定して区間を作成する</summary>
+    /// <param name="encoding">設定するエンコーディング</param>
+    /// <returns>設定区間。Disposeすると元の値を復元する。</returns>
+    public static Period OutputEncodingPeriod(Encoding encoding)
+    {
+        var original = Console.OutputEncoding;
+        Console.OutputEncoding = encoding;
+        return new Period(() => Console.OutputEncoding = original);
+    }
+
+    /// <summary>入力エンコーディングを設定して区間を作成する</summary>
+    /// <param name="encoding">設定するエンコーディング</param>
+    /// <returns>設定区間。Disposeすると元の値を復元する。</returns>
+    public static Period InputEncodingPeriod(Encoding encoding)
+    {
+        var original = Console.InputEncoding;
+        Console.InputEncoding = encoding;
+        return new Period(() => Console.InputEncoding = original);
+    }
+
+    /// <summary>キャンセルキーイベントをハンドルして区間を作成する</summary>
+    /// <param name="onCancel">キャンセル処理</param>
+    /// <returns>設定区間。Disposeするとイベントハンドルを解除する。</returns>
+    public static Period CancelKeyHandlePeriod(Action<ConsoleCancelEventArgs> onCancel)
+    {
+        var handler = new ConsoleCancelEventHandler((_, args) => { try { onCancel?.Invoke(args); } catch { } });
+        Console.CancelKeyPress += handler;
+        return new Period(() => Console.CancelKeyPress -= handler);
+    }
 }
