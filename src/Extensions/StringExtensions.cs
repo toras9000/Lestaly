@@ -21,6 +21,38 @@ public static class StringExtensions
     public static string? LastLine(this string? self)
         => CometFlavor.Extensions.Text.StringExtensions.LastLine(self);
 
+    /// <summary>特定文字の前部分文字列を取得する</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="marker">検索文字</param>
+    /// <param name="defaultEmpty">検索文字列が見つからない場合に空を返すか否か</param>
+    /// <returns>処理結果文字列</returns>
+    public static string? BeforeAt(this string? self, char marker, bool defaultEmpty = false)
+        => CometFlavor.Extensions.Text.StringExtensions.BeforeAt(self, marker, defaultEmpty);
+
+    /// <summary>特定文字列の前部分文字列を取得する</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="marker">検索文字列</param>
+    /// <param name="defaultEmpty">検索文字列が見つからない場合に空を返すか否か</param>
+    /// <returns>処理結果文字列</returns>
+    public static string? BeforeAt(this string? self, string marker, bool defaultEmpty = false)
+        => CometFlavor.Extensions.Text.StringExtensions.BeforeAt(self, marker, defaultEmpty);
+
+    /// <summary>特定文字の後部分文字列を取得する</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="marker">検索文字</param>
+    /// <param name="defaultEmpty">検索文字列が見つからない場合に空を返すか否か</param>
+    /// <returns>処理結果文字列</returns>
+    public static string? AfterAt(this string? self, char marker, bool defaultEmpty = false)
+        => CometFlavor.Extensions.Text.StringExtensions.AfterAt(self, marker, defaultEmpty);
+
+    /// <summary>特定文字列の後部分文字列を取得する</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="marker">検索文字列</param>
+    /// <param name="defaultEmpty">検索文字列が見つからない場合に空を返すか否か</param>
+    /// <returns>処理結果文字列</returns>
+    public static string? AfterAt(this string? self, string marker, bool defaultEmpty = false)
+        => CometFlavor.Extensions.Text.StringExtensions.AfterAt(self, marker, defaultEmpty);
+
     /// <summary>
     /// 文字列を連結する。
     /// </summary>
@@ -49,6 +81,16 @@ public static class StringExtensions
     /// <returns>装飾された文字列。元がnullまたは空の場合はそのまま返却。</returns>
     public static string? Decorate(this string? self, Func<string, string> decorator)
         => CometFlavor.Extensions.Text.StringExtensions.Decorate(self, decorator);
+
+    /// <summary>
+    /// 文字列をクォートする。
+    /// </summary>
+    /// <param name="text">対象文字列。nullの場合は空文字列と同じ扱いとする。</param>
+    /// <param name="quote">クォートキャラクタ</param>
+    /// <param name="escape">対象文字列中のクォートキャラクタをエスケープするキャラクタ</param>
+    /// <returns>クォートされたキャラクタ</returns>
+    public static string Quote(this string? text, char quote = '"', char? escape = null)
+        => CometFlavor.Extensions.Text.StringExtensions.Quote(text, quote, escape);
 
     /// <summary>
     /// 文字列のテキスト要素を列挙する。
@@ -151,4 +193,6 @@ public static class StringExtensions
     /// <param name="alt">代替文字列取得デリゲート</param>
     /// <returns>nullや空白文字ならば代替文字列、それ以外ならば元の文字列</returns>
     public static string WhenWhite(this string? self, Func<string> alt) => string.IsNullOrWhiteSpace(self) ? alt.Invoke() : self;
+
+
 }
