@@ -19,10 +19,10 @@ public class PavedOptions
 
     #region 定義済みインスタンス
     /// <summary>一時停止無しの定義済みインスタンス</summary>
-    public static PavedOptions NoPause { get; } = new PavedOptions { PauseOnError = false, PauseOnExit = false, };
+    public static PavedOptions NoPause { get; } = new PavedOptions { PauseOnError = false, PauseOnExit = false, PauseOnCancel = false, };
 
     /// <summary>なんらかで一時停止することを示す定義済みインスタンス</summary>
-    public static PavedOptions AnyPause { get; } = new PavedOptions { PauseOnError = true, PauseOnExit = true, };
+    public static PavedOptions AnyPause { get; } = new PavedOptions { PauseOnError = true, PauseOnExit = true, PauseOnCancel = true, };
     #endregion
 }
 
@@ -45,12 +45,20 @@ public static class Paved
         {
             result = await action();
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException ex)
         {
             // キャンセル発生時の一時停止フラグを評価
             pause = options?.PauseOnCancel == true;
 
-            ConsoleWig.WriteLineColord(ConsoleColor.Yellow, "Operation cancelled.");
+            // エラーハンドラがあればそれを実行。無ければ例外メッセージを出力しておく。
+            if (errorHandler != null)
+            {
+                result = errorHandler(ex);
+            }
+            else
+            {
+                ConsoleWig.WriteLineColord(ConsoleColor.Yellow, "Operation cancelled.");
+            }
         }
         catch (Exception ex)
         {
@@ -99,7 +107,16 @@ public static class Paved
     /// <returns>エラーコード</returns>
     public static Task<int> RunAsync(Func<ValueTask> action, PavedOptions options, Func<Exception, int>? errorHandler = null)
     {
-        var wrapErrHandler = errorHandler ?? ((ex) => { ConsoleWig.WriteLineColord(ConsoleColor.Red, ex.ToString()); return 255; });
+        var wrapErrHandler = errorHandler ?? ((ex) =>
+        {
+            if (ex is OperationCanceledException)
+            {
+                ConsoleWig.WriteLineColord(ConsoleColor.Yellow, "Operation cancelled.");
+                return 254;
+            }
+            ConsoleWig.WriteLineColord(ConsoleColor.Red, ex.ToString());
+            return 255;
+        });
         return RunAsync(async () => { await action(); return 0; }, options, wrapErrHandler);
     }
 
@@ -110,6 +127,6 @@ public static class Paved
     public static Task<int> RunAsync(Func<ValueTask> action, Func<Exception, int>? errorHandler = null)
     {
         var options = new PavedOptions();
-        return RunAsync(async () => { await action(); return 0; }, options);
+        return RunAsync(async () => { await action(); return 0; }, options, errorHandler);
     }
 }
