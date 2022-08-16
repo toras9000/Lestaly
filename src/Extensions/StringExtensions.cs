@@ -153,46 +153,54 @@ public static class StringExtensions
     /// <summary>文字列がnullや空であるかを判定する。</summary>
     /// <param name="self">対象文字列</param>
     /// <returns>nullや空ならば true</returns>
-    public static bool IsEmpty(this string? self) => string.IsNullOrEmpty(self);
+    public static bool IsEmpty(this string? self)
+        => CometFlavor.Extensions.Text.StringExtensions.IsEmpty(self);
 
     /// <summary>文字列がnullや空以外であるかを判定する。</summary>
     /// <param name="self">対象文字列</param>
     /// <returns>nullや空以外であれば true</returns>
-    public static bool IsNotEmpty(this string? self) => !string.IsNullOrEmpty(self);
+    public static bool IsNotEmpty(this string? self)
+        => CometFlavor.Extensions.Text.StringExtensions.IsNotEmpty(self);
 
     /// <summary>文字列がnullや空白文字であるかを判定する</summary>
     /// <param name="self">対象文字列</param>
     /// <returns>nullや空白文字ならば true</returns>
-    public static bool IsWhite(this string? self) => string.IsNullOrWhiteSpace(self);
+    public static bool IsWhite(this string? self)
+        => CometFlavor.Extensions.Text.StringExtensions.IsWhite(self);
 
     /// <summary>文字列がnullや空白文字以外であるかを判定する</summary>
     /// <param name="self">対象文字列</param>
     /// <returns>nullや空白文字以外ならば true</returns>
-    public static bool IsNotWhite(this string? self) => !string.IsNullOrWhiteSpace(self);
+    public static bool IsNotWhite(this string? self)
+        => CometFlavor.Extensions.Text.StringExtensions.IsNotWhite(self);
 
     /// <summary>文字列がnullや空であれば代替文字列を返却する。</summary>
     /// <param name="self">対象文字列</param>
     /// <param name="alt">代替文字列</param>
     /// <returns>nullや空ならば代替文字列、それ以外ならば元の文字列</returns>
-    public static string WhenEmpty(this string? self, string alt) => string.IsNullOrEmpty(self) ? alt : self;
+    public static string WhenEmpty(this string? self, string alt)
+        => CometFlavor.Extensions.Text.StringExtensions.WhenEmpty(self, alt);
 
     /// <summary>文字列がnullや空であれば代替文字列を返却する。</summary>
     /// <param name="self">対象文字列</param>
     /// <param name="alt">代替文字列取得デリゲート</param>
     /// <returns>nullや空ならば代替文字列、それ以外ならば元の文字列</returns>
-    public static string WhenEmpty(this string? self, Func<string> alt) => string.IsNullOrEmpty(self) ? alt.Invoke() : self;
+    public static string WhenEmpty(this string? self, Func<string> alt)
+        => CometFlavor.Extensions.Text.StringExtensions.WhenEmpty(self, alt);
 
     /// <summary>文字列がnullや空白文字であれば代替文字列を返却する。</summary>
     /// <param name="self">対象文字列</param>
     /// <param name="alt">代替文字列</param>
     /// <returns>nullや空白文字ならば代替文字列、それ以外ならば元の文字列</returns>
-    public static string WhenWhite(this string? self, string alt) => string.IsNullOrWhiteSpace(self) ? alt : self;
+    public static string WhenWhite(this string? self, string alt)
+        => CometFlavor.Extensions.Text.StringExtensions.WhenWhite(self, alt);
 
     /// <summary>文字列がnullや空白文字であれば代替文字列を返却する。</summary>
     /// <param name="self">対象文字列</param>
     /// <param name="alt">代替文字列取得デリゲート</param>
     /// <returns>nullや空白文字ならば代替文字列、それ以外ならば元の文字列</returns>
-    public static string WhenWhite(this string? self, Func<string> alt) => string.IsNullOrWhiteSpace(self) ? alt.Invoke() : self;
+    public static string WhenWhite(this string? self, Func<string> alt)
+        => CometFlavor.Extensions.Text.StringExtensions.WhenWhite(self, alt);
 
 
 }
