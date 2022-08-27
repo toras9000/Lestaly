@@ -97,12 +97,12 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
 
         // 保存データ
         var data = new[]
-            {
-                new { SNum1 = (sbyte?)1,              UNum1 = (byte?)2,             SNum4 = (int?)3,            UNum4 = (uint?)4,             },
-                new { SNum1 = (sbyte?)null,           UNum1 = (byte?)null,          SNum4 = (int?)null,         UNum4 = (uint?)null,          },
-                new { SNum1 = (sbyte?)sbyte.MaxValue, UNum1 = (byte?)byte.MaxValue, SNum4 = (int?)int.MaxValue, UNum4 = (uint?)uint.MaxValue, },
-                new { SNum1 = (sbyte?)sbyte.MinValue, UNum1 = (byte?)byte.MinValue, SNum4 = (int?)int.MinValue, UNum4 = (uint?)uint.MinValue, },
-            };
+        {
+            new { SNum1 = (sbyte?)1,              UNum1 = (byte?)2,             SNum4 = (int?)3,            UNum4 = (uint?)4,             },
+            new { SNum1 = (sbyte?)null,           UNum1 = (byte?)null,          SNum4 = (int?)null,         UNum4 = (uint?)null,          },
+            new { SNum1 = (sbyte?)sbyte.MaxValue, UNum1 = (byte?)byte.MaxValue, SNum4 = (int?)int.MaxValue, UNum4 = (uint?)uint.MaxValue, },
+            new { SNum1 = (sbyte?)sbyte.MinValue, UNum1 = (byte?)byte.MinValue, SNum4 = (int?)int.MinValue, UNum4 = (uint?)uint.MinValue, },
+        };
 
         // テスト対象実行
         data.SaveToExcel(target.FullName);
@@ -116,6 +116,72 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         var sheet = book.Worksheets.First();
         var area = detectDataArea(data);
         sheet.GetRangeData(row: 1, col: 1, area.width, 1 + area.height).Should().BeEquivalentTo(expect);
+    }
+
+    [TestMethod]
+    public void SaveToExcel_Hyperlink()
+    {
+        using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
+
+        // テスト用に一時ディレクトリ
+        using var tempDir = new TempDirectory();
+
+        // テストファイル
+        var target = tempDir.Info.GetRelativeFile("test.xlsx");
+
+        // 保存データ
+        var data = Enumerable.Empty<ExcelHyperlink?>()
+            .Concat(new[]
+            {
+                new ExcelHyperlink("https://www.google.com/", "Google", "Google検索"),
+                null,
+                new ExcelHyperlink(@"C:\Windows\Temp", "Temporary", "テンポラリディレクトリ"),
+            })
+            .Select(l => new { Link = l, });
+
+        // テスト対象実行
+        data.SaveToExcel(target.FullName);
+
+        // 検証
+        using var book = new XLWorkbook(target.FullName);
+        var sheet = book.Worksheets.First();
+        sheet.Row(2).Cell(1).Value.Should().Be("Google");
+        sheet.Row(2).Cell(1).GetHyperlink().Should().Match<XLHyperlink>(link => link.ExternalAddress.OriginalString == "https://www.google.com/" && link.Tooltip == "Google検索");
+        sheet.Row(3).Cell(1).IsEmpty().Should().BeTrue();
+        sheet.Row(3).Cell(1).HasHyperlink.Should().BeFalse();
+        sheet.Row(4).Cell(1).Value.Should().Be("Temporary");
+        sheet.Row(4).Cell(1).GetHyperlink().Should().Match<XLHyperlink>(link => link.ExternalAddress.OriginalString == @"C:\Windows\Temp" && link.Tooltip == "テンポラリディレクトリ");
+    }
+
+    [TestMethod]
+    public void SaveToExcel_Fomula()
+    {
+        using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
+
+        // テスト用に一時ディレクトリ
+        using var tempDir = new TempDirectory();
+
+        // テストファイル
+        var target = tempDir.Info.GetRelativeFile("test.xlsx");
+
+        // 保存データ
+        var data = new[]
+        {
+            new { Value = 12, Fomula = (ExcelFormula?)new ExcelFormula("A2", IsR1C1: false), },
+            new { Value = 34, Fomula = (ExcelFormula?)null,    },
+            new { Value = 56, Fomula = (ExcelFormula?)new ExcelFormula("R4C1", IsR1C1: true), },
+        };
+
+        // テスト対象実行
+        data.SaveToExcel(target.FullName);
+        data.SaveToExcel(@"d:\temp\test.xlsx");
+
+        // 検証
+        using var book = new XLWorkbook(target.FullName);
+        var sheet = book.Worksheets.First();
+        sheet.Row(2).Cell(2).Value.Should().Be(12);
+        sheet.Row(3).Cell(2).IsEmpty().Should().BeTrue();
+        sheet.Row(4).Cell(2).Value.Should().Be(56);
     }
 
     [TestMethod]

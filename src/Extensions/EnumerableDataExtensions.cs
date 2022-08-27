@@ -348,10 +348,13 @@ public static class EnumerableDataExtensions
             dataCell = dataCell.CellBelow();
             for (var i = 0; i < exporters.Length; i++)
             {
-                var cell = dataCell.CellRight(i);
                 var value = exporters[i].column.Getter(data);
-                var writer = exporters[i].writer;
-                writer(cell, value);
+                if (value != null)
+                {
+                    var cell = dataCell.CellRight(i);
+                    var writer = exporters[i].writer;
+                    writer(cell, value);
+                }
             }
         }
 
@@ -441,10 +444,13 @@ public static class EnumerableDataExtensions
             dataCell = dataCell.CellBelow();
             for (var i = 0; i < exporters.Length; i++)
             {
-                var cell = dataCell.CellRight(i);
                 var value = exporters[i].column.Getter(data);
-                var writer = exporters[i].writer;
-                writer(cell, value);
+                if (value != null)
+                {
+                    var cell = dataCell.CellRight(i);
+                    var writer = exporters[i].writer;
+                    writer(cell, value);
+                }
             }
         }
 
@@ -479,7 +485,7 @@ public static class EnumerableDataExtensions
     /// <param name="column">カラム情報</param>
     /// <param name="options">保存オプション</param>
     /// <returns>セル書き込みデリゲート</returns>
-    private static Action<IXLCell, object?> makeCellWriter<TSource>(TypeColumn<TSource> column, SaveToExcelOptions options)
+    private static Action<IXLCell, object> makeCellWriter<TSource>(TypeColumn<TSource> column, SaveToExcelOptions options)
     {
         if (options.AutoLink)
         {
@@ -488,15 +494,15 @@ public static class EnumerableDataExtensions
             case var t when t.IsAssignableTo(typeof(Uri)):
                 return (cell, value) =>
                 {
-                    if (value != null) cell.SetHyperlink(new XLHyperlink((Uri)value));
+                    cell.SetHyperlink(new XLHyperlink((Uri)value));
                     cell.Value = value;
                 };
             case var t when t.IsAssignableTo(typeof(FileSystemInfo)):
                 return (cell, value) =>
                 {
-                    var info = (FileSystemInfo?)value;
-                    if (info != null) cell.SetHyperlink(new XLHyperlink(info.FullName));
-                    cell.Value = info?.FullName;
+                    var info = (FileSystemInfo)value;
+                    cell.SetHyperlink(new XLHyperlink(info.FullName));
+                    cell.Value = info.FullName;
                 };
             default:
                 break;
@@ -505,6 +511,20 @@ public static class EnumerableDataExtensions
 
         switch (column.MemberType)
         {
+        case var t when t.IsAssignableTo(typeof(ExcelHyperlink)):
+            return (cell, value) =>
+            {
+                var link = (ExcelHyperlink)value;
+                cell.SetHyperlink(new XLHyperlink(link.Target, link.Tooltip));
+                cell.Value = link.Display ?? link.Target;
+            };
+        case var t when t.IsAssignableTo(typeof(ExcelFormula)):
+            return (cell, value) =>
+            {
+                var fomula = (ExcelFormula)value;
+                if (fomula.IsR1C1) cell.FormulaR1C1 = fomula.Expression;
+                else cell.FormulaA1 = fomula.Expression;
+            };
         default:
             return (cell, value) => cell.Value = value;
         }

@@ -26,6 +26,17 @@ public class SaveToExcelOptions : TypeColumnOptions
     /// <summary>出力範囲のカラム幅を調整するか否か</summary>
     public bool AdjustToContents { get; set; } = true;
 
-    /// <summary>型による自動リンク設定を有効とするか否か</summary>
+    /// <summary>型による自動リンク設定を有効とするか否か。trueの場合UriおよびFileInfo/DirectoryInfo型の列をリンク設定する。</summary>
     public bool AutoLink { get; set; } = false;
 }
+
+/// <summary>リンクデータを表すデータ型</summary>
+/// <param name="Target">リンク先</param>
+/// <param name="Display">表示名</param>
+/// <param name="Tooltip">ツールチップ</param>
+public record ExcelHyperlink(string Target, string? Display = null, string? Tooltip = null);
+
+/// <summary>式を表すデータ型</summary>
+/// <param name="Expression">式</param>
+/// <param name="IsR1C1">式</param>
+public record ExcelFormula(string Expression, bool IsR1C1 = false);
