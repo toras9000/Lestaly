@@ -178,28 +178,28 @@ public static class StringExtensions
     /// <param name="self">対象文字列</param>
     /// <param name="alt">代替文字列</param>
     /// <returns>nullや空ならば代替文字列、それ以外ならば元の文字列</returns>
-    public static string WhenEmpty(this string? self, string alt)
+    public static string? WhenEmpty(this string? self, string alt)
         => CometFlavor.Extensions.Text.StringExtensions.WhenEmpty(self, alt);
 
     /// <summary>文字列がnullや空であれば代替文字列を返却する。</summary>
     /// <param name="self">対象文字列</param>
     /// <param name="alt">代替文字列取得デリゲート</param>
     /// <returns>nullや空ならば代替文字列、それ以外ならば元の文字列</returns>
-    public static string WhenEmpty(this string? self, Func<string> alt)
+    public static string? WhenEmpty(this string? self, Func<string> alt)
         => CometFlavor.Extensions.Text.StringExtensions.WhenEmpty(self, alt);
 
     /// <summary>文字列がnullや空白文字であれば代替文字列を返却する。</summary>
     /// <param name="self">対象文字列</param>
     /// <param name="alt">代替文字列</param>
     /// <returns>nullや空白文字ならば代替文字列、それ以外ならば元の文字列</returns>
-    public static string WhenWhite(this string? self, string alt)
+    public static string? WhenWhite(this string? self, string alt)
         => CometFlavor.Extensions.Text.StringExtensions.WhenWhite(self, alt);
 
     /// <summary>文字列がnullや空白文字であれば代替文字列を返却する。</summary>
     /// <param name="self">対象文字列</param>
     /// <param name="alt">代替文字列取得デリゲート</param>
     /// <returns>nullや空白文字ならば代替文字列、それ以外ならば元の文字列</returns>
-    public static string WhenWhite(this string? self, Func<string> alt)
+    public static string? WhenWhite(this string? self, Func<string> alt)
         => CometFlavor.Extensions.Text.StringExtensions.WhenWhite(self, alt);
 
 

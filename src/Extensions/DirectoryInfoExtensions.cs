@@ -1,5 +1,8 @@
 ﻿namespace Lestaly;
 
+/// <inheritdoc />
+public record SelectFilesOptions : CometFlavor.Extensions.IO.SelectFilesOptions;
+
 /// <summary>
 /// DirectoryInfo に対する拡張メソッド
 /// </summary>
@@ -34,6 +37,23 @@ public static class DirectoryInfoExtensions
     public static IList<string> GetPathSegments(this DirectoryInfo self)
         => CometFlavor.Extensions.IO.DirectoryInfoExtensions.GetPathSegments(self);
 
+    /// <summary>ディレクトリが指定のディレクトリの子孫であるかを判定する。</summary>
+    /// <remarks></remarks>
+    /// <param name="self">対象ディレクトリ</param>
+    /// <param name="other">比較するディレクトリ</param>
+    /// <param name="sameIs">同一階層を真とするか否か</param>
+    /// <returns>指定ディレクトリの子孫であるか否か</returns>
+    public static bool IsDescendantOf(this DirectoryInfo self, DirectoryInfo other, bool sameIs = true)
+        => CometFlavor.Extensions.IO.DirectoryInfoExtensions.IsDescendantOf(self, other, sameIs);
+
+    /// <summary>ディレクトリが指定のディレクトリの祖先であるかを判定する。</summary>
+    /// <param name="self">対象ディレクトリ</param>
+    /// <param name="other">比較するディレクトリ</param>
+    /// <param name="sameIs">同一階層を真とするか否か</param>
+    /// <returns>指定ディレクトリの祖先であるか否か</returns>
+    public static bool IsAncestorOf(this DirectoryInfo self, DirectoryInfo other, bool sameIs = true)
+        => CometFlavor.Extensions.IO.DirectoryInfoExtensions.IsAncestorOf(self, other, sameIs);
+
     /// <summary>
     /// 指定のディレクトリを起点としたディレクトリの相対パスを取得する。
     /// </summary>
@@ -46,6 +66,44 @@ public static class DirectoryInfoExtensions
     /// <returns>相対パス</returns>
     public static string RelativePathFrom(this DirectoryInfo self, DirectoryInfo baseDir, bool ignoreCase)
         => CometFlavor.Extensions.IO.DirectoryInfoExtensions.RelativePathFrom(self, baseDir, ignoreCase);
+    #endregion
+
+    #region Search
+    /// <summary>ディレクトリ配下のファイルを検索して変換処理を行う</summary>
+    /// <remarks>
+    /// このメソッドではサブディレクトリ配下の検索に再帰呼び出しを利用する。
+    /// ディレクトリ構成によってはスタックを大量に消費する可能性があることに注意。
+    /// ディレクトリ内を列挙する際、最初にファイルを列挙し、次に
+    /// </remarks>
+    /// <typeparam name="TResult">ファイルに対する変換結果の型</typeparam>
+    /// <param name="self">検索の起点ディレクトリ</param>
+    /// <param name="selector">ファイルに対する変換処理</param>
+    /// <param name="filter">
+    /// ファイル/ディレクトリを列挙するか否かを判定するフィルタ処理。
+    /// ディレクトリに対して列挙対象外と判定した場合、その配下の検索は行われない。
+    /// </param>
+    /// <param name="options">検索オプション</param>
+    /// <returns>変換結果のシーケンス</returns>
+    public static IEnumerable<TResult> SelectFiles<TResult>(this DirectoryInfo self, Func<FileInfo, TResult> selector, Func<FileSystemInfo, bool>? filter = null, SelectFilesOptions? options = null)
+        => CometFlavor.Extensions.IO.DirectoryInfoExtensions.SelectFiles(self, selector, filter, options);
+
+    /// <summary>ディレクトリ配下のファイルを検索して変換処理を行う</summary>
+    /// <remarks>
+    /// このメソッドではサブディレクトリ配下の検索に再帰呼び出しを利用する。
+    /// ディレクトリ構成によってはスタックを大量に消費する可能性があることに注意。
+    /// ディレクトリ内を列挙する際、最初にファイルを列挙し、次に
+    /// </remarks>
+    /// <typeparam name="TResult">ファイルに対する変換結果の型</typeparam>
+    /// <param name="self">検索の起点ディレクトリ</param>
+    /// <param name="selector">ファイルに対する変換処理</param>
+    /// <param name="filter">
+    /// ファイル/ディレクトリを列挙するか否かを判定するフィルタ処理。
+    /// ディレクトリに対して列挙対象外と判定した場合、その配下の検索は行われない。
+    /// </param>
+    /// <param name="options">検索オプション</param>
+    /// <returns>変換結果のシーケンス</returns>
+    public static IAsyncEnumerable<TResult> SelectFilesAsync<TResult>(this DirectoryInfo self, Func<FileInfo, Task<TResult>> selector, Func<FileSystemInfo, bool>? filter = null, SelectFilesOptions? options = null)
+        => CometFlavor.Extensions.IO.DirectoryInfoExtensions.SelectFilesAsync(self, selector, filter, options);
     #endregion
 
 }

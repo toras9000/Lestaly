@@ -15,4 +15,12 @@ public static class EnumerableExtensions
     /// <returns>フィルタされたシーケンス</returns>
     public static IEnumerable<TSource> WhereElse<TSource>(this IEnumerable<TSource> self, Func<TSource, bool> predicate, Action<TSource> skipped)
         => CometFlavor.Extensions.Linq.EnumerableExtensions.WhereElse(self, predicate, skipped);
+
+    /// <summary>シーケンスインスタンスがnullならば空のシーケンスを代替とする</summary>
+    /// <typeparam name="TSource">シーケンスの要素型</typeparam>
+    /// <param name="self">対象シーケンス</param>
+    /// <returns>元のシーケンスまたは空のシーケンス</returns>
+    public static IEnumerable<TSource> CoalesceEmpty<TSource>(this IEnumerable<TSource>? self)
+        => CometFlavor.Extensions.Linq.EnumerableExtensions.CoalesceEmpty(self);
+
 }

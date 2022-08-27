@@ -242,6 +242,14 @@ public static class FileInfoExtensions
     public static IList<string> GetPathSegments(this FileInfo self)
         => CometFlavor.Extensions.IO.FileInfoExtensions.GetPathSegments(self);
 
+    /// <summary>ファイルが指定のディレクトリの子孫であるかを判定する。</summary>
+    /// <remarks></remarks>
+    /// <param name="self">対象ファイル</param>
+    /// <param name="other">比較するディレクトリ</param>
+    /// <returns>指定ディレクトリの子孫であるか否か</returns>
+    public static bool IsDescendantOf(this FileInfo self, DirectoryInfo other)
+        => CometFlavor.Extensions.IO.FileInfoExtensions.IsDescendantOf(self, other);
+
     /// <summary>
     /// 指定のディレクトリを起点としたファイルの相対パスを取得する。
     /// </summary>
@@ -255,4 +263,5 @@ public static class FileInfoExtensions
     public static string RelativePathFrom(this FileInfo self, DirectoryInfo baseDir, bool ignoreCase)
         => CometFlavor.Extensions.IO.FileInfoExtensions.RelativePathFrom(self, baseDir, ignoreCase);
     #endregion
+
 }
