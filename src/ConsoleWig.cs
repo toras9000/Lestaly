@@ -96,12 +96,24 @@ public static class ConsoleWig
         return new Period(() => Console.InputEncoding = original);
     }
 
-    /// <summary>キャンセルキーイベントをハンドルして区間を作成する</summary>
+    /// <summary>キャンセルキーイベントを指定のアクションでハンドルする区間を作成する</summary>
+    /// <remarks>このメソッドではイベントハンドラで指定のアクションを呼び出すのみ。デフォルト動作(プロセス終了)の抑止などが必要であれば指定のキャンセル処理内で行う。</remarks>
     /// <param name="onCancel">キャンセル処理</param>
     /// <returns>設定区間。Disposeするとイベントハンドルを解除する。</returns>
     public static Period CancelKeyHandlePeriod(Action<ConsoleCancelEventArgs> onCancel)
     {
         var handler = new ConsoleCancelEventHandler((_, args) => { try { onCancel?.Invoke(args); } catch { } });
+        Console.CancelKeyPress += handler;
+        return new Period(() => Console.CancelKeyPress -= handler);
+    }
+
+    /// <summary>キャンセルキーイベントで指定のキャンセルソースをキャンセルする区間を作成する</summary>
+    /// <remarks>このメソッドではイベントハンドラでデフォルト動作(プロセス終了)を抑止する。</remarks>
+    /// <param name="cancelSource">キャンセルソース</param>
+    /// <returns>設定区間。Disposeするとイベントハンドルを解除する。</returns>
+    public static Period CancelKeyHandlePeriod(CancellationTokenSource cancelSource)
+    {
+        var handler = new ConsoleCancelEventHandler((_, args) => { try { cancelSource.Cancel(); args.Cancel = true; } catch { } });
         Console.CancelKeyPress += handler;
         return new Period(() => Console.CancelKeyPress -= handler);
     }
