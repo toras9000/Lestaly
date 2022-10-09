@@ -3,7 +3,7 @@
 /// <summary>
 /// 実行補助オプション
 /// </summary>
-public class PavedOptions
+public class PavedOptions<T>
 {
     /// <summary>エラー発生時に一時停止するか否か</summary>
     public bool PauseOnError { get; set; } = true;
@@ -17,12 +17,27 @@ public class PavedOptions
     /// <summary>一時停止時メッセージ</summary>
     public string? PauseMessage { get; set; } = null;
 
+    /// <summary>エラー時ハンドラ</summary>
+    public Func<Exception, T>? ErrorHandler { get; set; } = null;
+
     #region 定義済みインスタンス
     /// <summary>一時停止無しの定義済みインスタンス</summary>
-    public static PavedOptions NoPause { get; } = new PavedOptions { PauseOnError = false, PauseOnExit = false, PauseOnCancel = false, };
+    public PavedOptions<T> NoPause()
+    {
+        this.PauseOnError = false;
+        this.PauseOnExit = false;
+        this.PauseOnCancel = false;
+        return this;
+    }
 
     /// <summary>なんらかで一時停止することを示す定義済みインスタンス</summary>
-    public static PavedOptions AnyPause { get; } = new PavedOptions { PauseOnError = true, PauseOnExit = true, PauseOnCancel = true, };
+    public PavedOptions<T> AnyPause()
+    {
+        this.PauseOnError = true;
+        this.PauseOnExit = true;
+        this.PauseOnCancel = true;
+        return this;
+    }
     #endregion
 }
 
@@ -34,26 +49,28 @@ public static class Paved
     /// <summary>例外を捕捉して処理を実行する。</summary>
     /// <typeparam name="T">戻り値の型</typeparam>
     /// <param name="action">実行処理</param>
-    /// <param name="options">実行オプション</param>
-    /// <param name="errorHandler">エラーハンドラ</param>
+    /// <param name="optionsBuilder ">実行オプション設定デリゲート</param>
     /// <returns>処理の戻り値</returns>
-    public static async Task<T?> RunAsync<T>(Func<ValueTask<T>> action, PavedOptions options, Func<Exception, T>? errorHandler = null)
+    public static async Task<T?> RunAsync<T>(Func<ValueTask<T>> action, Action<PavedOptions<T>>? optionsBuilder = null)
     {
+        var options = new PavedOptions<T>();
         var result = default(T);
         var pause = false;
         try
         {
+            optionsBuilder?.Invoke(options);
+
             result = await action();
         }
         catch (OperationCanceledException ex)
         {
             // キャンセル発生時の一時停止フラグを評価
-            pause = options?.PauseOnCancel == true;
+            pause = options.PauseOnCancel == true;
 
             // エラーハンドラがあればそれを実行。無ければ例外メッセージを出力しておく。
-            if (errorHandler != null)
+            if (options.ErrorHandler != null)
             {
-                result = errorHandler(ex);
+                result = options.ErrorHandler(ex);
             }
             else
             {
@@ -63,12 +80,12 @@ public static class Paved
         catch (Exception ex)
         {
             // エラー発生時の一時停止フラグを評価
-            pause = options?.PauseOnError == true;
+            pause = options.PauseOnError;
 
             // エラーハンドラがあればそれを実行。無ければ例外メッセージを出力しておく。
-            if (errorHandler != null)
+            if (options.ErrorHandler != null)
             {
-                result = errorHandler(ex);
+                result = options.ErrorHandler(ex);
             }
             else
             {
@@ -77,12 +94,12 @@ public static class Paved
         }
 
         // 終了時の一時停止フラグを評価
-        pause = pause || options?.PauseOnExit == true;
+        pause = pause || options.PauseOnExit;
 
         // オプションで要求されていてリダイレクトされていない場合に一時停止する
         if (pause && !Console.IsInputRedirected)
         {
-            Console.WriteLine(options?.PauseMessage ?? "(Press any key to exit.)");
+            Console.WriteLine(options.PauseMessage ?? "(Press any key to exit.)");
             Console.ReadKey(true);
         }
 
@@ -90,43 +107,24 @@ public static class Paved
     }
 
     /// <summary>例外を捕捉して処理を実行する。</summary>
-    /// <typeparam name="T">戻り値の型</typeparam>
     /// <param name="action">実行処理</param>
-    /// <param name="errorHandler">エラーハンドラ</param>
-    /// <returns>処理の戻り値</returns>
-    public static Task<T?> RunAsync<T>(Func<ValueTask<T>> action, Func<Exception, T>? errorHandler = null)
-    {
-        var options = new PavedOptions();
-        return RunAsync(action, options, errorHandler);
-    }
-
-    /// <summary>例外を捕捉して処理を実行する。</summary>
-    /// <param name="action">実行処理</param>
-    /// <param name="options">実行オプション</param>
-    /// <param name="errorHandler">エラーハンドラ</param>
+    /// <param name="optionsBuilder ">実行オプション設定デリゲート</param>
     /// <returns>エラーコード</returns>
-    public static Task<int> RunAsync(Func<ValueTask> action, PavedOptions options, Func<Exception, int>? errorHandler = null)
+    public static Task<int> RunAsync(Func<ValueTask> action, Action<PavedOptions<int>>? optionsBuilder = null)
     {
-        var wrapErrHandler = errorHandler ?? ((ex) =>
+        return RunAsync(async () => { await action(); return 0; }, options =>
         {
-            if (ex is OperationCanceledException)
+            options.ErrorHandler = (ex) =>
             {
-                ConsoleWig.WriteLineColord(ConsoleColor.Yellow, "Operation cancelled.");
-                return 254;
-            }
-            ConsoleWig.WriteLineColord(ConsoleColor.Red, ex.ToString());
-            return 255;
+                if (ex is OperationCanceledException)
+                {
+                    ConsoleWig.WriteLineColord(ConsoleColor.Yellow, "Operation cancelled.");
+                    return 254;
+                }
+                ConsoleWig.WriteLineColord(ConsoleColor.Red, ex.ToString());
+                return 255;
+            };
+            optionsBuilder?.Invoke(options);
         });
-        return RunAsync(async () => { await action(); return 0; }, options, wrapErrHandler);
-    }
-
-    /// <summary>例外を捕捉して処理を実行する。</summary>
-    /// <param name="action">実行処理</param>
-    /// <param name="errorHandler">エラーハンドラ</param>
-    /// <returns>エラーコード</returns>
-    public static Task<int> RunAsync(Func<ValueTask> action, Func<Exception, int>? errorHandler = null)
-    {
-        var options = new PavedOptions();
-        return RunAsync(async () => { await action(); return 0; }, options, errorHandler);
     }
 }
