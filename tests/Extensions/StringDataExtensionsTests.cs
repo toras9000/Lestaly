@@ -2,7 +2,7 @@
 using System.Reflection;
 using FluentAssertions;
 
-namespace LestalyTest;
+namespace LestalyTest.Extensions;
 
 [TestClass()]
 public class StringDataExtensionsTests

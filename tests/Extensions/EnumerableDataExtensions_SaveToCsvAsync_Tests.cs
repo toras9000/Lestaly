@@ -4,7 +4,7 @@ using FluentAssertions;
 using LestalyTest._Test;
 using TestCometFlavor._Test;
 
-namespace LestalyTest;
+namespace LestalyTest.Extensions;
 
 [TestClass()]
 public class EnumerableDataExtensions_SaveToCsvAsync_Tests
