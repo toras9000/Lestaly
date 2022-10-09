@@ -23,4 +23,50 @@ public static class EnumerableExtensions
     public static IEnumerable<TSource> CoalesceEmpty<TSource>(this IEnumerable<TSource>? self)
         => CometFlavor.Extensions.Linq.EnumerableExtensions.CoalesceEmpty(self);
 
+    /// <summary>シーケンスが空の場合にエラー(例外発行)とする</summary>
+    /// <typeparam name="TSource">シーケンスの要素型</typeparam>
+    /// <param name="self">対象シーケンス</param>
+    /// <param name="errorGenerator">空の場合のエラー(例外)インスタンス生成デリゲート</param>
+    /// <returns>エラーの無い場合は元と同じシーケンス</returns>
+    public static IEnumerable<TSource> ErrorIfEmpty<TSource>(this IEnumerable<TSource>? self, Func<Exception>? errorGenerator = null)
+    {
+        var exists = false;
+        if (self != null)
+        {
+            foreach (var elem in self)
+            {
+                yield return elem;
+                exists = true;
+            }
+        }
+        if (!exists)
+        {
+            throw errorGenerator?.Invoke() ?? new InvalidDataException();
+        }
+    }
+
+    /// <summary>シーケンス要素が条件を満たさない場合にエラー(例外発行)とする</summary>
+    /// <typeparam name="TSource"></typeparam>
+    /// <param name="self">シーケンスの要素型</param>
+    /// <param name="predicator">条件を満たすかを判定するデリゲート</param>
+    /// <param name="errorGenerator">条件を満たさない場合のエラー(例外)インスタンス生成デリゲート</param>
+    /// <returns>エラーの無い場合は元と同じシーケンス</returns>
+    public static IEnumerable<TSource> Must<TSource>(this IEnumerable<TSource> self, Func<TSource, bool> predicator, Func<Exception>? errorGenerator = null)
+    {
+        if (self == null) throw new ArgumentNullException(nameof(self));
+        if (predicator == null) throw new ArgumentNullException(nameof(predicator));
+
+        IEnumerable<TSource> mustEnumerator()
+        {
+            foreach (var elem in self)
+            {
+                if (!predicator(elem))
+                {
+                    throw errorGenerator?.Invoke() ?? new InvalidDataException();
+                }
+                yield return elem;
+            }
+        }
+        return mustEnumerator();
+    }
 }
