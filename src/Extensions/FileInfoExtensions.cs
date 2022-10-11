@@ -140,6 +140,20 @@ public static class FileInfoExtensions
     /// <returns>ファイルから読みだした全テキスト行</returns>
     public static Task<string[]> ReadAllLinesAsync(this FileInfo self, Encoding encoding, CancellationToken cancelToken = default)
         => CometFlavor.Extensions.IO.FileInfoExtensions.ReadAllLinesAsync(self, encoding, cancelToken);
+
+    /// <summary>
+    /// ファイル内容をテキストで読み取るリーダーを生成する。
+    /// </summary>
+    /// <param name="self">対象ファイルのFileInfo</param>
+    /// <param name="encoding">ファイル内容をデコードするテキストエンコーディング</param>
+    /// <param name="detectBom">BOMを検出してエンコーディングを決定するか否か</param>
+    /// <param name="options">元になるファイルストリームを開くオプション</param>
+    /// <returns>ストリームリーダー</returns>
+    public static StreamReader CreateTextReader(this FileInfo self, bool detectBom = true, FileStreamOptions? options = null, Encoding? encoding = null)
+    {
+        return (options == null) ? new StreamReader(self.FullName, encoding ?? Encoding.UTF8, detectBom)
+                                 : new StreamReader(self.FullName, encoding ?? Encoding.UTF8, detectBom, options);
+    }
     #endregion
 
     #region Write
@@ -231,6 +245,30 @@ public static class FileInfoExtensions
     /// <param name="cancelToken">キャンセルトークン</param>
     public static ValueTask WriteAllLinesAsync(this FileInfo self, IEnumerable<string> contents, Encoding encoding, CancellationToken cancelToken = default)
         => CometFlavor.Extensions.IO.FileInfoExtensions.WriteAllLinesAsync(self, contents, encoding, cancelToken);
+
+    /// <summary>
+    /// ファイル内容をテキストで読み取るリーダーを生成する。
+    /// </summary>
+    /// <param name="self">対象ファイルのFileInfo</param>
+    /// <param name="encoding">ファイル内容をデコードするテキストエンコーディング</param>
+    /// <param name="append">追記するか否か</param>
+    /// <returns>ストリームリーダー</returns>
+    public static StreamWriter CreateTextWriter(this FileInfo self, bool append = false, Encoding? encoding = null)
+    {
+        return new StreamWriter(self.FullName, append, encoding ?? Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// ファイル内容をテキストで読み取るリーダーを生成する。
+    /// </summary>
+    /// <param name="self">対象ファイルのFileInfo</param>
+    /// <param name="encoding">ファイル内容をデコードするテキストエンコーディング</param>
+    /// <param name="options">元になるファイルストリームを開くオプション</param>
+    /// <returns>ストリームリーダー</returns>
+    public static StreamWriter CreateTextWriter(this FileInfo self, FileStreamOptions options, Encoding? encoding = null)
+    {
+        return new StreamWriter(self.FullName, encoding ?? Encoding.UTF8, options);
+    }
     #endregion
 
     #region Path
