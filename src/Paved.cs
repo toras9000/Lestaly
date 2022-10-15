@@ -20,8 +20,8 @@ public class PavedOptions<T>
     /// <summary>エラー時ハンドラ</summary>
     public Func<Exception, T>? ErrorHandler { get; set; } = null;
 
-    #region 定義済みインスタンス
-    /// <summary>一時停止無しの定義済みインスタンス</summary>
+    #region 設定処理
+    /// <summary>一時停止無しに設定する。</summary>
     public PavedOptions<T> NoPause()
     {
         this.PauseOnError = false;
@@ -30,7 +30,7 @@ public class PavedOptions<T>
         return this;
     }
 
-    /// <summary>なんらかで一時停止することを示す定義済みインスタンス</summary>
+    /// <summary>いずれかの要因による一時停止ありに設定する。</summary>
     public PavedOptions<T> AnyPause()
     {
         this.PauseOnError = true;
