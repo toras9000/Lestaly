@@ -42,6 +42,29 @@ public class PavedOptions<T>
 }
 
 /// <summary>
+/// 実行補助処理で
+/// </summary>
+public class PavedMessageException : Exception
+{
+    /// <summary>エラーメッセージを指定するコンストラクタ</summary>
+    /// <param name="message">エラーメッセージ</param>
+    public PavedMessageException(string message) : base(message) { this.Fatal = true; }
+
+    /// <summary>エラーメッセージと内部例外を指定するコンストラクタ</summary>
+    /// <param name="message">エラーメッセージ</param>
+    /// <param name="innerException">内部例外</param>
+    public PavedMessageException(string message, Exception innerException) : base(message, innerException) { this.Fatal = true; }
+
+    /// <summary>エラーメッセージと重大度を指定するコンストラクタ</summary>
+    /// <param name="message">エラーメッセージ</param>
+    /// <param name="fatal">致命的なエラーであるか否か。Pavedでのエラーメッセージ色を決定するために使用。</param>
+    public PavedMessageException(string message, bool fatal) : base(message) { this.Fatal = fatal; }
+
+    /// <summary>致命的エラーであるか否か</summary>
+    public bool Fatal { get; }
+}
+
+/// <summary>
 /// 主にスクリプト用の定型実行補助クラス
 /// </summary>
 public static class Paved
@@ -87,6 +110,10 @@ public static class Paved
             {
                 result = options.ErrorHandler(ex);
             }
+            else if (ex is PavedMessageException pex)
+            {
+                ConsoleWig.WriteLineColord(pex.Fatal ? ConsoleColor.Red : ConsoleColor.Yellow, pex.Message);
+            }
             else
             {
                 ConsoleWig.WriteLineColord(ConsoleColor.Red, ex.ToString());
@@ -121,7 +148,14 @@ public static class Paved
                     ConsoleWig.WriteLineColord(ConsoleColor.Yellow, "Operation cancelled.");
                     return 254;
                 }
-                ConsoleWig.WriteLineColord(ConsoleColor.Red, ex.ToString());
+                if (ex is PavedMessageException pex)
+                {
+                    ConsoleWig.WriteLineColord(pex.Fatal ? ConsoleColor.Red : ConsoleColor.Yellow, pex.Message);
+                }
+                else
+                {
+                    ConsoleWig.WriteLineColord(ConsoleColor.Red, ex.ToString());
+                }
                 return 255;
             };
             optionsBuilder?.Invoke(options);
