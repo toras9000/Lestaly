@@ -94,6 +94,45 @@ public static class EnumerableDataExtensions
     /// <summary>シーケンスデータをCSV(Charactor Separated Field)として保存する。</summary>
     /// <typeparam name="TSource">シーケンスの要素型</typeparam>
     /// <param name="self">保存対象シーケンス</param>
+    /// <param name="file">保存ファイル</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>書き込み処理タスク</returns>
+    public static Task SaveToCsvAsync<TSource>(this IEnumerable<TSource> self, FileInfo file, CancellationToken cancelToken = default)
+    {
+        if (file == null) throw new ArgumentNullException(nameof(file));
+        return self.SaveToCsvAsync(file.FullName, cancelToken);
+    }
+
+    /// <summary>シーケンスデータをCSV(Charactor Separated Field)として保存する。</summary>
+    /// <typeparam name="TSource">シーケンスの要素型</typeparam>
+    /// <param name="self">保存対象シーケンス</param>
+    /// <param name="file">保存ファイル</param>
+    /// <param name="options">保存オプション</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>書き込み処理タスク</returns>
+    public static Task SaveToCsvAsync<TSource>(this IEnumerable<TSource> self, FileInfo file, SaveToCsvOptions options, CancellationToken cancelToken = default)
+    {
+        if (file == null) throw new ArgumentNullException(nameof(file));
+        return self.SaveToCsvAsync(file.FullName, options, cancelToken);
+    }
+
+    /// <summary>シーケンスデータをCSV(Charactor Separated Field)として保存する。</summary>
+    /// <typeparam name="TSource">シーケンスの要素型</typeparam>
+    /// <param name="self">保存対象シーケンス</param>
+    /// <param name="file">保存ファイル</param>
+    /// <param name="options">保存オプション</param>
+    /// <param name="encoding">保存テキストエンコーディング</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>書き込み処理タスク</returns>
+    public static Task SaveToCsvAsync<TSource>(this IEnumerable<TSource> self, FileInfo file, SaveToCsvOptions options, Encoding encoding, CancellationToken cancelToken = default)
+    {
+        if (file == null) throw new ArgumentNullException(nameof(file));
+        return self.SaveToCsvAsync(file.FullName, options, encoding, cancelToken);
+    }
+
+    /// <summary>シーケンスデータをCSV(Charactor Separated Field)として保存する。</summary>
+    /// <typeparam name="TSource">シーケンスの要素型</typeparam>
+    /// <param name="self">保存対象シーケンス</param>
     /// <param name="filePath">保存ファイルパス</param>
     /// <param name="cancelToken">キャンセルトークン</param>
     /// <returns>書き込み処理タスク</returns>
@@ -186,6 +225,45 @@ public static class EnumerableDataExtensions
 
         // 保存
         return File.WriteAllLinesAsync(filePath, lines, encoding, cancelToken);
+    }
+
+    /// <summary>シーケンスデータをCSV(Charactor Separated Field)として保存する。</summary>
+    /// <typeparam name="TSource">シーケンスの要素型</typeparam>
+    /// <param name="self">保存対象シーケンス</param>
+    /// <param name="file">保存ファイル</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>書き込み処理タスク</returns>
+    public static Task SaveToCsvAsync<TSource>(this IAsyncEnumerable<TSource> self, FileInfo file, CancellationToken cancelToken = default)
+    {
+        if (file == null) throw new ArgumentNullException(nameof(file));
+        return self.SaveToCsvAsync(file.FullName, cancelToken);
+    }
+
+    /// <summary>シーケンスデータをCSV(Charactor Separated Field)として保存する。</summary>
+    /// <typeparam name="TSource">シーケンスの要素型</typeparam>
+    /// <param name="self">保存対象シーケンス</param>
+    /// <param name="file">保存ファイル</param>
+    /// <param name="options">保存オプション</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>書き込み処理タスク</returns>
+    public static Task SaveToCsvAsync<TSource>(this IAsyncEnumerable<TSource> self, FileInfo file, SaveToCsvOptions options, CancellationToken cancelToken = default)
+    {
+        if (file == null) throw new ArgumentNullException(nameof(file));
+        return self.SaveToCsvAsync(file.FullName, options, cancelToken);
+    }
+
+    /// <summary>シーケンスデータをCSV(Charactor Separated Field)として保存する。</summary>
+    /// <typeparam name="TSource">シーケンスの要素型</typeparam>
+    /// <param name="self">保存対象シーケンス</param>
+    /// <param name="file">保存ファイル</param>
+    /// <param name="options">保存オプション</param>
+    /// <param name="encoding">保存テキストエンコーディング</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>書き込み処理タスク</returns>
+    public static Task SaveToCsvAsync<TSource>(this IAsyncEnumerable<TSource> self, FileInfo file, SaveToCsvOptions options, Encoding encoding, CancellationToken cancelToken = default)
+    {
+        if (file == null) throw new ArgumentNullException(nameof(file));
+        return self.SaveToCsvAsync(file.FullName, options, encoding, cancelToken);
     }
 
     /// <summary>シーケンスデータをCSV(Charactor Separated Field)として保存する。</summary>
@@ -293,6 +371,29 @@ public static class EnumerableDataExtensions
     /// <summary>シーケンスデータをExcelファイルとして保存する。</summary>
     /// <typeparam name="TSource">シーケンスの要素型</typeparam>
     /// <param name="self">保存対象シーケンス</param>
+    /// <param name="file">保存ファイル</param>
+    /// <returns>書き込み処理タスク</returns>
+    public static void SaveToExcel<TSource>(this IEnumerable<TSource> self, FileInfo file)
+    {
+        if (file == null) throw new ArgumentNullException(nameof(file));
+        self.SaveToExcel(file.FullName);
+    }
+
+    /// <summary>シーケンスデータをExcelファイルとして保存する。</summary>
+    /// <typeparam name="TSource">シーケンスの要素型</typeparam>
+    /// <param name="self">保存対象シーケンス</param>
+    /// <param name="file">保存ファイル</param>
+    /// <param name="options">保存オプション</param>
+    /// <returns>書き込み処理タスク</returns>
+    public static void SaveToExcel<TSource>(this IEnumerable<TSource> self, FileInfo file, SaveToExcelOptions options)
+    {
+        if (file == null) throw new ArgumentNullException(nameof(file));
+        self.SaveToExcel(file.FullName, options);
+    }
+
+    /// <summary>シーケンスデータをExcelファイルとして保存する。</summary>
+    /// <typeparam name="TSource">シーケンスの要素型</typeparam>
+    /// <param name="self">保存対象シーケンス</param>
     /// <param name="filePath">保存ファイルパス</param>
     /// <returns>書き込み処理タスク</returns>
     public static void SaveToExcel<TSource>(this IEnumerable<TSource> self, string filePath)
@@ -382,6 +483,31 @@ public static class EnumerableDataExtensions
 
         // ファイルに保存
         book.SaveAs(filePath);
+    }
+
+    /// <summary>シーケンスデータをCSV(Charactor Separated Field)として保存する。</summary>
+    /// <typeparam name="TSource">シーケンスの要素型</typeparam>
+    /// <param name="self">保存対象シーケンス</param>
+    /// <param name="file">保存ファイル</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>書き込み処理タスク</returns>
+    public static Task SaveToExcelAsync<TSource>(this IAsyncEnumerable<TSource> self, FileInfo file, CancellationToken cancelToken = default)
+    {
+        if (file == null) throw new ArgumentNullException(nameof(file));
+        return self.SaveToExcelAsync(file.FullName, cancelToken);
+    }
+
+    /// <summary>シーケンスデータをExcelファイルとして保存する。</summary>
+    /// <typeparam name="TSource">シーケンスの要素型</typeparam>
+    /// <param name="self">保存対象シーケンス</param>
+    /// <param name="file">保存ファイル</param>
+    /// <param name="options">保存オプション</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>書き込み処理タスク</returns>
+    public static Task SaveToExcelAsync<TSource>(this IAsyncEnumerable<TSource> self, FileInfo file, SaveToExcelOptions options, CancellationToken cancelToken = default)
+    {
+        if (file == null) throw new ArgumentNullException(nameof(file));
+        return self.SaveToExcelAsync(file.FullName, options, cancelToken);
     }
 
     /// <summary>シーケンスデータをCSV(Charactor Separated Field)として保存する。</summary>
