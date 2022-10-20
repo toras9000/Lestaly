@@ -16,6 +16,16 @@ public delegate void SelectFilesConveter<TResult>(CometFlavor.Extensions.IO.IFil
 /// <returns>処理タスク</returns>
 public delegate ValueTask AsyncSelectFilesConveter<TResult>(CometFlavor.Extensions.IO.IFileConverter<TResult?> context);
 
+/// <summary>列挙したファイル/ディレクトリに対する処理デリゲート型</summary>
+/// <param name="context">列挙コンテキストデータ</param>
+public delegate void DoFilesWalker(CometFlavor.Extensions.IO.IFileWalker context);
+
+/// <summary>列挙したファイル/ディレクトリに対する非同期処理デリゲート型</summary>
+/// <param name="context">列挙コンテキストデータ</param>
+/// <returns>処理タスク</returns>
+public delegate ValueTask AsyncDoFilesWalker(CometFlavor.Extensions.IO.IFileWalker context);
+
+
 /// <summary>
 /// DirectoryInfo に対する拡張メソッド
 /// </summary>
@@ -188,6 +198,99 @@ public static class DirectoryInfoExtensions
             if (includes == null || includes.Any(e => e.IsMatch(name)))
             {
                 await selector(c).ConfigureAwait(false);
+            }
+        });
+    }
+
+    /// <summary>ディレクトリ配下のファイル/ディレクトリを検索して処理を行う</summary>
+    /// <param name="self">検索の起点ディレクトリ</param>
+    /// <param name="processor">ファイル/ディレクトリに対する処理</param>
+    /// <param name="options">検索オプション</param>
+    public static void DoFiles(this DirectoryInfo self, DoFilesWalker processor, SelectFilesOptions? options = null)
+    {
+        if (processor == null) throw new ArgumentNullException(nameof(processor));
+        CometFlavor.Extensions.IO.DirectoryInfoExtensions.DoFiles(self, c => processor(c), options);
+    }
+
+    /// <summary>ディレクトリ配下のファイル/ディレクトリを検索して処理を行う</summary>
+    /// <param name="self">検索の起点ディレクトリ</param>
+    /// <param name="processor">ファイル/ディレクトリに対する処理</param>
+    /// <param name="excludes">列挙対象から除外するパターンのコレクション</param>
+    /// <param name="includes">列挙対象に含めるパターンのコレクション。除外されなかったファイルに適用する。nullの場合は全てのファイルが列挙対象。</param>
+    /// <param name="options">検索オプション</param>
+    public static void DoFiles(this DirectoryInfo self, DoFilesWalker processor, IReadOnlyCollection<Regex> excludes, IReadOnlyCollection<Regex>? includes = null, SelectFilesOptions? options = null)
+    {
+        if (processor == null) throw new ArgumentNullException(nameof(processor));
+        if (excludes == null) throw new ArgumentNullException(nameof(excludes));
+        CometFlavor.Extensions.IO.DirectoryInfoExtensions.DoFiles(self, options: options, processor: c =>
+        {
+            var name = default(string?);
+            // ディレクトリに対する呼び出しであるかを判定
+            if (c.File == null)
+            {
+                // ディレクトリが除外パターンにマッチする場合、そのディレクトリの配下に入らないようフラグを立てる
+                if (excludes.Any(e => e.IsMatch(c.Directory.Name))) { c.Break = true; return; }
+                // 仲介判定用の名称はディレクトリ名
+                name = c.Directory.Name;
+            }
+            else
+            {
+                // ファイルが除外パターンにマッチする場合、単に仲介せずに終える。
+                if (excludes.Any(e => e.IsMatch(c.File.Name))) { return; }
+                // 仲介判定用の名称はファイル名
+                name = c.File.Name;
+            }
+            // 処理対象パターンが無し、もしくは指定されていてパターンに一致する場合に処理を仲介する
+            if (includes == null || includes.Any(e => e.IsMatch(name)))
+            {
+                processor(c);
+            }
+        });
+    }
+
+    /// <summary>ディレクトリ配下のファイル/ディレクトリを検索して処理を行う</summary>
+    /// <param name="self">検索の起点ディレクトリ</param>
+    /// <param name="processor">ファイル/ディレクトリに対する処理</param>
+    /// <param name="options">検索オプション</param>
+    /// <returns>検索処理タスク</returns>
+    public static Task DoFilesAsync(this DirectoryInfo self, AsyncDoFilesWalker processor, SelectFilesOptions? options = null)
+    {
+        if (processor == null) throw new ArgumentNullException(nameof(processor));
+        return CometFlavor.Extensions.IO.DirectoryInfoExtensions.DoFilesAsync(self, c => processor(c), options);
+    }
+
+    /// <summary>ディレクトリ配下のファイル/ディレクトリを検索して処理を行う</summary>
+    /// <param name="self">検索の起点ディレクトリ</param>
+    /// <param name="processor">ファイル/ディレクトリに対する処理</param>
+    /// <param name="excludes">列挙対象から除外するパターンのコレクション</param>
+    /// <param name="includes">列挙対象に含めるパターンのコレクション。除外されなかったファイルに適用する。nullの場合は全てのファイルが列挙対象。</param>
+    /// <param name="options">検索オプション</param>
+    /// <returns>検索処理タスク</returns>
+    public static Task DoFilesAsync(this DirectoryInfo self, AsyncDoFilesWalker processor, IReadOnlyCollection<Regex> excludes, IReadOnlyCollection<Regex>? includes = null, SelectFilesOptions? options = null)
+    {
+        if (processor == null) throw new ArgumentNullException(nameof(processor));
+        return CometFlavor.Extensions.IO.DirectoryInfoExtensions.DoFilesAsync(self, options: options, processor: async c =>
+        {
+            var name = default(string?);
+            // ディレクトリに対する呼び出しであるかを判定
+            if (c.File == null)
+            {
+                // ディレクトリが除外パターンにマッチする場合、そのディレクトリの配下に入らないようフラグを立てる
+                if (excludes.Any(e => e.IsMatch(c.Directory.Name))) { c.Break = true; return; }
+                // 仲介判定用の名称はディレクトリ名
+                name = c.Directory.Name;
+            }
+            else
+            {
+                // ファイルが除外パターンにマッチする場合、単に仲介せずに終える。
+                if (excludes.Any(e => e.IsMatch(c.File.Name))) { return; }
+                // 仲介判定用の名称はファイル名
+                name = c.File.Name;
+            }
+            // 処理対象パターンが無し、もしくは指定されていてパターンに一致する場合に処理を仲介する
+            if (includes == null || includes.Any(e => e.IsMatch(name)))
+            {
+                await processor(c).ConfigureAwait(false);
             }
         });
     }
