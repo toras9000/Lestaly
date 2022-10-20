@@ -5,6 +5,17 @@ namespace Lestaly;
 /// <inheritdoc />
 public record SelectFilesOptions : CometFlavor.Extensions.IO.SelectFilesOptions;
 
+/// <summary>列挙したファイル/ディレクトリに対する変換処理デリゲート型</summary>
+/// <typeparam name="TResult">変換結果の型</typeparam>
+/// <param name="context">変換コンテキストデータ</param>
+public delegate void SelectFilesConveter<TResult>(CometFlavor.Extensions.IO.IFileConverter<TResult?> context);
+
+/// <summary>列挙したファイル/ディレクトリに対する非同期変換処理デリゲート型</summary>
+/// <typeparam name="TResult">変換結果の型</typeparam>
+/// <param name="context">変換コンテキストデータ</param>
+/// <returns>処理タスク</returns>
+public delegate ValueTask AsyncSelectFilesConveter<TResult>(CometFlavor.Extensions.IO.IFileConverter<TResult?> context);
+
 /// <summary>
 /// DirectoryInfo に対する拡張メソッド
 /// </summary>
@@ -71,83 +82,113 @@ public static class DirectoryInfoExtensions
     #endregion
 
     #region Search
-    /// <summary>ディレクトリ配下のファイルを検索して変換処理を行う</summary>
+    /// <summary>ディレクトリ配下のファイル/ディレクトリを検索して変換処理を行う</summary>
     /// <remarks>
+    /// ディレクトリ内を列挙する際は最初にファイルを列挙し、オプションで指定されていれば次にサブディレクトリを列挙する。
     /// このメソッドではサブディレクトリ配下の検索に再帰呼び出しを利用する。
     /// ディレクトリ構成によってはスタックを大量に消費する可能性があることに注意。
-    /// ディレクトリ内を列挙する際、最初にファイルを列挙し、次に
     /// </remarks>
-    /// <typeparam name="TResult">ファイルに対する変換結果の型</typeparam>
+    /// <typeparam name="TResult">ファイル/ディレクトリに対する変換結果の型</typeparam>
     /// <param name="self">検索の起点ディレクトリ</param>
-    /// <param name="selector">ファイルに対する変換処理</param>
-    /// <param name="filter">
-    /// ファイル/ディレクトリを列挙するか否かを判定するフィルタ処理。
-    /// ディレクトリに対して列挙対象外と判定した場合、その配下の検索は行われない。
-    /// </param>
+    /// <param name="selector">ファイル/ディレクトリに対する変換処理</param>
     /// <param name="options">検索オプション</param>
     /// <returns>変換結果のシーケンス</returns>
-    public static IEnumerable<TResult> SelectFiles<TResult>(this DirectoryInfo self, Func<FileInfo, TResult> selector, Func<FileSystemInfo, bool>? filter = null, SelectFilesOptions? options = null)
-        => CometFlavor.Extensions.IO.DirectoryInfoExtensions.SelectFiles(self, selector, filter, options);
+    public static IEnumerable<TResult?> SelectFiles<TResult>(this DirectoryInfo self, SelectFilesConveter<TResult> selector, SelectFilesOptions? options = null)
+    {
+        if (selector == null) throw new ArgumentNullException(nameof(selector));
+        return CometFlavor.Extensions.IO.DirectoryInfoExtensions.SelectFiles<TResult>(self, c => selector(c), options);
+    }
 
-    /// <summary>ディレクトリ配下のファイルを検索して変換処理を行う</summary>
-    /// <remarks><see cref="SelectFiles{TResult}(DirectoryInfo, Func{FileInfo, TResult}, Func{FileSystemInfo, bool}?, SelectFilesOptions?)"/></remarks>
-    /// <typeparam name="TResult">ファイルに対する変換結果の型</typeparam>
+    /// <summary>ディレクトリ配下のファイル/ディレクトリを検索して変換処理を行う</summary>
+    /// <typeparam name="TResult">ファイル/ディレクトリに対する変換結果の型</typeparam>
     /// <param name="self">検索の起点ディレクトリ</param>
-    /// <param name="selector">ファイルに対する変換処理</param>
+    /// <param name="selector">ファイル/ディレクトリに対する変換処理</param>
     /// <param name="excludes">列挙対象から除外するパターンのコレクション</param>
     /// <param name="includes">列挙対象に含めるパターンのコレクション。除外されなかったファイルに適用する。nullの場合は全てのファイルが列挙対象。</param>
     /// <param name="options">検索オプション</param>
     /// <returns>変換結果のシーケンス</returns>
-    public static IEnumerable<TResult> SelectFiles<TResult>(this DirectoryInfo self, Func<FileInfo, TResult> selector, IReadOnlyCollection<Regex> excludes, IReadOnlyCollection<Regex>? includes, SelectFilesOptions? options = null)
+    public static IEnumerable<TResult?> SelectFiles<TResult>(this DirectoryInfo self, SelectFilesConveter<TResult> selector, IReadOnlyCollection<Regex> excludes, IReadOnlyCollection<Regex>? includes = null, SelectFilesOptions? options = null)
     {
-        return CometFlavor.Extensions.IO.DirectoryInfoExtensions.SelectFiles(self, selector, options: options, filter: item =>
+        if (selector == null) throw new ArgumentNullException(nameof(selector));
+        if (excludes == null) throw new ArgumentNullException(nameof(excludes));
+        return CometFlavor.Extensions.IO.DirectoryInfoExtensions.SelectFiles<TResult>(self, options: options, selector: c =>
         {
-            if (excludes.Any(e => e.IsMatch(item.Name))) return false;
-            if (includes != null && item is FileInfo file)
+            var name = default(string?);
+            // ディレクトリに対する呼び出しであるかを判定
+            if (c.File == null)
             {
-                if (!includes.Any(e => e.IsMatch(item.Name))) return false;
+                // ディレクトリが除外パターンにマッチする場合、そのディレクトリの配下に入らないようフラグを立てる
+                if (excludes.Any(e => e.IsMatch(c.Directory.Name))) { c.Break = true; return; }
+                // 仲介判定用の名称はディレクトリ名
+                name = c.Directory.Name;
             }
-            return true;
+            else
+            {
+                // ファイルが除外パターンにマッチする場合、単に仲介せずに終える。
+                if (excludes.Any(e => e.IsMatch(c.File.Name))) { return; }
+                // 仲介判定用の名称はファイル名
+                name = c.File.Name;
+            }
+            // 処理対象パターンが無し、もしくは指定されていてパターンに一致する場合に処理を仲介する
+            if (includes == null || includes.Any(e => e.IsMatch(name)))
+            {
+                selector(c);
+            }
         });
     }
 
-    /// <summary>ディレクトリ配下のファイルを検索して変換処理を行う</summary>
+    /// <summary>ディレクトリ配下のファイル/ディレクトリを検索して変換処理を行う</summary>
     /// <remarks>
+    /// ディレクトリ内を列挙する際は最初にファイルを列挙し、オプションで指定されていれば次にサブディレクトリを列挙する。
     /// このメソッドではサブディレクトリ配下の検索に再帰呼び出しを利用する。
     /// ディレクトリ構成によってはスタックを大量に消費する可能性があることに注意。
-    /// ディレクトリ内を列挙する際、最初にファイルを列挙し、次に
     /// </remarks>
-    /// <typeparam name="TResult">ファイルに対する変換結果の型</typeparam>
+    /// <typeparam name="TResult">ファイル/ディレクトリに対する変換処理</typeparam>
     /// <param name="self">検索の起点ディレクトリ</param>
-    /// <param name="selector">ファイルに対する変換処理</param>
-    /// <param name="filter">
-    /// ファイル/ディレクトリを列挙するか否かを判定するフィルタ処理。
-    /// ディレクトリに対して列挙対象外と判定した場合、その配下の検索は行われない。
-    /// </param>
+    /// <param name="selector">ファイル/ディレクトリに対する変換処理</param>
     /// <param name="options">検索オプション</param>
     /// <returns>変換結果のシーケンス</returns>
-    public static IAsyncEnumerable<TResult> SelectFilesAsync<TResult>(this DirectoryInfo self, Func<FileInfo, Task<TResult>> selector, Func<FileSystemInfo, bool>? filter = null, SelectFilesOptions? options = null)
-        => CometFlavor.Extensions.IO.DirectoryInfoExtensions.SelectFilesAsync(self, selector, filter, options);
+    public static IAsyncEnumerable<TResult?> SelectFilesAsync<TResult>(this DirectoryInfo self, AsyncSelectFilesConveter<TResult> selector, SelectFilesOptions? options = null)
+    {
+        if (selector == null) throw new ArgumentNullException(nameof(selector));
+        return CometFlavor.Extensions.IO.DirectoryInfoExtensions.SelectFilesAsync<TResult>(self, c => selector(c), options);
+    }
 
-    /// <summary>ディレクトリ配下のファイルを検索して変換処理を行う</summary>
-    /// <remarks><see cref="SelectFilesAsync{TResult}(DirectoryInfo, Func{FileInfo, Task{TResult}}, Func{FileSystemInfo, bool}?, SelectFilesOptions?)"/></remarks>
-    /// <typeparam name="TResult">ファイルに対する変換結果の型</typeparam>
+    /// <summary>ディレクトリ配下のファイル/ディレクトリを検索して変換処理を行う</summary>
+    /// <typeparam name="TResult">ファイル/ディレクトリに対する変換結果の型</typeparam>
     /// <param name="self">検索の起点ディレクトリ</param>
-    /// <param name="selector">ファイルに対する変換処理</param>
+    /// <param name="selector">ファイル/ディレクトリに対する変換処理</param>
     /// <param name="excludes">列挙対象から除外するパターンのコレクション</param>
     /// <param name="includes">列挙対象に含めるパターンのコレクション。除外されなかったファイルに適用する。nullの場合は全てのファイルが列挙対象。</param>
     /// <param name="options">検索オプション</param>
     /// <returns>変換結果のシーケンス</returns>
-    public static IAsyncEnumerable<TResult> SelectFilesAsync<TResult>(this DirectoryInfo self, Func<FileInfo, Task<TResult>> selector, IReadOnlyCollection<Regex> excludes, IReadOnlyCollection<Regex>? includes, SelectFilesOptions? options = null)
+    public static IAsyncEnumerable<TResult?> SelectFilesAsync<TResult>(this DirectoryInfo self, AsyncSelectFilesConveter<TResult> selector, IReadOnlyCollection<Regex> excludes, IReadOnlyCollection<Regex>? includes = null, SelectFilesOptions? options = null)
     {
-        return CometFlavor.Extensions.IO.DirectoryInfoExtensions.SelectFilesAsync(self, selector, options: options, filter: item =>
+        if (selector == null) throw new ArgumentNullException(nameof(selector));
+        if (excludes == null) throw new ArgumentNullException(nameof(excludes));
+        return CometFlavor.Extensions.IO.DirectoryInfoExtensions.SelectFilesAsync<TResult>(self, options: options, selector: async c =>
         {
-            if (excludes.Any(e => e.IsMatch(item.Name))) return false;
-            if (includes != null && item is FileInfo file)
+            var name = default(string?);
+            // ディレクトリに対する呼び出しであるかを判定
+            if (c.File == null)
             {
-                if (!includes.Any(e => e.IsMatch(item.Name))) return false;
+                // ディレクトリが除外パターンにマッチする場合、そのディレクトリの配下に入らないようフラグを立てる
+                if (excludes.Any(e => e.IsMatch(c.Directory.Name))) { c.Break = true; return; }
+                // 仲介判定用の名称はディレクトリ名
+                name = c.Directory.Name;
             }
-            return true;
+            else
+            {
+                // ファイルが除外パターンにマッチする場合、単に仲介せずに終える。
+                if (excludes.Any(e => e.IsMatch(c.File.Name))) { return; }
+                // 仲介判定用の名称はファイル名
+                name = c.File.Name;
+            }
+            // 処理対象パターンが無し、もしくは指定されていてパターンに一致する場合に処理を仲介する
+            if (includes == null || includes.Any(e => e.IsMatch(name)))
+            {
+                await selector(c).ConfigureAwait(false);
+            }
         });
     }
     #endregion
