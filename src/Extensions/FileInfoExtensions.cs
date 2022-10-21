@@ -271,6 +271,14 @@ public static class FileInfoExtensions
     }
     #endregion
 
+    #region FileSystem
+    /// <summary>ファイルまでのディレクトリを作成する。</summary>
+    /// <param name="self">対象ファイル情報</param>
+    /// <returns>元のファイル情報</returns>
+    public static FileInfo WithCreate(this FileInfo self)
+        => CometFlavor.Extensions.IO.FileInfoExtensions.WithDirectoryCreate(self);
+    #endregion
+
     #region Path
     /// <summary>
     /// ファイルパスの構成セグメントを取得する。

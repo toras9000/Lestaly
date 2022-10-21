@@ -51,6 +51,14 @@ public static class DirectoryInfoExtensions
         => CometFlavor.Extensions.IO.DirectoryInfoExtensions.GetRelativeDirectory(self, relativePath);
     #endregion
 
+    #region FileSystem
+    /// <summary>ディレクトリを作成する。</summary>
+    /// <param name="self">対象ディレクトリ情報</param>
+    /// <returns>元のディレクトリ情報</returns>
+    public static DirectoryInfo WithCreate(this DirectoryInfo self)
+        => CometFlavor.Extensions.IO.DirectoryInfoExtensions.WithCreate(self);
+    #endregion
+
     #region Path
     /// <summary>
     /// ディレクトリパスの構成セグメントを取得する。
