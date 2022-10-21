@@ -277,6 +277,18 @@ public static class FileInfoExtensions
     /// <returns>元のファイル情報</returns>
     public static FileInfo WithCreate(this FileInfo self)
         => CometFlavor.Extensions.IO.FileInfoExtensions.WithDirectoryCreate(self);
+
+    /// <summary>ファイルの作成または更新日時の更新を行う</summary>
+    /// <param name="self">対象ファイル情報</param>
+    /// <returns>元のファイル情報</returns>
+    public static FileInfo Touch(this FileInfo self)
+    {
+        if (self == null) throw new ArgumentNullException(nameof(self));
+        self.Directory?.Create();
+        using var stream = new FileStream(self.FullName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None, bufferSize: 0);
+        self.LastWriteTimeUtc = DateTime.UtcNow;
+        return self;
+    }
     #endregion
 
     #region Path
