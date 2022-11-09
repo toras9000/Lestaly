@@ -42,7 +42,7 @@ public class PavedOptions<T>
 }
 
 /// <summary>
-/// 実行補助処理で
+/// 実行補助処理で特別に扱うエラーメッセージ伝達用例外
 /// </summary>
 public class PavedMessageException : Exception
 {
