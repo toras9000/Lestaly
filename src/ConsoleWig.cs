@@ -66,6 +66,48 @@ public static class ConsoleWig
         return buff.ToString();
     }
 
+    /// <summary>入力を行末または指定のキーワードが入力されるまで読み取る。</summary>
+    /// <param name="keyword">入力を終了するキーワード</param>
+    /// <param name="comparison">文字列比較方法</param>
+    /// <param name="breakOnReturn">入力終了後に改行を出力するか否か</param>
+    /// <returns>入力された文字列</returns>
+    public static string ReadLineReaction(string keyword, StringComparison comparison = StringComparison.Ordinal, bool breakOnReturn = true)
+    {
+        if (string.IsNullOrEmpty(keyword)) throw new ArgumentException($"Invalid {nameof(keyword)}");
+        var buff = new StringBuilder();
+        while (true)
+        {
+            var input = Console.ReadKey(intercept: true);
+            if (input.Key == ConsoleKey.Enter) break;
+            if (input.Key == ConsoleKey.Backspace)
+            {
+                if (0 < buff.Length) buff.Length--;
+                Console.Write(input.KeyChar);
+                continue;
+            }
+            if (input.KeyChar != 0)
+            {
+                buff.Append(input.KeyChar);
+                Console.Write(input.KeyChar);
+                if (buff.EndsWith(keyword, comparison)) break;
+            }
+        }
+        if (breakOnReturn) Console.WriteLine();
+        return buff.ToString();
+    }
+
+    /// <summary>バッファ内のキー入力をスキップする。</summary>
+    /// <param name="maxCount">最大スキップ数。継続的に入力される場合や</param>
+    public static void SkipInputChars(int maxCount = int.MaxValue)
+    {
+        if (maxCount < 0) throw new ArgumentOutOfRangeException(nameof(maxCount));
+        for (var i = 0; i < maxCount; i++)
+        {
+            if (!Console.KeyAvailable) break;
+            Console.ReadKey(intercept: true);
+        }
+    }
+
     /// <summary>出力テキスト色を設定して区間を作成する</summary>
     /// <param name="color">色</param>
     /// <returns>設定区間。Disposeすると元の値を復元する。</returns>
