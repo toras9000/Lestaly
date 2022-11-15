@@ -71,13 +71,16 @@ public static class ConsoleWig
     /// <param name="comparison">文字列比較方法</param>
     /// <param name="breakOnReturn">入力終了後に改行を出力するか否か</param>
     /// <returns>入力された文字列</returns>
-    public static string ReadLineReaction(string keyword, StringComparison comparison = StringComparison.Ordinal, bool breakOnReturn = true)
+    public static string ReadKeysLineReaction(string keyword, StringComparison comparison = StringComparison.Ordinal, bool breakOnReturn = true)
     {
         if (string.IsNullOrEmpty(keyword)) throw new ArgumentException($"Invalid {nameof(keyword)}");
         var buff = new StringBuilder();
         while (true)
         {
+            // キー入力読み取り
             var input = Console.ReadKey(intercept: true);
+
+            // 特殊キーの処理
             if (input.Key == ConsoleKey.Enter) break;
             if (input.Key == ConsoleKey.Backspace)
             {
@@ -85,15 +88,71 @@ public static class ConsoleWig
                 Console.Write(input.KeyChar);
                 continue;
             }
-            if (input.KeyChar != 0)
-            {
-                buff.Append(input.KeyChar);
-                Console.Write(input.KeyChar);
-                if (buff.EndsWith(keyword, comparison)) break;
-            }
+
+            // 無効なキャラクタならばスキップ
+            if (input.KeyChar == 0) continue;
+
+            // 有効キャラクタを蓄積・出力
+            buff.Append(input.KeyChar);
+            Console.Write(input.KeyChar);
+
+            // 蓄積文字列の末尾が指定のキーワードになったら完了とする
+            if (buff.EndsWith(keyword, comparison)) break;
         }
+
+        // 指定により改行出力してから終了
         if (breakOnReturn) Console.WriteLine();
         return buff.ToString();
+    }
+
+    /// <summary>入力を行末または一定時間アイドル指定のキーワードが入力されるまで読み取る。</summary>
+    /// <param name="completer">入力アイドル時に完了判定する処理</param>
+    /// <param name="timeout">入力アイドル時間 [ms]</param>
+    /// <param name="breakOnReturn">入力終了後に改行を出力するか否か</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>入力された文字列を得るタスク</returns>
+    public static async Task<string> ReadKeysLineIfAsync(Func<string, bool> completer, int timeout = 100, bool breakOnReturn = true, CancellationToken cancelToken = default)
+    {
+        if (completer == null) throw new ArgumentNullException(nameof(completer));
+        if (timeout <= 0) throw new ArgumentOutOfRangeException(nameof(timeout));
+
+        var buff = new StringBuilder();
+        while (true)
+        {
+            // ずっと入力がAvailableな場合への対処として、キャンセル状態をチェック
+            cancelToken.ThrowIfCancellationRequested();
+
+            // キー入力読み取り
+            var input = Console.ReadKey(intercept: true);
+
+            // 特殊キーの処理
+            if (input.Key == ConsoleKey.Enter) break;
+            if (input.Key == ConsoleKey.Backspace)
+            {
+                if (0 < buff.Length) buff.Length--;
+                Console.Write(input.KeyChar);
+            }
+            else if (input.KeyChar != 0)
+            {
+                // 有効キャラクタを蓄積・出力
+                buff.Append(input.KeyChar);
+                Console.Write(input.KeyChar);
+            }
+
+            // 次のキー入力が有効であれば続けて読み取り
+            if (Console.KeyAvailable) { continue; }
+
+            // 入力が無い場合は一定時間待機
+            await Task.Delay(timeout, cancelToken).ConfigureAwait(false);
+
+            // コールバックで完了判定
+            var complete = completer(buff.ToString());
+            if (complete) break;
+        }
+
+        // 指定により改行出力してから終了
+        if (breakOnReturn) Console.WriteLine();
+        return string.Concat(buff);
     }
 
     /// <summary>バッファ内のキー入力をスキップする。</summary>
