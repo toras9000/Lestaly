@@ -26,7 +26,7 @@ public class CmdProcTests
         using var canceller = new CancellationTokenSource();
         canceller.CancelAfter(3000);
 
-        await FluentActions.Awaiting(() => CmdProc.CallAsync("nslookup", cancelToken: canceller.Token))
+        await FluentActions.Awaiting(() => CmdProc.CallAsync("ping", new[] { "-t", "localhost", }, cancelToken: canceller.Token))
               .Should().ThrowAsync<CmdProcCancelException>();
     }
 
@@ -57,7 +57,7 @@ public class CmdProcTests
         using var canceller = new CancellationTokenSource();
         canceller.CancelAfter(3000);
 
-        await FluentActions.Awaiting(() => CmdProc.ExecAsync("nslookup", cancelToken: canceller.Token))
+        await FluentActions.Awaiting(() => CmdProc.ExecAsync("ping", new[] { "-t", "localhost", }, cancelToken: canceller.Token))
               .Should().ThrowAsync<CmdProcCancelException>();
     }
 
