@@ -40,3 +40,24 @@ public record ExcelHyperlink(string Target, string? Display = null, string? Tool
 /// <param name="Expression">式</param>
 /// <param name="IsR1C1">式</param>
 public record ExcelFormula(string Expression, bool IsR1C1 = false);
+
+/// <summary>書式付きの値を表すデータ型</summary>
+/// <param name="Value">出力する値</param>
+/// <param name="BackColor">背景色。#で開始するARGB HEX表記か名称による指定が可能。</param>
+/// <param name="ForeColor">テキスト色。#で開始するARGB HEX表記か名称による指定が可能。</param>
+/// <param name="Extra">追加の書式情報</param>
+/// <param name="DynamicValue">
+/// 出力する値を動的に評価するか否か。
+/// 動的評価では ExcelHyperlink/ExcelFormula が有効となる。
+/// 動的評価を有効にした場合、パフォーマンスは大きく落ちるため注意。
+/// </param>
+public record ExcelStyle(object Value, string? BackColor = null, string? ForeColor = null, ExcelStyleExtra? Extra = null, bool DynamicValue = false);
+
+/// <summary>書式付き値を型への追加書式情報</summary>
+/// <param name="Font">利用するフォント名</param>
+/// <param name="FontSize">フォントサイズ。非数の場合は指定なしを示す。</param>
+/// <param name="Bold">フォントをボールドにするか否か</param>
+/// <param name="Italic">フォントをイタリックにするか否か</param>
+/// <param name="Strike">テキストに打消し線を装飾するか否か</param>
+/// <param name="Comment">コメント(メモ)</param>
+public record ExcelStyleExtra(string? Font = null, double FontSize = double.NaN, bool Bold = false, bool Italic = false, bool Strike = false, string? Comment = null);

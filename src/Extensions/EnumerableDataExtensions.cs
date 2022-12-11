@@ -613,9 +613,18 @@ public static class EnumerableDataExtensions
     /// <returns>セル書き込みデリゲート</returns>
     private static Action<IXLCell, object> makeCellWriter<TSource>(TypeColumn<TSource> column, SaveToExcelOptions options)
     {
+        return makeCellWriter(column.MemberType, options);
+    }
+
+    /// <summary>Excelファイル保存用のセルにカラム値を書き込むデリゲートを作成する</summary>
+    /// <param name="type">書き込み対象の型情報</param>
+    /// <param name="options">保存オプション</param>
+    /// <returns>セル書き込みデリゲート</returns>
+    private static Action<IXLCell, object> makeCellWriter(Type type, SaveToExcelOptions options)
+    {
         if (options.AutoLink)
         {
-            switch (column.MemberType)
+            switch (type)
             {
             case var t when t.IsAssignableTo(typeof(Uri)):
                 return (cell, value) =>
@@ -635,7 +644,7 @@ public static class EnumerableDataExtensions
             }
         }
 
-        switch (column.MemberType)
+        switch (type)
         {
         case var t when t.IsAssignableTo(typeof(ExcelHyperlink)):
             return (cell, value) =>
@@ -650,6 +659,35 @@ public static class EnumerableDataExtensions
                 var fomula = (ExcelFormula)value;
                 if (fomula.IsR1C1) cell.FormulaR1C1 = fomula.Expression;
                 else cell.FormulaA1 = fomula.Expression;
+            };
+        case var t when t.IsAssignableTo(typeof(ExcelStyle)):
+            return (cell, value) =>
+            {
+                static XLColor fromText(string text) => text.StartsWith('#') ? XLColor.FromHtml(text) : XLColor.FromName(text);
+                var style = (ExcelStyle)value;
+                if (style.BackColor != null) cell.Style.Fill.BackgroundColor = fromText(style.BackColor);
+                if (style.ForeColor != null) cell.Style.Font.FontColor = fromText(style.ForeColor);
+                if (style.Extra is var extra && extra is not null)
+                {
+                    if (extra.Bold) cell.Style.Font.Bold = true;
+                    if (extra.Italic) cell.Style.Font.Italic = true;
+                    if (extra.Strike) cell.Style.Font.Strikethrough = true;
+                    if (extra.Font != null) cell.Style.Font.FontName = extra.Font;
+                    if (double.IsFinite(extra.FontSize)) cell.Style.Font.FontSize = extra.FontSize;
+                    if (extra.Comment != null) cell.CreateComment().AddText(extra.Comment);
+                }
+                if (style.Value != null)
+                {
+                    if (style.DynamicValue && (style.Value is ExcelHyperlink || style.Value is ExcelFormula))
+                    {
+                        var writer = makeCellWriter(style.Value.GetType(), options);
+                        writer(cell, style.Value);
+                    }
+                    else
+                    {
+                        cell.Value = style.Value;
+                    }
+                }
             };
         default:
             return (cell, value) => cell.Value = value;

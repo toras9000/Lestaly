@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Drawing;
 using System.Globalization;
 using ClosedXML.Excel;
 using FluentAssertions;
@@ -174,7 +175,6 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
 
         // テスト対象実行
         data.SaveToExcel(target.FullName);
-        data.SaveToExcel(@"d:\temp\test.xlsx");
 
         // 検証
         using var book = new XLWorkbook(target.FullName);
@@ -182,6 +182,96 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         sheet.Row(2).Cell(2).Value.Should().Be(12);
         sheet.Row(3).Cell(2).IsEmpty().Should().BeTrue();
         sheet.Row(4).Cell(2).Value.Should().Be(56);
+    }
+
+    [TestMethod]
+    public void SaveToExcel_Style()
+    {
+        using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
+
+        // テスト用に一時ディレクトリ
+        using var tempDir = new TempDirectory();
+
+        // テストファイル
+        var target = tempDir.Info.GetRelativeFile("test.xlsx");
+
+        // フィールドデータ
+        var style1 = new ExcelStyle("aaa", BackColor: "red", ForeColor: "#00ff00");
+        var style2 = new ExcelStyle("bbb", Extra: new(FontSize: 12, Bold: true));
+        var style3 = new ExcelStyle("ccc", Extra: new(Italic: true, Strike: true, Comment: "コメント"));
+
+        // 保存データ
+        var data = new[]
+        {
+            new { Style1 = style1, Style2 = style2, Style3 = style3, },
+        };
+
+        // テスト対象実行
+        data.SaveToExcel(target.FullName);
+
+        // 検証
+        using var book = new XLWorkbook(target.FullName);
+        var sheet = book.Worksheets.First();
+
+        var cell1 = sheet.Row(2).Cell(1);
+        cell1.Value.Should().Be("aaa");
+        cell1.Style.Fill.BackgroundColor.Color.ToArgb().Should().Be(Color.FromArgb(0xFF, 0x00, 0x00).ToArgb());
+        cell1.Style.Font.FontColor.Color.ToArgb().Should().Be(Color.FromArgb(0x00, 0xFF, 0x00).ToArgb());
+        cell1.Style.Font.Bold.Should().BeFalse();
+        cell1.Style.Font.Italic.Should().BeFalse();
+        cell1.Style.Font.Strikethrough.Should().BeFalse();
+        cell1.HasComment.Should().BeFalse();
+
+        var cell2 = sheet.Row(2).Cell(2);
+        cell2.Value.Should().Be("bbb");
+        cell2.Style.Fill.BackgroundColor.Color.ToArgb().Should().Be(Color.FromArgb(0x00, 0xFF, 0xFF, 0xFF).ToArgb());
+        cell2.Style.Font.FontSize.Should().Be(12);
+        cell2.Style.Font.FontColor.Color.ToArgb().Should().Be(Color.FromArgb(0x00, 0x00, 0x00).ToArgb());
+        cell2.Style.Font.Bold.Should().BeTrue();
+        cell2.Style.Font.Italic.Should().BeFalse();
+        cell2.Style.Font.Strikethrough.Should().BeFalse();
+        cell2.HasComment.Should().BeFalse();
+
+        var cell3 = sheet.Row(2).Cell(3);
+        cell3.Value.Should().Be("ccc");
+        cell3.Style.Fill.BackgroundColor.Color.ToArgb().Should().Be(Color.FromArgb(0x00, 0xFF, 0xFF, 0xFF).ToArgb());
+        cell3.Style.Font.FontColor.Color.ToArgb().Should().Be(Color.FromArgb(0x00, 0x00, 0x00).ToArgb());
+        cell3.Style.Font.Bold.Should().BeFalse();
+        cell3.Style.Font.Italic.Should().BeTrue();
+        cell3.Style.Font.Strikethrough.Should().BeTrue();
+        cell3.HasComment.Should().BeTrue();
+        cell3.GetComment().Text.Should().Be("コメント");
+    }
+
+    [TestMethod]
+    public void SaveToExcel_Style_Dynamic()
+    {
+        using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
+
+        // テスト用に一時ディレクトリ
+        using var tempDir = new TempDirectory();
+
+        // テストファイル
+        var target = tempDir.Info.GetRelativeFile("test.xlsx");
+
+        // フィールドデータ
+        var style1 = new ExcelStyle(new ExcelFormula("1+2"), DynamicValue: false);
+        var style2 = new ExcelStyle(new ExcelFormula("3+4"), DynamicValue: true);
+
+        // 保存データ
+        var data = new[]
+        {
+            new { Style1 = style1, Style2 = style2, },
+        };
+
+        // テスト対象実行
+        data.SaveToExcel(target.FullName);
+
+        // 検証
+        using var book = new XLWorkbook(target.FullName, new LoadOptions { RecalculateAllFormulas = true, });
+        var sheet = book.Worksheets.First();
+        sheet.Row(2).Cell(1).Value.Should().BeOfType<string>().Which.Contains("ExcelFormula");
+        sheet.Row(2).Cell(2).Value.Should().Be(7);
     }
 
     [TestMethod]
