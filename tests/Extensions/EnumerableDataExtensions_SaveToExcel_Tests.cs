@@ -639,7 +639,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         var options = new SaveToExcelOptions()
         {
             IncludeFields = true,
-            UseDisplayAttribute = true,
+            UseCaptionAttribute = true,
         };
 
         // テスト対象実行
@@ -687,7 +687,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         var options = new SaveToExcelOptions()
         {
             IncludeFields = true,
-            UseDisplayAttribute = true,
+            UseCaptionAttribute = true,
         };
 
         // テスト対象実行
@@ -725,7 +725,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         var options = new SaveToExcelOptions()
         {
             IncludeFields = true,
-            UseDisplayAttribute = false,
+            UseCaptionAttribute = false,
             SortCaption = true,
             CaptionSelector = m => m.Name switch
             {
@@ -782,7 +782,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         var options = new SaveToExcelOptions()
         {
             IncludeFields = true,
-            UseDisplayAttribute = false,
+            UseCaptionAttribute = false,
             SortCaption = false,
             SortMemberName = true,
         };

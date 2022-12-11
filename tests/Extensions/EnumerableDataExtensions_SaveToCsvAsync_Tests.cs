@@ -394,7 +394,7 @@ public class EnumerableDataExtensions_SaveToCsvAsync_Tests
         var options = new SaveToCsvOptions()
         {
             IncludeFields = true,
-            UseDisplayAttribute = true,
+            UseCaptionAttribute = true,
         };
 
         // テスト対象実行
@@ -440,7 +440,7 @@ public class EnumerableDataExtensions_SaveToCsvAsync_Tests
         var options = new SaveToCsvOptions()
         {
             IncludeFields = true,
-            UseDisplayAttribute = true,
+            UseCaptionAttribute = true,
         };
 
         // テスト対象実行
@@ -476,7 +476,7 @@ public class EnumerableDataExtensions_SaveToCsvAsync_Tests
         var options = new SaveToCsvOptions()
         {
             IncludeFields = true,
-            UseDisplayAttribute = false,
+            UseCaptionAttribute = false,
             SortCaption = true,
             CaptionSelector = m => m.Name switch
             {
@@ -531,7 +531,7 @@ public class EnumerableDataExtensions_SaveToCsvAsync_Tests
         var options = new SaveToCsvOptions()
         {
             IncludeFields = true,
-            UseDisplayAttribute = false,
+            UseCaptionAttribute = false,
             SortCaption = false,
             SortMemberName = true,
         };
@@ -570,7 +570,7 @@ public class EnumerableDataExtensions_SaveToCsvAsync_Tests
         var options = new SaveToCsvOptions()
         {
             IncludeFields = true,
-            UseDisplayAttribute = true,
+            UseCaptionAttribute = true,
             SortCaption = true,
             SortMemberName = true,
         };

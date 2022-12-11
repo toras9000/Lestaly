@@ -725,21 +725,27 @@ public static class EnumerableDataExtensions
                 // Display属性の利用が指定されていれば、その情報を取得する。
                 var caption = default(string);
                 var order = default(int);
-                if (options.UseDisplayAttribute)
+                if (options.UseCaptionAttribute)
                 {
                     var display = member.GetCustomAttribute<DisplayAttribute>();
                     caption = display?.Name;
                     order = display?.GetOrder() ?? 0;
                 }
 
-                // カラム名を決定する。
-                // 上記の属性からの情報があればそれを優先し、
-                // それがなければキャプション選択デリゲートから、それもなければメンバ名をカラム名とする。
-                caption ??= options.CaptionSelector?.Invoke(member) ?? member.Name;
+                // キャプション選択デリゲートが指定されていれば名前を取得する。
+                // こちらでカラム名が取得出来たらそれを優先する。
+                if (options.CaptionSelector?.Invoke(member) is string selectedCaption)
+                {
+                    caption = selectedCaption;
+                }
 
+                // 上の処理でカラム名が決定されなかった場合、メンバ名をカラム名として利用する。
+                caption ??= member.Name;
+
+                // カラム情報を作る
                 return new TypeColumn<TSource>(member, returnType, getter, caption, order);
             })
-            .OrderBy(c => options.UseDisplayAttribute ? c.Order : 0)    // 属性利用時はその Order プロパティを最優先。
+            .OrderBy(c => options.UseCaptionAttribute ? c.Order : 0)    // 属性利用時はその Order プロパティを最優先。
             .ThenBy(c => options.SortCaption ? c.Caption : "")          // キャンプションソートが指定されていればそのソート
             .ThenBy(c => options.SortMemberName ? c.Member.Name : "")   // メンバ名ソートが指定されていればそのソート。両方指定されていたらキャプションよりも後(同一キャプションの場合の順序)
             .ToArray();
