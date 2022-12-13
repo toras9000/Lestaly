@@ -274,6 +274,193 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         sheet.Row(2).Cell(2).Value.Should().Be(7);
     }
 
+    class ExpandItem
+    {
+        public int Number { get; set; }
+        [MaxLength(3)] public ExcelExpand? ExpandAttr { get; set; }
+        public ExcelExpand? ExpandNoSpan { get; set; }
+        public string? Text { get; set; }
+        public ExcelExpand? ExpandDelegate { get; set; }
+    }
+
+    [TestMethod]
+    public void SaveToExcel_Expand()
+    {
+        using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
+
+        // テスト用に一時ディレクトリ
+        using var tempDir = new TempDirectory();
+
+        // テストファイル
+        var target = tempDir.Info.GetRelativeFile("test.xlsx");
+
+        // 保存データ
+        var data = new[]
+        {
+            new ExpandItem
+            {
+                Number = 100,
+                ExpandAttr = new ExcelExpand(new object[]
+                {
+                    "xyz",
+                    200,
+                }),
+                ExpandNoSpan = new ExcelExpand(new object[]
+                {
+                    "AAA",
+                }),
+                Text = "abc",
+                ExpandDelegate = new ExcelExpand(new object[]
+                {
+                    new DateTime(2222, 3, 4, 5, 6, 7, 8),
+                    "BBB",
+                }),
+            },
+        };
+
+        // 実行オプション
+        var options = new SaveToExcelOptions()
+        {
+            ColumnSpanSelector = m => m.Name == nameof(ExpandItem.ExpandDelegate) ? 4 : null,
+            UseColumnSpanAttribute = true,
+        };
+
+        // テスト対象実行
+        data.SaveToExcel(target.FullName, options);
+
+        // 検証
+        using var book = new XLWorkbook(target.FullName);
+        var sheet = book.Worksheets.First();
+        sheet.Row(1).Cells(1, 11).Select(c => c.Value).Should().Equal(new[]
+        {
+            "Number",
+            "ExpandAttr[0]",
+            "ExpandAttr[1]",
+            "ExpandAttr[2]",
+            "ExpandNoSpan",
+            "Text",
+            "ExpandDelegate[0]",
+            "ExpandDelegate[1]",
+            "ExpandDelegate[2]",
+            "ExpandDelegate[3]",
+            "",
+        });
+        sheet.Row(2).Cells(1, 11).Select(c => c.Value).Should().Equal(new object[]
+        {
+            // Number
+            100,
+            // ExpandAttr
+            "xyz",
+            200,
+            "",
+            // ExpandNoSpan
+            "AAA",
+            // Text
+            "abc",
+            // ExpandDelegate
+            new DateTime(2222, 3, 4, 5, 6, 7, 8),
+            "BBB",
+            "",
+            "",
+            // (nothing)
+            "",
+        });
+    }
+
+    [TestMethod]
+    public void SaveToExcel_Expand_ColmnOverDrop()
+    {
+        using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
+
+        // テスト用に一時ディレクトリ
+        using var tempDir = new TempDirectory();
+
+        // テストファイル
+        var target = tempDir.Info.GetRelativeFile("test.xlsx");
+
+        // 保存データ
+        var data = new[]
+        {
+            new
+            {
+                Expand = new ExcelExpand(new object[]
+                {
+                    "abc",
+                    200,
+                    "def",
+                    300,
+                }),
+            },
+        };
+
+        // 実行オプション：オーバーしたデータをドロップする
+        var options = new SaveToExcelOptions()
+        {
+            ColumnSpanSelector = m => 3,
+            DropSpanOver = true,
+        };
+
+        // テスト対象実行
+        data.SaveToExcel(target.FullName, options);
+
+        // 検証
+        using var book = new XLWorkbook(target.FullName);
+        var sheet = book.Worksheets.First();
+        sheet.Row(1).Cells(1, 4).Select(c => c.Value).Should().Equal(new[]
+        {
+            "Expand[0]",
+            "Expand[1]",
+            "Expand[2]",
+            "",
+        });
+        sheet.Row(2).Cells(1, 4).Select(c => c.Value).Should().Equal(new object[]
+        {
+            "abc",
+            200,
+            "def",
+            "",
+        });
+    }
+
+    [TestMethod]
+    public void SaveToExcel_Expand_ColmnOverFail()
+    {
+        using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
+
+        // テスト用に一時ディレクトリ
+        using var tempDir = new TempDirectory();
+
+        // テストファイル
+        var target = tempDir.Info.GetRelativeFile("test.xlsx");
+
+        // 保存データ
+        var data = new[]
+        {
+            new
+            {
+                Expand = new ExcelExpand(new object[]
+                {
+                    "abc",
+                    200,
+                    "def",
+                    300,
+                }),
+            },
+        };
+
+        // 実行オプション：オーバーしたデータをドロップしない
+        var options = new SaveToExcelOptions()
+        {
+            ColumnSpanSelector = m => 3,
+            DropSpanOver = false,
+        };
+
+        // テスト対象実行
+        new Action(() => data.SaveToExcel(target.FullName, options))
+            .Should().Throw<Exception>();
+
+    }
+
     [TestMethod]
     public void SaveToExcel_Min()
     {

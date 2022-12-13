@@ -26,4 +26,15 @@ public class TypeColumnOptions
 
     /// <summary>メンバ名で出力カラム順をソートするか否か</summary>
     public bool SortMemberName { get; set; } = false;
+
+    /// <summary>メンバが使用するカラム数の取得デリゲート</summary>
+    /// <remarks><see cref="UseColumnSpanAttribute"/> が有効で属性からカラム数を得た場合でも、このデリゲートで数が得られた場合は優先して使用する。</remarks>
+    public Func<MemberInfo, int?>? ColumnSpanSelector { get; set; } = null;
+
+    /// <summary>属性から使用するカラム数を参照するか否か</summary>
+    /// <remarks>プロパティに付与された <see cref="System.ComponentModel.DataAnnotations.MaxLengthAttribute"/> を参照する。</remarks>
+    public bool UseColumnSpanAttribute { get; set; } = false;
+
+    /// <summary>展開データが最大カラム数を超えた場合にサイレントに破棄するか否かを示す。</summary>
+    public bool DropSpanOver { get; set; } = false;
 }

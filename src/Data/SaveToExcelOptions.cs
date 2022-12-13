@@ -1,4 +1,6 @@
-﻿namespace Lestaly;
+﻿using System.Reflection;
+
+namespace Lestaly;
 
 /// <summary>
 /// Excelテキスト保存オプション
@@ -61,3 +63,16 @@ public record ExcelStyle(object Value, string? BackColor = null, string? ForeCol
 /// <param name="Strike">テキストに打消し線を装飾するか否か</param>
 /// <param name="Comment">コメント(メモ)</param>
 public record ExcelStyleExtra(string? Font = null, double FontSize = double.NaN, bool Bold = false, bool Italic = false, bool Strike = false, string? Comment = null);
+
+/// <summary>複数列に展開するデータ型</summary>
+/// <param name="Values">
+/// カラム方向に展開出力するデータ。
+/// 展開出力するためには、この型のメンバに対して属性または<see cref="TypeColumnOptions.ColumnSpanSelector"/>にて最大カラム数を指定しておく必要がある。
+/// 出力先の幅を超えた場合の挙動は<see cref="TypeColumnOptions.DropSpanOver"/>の影響を受ける。
+/// </param>
+/// <param name="DynamicValue">
+/// 出力する値を動的に評価するか否か。
+/// 動的評価では ExcelHyperlink/ExcelFormula/ExcelStyle が有効となる。
+/// 動的評価を有効にした場合、パフォーマンスは大きく落ちるため注意。
+/// </param>
+public record ExcelExpand(IReadOnlyCollection<object> Values, bool DynamicValue = false);

@@ -437,9 +437,16 @@ public static class EnumerableDataExtensions
 
         // ヘッダ出力
         var headerCell = baseCell;
+        var offset = 0;
         for (var i = 0; i < exporters.Length; i++)
         {
-            headerCell.CellRight(i).SetValue<string>(exporters[i].column.Caption);
+            var column = exporters[i].column;
+            for (var a = 0; a < column.Span; a++)
+            {
+                var caption = (column.Span == 1) ? column.Caption : $"{column.Caption}[{a}]";
+                headerCell.CellRight(offset).SetValue<string>(caption);
+                offset++;
+            }
         }
 
         // データ出力
@@ -447,15 +454,20 @@ public static class EnumerableDataExtensions
         foreach (var data in self)
         {
             dataCell = dataCell.CellBelow();
+            offset = 0;
             for (var i = 0; i < exporters.Length; i++)
             {
-                var value = exporters[i].column.Getter(data);
+                var column = exporters[i].column;
+                if (column.Span <= 0) continue;
+
+                var value = column.Getter(data);
                 if (value != null)
                 {
-                    var cell = dataCell.CellRight(i);
+                    var cell = dataCell.CellRight(offset);
                     var writer = exporters[i].writer;
                     writer(cell, value);
                 }
+                offset += column.Span;
             }
         }
 
@@ -558,9 +570,16 @@ public static class EnumerableDataExtensions
 
         // ヘッダ出力
         var headerCell = baseCell;
+        var offset = 0;
         for (var i = 0; i < exporters.Length; i++)
         {
-            headerCell.CellRight(i).SetValue<string>(exporters[i].column.Caption);
+            var column = exporters[i].column;
+            for (var a = 0; a < column.Span; a++)
+            {
+                var caption = (column.Span == 1) ? column.Caption : $"{column.Caption}[{a}]";
+                headerCell.CellRight(offset).SetValue<string>(caption);
+                offset++;
+            }
         }
 
         // データ出力
@@ -568,15 +587,20 @@ public static class EnumerableDataExtensions
         await foreach (var data in self.ConfigureAwait(false))
         {
             dataCell = dataCell.CellBelow();
+            offset = 0;
             for (var i = 0; i < exporters.Length; i++)
             {
-                var value = exporters[i].column.Getter(data);
-                if (value != null)
+                var column = exporters[i].column;
+                if (column.Span <= 0) continue;
+
+                var value = column.Getter(data);
+                if (value != null && 0 < column.Span)
                 {
-                    var cell = dataCell.CellRight(i);
+                    var cell = dataCell.CellRight(offset);
                     var writer = exporters[i].writer;
                     writer(cell, value);
                 }
+                offset += column.Span;
             }
         }
 
@@ -613,6 +637,35 @@ public static class EnumerableDataExtensions
     /// <returns>セル書き込みデリゲート</returns>
     private static Action<IXLCell, object> makeCellWriter<TSource>(TypeColumn<TSource> column, SaveToExcelOptions options)
     {
+        if (column.MemberType is var t && t.IsAssignableTo(typeof(ExcelExpand)))
+        {
+            return (cell, value) =>
+            {
+                var expand = (ExcelExpand)value;
+                if (expand.Values == null) return;
+                var count = 0;
+                foreach (var item in expand.Values)
+                {
+                    if (column.Span <= count)
+                    {
+                        if (!options.DropSpanOver) throw new InvalidDataException($"'{column.Member.Name}' has exceeded the maximum span.");
+                        break;
+                    }
+                    var putCell = cell.CellRight(count);
+                    if (expand.DynamicValue && (item is ExcelHyperlink || item is ExcelFormula || item is ExcelStyle))
+                    {
+                        var writer = makeCellWriter(item.GetType(), options);
+                        writer(putCell, item);
+                    }
+                    else
+                    {
+                        putCell.Value = item;
+                    }
+                    count++;
+                }
+            };
+        }
+
         return makeCellWriter(column.MemberType, options);
     }
 
@@ -707,7 +760,7 @@ public static class EnumerableDataExtensions
             .Select(member =>
             {
                 // メンバのゲッターを作成
-                // フィールドはリフレクションによって、プロパティは取得用デリゲート生成をして。
+                // フィールドはリフレクションにて、プロパティは取得用デリゲート生成にて。
                 var getter = default(Func<TSource, object?>);
                 var returnType = default(Type);
                 if (member is FieldInfo fieldInfo)
@@ -722,7 +775,7 @@ public static class EnumerableDataExtensions
                     returnType = propInfo.PropertyType;
                 }
 
-                // Display属性の利用が指定されていれば、その情報を取得する。
+                // キャプション取得の属性利用が指定されていれば、その情報を取得する。
                 var caption = default(string);
                 var order = default(int);
                 if (options.UseCaptionAttribute)
@@ -732,8 +785,7 @@ public static class EnumerableDataExtensions
                     order = display?.GetOrder() ?? 0;
                 }
 
-                // キャプション選択デリゲートが指定されていれば名前を取得する。
-                // こちらでカラム名が取得出来たらそれを優先する。
+                // デリゲートによるキャプション名取得。こちらが指定されたら優先する。
                 if (options.CaptionSelector?.Invoke(member) is string selectedCaption)
                 {
                     caption = selectedCaption;
@@ -742,8 +794,25 @@ public static class EnumerableDataExtensions
                 // 上の処理でカラム名が決定されなかった場合、メンバ名をカラム名として利用する。
                 caption ??= member.Name;
 
+                // カラム数取得の属性利用が指定されていれば、その情報を取得する。
+                var span = 1;
+                if (options.UseColumnSpanAttribute)
+                {
+                    var maxLenAttr = member.GetCustomAttribute<MaxLengthAttribute>();
+                    if (maxLenAttr != null)
+                    {
+                        span = maxLenAttr.Length;
+                    }
+                }
+
+                // デリゲートによるカラム数取得。こちらが指定されたら優先する。
+                if (options.ColumnSpanSelector?.Invoke(member) is int selectedSpan)
+                {
+                    span = selectedSpan;
+                }
+
                 // カラム情報を作る
-                return new TypeColumn<TSource>(member, returnType, getter, caption, order);
+                return new TypeColumn<TSource>(member, returnType, getter, span, caption, order);
             })
             .OrderBy(c => options.UseCaptionAttribute ? c.Order : 0)    // 属性利用時はその Order プロパティを最優先。
             .ThenBy(c => options.SortCaption ? c.Caption : "")          // キャンプションソートが指定されていればそのソート
@@ -806,7 +875,8 @@ public static class EnumerableDataExtensions
     /// <param name="Member">メンバ情報</param>
     /// <param name="MemberType">メンバの取得値型</param>
     /// <param name="Getter">メンバからの値取得デリゲート</param>
+    /// <param name="Span">メンバが利用するカラム数</param>
     /// <param name="Caption">カラムキャプション</param>
     /// <param name="Order">カラムの順序</param>
-    private record TypeColumn<TSource>(MemberInfo Member, Type MemberType, Func<TSource, object?> Getter, string Caption, int Order);
+    private record TypeColumn<TSource>(MemberInfo Member, Type MemberType, Func<TSource, object?> Getter, int Span, string Caption, int Order);
 }
