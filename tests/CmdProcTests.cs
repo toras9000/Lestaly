@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Globalization;
+using System.Text;
 using FluentAssertions;
 
 namespace Lestaly.Tests;
@@ -11,8 +12,9 @@ public class CmdProcTests
     {
         var writer = new StringWriter();
         var exitCode = await CmdProc.ExecAsync("ipconfig", new[] { "/all", }, stdOutWriter: writer);
+        var output = writer.ToString();
         exitCode.Should().Be(0);
-        writer.ToString().Should().Contain("DHCP");
+        output.Should().Contain("DHCP");
     }
 
     [TestMethod()]

@@ -76,7 +76,7 @@ public static class CmdProc
                 if (length <= 0) break;
 
                 // 読み取ったデータをリダイレクト先に書き込み
-                redirectTask = writer.WriteAsync(buff.AsMemory(length), cancelToken);
+                redirectTask = writer.WriteAsync(buff.AsMemory(0, length), cancelToken);
             }
         }
 
