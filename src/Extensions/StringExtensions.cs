@@ -53,34 +53,80 @@ public static class StringExtensions
     public static string? AfterAt(this string? self, string marker, bool defaultEmpty = false)
         => CometFlavor.Extensions.Text.StringExtensions.AfterAt(self, marker, defaultEmpty);
 
-    /// <summary>
-    /// 文字列を連結する。
-    /// </summary>
+    /// <summary>文字列を連結する。</summary>
     /// <param name="self">文字列のシーケンス</param>
     /// <param name="separator">連結する文字間に差し込む文字列</param>
-    /// <returns></returns>
+    /// <returns>連結された文字列</returns>
     public static string JoinString(this IEnumerable<string?> self, string? separator = null)
         => CometFlavor.Extensions.Text.StringExtensions.JoinString(self, separator);
 
-    /// <summary>
-    /// 文字列を装飾する。
-    /// 元の文字列が null または 空の場合はなにもしない。
-    /// </summary>
+    /// <summary>文字列のシーケンスからnull/空を取り除く。</summary>
+    /// <param name="self">文字列のシーケンス</param>
+    /// <returns>null/空以外のシーケンス</returns>
+    public static IEnumerable<string> ExcludeEmpty(this IEnumerable<string?> self)
+        => self.Where(s => !string.IsNullOrEmpty(s))!;
+
+    /// <summary>文字列のシーケンスからnull/空白文字列を取り除く。</summary>
+    /// <param name="self">文字列のシーケンス</param>
+    /// <returns>null/空白文字列以外のシーケンス</returns>
+    public static IEnumerable<string> ExcludeWhite(this IEnumerable<string?> self)
+        => self.Where(s => !string.IsNullOrWhiteSpace(s))!;
+
+    /// <summary>指定の文字列がnull/空でない場合に装飾を付与する。</summary>
     /// <param name="self">元になる文字列</param>
     /// <param name="format">文字列を装飾する書式。埋め込み位置0のプレースホルダ({{0}})が含まれる必要がある。</param>
     /// <returns>装飾された文字列。元がnullまたは空の場合はそのまま返却。</returns>
     public static string? Decorate(this string? self, string format)
         => CometFlavor.Extensions.Text.StringExtensions.Decorate(self, format);
 
-    /// <summary>
-    /// 文字列を装飾する。
-    /// 元の文字列が null または 空の場合はなにもしない。
-    /// </summary>
+    /// <summary>指定の文字列がnull/空でない場合に装飾を付与する。</summary>
     /// <param name="self">元になる文字列</param>
     /// <param name="decorator">文字列を装飾するデリゲート</param>
     /// <returns>装飾された文字列。元がnullまたは空の場合はそのまま返却。</returns>
     public static string? Decorate(this string? self, Func<string, string> decorator)
         => CometFlavor.Extensions.Text.StringExtensions.Decorate(self, decorator);
+
+    /// <summary>指定の文字列がnull/空でない場合にプレフィックスを付与する。</summary>
+    /// <param name="self">元になる文字列</param>
+    /// <param name="prefix">先頭に付与する文字列</param>
+    /// <returns>装飾された文字列。元がnullまたは空の場合はそのまま返却。</returns>
+    public static string? DecoratePrefix(this string? self, string prefix)
+    {
+        if (string.IsNullOrEmpty(self))
+        {
+            return self;
+        }
+
+        return prefix + self;
+    }
+
+    /// <summary>指定の文字列がnull/空でない場合にサフィックスを付与する。</summary>
+    /// <param name="self">元になる文字列</param>
+    /// <param name="suffix">末尾に付与する文字列</param>
+    /// <returns>装飾された文字列。元がnullまたは空の場合はそのまま返却。</returns>
+    public static string? DecorateSuffix(this string? self, string suffix)
+    {
+        if (string.IsNullOrEmpty(self))
+        {
+            return self;
+        }
+
+        return self + suffix;
+    }
+
+    /// <summary>対象と続く文字列の両方の文字列がnull/空でない場合に結合した文字列を作る</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="sequel">続く文字列</param>
+    /// <returns>結合した文字列。いずれかがnull/空であれば空文字列を返却する。</returns>
+    public static string TieIn(this string? self, string? sequel)
+    {
+        if (string.IsNullOrEmpty(self) || string.IsNullOrEmpty(sequel))
+        {
+            return "";
+        }
+
+        return self + sequel;
+    }
 
     /// <summary>
     /// 文字列をクォートする。
@@ -148,7 +194,6 @@ public static class StringExtensions
     /// <returns>必要に応じて省略した文字列。</returns>
     public static string EllipsisByElements(this string self, int count, string? marker = null)
         => CometFlavor.Extensions.Text.StringExtensions.EllipsisByElements(self, count, marker);
-
 
     /// <summary>文字列がnullや空であるかを判定する。</summary>
     /// <param name="self">対象文字列</param>
