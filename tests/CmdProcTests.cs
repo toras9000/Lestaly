@@ -36,6 +36,18 @@ public class CmdProcTests
     }
 
     [TestMethod()]
+    public async Task ExecAsync_Input()
+    {
+        using var canceller = new CancellationTokenSource();
+        canceller.CancelAfter(3000);
+
+        using var stdInReader = new StringReader(" ");
+
+        await FluentActions.Awaiting(() => CmdProc.ExecAsync("cmd", new[] { "/C", "pause" }, stdInReader: stdInReader, cancelToken: canceller.Token))
+              .Should().NotThrowAsync();
+    }
+
+    [TestMethod()]
     public async Task RunAsync_Normal()
     {
         var result = await CmdProc.RunAsync("ipconfig", new[] { "/all", });
