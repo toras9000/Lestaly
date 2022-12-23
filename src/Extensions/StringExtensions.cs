@@ -63,14 +63,14 @@ public static class StringExtensions
     /// <summary>文字列のシーケンスからnull/空を取り除く。</summary>
     /// <param name="self">文字列のシーケンス</param>
     /// <returns>null/空以外のシーケンス</returns>
-    public static IEnumerable<string> ExcludeEmpty(this IEnumerable<string?> self)
-        => self.Where(s => !string.IsNullOrEmpty(s))!;
+    public static IEnumerable<string> DropEmpty(this IEnumerable<string?> self)
+        => CometFlavor.Extensions.Text.StringExtensions.DropEmpty(self);
 
     /// <summary>文字列のシーケンスからnull/空白文字列を取り除く。</summary>
     /// <param name="self">文字列のシーケンス</param>
     /// <returns>null/空白文字列以外のシーケンス</returns>
-    public static IEnumerable<string> ExcludeWhite(this IEnumerable<string?> self)
-        => self.Where(s => !string.IsNullOrWhiteSpace(s))!;
+    public static IEnumerable<string> DropWhite(this IEnumerable<string?> self)
+        => CometFlavor.Extensions.Text.StringExtensions.DropWhite(self);
 
     /// <summary>指定の文字列がnull/空でない場合に装飾を付与する。</summary>
     /// <param name="self">元になる文字列</param>

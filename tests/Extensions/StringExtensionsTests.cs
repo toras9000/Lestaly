@@ -6,17 +6,17 @@ namespace LestalyTest.Extensions;
 public class StringExtensionsTests
 {
     [TestMethod()]
-    public void ExcludeEmpty()
+    public void DropEmpty()
     {
         new[] { "", "abc", null, null, "  ", "", "def", null, }
-            .ExcludeEmpty().Should().Equal(new[] { "abc", "  ", "def", });
+            .DropEmpty().Should().Equal(new[] { "abc", "  ", "def", });
     }
 
     [TestMethod()]
-    public void ExcludeWhite()
+    public void DropWhite()
     {
         new[] { "", "abc", null, null, "  ", "", "def", null, }
-            .ExcludeWhite().Should().Equal(new[] { "abc", "def", });
+            .DropWhite().Should().Equal(new[] { "abc", "def", });
     }
 
     [TestMethod()]

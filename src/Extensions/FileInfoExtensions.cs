@@ -150,10 +150,7 @@ public static class FileInfoExtensions
     /// <param name="options">元になるファイルストリームを開くオプション</param>
     /// <returns>ストリームリーダー</returns>
     public static StreamReader CreateTextReader(this FileInfo self, bool detectBom = true, FileStreamOptions? options = null, Encoding? encoding = null)
-    {
-        return (options == null) ? new StreamReader(self.FullName, encoding ?? Encoding.UTF8, detectBom)
-                                 : new StreamReader(self.FullName, encoding ?? Encoding.UTF8, detectBom, options);
-    }
+        => CometFlavor.Extensions.IO.FileInfoExtensions.CreateTextReader(self, detectBom, options, encoding);
     #endregion
 
     #region Write
@@ -254,9 +251,7 @@ public static class FileInfoExtensions
     /// <param name="append">追記するか否か</param>
     /// <returns>ストリームリーダー</returns>
     public static StreamWriter CreateTextWriter(this FileInfo self, bool append = false, Encoding? encoding = null)
-    {
-        return new StreamWriter(self.FullName, append, encoding ?? Encoding.UTF8);
-    }
+        => CometFlavor.Extensions.IO.FileInfoExtensions.CreateTextWriter(self, append, encoding);
 
     /// <summary>
     /// ファイル内容をテキストで読み取るリーダーを生成する。
@@ -266,9 +261,7 @@ public static class FileInfoExtensions
     /// <param name="options">元になるファイルストリームを開くオプション</param>
     /// <returns>ストリームリーダー</returns>
     public static StreamWriter CreateTextWriter(this FileInfo self, FileStreamOptions options, Encoding? encoding = null)
-    {
-        return new StreamWriter(self.FullName, encoding ?? Encoding.UTF8, options);
-    }
+        => CometFlavor.Extensions.IO.FileInfoExtensions.CreateTextWriter(self, options, encoding);
     #endregion
 
     #region FileSystem
