@@ -41,7 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="ClosedXML" Version="0.97.0" />
-    <PackageReference Include="CometFlavor" Version="0.13.0" />
+    <PackageReference Include="CometFlavor" Version="0.14.0" />
     <PackageReference Include="CometFlavor.Unicode" Version="0.2.0" />
     <PackageReference Include="System.Threading.Tasks.Dataflow" Version="7.0.0" />
   </ItemGroup>

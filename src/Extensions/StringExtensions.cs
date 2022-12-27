@@ -1,4 +1,6 @@
-﻿namespace Lestaly;
+﻿using System.Text;
+
+namespace Lestaly;
 
 /// <summary>
 /// string に対する拡張メソッド
@@ -137,6 +139,14 @@ public static class StringExtensions
     /// <returns>クォートされたキャラクタ</returns>
     public static string Quote(this string? text, char quote = '"', char? escape = null)
         => CometFlavor.Extensions.Text.StringExtensions.Quote(text, quote, escape);
+
+    /// <summary>文字列をアンクォートする。</summary>
+    /// <param name="text">対象文字列。</param>
+    /// <param name="quotes">クォートキャラクタ候補。空の場合はダブル/シングルクォートキャラクタを候補とする。</param>
+    /// <param name="escape">クォートキャラクタをエスケープしているキャラクタ。指定がない場合はクォートキャラクタ2つで</param>
+    /// <returns>アンクォートされた文字列</returns>
+    public static string? Unquote(this string text, ReadOnlySpan<char> quotes = default, char? escape = null)
+        => CometFlavor.Extensions.Text.StringExtensions.Unquote(text, quotes, escape);
 
     /// <summary>
     /// 文字列のテキスト要素を列挙する。
