@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using TestCometFlavor._Test;
+using Lestaly;
 
 namespace LestalyTest.Extensions;
 
@@ -9,7 +9,7 @@ public class FileExtensionsTests
     [TestMethod()]
     public async Task Touch()
     {
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         var file = tempDir.Info.GetRelativeFile("asd.txt");
         file.Exists.Should().Be(false);

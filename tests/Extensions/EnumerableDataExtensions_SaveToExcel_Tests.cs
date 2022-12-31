@@ -4,7 +4,7 @@ using System.Globalization;
 using ClosedXML.Excel;
 using FluentAssertions;
 using LestalyTest._Test;
-using TestCometFlavor._Test;
+using Lestaly;
 
 namespace LestalyTest.Extensions;
 
@@ -25,7 +25,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
         // テスト用に一時ディレクトリ
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         // テストファイル
         var target = tempDir.Info.GetRelativeFile("test.xlsx");
@@ -58,7 +58,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
         // テスト用に一時ディレクトリ
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         // テストファイル
         var target = tempDir.Info.GetRelativeFile("test.xlsx");
@@ -91,7 +91,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
         // テスト用に一時ディレクトリ
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         // テストファイル
         var target = tempDir.Info.GetRelativeFile("test.xlsx");
@@ -125,7 +125,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
         // テスト用に一時ディレクトリ
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         // テストファイル
         var target = tempDir.Info.GetRelativeFile("test.xlsx");
@@ -160,7 +160,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
         // テスト用に一時ディレクトリ
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         // テストファイル
         var target = tempDir.Info.GetRelativeFile("test.xlsx");
@@ -190,7 +190,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
         // テスト用に一時ディレクトリ
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         // テストファイル
         var target = tempDir.Info.GetRelativeFile("test.xlsx");
@@ -249,7 +249,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
         // テスト用に一時ディレクトリ
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         // テストファイル
         var target = tempDir.Info.GetRelativeFile("test.xlsx");
@@ -289,7 +289,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
         // テスト用に一時ディレクトリ
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         // テストファイル
         var target = tempDir.Info.GetRelativeFile("test.xlsx");
@@ -373,7 +373,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
         // テスト用に一時ディレクトリ
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         // テストファイル
         var target = tempDir.Info.GetRelativeFile("test.xlsx");
@@ -428,7 +428,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
         // テスト用に一時ディレクトリ
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         // テストファイル
         var target = tempDir.Info.GetRelativeFile("test.xlsx");
@@ -467,7 +467,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
         // テスト用に一時ディレクトリ
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         // テストファイル
         var target = tempDir.Info.GetRelativeFile("test.xlsx");
@@ -494,7 +494,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
         // テスト用に一時ディレクトリ
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         // テストファイル
         var target = tempDir.Info.GetRelativeFile("test.xlsx");
@@ -534,7 +534,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
         // テスト用に一時ディレクトリ
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         // テストファイル
         var target = tempDir.Info.GetRelativeFile("test.xlsx");
@@ -568,7 +568,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
         // テスト用に一時ディレクトリ
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         // テストファイル
         var target = tempDir.Info.GetRelativeFile("test.xlsx");
@@ -602,7 +602,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
         // テスト用に一時ディレクトリ
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         // テストファイル
         var target = tempDir.Info.GetRelativeFile("test.xlsx");
@@ -639,7 +639,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
         // テスト用に一時ディレクトリ
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         // テストファイル
         var target = tempDir.Info.GetRelativeFile("test.xlsx");
@@ -678,7 +678,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
         // テスト用に一時ディレクトリ
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         // テストファイル
         var target = tempDir.Info.GetRelativeFile("test.xlsx");
@@ -725,7 +725,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
         // テスト用に一時ディレクトリ
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         // テストファイル
         var target = tempDir.Info.GetRelativeFile("test.xlsx");
@@ -763,7 +763,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
         // テスト用に一時ディレクトリ
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         // テストファイル
         var target = tempDir.Info.GetRelativeFile("test.xlsx");
@@ -810,7 +810,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
         // テスト用に一時ディレクトリ
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         // テストファイル
         var target = tempDir.Info.GetRelativeFile("test.xlsx");
@@ -858,7 +858,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
         // テスト用に一時ディレクトリ
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         // テストファイル
         var target = tempDir.Info.GetRelativeFile("test.xlsx");
@@ -897,7 +897,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
         // テスト用に一時ディレクトリ
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         // テストファイル
         var target = tempDir.Info.GetRelativeFile("test.xlsx");
@@ -954,7 +954,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
         // テスト用に一時ディレクトリ
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         // テストファイル
         var target = tempDir.Info.GetRelativeFile("test.xlsx");
@@ -994,7 +994,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
         // テスト用に一時ディレクトリ
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         // テストファイル
         var target = tempDir.Info.GetRelativeFile("test.xlsx");

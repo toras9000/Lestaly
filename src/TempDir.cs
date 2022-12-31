@@ -1,17 +1,19 @@
-﻿namespace TestCometFlavor._Test;
+﻿namespace Lestaly;
 
 /// <summary>
 /// 一時ディレクトリを扱うクラス
 /// </summary>
-public class TempDirectory : IDisposable
+public class TempDir : IDisposable
 {
     // 構築
     #region コンストラクタ
-    /// <summary>
-    /// デフォルトコンストラクタ
-    /// </summary>
-    public TempDirectory()
+    /// <summary>一時ディレクトリを作成するコンストラクタ</summary>
+    /// <param name="autoDelete">インスタンスの破棄時に一時ディレクトリを自動削除するか否か</param>
+    public TempDir(bool autoDelete = true)
     {
+        // 設定保持
+        this.AutoDelete = autoDelete;
+
         // システムの一時ディレクトリ取得
         var tempDir = Path.GetTempPath();
 
@@ -35,6 +37,11 @@ public class TempDirectory : IDisposable
     #endregion
 
     // 公開プロパティ
+    #region 設定
+    /// <summary>破棄時に自動削除するか否か</summary>
+    public bool AutoDelete { get; }
+    #endregion
+
     #region 状態情報
     /// <summary>一時ディレクト入りのDirectoryInfo</summary>
     public DirectoryInfo Info { get; }
@@ -54,7 +61,7 @@ public class TempDirectory : IDisposable
     /// <summary>
     /// デストラクタ
     /// </summary>
-    ~TempDirectory()
+    ~TempDir()
     {
         Dispose(disposing: false);
     }
@@ -77,7 +84,10 @@ public class TempDirectory : IDisposable
             }
 
             // アンネージドリソースの破棄
-            try { this.Info.Delete(recursive: true); } catch { /* ignore exception */ }
+            if (this.AutoDelete)
+            {
+                try { this.Info.Delete(recursive: true); } catch { /* ignore exception */ }
+            }
 
             // 破棄済みフラグ設定
             this.disposed = true;

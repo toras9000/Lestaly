@@ -2,7 +2,7 @@
 using System.Globalization;
 using FluentAssertions;
 using LestalyTest._Test;
-using TestCometFlavor._Test;
+using Lestaly;
 
 namespace LestalyTest.Extensions;
 
@@ -15,7 +15,7 @@ public class EnumerableDataExtensions_SaveToCsvAsync_Tests
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
         // テスト用に一時ディレクトリ
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         // テストファイル
         var target = tempDir.Info.GetRelativeFile("test.txt");
@@ -48,7 +48,7 @@ public class EnumerableDataExtensions_SaveToCsvAsync_Tests
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
         // テスト用に一時ディレクトリ
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         // テストファイル
         var target = tempDir.Info.GetRelativeFile("test.txt");
@@ -79,7 +79,7 @@ public class EnumerableDataExtensions_SaveToCsvAsync_Tests
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
         // テスト用に一時ディレクトリ
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         // テストファイル
         var target = tempDir.Info.GetRelativeFile("test.txt");
@@ -112,7 +112,7 @@ public class EnumerableDataExtensions_SaveToCsvAsync_Tests
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
         // テスト用に一時ディレクトリ
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         // テストファイル
         var target = tempDir.Info.GetRelativeFile("test.txt");
@@ -151,7 +151,7 @@ public class EnumerableDataExtensions_SaveToCsvAsync_Tests
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
         // テスト用に一時ディレクトリ
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         // テストファイル
         var target = tempDir.Info.GetRelativeFile("test.txt");
@@ -184,7 +184,7 @@ public class EnumerableDataExtensions_SaveToCsvAsync_Tests
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
         // テスト用に一時ディレクトリ
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         // テストファイル
         var target = tempDir.Info.GetRelativeFile("test.txt");
@@ -219,7 +219,7 @@ public class EnumerableDataExtensions_SaveToCsvAsync_Tests
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
         // テスト用に一時ディレクトリ
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         // テストファイル
         var target = tempDir.Info.GetRelativeFile("test.txt");
@@ -258,7 +258,7 @@ public class EnumerableDataExtensions_SaveToCsvAsync_Tests
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
         // テスト用に一時ディレクトリ
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         // テストファイル
         var target = tempDir.Info.GetRelativeFile("test.txt");
@@ -295,7 +295,7 @@ public class EnumerableDataExtensions_SaveToCsvAsync_Tests
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
         // テスト用に一時ディレクトリ
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         // テストファイル
         var target = tempDir.Info.GetRelativeFile("test.txt");
@@ -332,7 +332,7 @@ public class EnumerableDataExtensions_SaveToCsvAsync_Tests
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
         // テスト用に一時ディレクトリ
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         // テストファイル
         var target = tempDir.Info.GetRelativeFile("test.txt");
@@ -378,7 +378,7 @@ public class EnumerableDataExtensions_SaveToCsvAsync_Tests
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
         // テスト用に一時ディレクトリ
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         // テストファイル
         var target = tempDir.Info.GetRelativeFile("test.txt");
@@ -424,7 +424,7 @@ public class EnumerableDataExtensions_SaveToCsvAsync_Tests
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
         // テスト用に一時ディレクトリ
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         // テストファイル
         var target = tempDir.Info.GetRelativeFile("test.txt");
@@ -461,7 +461,7 @@ public class EnumerableDataExtensions_SaveToCsvAsync_Tests
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
         // テスト用に一時ディレクトリ
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         // テストファイル
         var target = tempDir.Info.GetRelativeFile("test.txt");
@@ -516,7 +516,7 @@ public class EnumerableDataExtensions_SaveToCsvAsync_Tests
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
         // テスト用に一時ディレクトリ
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         // テストファイル
         var target = tempDir.Info.GetRelativeFile("test.txt");
@@ -554,7 +554,7 @@ public class EnumerableDataExtensions_SaveToCsvAsync_Tests
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
         // テスト用に一時ディレクトリ
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         // テストファイル
         var target = tempDir.Info.GetRelativeFile("test.txt");
@@ -593,7 +593,7 @@ public class EnumerableDataExtensions_SaveToCsvAsync_Tests
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
         // テスト用に一時ディレクトリ
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         // テストファイル
         var target = tempDir.Info.GetRelativeFile("test.txt");

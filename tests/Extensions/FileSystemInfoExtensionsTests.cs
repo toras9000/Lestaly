@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using TestCometFlavor._Test;
+using Lestaly;
 
 namespace LestalyTest.Extensions;
 
@@ -9,7 +9,7 @@ public class FileSystemInfoExtensionsTests
     [TestMethod()]
     public void GetReadOnly_File()
     {
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         var file = tempDir.Info.GetRelativeFile("asd.txt").Touch();
         file.GetReadOnly().Should().Be(false);
@@ -20,7 +20,7 @@ public class FileSystemInfoExtensionsTests
     [TestMethod()]
     public void GetReadOnly_Dir()
     {
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         var dir = tempDir.Info.GetRelativeDirectory("def").WithCreate();
         dir.GetReadOnly().Should().Be(false);
@@ -31,7 +31,7 @@ public class FileSystemInfoExtensionsTests
     [TestMethod()]
     public void SetReadOnly_File()
     {
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         var file = tempDir.Info.GetRelativeFile("asd.txt").Touch();
         file.GetReadOnly().Should().Be(false);
@@ -44,7 +44,7 @@ public class FileSystemInfoExtensionsTests
     [TestMethod()]
     public void SetReadOnly_Dir()
     {
-        using var tempDir = new TempDirectory();
+        using var tempDir = new TempDir();
 
         var dir = tempDir.Info.GetRelativeDirectory("def").WithCreate();
         dir.GetReadOnly().Should().Be(false);
