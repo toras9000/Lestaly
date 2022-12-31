@@ -44,4 +44,72 @@ public class StringExtensionsTests
         "".TieIn("xxx").Should().Be("");
         default(string).TieIn("xxx").Should().Be("");
     }
+
+    [TestMethod()]
+    public void ThrowIfEmpty()
+    {
+        "abc".ThrowIfEmpty().Should().Be("abc");
+        " ".ThrowIfEmpty().Should().Be(" ");
+
+        new Action(() => "".ThrowIfEmpty())
+            .Should().Throw<Exception>();
+        new Action(() => default(string).ThrowIfEmpty())
+            .Should().Throw<Exception>();
+
+        "abc".ThrowIfEmpty(() => new InvalidOperationException()).Should().Be("abc");
+        " ".ThrowIfEmpty(() => new InvalidOperationException()).Should().Be(" ");
+
+        new Action(() => "".ThrowIfEmpty(() => new InvalidOperationException()))
+            .Should().Throw<InvalidOperationException>();
+        new Action(() => default(string).ThrowIfEmpty(() => new InvalidOperationException()))
+            .Should().Throw<InvalidOperationException>();
+    }
+
+    [TestMethod()]
+    public void ThrowIfWhite()
+    {
+        "abc".ThrowIfWhite().Should().Be("abc");
+
+        new Action(() => "".ThrowIfWhite())
+            .Should().Throw<Exception>();
+        new Action(() => " ".ThrowIfWhite())
+            .Should().Throw<Exception>();
+        new Action(() => default(string).ThrowIfWhite())
+            .Should().Throw<Exception>();
+
+        "abc".ThrowIfWhite(() => new InvalidOperationException()).Should().Be("abc");
+
+        new Action(() => "".ThrowIfWhite(() => new InvalidOperationException()))
+            .Should().Throw<InvalidOperationException>();
+        new Action(() => " ".ThrowIfWhite(() => new InvalidOperationException()))
+            .Should().Throw<InvalidOperationException>();
+        new Action(() => default(string).ThrowIfWhite(() => new InvalidOperationException()))
+            .Should().Throw<InvalidOperationException>();
+    }
+
+    [TestMethod()]
+    public void CancelIfEmpty()
+    {
+        "abc".CancelIfEmpty().Should().Be("abc");
+        " ".CancelIfEmpty().Should().Be(" ");
+
+        new Action(() => "".CancelIfEmpty())
+            .Should().Throw<OperationCanceledException>();
+        new Action(() => default(string).CancelIfEmpty())
+            .Should().Throw<OperationCanceledException>();
+    }
+
+    [TestMethod()]
+    public void CancelIfWhite()
+    {
+        "abc".CancelIfWhite().Should().Be("abc");
+
+        new Action(() => "".CancelIfWhite())
+            .Should().Throw<OperationCanceledException>();
+        new Action(() => " ".CancelIfWhite())
+            .Should().Throw<OperationCanceledException>();
+        new Action(() => default(string).CancelIfWhite())
+            .Should().Throw<OperationCanceledException>();
+    }
+
 }

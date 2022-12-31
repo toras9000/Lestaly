@@ -258,5 +258,30 @@ public static class StringExtensions
     public static string? WhenWhite(this string? self, Func<string> alt)
         => CometFlavor.Extensions.Text.StringExtensions.WhenWhite(self, alt);
 
+    /// <summary>文字列がnullや空であれば例外を送出する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="generator">例外オブジェクト生成デリゲート</param>
+    /// <returns>対象文字列</returns>
+    public static string ThrowIfEmpty(this string? self, Func<Exception>? generator = null)
+        => string.IsNullOrEmpty(self) ? throw generator?.Invoke() ?? new InvalidDataException() : self;
+
+    /// <summary>文字列がnullや空白文字であれば例外を送出する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="generator">例外オブジェクト生成デリゲート</param>
+    /// <returns>対象文字列</returns>
+    public static string ThrowIfWhite(this string? self, Func<Exception>? generator = null)
+        => string.IsNullOrWhiteSpace(self) ? throw generator?.Invoke() ?? new InvalidDataException() : self;
+
+    /// <summary>文字列がnullや空であればキャンセル例外を送出する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <returns>対象文字列</returns>
+    public static string CancelIfEmpty(this string? self)
+    => self.ThrowIfEmpty(() => new OperationCanceledException());
+
+    /// <summary>文字列がnullや空白文字であればキャンセル例外を送出する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <returns>対象文字列</returns>
+    public static string CancelIfWhite(this string? self)
+    => self.ThrowIfWhite(() => new OperationCanceledException());
 
 }
