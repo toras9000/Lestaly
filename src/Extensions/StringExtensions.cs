@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text;
 
 namespace Lestaly;
 
@@ -208,25 +209,25 @@ public static class StringExtensions
     /// <summary>文字列がnullや空であるかを判定する。</summary>
     /// <param name="self">対象文字列</param>
     /// <returns>nullや空ならば true</returns>
-    public static bool IsEmpty(this string? self)
+    public static bool IsEmpty([NotNullWhen(false)] this string? self)
         => CometFlavor.Extensions.Text.StringExtensions.IsEmpty(self);
 
     /// <summary>文字列がnullや空以外であるかを判定する。</summary>
     /// <param name="self">対象文字列</param>
     /// <returns>nullや空以外であれば true</returns>
-    public static bool IsNotEmpty(this string? self)
+    public static bool IsNotEmpty([NotNullWhen(true)] this string? self)
         => CometFlavor.Extensions.Text.StringExtensions.IsNotEmpty(self);
 
     /// <summary>文字列がnullや空白文字であるかを判定する</summary>
     /// <param name="self">対象文字列</param>
     /// <returns>nullや空白文字ならば true</returns>
-    public static bool IsWhite(this string? self)
+    public static bool IsWhite([NotNullWhen(false)] this string? self)
         => CometFlavor.Extensions.Text.StringExtensions.IsWhite(self);
 
     /// <summary>文字列がnullや空白文字以外であるかを判定する</summary>
     /// <param name="self">対象文字列</param>
     /// <returns>nullや空白文字以外ならば true</returns>
-    public static bool IsNotWhite(this string? self)
+    public static bool IsNotWhite([NotNullWhen(true)] this string? self)
         => CometFlavor.Extensions.Text.StringExtensions.IsNotWhite(self);
 
     /// <summary>文字列がnullや空であれば代替文字列を返却する。</summary>
