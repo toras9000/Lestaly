@@ -45,11 +45,10 @@ public static class ConsoleWig
     /// <remarks>このメソッドは入力がリダイレクトされている場合には例外を発する。</remarks>
     /// <param name="caption">キャプション文字列</param>
     /// <returns>入力されたテキスト</returns>
-    public static string? ReadLineDirect(string caption)
+    public static string ReadLine(string? caption = null)
     {
-        if (Console.IsInputRedirected) throw new InvalidOperationException();
-        Console.Write(caption);
-        return Console.ReadLine();
+        if (caption.IsNotEmpty()) Console.Write(caption);
+        return Console.ReadLine() ?? "";
     }
 
     /// <summary>入力エコー無しで1行分のキー入力を読み取る</summary>
