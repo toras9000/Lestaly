@@ -6,6 +6,64 @@ namespace LestalyTest.Extensions;
 public class StringExtensionsTests
 {
     [TestMethod()]
+    public void FirstLine()
+    {
+        "a".FirstLine().Should().Be("a");
+        "a\nb\nc".FirstLine().Should().Be("a");
+        "a\rb\rc".FirstLine().Should().Be("a");
+        "".FirstLine().Should().Be("");
+        default(string).FirstLine().Should().Be("");
+    }
+
+    [TestMethod()]
+    public void LastLine()
+    {
+        "a".LastLine().Should().Be("a");
+        "a\nb\nc".LastLine().Should().Be("c");
+        "a\rb\rc".LastLine().Should().Be("c");
+        "".LastLine().Should().Be("");
+        default(string).LastLine().Should().Be("");
+    }
+
+    [TestMethod()]
+    public void BeforeAt_Char()
+    {
+        "a.b.c".BeforeAt('.').Should().Be("a");
+        "".BeforeAt('.').Should().Be("");
+        default(string).BeforeAt('.').Should().Be("");
+    }
+
+    [TestMethod()]
+    public void BeforeAt_Str()
+    {
+        "a//b//c".BeforeAt("//").Should().Be("a");
+        "".BeforeAt("//").Should().Be("");
+        default(string).BeforeAt("//").Should().Be("");
+    }
+
+    [TestMethod()]
+    public void AfterAt_Char()
+    {
+        "a.b.c".AfterAt('.').Should().Be("b.c");
+        "".AfterAt('.').Should().Be("");
+        default(string).AfterAt('.').Should().Be("");
+    }
+
+    [TestMethod()]
+    public void AfterAt_Str()
+    {
+        "a//b//c".AfterAt("//").Should().Be("b//c");
+        "".AfterAt("//").Should().Be("");
+        default(string).AfterAt("//").Should().Be("");
+    }
+
+    [TestMethod()]
+    public void JoinString()
+    {
+        new[] { null, "a", " ", "b", null }.JoinString("/").Should().Be("/a/ /b/");
+    }
+
+    [TestMethod()]
     public void DropEmpty()
     {
         new[] { "", "abc", null, null, "  ", "", "def", null, }
@@ -17,6 +75,18 @@ public class StringExtensionsTests
     {
         new[] { "", "abc", null, null, "  ", "", "def", null, }
             .DropWhite().Should().Equal(new[] { "abc", "def", });
+    }
+
+    [TestMethod()]
+    public void Decorate()
+    {
+        "abc".Decorate("<{0}>").Should().Be("<abc>");
+        "".Decorate("<{0}>").Should().Be("");
+        default(string).Decorate("<{0}>").Should().Be(null);
+
+        "abc".Decorate(t => $"<{t}>").Should().Be("<abc>");
+        "".Decorate(t => $"<{t}>").Should().Be("");
+        default(string).Decorate(t => $"<{t}>").Should().Be(null);
     }
 
     [TestMethod()]
@@ -43,6 +113,26 @@ public class StringExtensionsTests
         "abc".TieIn(null).Should().Be("");
         "".TieIn("xxx").Should().Be("");
         default(string).TieIn("xxx").Should().Be("");
+    }
+
+    [TestMethod()]
+    public void CutLeftElements()
+    {
+        "abc".CutLeftElements(1).Should().Be("a");
+        "abc".CutLeftElements(5).Should().Be("abc");
+
+        "".CutLeftElements(1).Should().Be("");
+        default(string).CutLeftElements(1).Should().Be("");
+    }
+
+    [TestMethod()]
+    public void CutRightElements()
+    {
+        "abc".CutRightElements(1).Should().Be("c");
+        "abc".CutRightElements(5).Should().Be("abc");
+
+        "".CutRightElements(1).Should().Be("");
+        default(string).CutRightElements(1).Should().Be("");
     }
 
     [TestMethod()]
