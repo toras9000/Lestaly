@@ -99,13 +99,17 @@ public static class Paved
                 }
                 if (ex is PavedMessageException pex)
                 {
+                    var exitCode = 255;
                     switch (pex.Kind)
                     {
                     case PavedMessageKind.Error:
                         ConsoleWig.WriteLineColord(ConsoleColor.Red, pex.Message);
                         break;
                     case PavedMessageKind.Warning:
+                        ConsoleWig.WriteLineColord(ConsoleColor.Yellow, pex.Message);
+                        break;
                     case PavedMessageKind.Cancelled:
+                        exitCode = 254;
                         ConsoleWig.WriteLineColord(ConsoleColor.Yellow, pex.Message);
                         break;
                     case PavedMessageKind.Information:
@@ -113,11 +117,14 @@ public static class Paved
                         Console.WriteLine(pex.Message);
                         break;
                     }
+                    if (pex is PavedExitException eex)
+                    {
+                        exitCode = eex.ExitCode;
+                    }
+                    return exitCode;
                 }
-                else
-                {
-                    ConsoleWig.WriteLineColord(ConsoleColor.Red, ex.ToString());
-                }
+
+                ConsoleWig.WriteLineColord(ConsoleColor.Red, ex.ToString());
                 return 255;
             };
             optionsBuilder?.Invoke(options);

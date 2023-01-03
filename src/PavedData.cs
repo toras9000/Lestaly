@@ -83,3 +83,18 @@ public class PavedMessageException : Exception
     /// <summary>メッセージの種類</summary>
     public PavedMessageKind Kind { get; }
 }
+
+/// <summary>
+/// 実行補助処理で特別に扱うエラーメッセージ/終了コード伝達用例外
+/// </summary>
+public class PavedExitException : PavedMessageException
+{
+    /// <summary>エラーメッセージとメッセージ種別および終了コードを指定するコンストラクタ</summary>
+    /// <param name="message">エラーメッセージ</param>
+    /// <param name="kind">メッセージの種類。</param>
+    /// <param name="exitCode">終了コード。</param>
+    public PavedExitException(string message, PavedMessageKind kind, int exitCode = 255) : base(message, kind) { this.ExitCode = exitCode; }
+
+    /// <summary>終了コード</summary>
+    public int ExitCode { get; }
+}
