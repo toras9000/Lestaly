@@ -56,7 +56,7 @@ public static class CliArgs
     {
         var parser = new Parser(settings =>
         {
-            settings.AutoHelp = false;
+            settings.AutoHelp = true;
             settings.AutoVersion = false;
             settings.HelpWriter = null;
             settings.IgnoreUnknownArguments = !options.AllowUnknown;
