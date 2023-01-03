@@ -8,16 +8,16 @@ public static class Paved
     /// <summary>例外を捕捉して処理を実行する。</summary>
     /// <typeparam name="T">戻り値の型</typeparam>
     /// <param name="action">実行処理</param>
-    /// <param name="optionsBuilder ">実行オプション設定デリゲート</param>
+    /// <param name="configutarion ">実行オプション設定デリゲート</param>
     /// <returns>処理の戻り値</returns>
-    public static async Task<T?> RunAsync<T>(Func<ValueTask<T>> action, Action<PavedOptions<T>>? optionsBuilder = null)
+    public static async Task<T?> RunAsync<T>(Func<ValueTask<T>> action, Action<PavedOptions<T>>? configutarion = null)
     {
         var options = new PavedOptions<T>();
         var result = default(T);
         var pause = false;
         try
         {
-            optionsBuilder?.Invoke(options);
+            configutarion?.Invoke(options);
 
             result = await action();
         }
@@ -84,9 +84,9 @@ public static class Paved
 
     /// <summary>例外を捕捉して処理を実行する。</summary>
     /// <param name="action">実行処理</param>
-    /// <param name="optionsBuilder ">実行オプション設定デリゲート</param>
+    /// <param name="configutarion ">実行オプション設定デリゲート</param>
     /// <returns>エラーコード</returns>
-    public static Task<int> RunAsync(Func<ValueTask> action, Action<PavedOptions<int>>? optionsBuilder = null)
+    public static Task<int> RunAsync(Func<ValueTask> action, Action<PavedOptions<int>>? configutarion = null)
     {
         return RunAsync(async () => { await action(); return 0; }, options =>
         {
@@ -127,7 +127,7 @@ public static class Paved
                 ConsoleWig.WriteLineColord(ConsoleColor.Red, ex.ToString());
                 return 255;
             };
-            optionsBuilder?.Invoke(options);
+            configutarion?.Invoke(options);
         });
     }
 }
