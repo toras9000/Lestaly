@@ -430,6 +430,12 @@ public static class EnumerableDataExtensions
 
         // 出力ブック作成
         var book = new XLWorkbook();
+        if (options.FontName != null)
+        {
+            book.Style.Font.FontName = options.FontName;
+        }
+
+        // 出力シート作成
         var sheet = book.AddWorksheet(options.Sheet.WhenWhite("Sheet1"));
 
         // 出力の基準セル取得
@@ -563,6 +569,12 @@ public static class EnumerableDataExtensions
 
         // 出力ブック作成
         var book = new XLWorkbook();
+        if (options.FontName != null)
+        {
+            book.Style.Font.FontName = options.FontName;
+        }
+
+        // 出力シート作成
         var sheet = book.AddWorksheet(options.Sheet.WhenWhite("Sheet1"));
 
         // 出力の基準セル取得

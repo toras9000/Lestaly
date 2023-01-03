@@ -7,6 +7,9 @@ namespace Lestaly;
 /// </summary>
 public class SaveToExcelOptions : TypeColumnOptions
 {
+    /// <summary>フォント名</summary>
+    public string? FontName { get; set; } = null;
+
     /// <summary>シート名</summary>
     public string? Sheet { get; set; } = null;
 
