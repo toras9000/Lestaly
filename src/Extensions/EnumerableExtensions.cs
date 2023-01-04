@@ -69,4 +69,75 @@ public static class EnumerableExtensions
         }
         return mustEnumerator();
     }
+
+    /// <summary>シーケンスの先頭から要素を分解する</summary>
+    /// <typeparam name="TSource">要素の型</typeparam>
+    /// <param name="self">対象シーケンス</param>
+    /// <param name="value1">シーケンス要素1</param>
+    /// <param name="value2">シーケンス要素2</param>
+    public static void Deconstruct<TSource>(this IEnumerable<TSource>? self, out TSource? value1, out TSource? value2)
+    {
+        if (self == null) throw new ArgumentNullException(nameof(self));
+
+        using var enumerator = self.GetEnumerator();
+        value1 = enumerator.MoveNext() ? enumerator.Current : default;
+        value2 = enumerator.MoveNext() ? enumerator.Current : default;
+    }
+
+    /// <summary>シーケンスの先頭から要素を分解する</summary>
+    /// <typeparam name="TSource">要素の型</typeparam>
+    /// <param name="self">対象シーケンス</param>
+    /// <param name="value1">シーケンス要素1</param>
+    /// <param name="value2">シーケンス要素2</param>
+    /// <param name="value3">シーケンス要素3</param>
+    public static void Deconstruct<TSource>(this IEnumerable<TSource>? self, out TSource? value1, out TSource? value2, out TSource? value3)
+    {
+        if (self == null) throw new ArgumentNullException(nameof(self));
+
+        using var enumerator = self.GetEnumerator();
+        value1 = enumerator.MoveNext() ? enumerator.Current : default;
+        value2 = enumerator.MoveNext() ? enumerator.Current : default;
+        value3 = enumerator.MoveNext() ? enumerator.Current : default;
+    }
+
+    /// <summary>シーケンスの先頭から要素を分解する</summary>
+    /// <typeparam name="TSource">要素の型</typeparam>
+    /// <param name="self">対象シーケンス</param>
+    /// <param name="value1">シーケンス要素1</param>
+    /// <param name="value2">シーケンス要素2</param>
+    /// <param name="value3">シーケンス要素3</param>
+    /// <param name="value4">シーケンス要素4</param>
+    public static void Deconstruct<TSource>(this IEnumerable<TSource>? self, out TSource? value1, out TSource? value2, out TSource? value3, out TSource? value4)
+    {
+        if (self == null) throw new ArgumentNullException(nameof(self));
+
+        using var enumerator = self.GetEnumerator();
+        value1 = enumerator.MoveNext() ? enumerator.Current : default;
+        value2 = enumerator.MoveNext() ? enumerator.Current : default;
+        value3 = enumerator.MoveNext() ? enumerator.Current : default;
+        value4 = enumerator.MoveNext() ? enumerator.Current : default;
+    }
+
+    /// <summary>シーケンスの先頭から要素を分解する</summary>
+    /// <typeparam name="TSource">要素の型</typeparam>
+    /// <param name="self">対象シーケンス</param>
+    /// <param name="value1">シーケンス要素1</param>
+    /// <param name="value2">シーケンス要素2</param>
+    /// <param name="value3">シーケンス要素3</param>
+    /// <param name="value4">シーケンス要素4</param>
+    /// <param name="value5">シーケンス要素5</param>
+    public static void Deconstruct<TSource>(this IEnumerable<TSource>? self, out TSource? value1, out TSource? value2, out TSource? value3, out TSource? value4, out TSource? value5)
+    {
+        if (self == null) throw new ArgumentNullException(nameof(self));
+
+        using var enumerator = self.GetEnumerator();
+        value1 = enumerator.MoveNext() ? enumerator.Current : default;
+        value2 = enumerator.MoveNext() ? enumerator.Current : default;
+        value3 = enumerator.MoveNext() ? enumerator.Current : default;
+        value4 = enumerator.MoveNext() ? enumerator.Current : default;
+        value5 = enumerator.MoveNext() ? enumerator.Current : default;
+    }
+
+
+
 }
