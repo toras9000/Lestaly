@@ -113,6 +113,30 @@ public class StringExtensionsTests
         "abc".TieIn(null).Should().Be("");
         "".TieIn("xxx").Should().Be("");
         default(string).TieIn("xxx").Should().Be("");
+        "".TieIn("").Should().Be("");
+        default(string).TieIn(null).Should().Be("");
+
+        "abc".TieIn("xxx", (x, y) => $"({x}/{y})").Should().Be("(abc/xxx)");
+        "abc".TieIn("", (x, y) => $"({x}/{y})").Should().Be("");
+        "".TieIn("xxx", (x, y) => $"({x}/{y})").Should().Be("");
+        default(string).TieIn(null, (x, y) => $"({x}/{y})").Should().Be("");
+    }
+
+    [TestMethod()]
+    public void Mux()
+    {
+        "abc".Mux("xxx").Should().Be("abcxxx");
+        "abc".Mux("").Should().Be("abc");
+        "abc".Mux(null).Should().Be("abc");
+        "".Mux("xxx").Should().Be("xxx");
+        default(string).Mux("xxx").Should().Be("xxx");
+        "".Mux("").Should().Be("");
+        default(string).Mux(null).Should().Be("");
+
+        "abc".Mux("xxx", (x, y) => $"({x}/{y})").Should().Be("(abc/xxx)");
+        "abc".Mux("", (x, y) => $"({x}/{y})").Should().Be("abc");
+        "".Mux("xxx", (x, y) => $"({x}/{y})").Should().Be("xxx");
+        default(string).Mux(null, (x, y) => $"({x}/{y})").Should().Be("");
     }
 
     [TestMethod()]
