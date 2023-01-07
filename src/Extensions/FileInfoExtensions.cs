@@ -268,7 +268,7 @@ public static class FileInfoExtensions
     /// <summary>ファイルまでのディレクトリを作成する。</summary>
     /// <param name="self">対象ファイル情報</param>
     /// <returns>元のファイル情報</returns>
-    public static FileInfo WithCreate(this FileInfo self)
+    public static FileInfo WithDirectoryCreate(this FileInfo self)
         => CometFlavor.Extensions.IO.FileInfoExtensions.WithDirectoryCreate(self);
 
     /// <summary>ファイルの作成または更新日時の更新を行う</summary>
