@@ -11,71 +11,162 @@ public class DirectoryInfoExtensionsTests
     [TestMethod()]
     public void SelectFiles_Func()
     {
-        using var tempDir = new TempDir();
-        for (var d = 0; d < 3; d++)
+        var data = new[]
         {
-            var sub = tempDir.Info.CreateSubdirectory($"D{d:D3}");
-            for (var f = 0; f < 3; f++)
-            {
-                sub.GetRelativeFile($"F{f:D3}.txt").WriteAllText(f.ToString());
-            }
+            "D001/F001.txt",
+            "D001/F002.txt",
+            "D001/F003.txt",
+            "D002/F001.txt",
+            "D002/F002.txt",
+            "D002/F003.txt",
+            "D003/F001.txt",
+            "D003/F002.txt",
+            "D003/F003.txt",
+        };
+
+        using var tempDir = new TempDir();
+        foreach (var path in data)
+        {
+            tempDir.Info.GetRelativeFile(path).WithDirectoryCreate().WriteAllText(path);
         }
 
-        var expect = Enumerable.Range(0, 3)
-            .SelectMany(d => Enumerable.Range(0, 3).Select(f => (d, f)))
-            .Select(e => Path.Combine(tempDir.Info.FullName, $"D{e.d:D3}", $"F{e.f:D3}.txt"));
+        var actual = tempDir.Info.SelectFiles(c => c.Item.RelativePathFrom(tempDir.Info, ignoreCase: true))
+            .Select(p => p!.Replace('\\', '/'))
+            .ToArray();
 
-        tempDir.Info.SelectFiles(c => c.File?.FullName)
-            .OrderBy(n => n)
-            .Should()
-            .Equal(expect);
+        var expect = data;
+
+        actual.Should().BeEquivalentTo(expect);
     }
 
     [TestMethod()]
     public void SelectFiles_FuncExcludes()
     {
-        using var tempDir = new TempDir();
-        for (var d = 0; d < 3; d++)
+        var data = new[]
         {
-            var sub = tempDir.Info.CreateSubdirectory($"D{d:D3}");
-            for (var f = 0; f < 3; f++)
-            {
-                sub.GetRelativeFile($"F{f:D3}.txt").WriteAllText(f.ToString());
-            }
+            "D001/F001.txt",
+            "D001/F002.txt",
+            "D001/F003.txt",
+            "D002/F001.txt",
+            "D002/F002.txt",
+            "D002/F003.txt",
+            "D003/F001.txt",
+            "D003/F002.txt",
+            "D003/F003.txt",
+        };
+
+        using var tempDir = new TempDir();
+        foreach (var path in data)
+        {
+            tempDir.Info.GetRelativeFile(path).WithDirectoryCreate().WriteAllText(path);
         }
 
-        var excludes = new[] { new Regex("F001"), };
+        {// exclude file
+            var excludes = new[] { new Regex("F001"), };
 
-        var expect = Enumerable.Range(0, 3)
-            .SelectMany(d => Enumerable.Range(0, 3).Where(n => n != 1).Select(f => (d, f)))
-            .Select(e => Path.Combine(tempDir.Info.FullName, $"D{e.d:D3}", $"F{e.f:D3}.txt"));
+            var actual = tempDir.Info.SelectFiles(c => c.Item.RelativePathFrom(tempDir.Info, ignoreCase: true), excludes)
+                .Select(p => p!.Replace('\\', '/'))
+                .ToArray();
 
-        tempDir.Info.SelectFiles(c => c.File?.FullName, excludes)
-            .OrderBy(n => n)
-            .Should()
-            .Equal(expect);
+            var expect = new[]
+            {
+                "D001/F002.txt",
+                "D001/F003.txt",
+                "D002/F002.txt",
+                "D002/F003.txt",
+                "D003/F002.txt",
+                "D003/F003.txt",
+            };
+
+            actual.Should().BeEquivalentTo(expect);
+        }
+
+        {// exclude dir
+            var excludes = new[] { new Regex("D003"), };
+
+            var actual = tempDir.Info.SelectFiles(
+                    c => c.Item.RelativePathFrom(tempDir.Info, ignoreCase: true),
+                    excludes,
+                    options: new() { DirectoryHandling = true, }
+                )
+                .Select(p => p!.Replace('\\', '/'))
+                .ToArray();
+
+            var expect = new[]
+            {
+                "D001",
+                "D001/F001.txt",
+                "D001/F002.txt",
+                "D001/F003.txt",
+                "D002",
+                "D002/F001.txt",
+                "D002/F002.txt",
+                "D002/F003.txt",
+            };
+
+            actual.Should().BeEquivalentTo(expect);
+        }
     }
 
     [TestMethod()]
     public void SelectFiles_FilterFunc()
     {
-        using var tempDir = new TempDir();
-        for (var d = 0; d < 3; d++)
+        var data = new[]
         {
-            var sub = tempDir.Info.CreateSubdirectory($"D{d:D3}");
-            for (var f = 0; f < 3; f++)
-            {
-                sub.GetRelativeFile($"F{f:D3}.txt").WriteAllText(f.ToString());
-            }
+            "D001/F001.txt",
+            "D001/F002.txt",
+            "D001/F003.txt",
+            "D002/F001.txt",
+            "D002/F002.txt",
+            "D002/F003.txt",
+            "D003/F001.txt",
+            "D003/F002.txt",
+            "D003/F003.txt",
+        };
+
+        using var tempDir = new TempDir();
+        foreach (var path in data)
+        {
+            tempDir.Info.GetRelativeFile(path).WithDirectoryCreate().WriteAllText(path);
         }
 
-        var expect = Enumerable.Range(0, 3)
-            .SelectMany(d => Enumerable.Range(0, 3).Where(n => n == 1).Select(f => (d, f)))
-            .Select(e => Path.Combine(tempDir.Info.FullName, $"D{e.d:D3}", $"F{e.f:D3}.txt"));
+        {// filter file
+            var actual = tempDir.Info.SelectFiles(
+                    c => c.Item.Name.StartsWith("F001") == true,
+                    c => c.Item.RelativePathFrom(tempDir.Info, ignoreCase: true)
+                )
+                .Select(p => p!.Replace('\\', '/'))
+                .ToArray();
+            var expect = new[]
+            {
+                "D001/F001.txt",
+                "D002/F001.txt",
+                "D003/F001.txt",
+            };
+            actual.Should().BeEquivalentTo(expect);
+        }
 
-        tempDir.Info.SelectFiles(c => c.File?.Name.StartsWith("F001") == true, c => c.File!.FullName)
-            .OrderBy(n => n)
-            .Should()
-            .Equal(expect);
+        {// filter dir
+            var actual = tempDir.Info.SelectFiles(
+                    c => c.Item.Name != "D002",
+                    c => c.Item.RelativePathFrom(tempDir.Info, ignoreCase: true),
+                    new() { DirectoryHandling = true, }
+                )
+                .Select(p => p!.Replace('\\', '/'))
+                .OrderBy(n => n)
+                .ToArray();
+            var expect = new[]
+            {
+                "D001",
+                "D001/F001.txt",
+                "D001/F002.txt",
+                "D001/F003.txt",
+                "D003",
+                "D003/F001.txt",
+                "D003/F002.txt",
+                "D003/F003.txt",
+            };
+            actual.Should().BeEquivalentTo(expect);
+        }
     }
 }

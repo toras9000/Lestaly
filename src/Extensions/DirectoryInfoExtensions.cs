@@ -132,7 +132,7 @@ public static class DirectoryInfoExtensions
     public static IEnumerable<TResult?> SelectFiles<TResult>(this DirectoryInfo self, Func<CometFlavor.Extensions.IO.IFileWalker, bool> filter, Func<CometFlavor.Extensions.IO.IFileWalker, TResult?> selector, SelectFilesOptions? options = null)
     {
         if (selector == null) throw new ArgumentNullException(nameof(selector));
-        return self.SelectFiles<TResult>(c => { if (filter(c)) c.SetResult(selector(c)); }, options);
+        return self.SelectFiles<TResult>(c => { if (filter(c)) { c.SetResult(selector(c)); } else if (c.File == null) { c.Break = true; } }, options);
     }
 
     /// <summary>ディレクトリ配下のファイル/ディレクトリを検索して変換処理を行う</summary>
