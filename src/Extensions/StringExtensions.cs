@@ -87,7 +87,7 @@ public static class StringExtensions
     /// <summary>特定文字の前部分文字列を取得する</summary>
     /// <param name="self">対象文字列</param>
     /// <param name="marker">検索文字</param>
-    /// <param name="defaultEmpty">検索文字列が見つからない場合に空を返すか否か</param>
+    /// <param name="defaultEmpty">検索文字が見つからない場合に空を返すか否か</param>
     /// <returns>
     /// 検索文字が存在する場合はそれより前の文字列。
     /// 見つからない場合はパラメータ指定により文字列全体または空文字列。
@@ -101,7 +101,7 @@ public static class StringExtensions
     /// <param name="marker">検索文字列</param>
     /// <param name="defaultEmpty">検索文字列が見つからない場合に空を返すか否か</param>
     /// <returns>
-    /// 検索文字が存在する場合はそれより前の文字列。
+    /// 検索文字列が存在する場合はそれより前の文字列。
     /// 見つからない場合はパラメータ指定により文字列全体または空文字列。
     /// </returns>
     [return: NotNullIfNotNull(nameof(self))]
@@ -111,7 +111,7 @@ public static class StringExtensions
     /// <summary>特定文字の後部分文字列を取得する</summary>
     /// <param name="self">対象文字列</param>
     /// <param name="marker">検索文字</param>
-    /// <param name="defaultEmpty">検索文字列が見つからない場合に空を返すか否か</param>
+    /// <param name="defaultEmpty">検索文字が見つからない場合に空を返すか否か</param>
     /// <returns>
     /// 検索文字が存在する場合はそれより後の文字列。
     /// 見つからない場合はパラメータ指定により文字列全体または空文字列。
@@ -125,12 +125,60 @@ public static class StringExtensions
     /// <param name="marker">検索文字列</param>
     /// <param name="defaultEmpty">検索文字列が見つからない場合に空を返すか否か</param>
     /// <returns>
-    /// 検索文字が存在する場合はそれより後の文字列。
+    /// 検索文字列が存在する場合はそれより後の文字列。
     /// 見つからない場合はパラメータ指定により文字列全体または空文字列。
     /// </returns>
     [return: NotNullIfNotNull(nameof(self))]
     public static string? AfterAt(this string? self, string marker, bool defaultEmpty = false)
         => CometFlavor.Extensions.Text.StringExtensions.AfterAt(self, marker, defaultEmpty);
+
+    /// <summary>特定文字まで部分文字列を取得する</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="marker">検索文字</param>
+    /// <param name="defaultEmpty">検索文字が見つからない場合に空を返すか否か</param>
+    /// <returns>
+    /// 検索文字が存在する場合は検索文字までの文字列。
+    /// 見つからない場合はパラメータ指定により文字列全体または空文字列。
+    /// </returns>
+    [return: NotNullIfNotNull(nameof(self))]
+    public static string? TakeTo(this string? self, char marker, bool defaultEmpty = false)
+        => CometFlavor.Extensions.Text.StringExtensions.TakeTo(self, marker, defaultEmpty);
+
+    /// <summary>特定文字列までの部分文字列を取得する</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="marker">検索文字列</param>
+    /// <param name="defaultEmpty">検索文字列が見つからない場合に空を返すか否か</param>
+    /// <returns>
+    /// 検索文字列が存在する場合は検索文字列までの文字列。
+    /// 見つからない場合はパラメータ指定により文字列全体または空文字列。
+    /// </returns>
+    [return: NotNullIfNotNull(nameof(self))]
+    public static string? TakeTo(this string? self, string marker, bool defaultEmpty = false)
+        => CometFlavor.Extensions.Text.StringExtensions.TakeTo(self, marker, defaultEmpty);
+
+    /// <summary>特定文字からの部分文字列を取得する</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="marker">検索文字</param>
+    /// <param name="defaultEmpty">検索文字が見つからない場合に空を返すか否か</param>
+    /// <returns>
+    /// 検索文字が存在する場合は検索文字からの文字列。
+    /// 見つからない場合はパラメータ指定により文字列全体または空文字列。
+    /// </returns>
+    [return: NotNullIfNotNull(nameof(self))]
+    public static string? TakeFrom(this string? self, char marker, bool defaultEmpty = false)
+        => CometFlavor.Extensions.Text.StringExtensions.TakeFrom(self, marker, defaultEmpty);
+
+    /// <summary>特定文字列からの部分文字列を取得する</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="marker">検索文字列</param>
+    /// <param name="defaultEmpty">検索文字列が見つからない場合に空を返すか否か</param>
+    /// <returns>
+    /// 検索文字列が存在する場合は検索文字列からの文字列。
+    /// 見つからない場合はパラメータ指定により文字列全体または空文字列。
+    /// </returns>
+    [return: NotNullIfNotNull(nameof(self))]
+    public static string? TakeFrom(this string? self, string marker, bool defaultEmpty = false)
+        => CometFlavor.Extensions.Text.StringExtensions.TakeFrom(self, marker, defaultEmpty);
 
     /// <summary>文字列のシーケンスからnull/空を取り除く。</summary>
     /// <param name="self">文字列のシーケンス</param>
