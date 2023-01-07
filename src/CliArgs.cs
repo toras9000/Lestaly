@@ -9,7 +9,7 @@ namespace Lestaly;
 /// <param name="AllowMultiple">複数回の同じオプションを許容するか否か</param>
 /// <param name="MaxDispWidth">ヘルプ表示時の最大表示幅</param>
 /// <param name="Title">ヘルプ表示時のタイトル</param>
-public record CliArgsOptions(bool CaseSensitive = false, bool AllowUnknown = false, bool AllowMultiple = true, int MaxDispWidth = 80, string? Title = null);
+public record CliArgsOptions(bool CaseSensitive = false, bool AllowUnknown = false, bool AllowMultiple = true, int? MaxDispWidth = null, string? Title = null);
 
 /// <summary>
 /// コマンドライン引数処理
@@ -59,10 +59,10 @@ public static class CliArgs
             settings.AutoHelp = true;
             settings.AutoVersion = false;
             settings.HelpWriter = null;
-            settings.IgnoreUnknownArguments = !options.AllowUnknown;
+            settings.IgnoreUnknownArguments = options.AllowUnknown;
             settings.CaseSensitive = options.CaseSensitive;
             settings.CaseInsensitiveEnumValues = !options.CaseSensitive;
-            settings.MaximumDisplayWidth = options.MaxDispWidth;
+            if (options.MaxDispWidth.HasValue) settings.MaximumDisplayWidth = options.MaxDispWidth.Value;
         });
         var result = parser.ParseArguments<T>(args);
         if (result == null) throw new PavedMessageException("Argument error", fatal: false);
