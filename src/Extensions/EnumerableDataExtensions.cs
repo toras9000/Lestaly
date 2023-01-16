@@ -450,7 +450,7 @@ public static class EnumerableDataExtensions
             for (var a = 0; a < column.Span; a++)
             {
                 var caption = (column.Span == 1) ? column.Caption : $"{column.Caption}[{a}]";
-                headerCell.CellRight(offset).SetValue<string>(caption);
+                headerCell.CellRight(offset).Value = caption;
                 offset++;
             }
         }
@@ -589,7 +589,7 @@ public static class EnumerableDataExtensions
             for (var a = 0; a < column.Span; a++)
             {
                 var caption = (column.Span == 1) ? column.Caption : $"{column.Caption}[{a}]";
-                headerCell.CellRight(offset).SetValue<string>(caption);
+                headerCell.CellRight(offset).Value = caption;
                 offset++;
             }
         }
@@ -671,7 +671,7 @@ public static class EnumerableDataExtensions
                     }
                     else
                     {
-                        putCell.Value = item;
+                        writeCellValue(putCell, item);
                     }
                     count++;
                 }
@@ -694,8 +694,9 @@ public static class EnumerableDataExtensions
             case var t when t.IsAssignableTo(typeof(Uri)):
                 return (cell, value) =>
                 {
-                    cell.SetHyperlink(new XLHyperlink((Uri)value));
-                    cell.Value = value;
+                    var uri = (Uri)value;
+                    cell.SetHyperlink(new XLHyperlink(uri));
+                    cell.Value = uri.ToString();
                 };
             case var t when t.IsAssignableTo(typeof(FileSystemInfo)):
                 return (cell, value) =>
@@ -711,6 +712,35 @@ public static class EnumerableDataExtensions
 
         switch (type)
         {
+        case var t when t == typeof(bool): return (cell, value) => cell.Value = (bool)value;
+        case var t when t == typeof(sbyte): return (cell, value) => cell.Value = (sbyte?)value;
+        case var t when t == typeof(byte): return (cell, value) => cell.Value = (byte?)value;
+        case var t when t == typeof(short): return (cell, value) => cell.Value = (short?)value;
+        case var t when t == typeof(ushort): return (cell, value) => cell.Value = (ushort?)value;
+        case var t when t == typeof(int): return (cell, value) => cell.Value = (int?)value;
+        case var t when t == typeof(uint): return (cell, value) => cell.Value = (uint?)value;
+        case var t when t == typeof(long): return (cell, value) => cell.Value = (long?)value;
+        case var t when t == typeof(ulong): return (cell, value) => cell.Value = (ulong?)value;
+        case var t when t == typeof(float): return (cell, value) => cell.Value = (float?)value;
+        case var t when t == typeof(double): return (cell, value) => cell.Value = (double?)value;
+        case var t when t == typeof(decimal): return (cell, value) => cell.Value = (decimal?)value;
+        case var t when t == typeof(DateTime): return (cell, value) => cell.Value = (DateTime?)value;
+        case var t when t == typeof(TimeSpan): return (cell, value) => cell.Value = (TimeSpan?)value;
+        case var t when t == typeof(sbyte?): return (cell, value) => cell.Value = (sbyte?)value;
+        case var t when t == typeof(byte?): return (cell, value) => cell.Value = (byte?)value;
+        case var t when t == typeof(short?): return (cell, value) => cell.Value = (short?)value;
+        case var t when t == typeof(ushort?): return (cell, value) => cell.Value = (ushort?)value;
+        case var t when t == typeof(int?): return (cell, value) => cell.Value = (int?)value;
+        case var t when t == typeof(uint?): return (cell, value) => cell.Value = (uint?)value;
+        case var t when t == typeof(long?): return (cell, value) => cell.Value = (long?)value;
+        case var t when t == typeof(ulong?): return (cell, value) => cell.Value = (ulong?)value;
+        case var t when t == typeof(float?): return (cell, value) => cell.Value = (float?)value;
+        case var t when t == typeof(double?): return (cell, value) => cell.Value = (double?)value;
+        case var t when t == typeof(decimal?): return (cell, value) => cell.Value = (decimal?)value;
+        case var t when t == typeof(DateTime?): return (cell, value) => cell.Value = (DateTime?)value;
+        case var t when t == typeof(TimeSpan?): return (cell, value) => cell.Value = (TimeSpan?)value;
+        case var t when t == typeof(string): return (cell, value) => cell.Value = (string)value;
+
         case var t when t.IsAssignableTo(typeof(ExcelHyperlink)):
             return (cell, value) =>
             {
@@ -750,12 +780,37 @@ public static class EnumerableDataExtensions
                     }
                     else
                     {
-                        cell.Value = style.Value;
+                        writeCellValue(cell, style.Value);
                     }
                 }
             };
         default:
-            return (cell, value) => cell.Value = value;
+            return (cell, value) => writeCellValue(cell, value);
+        }
+    }
+
+    /// <summary>セルにプリミティブ値を設定する</summary>
+    /// <param name="cell">対象セル</param>
+    /// <param name="value">設定する値。サポートされるプリミティブ値でない場合は文字列化して設定する。</param>
+    private static void writeCellValue(IXLCell cell, object value)
+    {
+        switch (value)
+        {
+        case bool v: cell.Value = v; break;
+        case sbyte v: cell.Value = v; break;
+        case byte v: cell.Value = v; break;
+        case short v: cell.Value = v; break;
+        case ushort v: cell.Value = v; break;
+        case int v: cell.Value = v; break;
+        case uint v: cell.Value = v; break;
+        case long v: cell.Value = v; break;
+        case ulong v: cell.Value = v; break;
+        case float v: cell.Value = v; break;
+        case double v: cell.Value = v; break;
+        case decimal v: cell.Value = v; break;
+        case DateTime v: cell.Value = v; break;
+        case TimeSpan v: cell.Value = v; break;
+        default: cell.Value = value?.ToString(); break;
         }
     }
 

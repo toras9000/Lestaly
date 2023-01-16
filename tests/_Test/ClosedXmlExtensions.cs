@@ -1,19 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ClosedXML.Excel;
+using Lestaly.Extensions;
 
 namespace LestalyTest._Test;
 
 public static class ClosedXmlExtensions
 {
-    public static object[][] GetRangeData(this IXLWorksheet self, int row, int col, int width, int height)
+    public static object?[][] GetRangeData(this IXLWorksheet self, int row, int col, int width, int height)
     {
         var range = self.Range(row, col, row + height - 1, col + width - 1);
         return range.Rows()
-            .Select(row => row.Cells().Select(cell => cell.Value).ToArray())
+            .Select(row => row.Cells().Select(c => c.ToObjectValue()).ToArray())
             .ToArray();
     }
 

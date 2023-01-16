@@ -5,6 +5,7 @@ using ClosedXML.Excel;
 using FluentAssertions;
 using LestalyTest._Test;
 using Lestaly;
+using Lestaly.Extensions;
 
 namespace LestalyTest.Extensions;
 
@@ -43,7 +44,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
 
         // 期待値
         var expect = new List<object[]> { new object[] { "Text", "Number", "Decimal", "Time", } };
-        expect.AddRange(data.Select(d => new object[] { d.Text, d.Number, d.Decimal, d.Time.Year < 1900 ? d.Time.ToString() : d.Time, }));
+        expect.AddRange(data.Select(d => new object[] { d.Text, d.Number, d.Decimal, d.Time, }));
 
         // 検証
         using var book = new XLWorkbook(target.FullName);
@@ -110,7 +111,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
 
         // 期待値
         var expect = new List<object?[]> { new object?[] { "SNum1", "UNum1", "SNum4", "UNum4", } };
-        expect.AddRange(data.Select(d => new object?[] { (object?)d.SNum1 ?? "", (object?)d.UNum1 ?? "", (object?)d.SNum4 ?? "", (object?)d.UNum4 ?? "", }));
+        expect.AddRange(data.Select(d => new object?[] { (object?)d.SNum1, (object?)d.UNum1, (object?)d.SNum4, (object?)d.UNum4, }));
 
         // 検証
         using var book = new XLWorkbook(target.FullName);
@@ -146,11 +147,11 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         // 検証
         using var book = new XLWorkbook(target.FullName);
         var sheet = book.Worksheets.First();
-        sheet.Row(2).Cell(1).Value.Should().Be("Google");
+        sheet.Row(2).Cell(1).ToObjectValue().Should().Be("Google");
         sheet.Row(2).Cell(1).GetHyperlink().Should().Match<XLHyperlink>(link => link.ExternalAddress.OriginalString == "https://www.google.com/" && link.Tooltip == "Google検索");
         sheet.Row(3).Cell(1).IsEmpty().Should().BeTrue();
         sheet.Row(3).Cell(1).HasHyperlink.Should().BeFalse();
-        sheet.Row(4).Cell(1).Value.Should().Be("Temporary");
+        sheet.Row(4).Cell(1).ToObjectValue().Should().Be("Temporary");
         sheet.Row(4).Cell(1).GetHyperlink().Should().Match<XLHyperlink>(link => link.ExternalAddress.OriginalString == @"C:\Windows\Temp" && link.Tooltip == "テンポラリディレクトリ");
     }
 
@@ -179,9 +180,9 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         // 検証
         using var book = new XLWorkbook(target.FullName);
         var sheet = book.Worksheets.First();
-        sheet.Row(2).Cell(2).Value.Should().Be(12);
+        sheet.Row(2).Cell(2).ToObjectValue().Should().Be(12);
         sheet.Row(3).Cell(2).IsEmpty().Should().BeTrue();
-        sheet.Row(4).Cell(2).Value.Should().Be(56);
+        sheet.Row(4).Cell(2).ToObjectValue().Should().Be(56);
     }
 
     [TestMethod]
@@ -214,7 +215,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         var sheet = book.Worksheets.First();
 
         var cell1 = sheet.Row(2).Cell(1);
-        cell1.Value.Should().Be("aaa");
+        cell1.ToObjectValue().Should().Be("aaa");
         cell1.Style.Fill.BackgroundColor.Color.ToArgb().Should().Be(Color.FromArgb(0xFF, 0x00, 0x00).ToArgb());
         cell1.Style.Font.FontColor.Color.ToArgb().Should().Be(Color.FromArgb(0x00, 0xFF, 0x00).ToArgb());
         cell1.Style.Font.Bold.Should().BeFalse();
@@ -223,7 +224,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         cell1.HasComment.Should().BeFalse();
 
         var cell2 = sheet.Row(2).Cell(2);
-        cell2.Value.Should().Be("bbb");
+        cell2.ToObjectValue().Should().Be("bbb");
         cell2.Style.Fill.BackgroundColor.Color.ToArgb().Should().Be(Color.FromArgb(0x00, 0xFF, 0xFF, 0xFF).ToArgb());
         cell2.Style.Font.FontSize.Should().Be(12);
         cell2.Style.Font.FontColor.Color.ToArgb().Should().Be(Color.FromArgb(0x00, 0x00, 0x00).ToArgb());
@@ -233,7 +234,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         cell2.HasComment.Should().BeFalse();
 
         var cell3 = sheet.Row(2).Cell(3);
-        cell3.Value.Should().Be("ccc");
+        cell3.ToObjectValue().Should().Be("ccc");
         cell3.Style.Fill.BackgroundColor.Color.ToArgb().Should().Be(Color.FromArgb(0x00, 0xFF, 0xFF, 0xFF).ToArgb());
         cell3.Style.Font.FontColor.Color.ToArgb().Should().Be(Color.FromArgb(0x00, 0x00, 0x00).ToArgb());
         cell3.Style.Font.Bold.Should().BeFalse();
@@ -270,8 +271,8 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         // 検証
         using var book = new XLWorkbook(target.FullName, new LoadOptions { RecalculateAllFormulas = true, });
         var sheet = book.Worksheets.First();
-        sheet.Row(2).Cell(1).Value.Should().BeOfType<string>().Which.Contains("ExcelFormula");
-        sheet.Row(2).Cell(2).Value.Should().Be(7);
+        sheet.Row(2).Cell(1).ToObjectValue().Should().BeOfType<string>().Which.Contains("ExcelFormula");
+        sheet.Row(2).Cell(2).ToObjectValue().Should().Be(7);
     }
 
     class ExpandItem
@@ -331,7 +332,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         // 検証
         using var book = new XLWorkbook(target.FullName);
         var sheet = book.Worksheets.First();
-        sheet.Row(1).Cells(1, 11).Select(c => c.Value).Should().Equal(new[]
+        sheet.Row(1).Cells(1, 11).Select(c => c.ToObjectValue()).Should().Equal(new[]
         {
             "Number",
             "ExpandAttr[0]",
@@ -343,16 +344,16 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
             "ExpandDelegate[1]",
             "ExpandDelegate[2]",
             "ExpandDelegate[3]",
-            "",
+            null,
         });
-        sheet.Row(2).Cells(1, 11).Select(c => c.Value).Should().Equal(new object[]
+        sheet.Row(2).Cells(1, 11).Select(c => c.ToObjectValue()).Should().Equal(new object?[]
         {
             // Number
             100,
             // ExpandAttr
             "xyz",
             200,
-            "",
+            default,
             // ExpandNoSpan
             "AAA",
             // Text
@@ -360,10 +361,10 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
             // ExpandDelegate
             new DateTime(2222, 3, 4, 5, 6, 7, 8),
             "BBB",
-            "",
-            "",
+            default,
+            default,
             // (nothing)
-            "",
+            default,
         });
     }
 
@@ -406,19 +407,19 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         // 検証
         using var book = new XLWorkbook(target.FullName);
         var sheet = book.Worksheets.First();
-        sheet.Row(1).Cells(1, 4).Select(c => c.Value).Should().Equal(new[]
+        sheet.Row(1).Cells(1, 4).Select(c => c.ToObjectValue()).Should().Equal(new[]
         {
             "Expand[0]",
             "Expand[1]",
             "Expand[2]",
-            "",
+            null,
         });
-        sheet.Row(2).Cells(1, 4).Select(c => c.Value).Should().Equal(new object[]
+        sheet.Row(2).Cells(1, 4).Select(c => c.ToObjectValue()).Should().Equal(new object?[]
         {
             "abc",
             200,
             "def",
-            "",
+            default,
         });
     }
 
@@ -519,7 +520,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
 
         // 期待値
         var expect = new List<object[]> { new object[] { "Text", "Number", "Decimal", "Time", } };
-        expect.AddRange(data.Select(d => new object[] { d.Text, d.Number, d.Decimal, d.Time.Year < 1900 ? d.Time.ToString() : d.Time, }));
+        expect.AddRange(data.Select(d => new object[] { d.Text, d.Number, d.Decimal, d.Time, }));
 
         // 検証
         using var book = new XLWorkbook(target.FullName);
