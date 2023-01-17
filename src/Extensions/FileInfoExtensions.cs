@@ -243,6 +243,38 @@ public static class FileInfoExtensions
     public static ValueTask WriteAllLinesAsync(this FileInfo self, IEnumerable<string> contents, Encoding encoding, CancellationToken cancelToken = default)
         => CometFlavor.Extensions.IO.FileInfoExtensions.WriteAllLinesAsync(self, contents, encoding, cancelToken);
 
+    /// <summary>ファイル内容が指定のバイト列となるように書き込む。</summary>
+    /// <param name="self">対象ファイルのFileInfo</param>
+    /// <param name="bytes">書き込むバイト列</param>
+    /// <param name="options">ファイルストリームを開くオプション。Access プロパティは無視する。</param>
+    public static void WriteAllBytes(this FileInfo self, ReadOnlySpan<byte> bytes, FileStreamOptions? options = null)
+        => CometFlavor.Extensions.IO.FileInfoExtensions.WriteAllBytes(self, bytes, options);
+
+    /// <summary>ファイル内容が指定のバイト列となるように書き込む。</summary>
+    /// <param name="self">対象ファイルのFileInfo</param>
+    /// <param name="bytes">書き込むバイト列</param>
+    /// <param name="options">ファイルストリームを開くオプション。Access プロパティは無視する。</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    public static ValueTask WriteAllBytesAsync(this FileInfo self, ReadOnlyMemory<byte> bytes, FileStreamOptions? options = null, CancellationToken cancelToken = default)
+        => CometFlavor.Extensions.IO.FileInfoExtensions.WriteAllBytesAsync(self, bytes, options, cancelToken);
+
+    /// <summary>ファイル内容が指定のテキストとなるように書き込む。</summary>
+    /// <param name="self">対象ファイルのFileInfo</param>
+    /// <param name="contents">書き込むテキスト</param>
+    /// <param name="options">ファイルストリームを開くオプション。Access プロパティは無視する。</param>
+    /// <param name="encoding">書き込むテキストをエンコードするテキストエンコーディング</param>
+    public static void WriteAllText(this FileInfo self, ReadOnlySpan<char> contents, FileStreamOptions? options = null, Encoding? encoding = null)
+        => CometFlavor.Extensions.IO.FileInfoExtensions.WriteAllText(self, contents, options, encoding);
+
+    /// <summary>ファイル内容が指定のバイト列となるように書き込む。</summary>
+    /// <param name="self">対象ファイルのFileInfo</param>
+    /// <param name="contents">書き込むテキスト</param>
+    /// <param name="options">ファイルストリームを開くオプション。Access プロパティは無視する。</param>
+    /// <param name="encoding">書き込むテキストをエンコードするテキストエンコーディング</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    public static ValueTask WriteAllTextAsync(this FileInfo self, ReadOnlyMemory<char> contents, FileStreamOptions? options = null, Encoding? encoding = null, CancellationToken cancelToken = default)
+        => CometFlavor.Extensions.IO.FileInfoExtensions.WriteAllTextAsync(self, contents, options, encoding, cancelToken);
+
     /// <summary>
     /// ファイル内容をテキストで読み取るリーダーを生成する。
     /// </summary>
