@@ -477,25 +477,28 @@ public static class EnumerableDataExtensions
             }
         }
 
-        // 出力した範囲取得
-        var dataRange = sheet.Range(baseCell, dataCell.CellRight(exporters.Length - 1));
+        if (0 < offset)
+        {
+            // 出力した範囲取得
+            var dataRange = sheet.Range(baseCell, dataCell.CellRight(offset - 1));
 
-        // テーブルまたはフィルタの設定
-        if (options.TableDefine)
-        {
-            dataRange.CreateTable(options.TableName.WhenWhite("Table1"));
-        }
-        else if (options.AutoFilter)
-        {
-            dataRange.SetAutoFilter();
-        }
-
-        // カラムサイズ調整
-        if (options.AdjustToContents)
-        {
-            foreach (var column in dataRange.Columns())
+            // テーブルまたはフィルタの設定
+            if (options.TableDefine)
             {
-                column.WorksheetColumn().AdjustToContents();
+                dataRange.CreateTable(options.TableName.WhenWhite("Table1"));
+            }
+            else if (options.AutoFilter)
+            {
+                dataRange.SetAutoFilter();
+            }
+
+            // カラムサイズ調整
+            if (options.AdjustToContents)
+            {
+                foreach (var column in dataRange.Columns())
+                {
+                    column.WorksheetColumn().AdjustToContents();
+                }
             }
         }
 
@@ -616,25 +619,28 @@ public static class EnumerableDataExtensions
             }
         }
 
-        // 出力した範囲取得
-        var dataRange = sheet.Range(baseCell, dataCell.CellRight(exporters.Length - 1));
+        if (0 < offset)
+        {
+            // 出力した範囲取得
+            var dataRange = sheet.Range(baseCell, dataCell.CellRight(offset - 1));
 
-        // テーブルまたはフィルタの設定
-        if (options.TableDefine)
-        {
-            dataRange.CreateTable(options.TableName.WhenWhite("Table1"));
-        }
-        else if (options.AutoFilter)
-        {
-            dataRange.SetAutoFilter();
-        }
-
-        // カラムサイズ調整
-        if (options.AdjustToContents)
-        {
-            foreach (var column in dataRange.Columns())
+            // テーブルまたはフィルタの設定
+            if (options.TableDefine)
             {
-                column.WorksheetColumn().AdjustToContents();
+                dataRange.CreateTable(options.TableName.WhenWhite("Table1"));
+            }
+            else if (options.AutoFilter)
+            {
+                dataRange.SetAutoFilter();
+            }
+
+            // カラムサイズ調整
+            if (options.AdjustToContents)
+            {
+                foreach (var column in dataRange.Columns())
+                {
+                    column.WorksheetColumn().AdjustToContents();
+                }
             }
         }
 
