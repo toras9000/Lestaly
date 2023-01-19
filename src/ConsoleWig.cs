@@ -52,15 +52,30 @@ public static class ConsoleWig
     }
 
     /// <summary>入力エコー無しで1行分のキー入力を読み取る</summary>
+    /// <param name="caption">キャプション文字列</param>
     /// <returns>読み取った行テキスト</returns>
-    public static string ReadLineIntercepted()
+    public static string ReadLineIntercepted(string? caption = null)
     {
+        if (caption.IsNotEmpty()) Console.Write(caption);
         var buff = new StringBuilder();
         while (true)
         {
-            var info = Console.ReadKey(intercept: true);
-            if (info.Key == ConsoleKey.Enter) break;
-            buff.Append(info.KeyChar);
+            // キー入力読み取り
+            var input = Console.ReadKey(intercept: true);
+
+            // 特殊キーの処理
+            if (input.Key == ConsoleKey.Enter) break;
+            if (input.Key == ConsoleKey.Backspace)
+            {
+                if (0 < buff.Length) buff.Length--;
+                continue;
+            }
+
+            // 無効なキャラクタならばスキップ
+            if (input.KeyChar == 0) continue;
+
+            // 有効キャラクタを蓄積
+            buff.Append(input.KeyChar);
         }
         return buff.ToString();
     }
