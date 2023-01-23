@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Globalization;
 using FluentAssertions;
 
 namespace LestalyTest.Extensions;
@@ -23,6 +18,9 @@ public class StringParseExtensionsTests
         "80".ParseUInt8(NumberStyles.HexNumber).Should().Be(0x80);
         "FF".ParseUInt8(NumberStyles.HexNumber).Should().Be(0xFF);
         new Action(() => "100".ParseUInt8(NumberStyles.HexNumber)).Should().Throw<Exception>();
+
+        "255".AsSpan().ParseUInt8().Should().Be(255);
+        "255".ToArray().AsSpan().ParseUInt8().Should().Be(255);
     }
 
     [TestMethod()]
@@ -37,6 +35,9 @@ public class StringParseExtensionsTests
         "8000".ParseUInt16(NumberStyles.HexNumber).Should().Be(0x8000);
         "FFFF".ParseUInt16(NumberStyles.HexNumber).Should().Be(0xFFFF);
         new Action(() => "10000".ParseUInt16(NumberStyles.HexNumber)).Should().Throw<Exception>();
+
+        "65535".AsSpan().ParseUInt16().Should().Be(65535);
+        "65535".ToArray().AsSpan().ParseUInt16().Should().Be(65535);
     }
 
     [TestMethod()]
@@ -51,6 +52,9 @@ public class StringParseExtensionsTests
         "80000000".ParseUInt32(NumberStyles.HexNumber).Should().Be(0x80000000);
         "FFFFFFFF".ParseUInt32(NumberStyles.HexNumber).Should().Be(0xFFFFFFFF);
         new Action(() => "100000000".ParseUInt32(NumberStyles.HexNumber)).Should().Throw<Exception>();
+
+        "4294967295".AsSpan().ParseUInt32().Should().Be(4294967295);
+        "4294967295".ToArray().AsSpan().ParseUInt32().Should().Be(4294967295);
     }
 
     [TestMethod()]
@@ -65,6 +69,9 @@ public class StringParseExtensionsTests
         "8000000000000000".ParseUInt64(NumberStyles.HexNumber).Should().Be(0x8000000000000000);
         "FFFFFFFFFFFFFFFF".ParseUInt64(NumberStyles.HexNumber).Should().Be(0xFFFFFFFFFFFFFFFF);
         new Action(() => "10000000000000000".ParseUInt64(NumberStyles.HexNumber)).Should().Throw<Exception>();
+
+        "18446744073709551615".AsSpan().ParseUInt64().Should().Be(18446744073709551615);
+        "18446744073709551615".ToArray().AsSpan().ParseUInt64().Should().Be(18446744073709551615);
     }
 
     [TestMethod()]
@@ -80,6 +87,9 @@ public class StringParseExtensionsTests
         "7F".ParseInt8(NumberStyles.HexNumber).Should().Be(0x7F);
         "80".ParseInt8(NumberStyles.HexNumber).Should().Be(-128);
         new Action(() => "100".ParseInt8(NumberStyles.HexNumber)).Should().Throw<Exception>();
+
+        "-128".AsSpan().ParseInt8().Should().Be(-128);
+        "-128".ToArray().AsSpan().ParseInt8().Should().Be(-128);
     }
 
     [TestMethod()]
@@ -94,6 +104,9 @@ public class StringParseExtensionsTests
         "7FFF".ParseInt16(NumberStyles.HexNumber).Should().Be(0x7FFF);
         "8000".ParseInt16(NumberStyles.HexNumber).Should().Be(-32768);
         new Action(() => "10000".ParseInt16(NumberStyles.HexNumber)).Should().Throw<Exception>();
+
+        "32767".AsSpan().ParseInt16().Should().Be(32767);
+        "32767".ToArray().AsSpan().ParseInt16().Should().Be(32767);
     }
 
     [TestMethod()]
@@ -108,6 +121,9 @@ public class StringParseExtensionsTests
         "7FFFFFFF".ParseInt32(NumberStyles.HexNumber).Should().Be(0x7FFFFFFF);
         "80000000".ParseInt32(NumberStyles.HexNumber).Should().Be(-2147483648);
         new Action(() => "100000000".ParseInt32(NumberStyles.HexNumber)).Should().Throw<Exception>();
+
+        "2147483647".AsSpan().ParseInt32().Should().Be(2147483647);
+        "2147483647".ToArray().AsSpan().ParseInt32().Should().Be(2147483647);
     }
 
     [TestMethod()]
@@ -122,6 +138,9 @@ public class StringParseExtensionsTests
         "7FFFFFFFFFFFFFFF".ParseInt64(NumberStyles.HexNumber).Should().Be(0x7FFFFFFFFFFFFFFF);
         "8000000000000000".ParseInt64(NumberStyles.HexNumber).Should().Be(-9223372036854775808);
         new Action(() => "10000000000000000".ParseInt64(NumberStyles.HexNumber)).Should().Throw<Exception>();
+
+        "9223372036854775807".AsSpan().ParseInt64().Should().Be(9223372036854775807);
+        "9223372036854775807".ToArray().AsSpan().ParseInt64().Should().Be(9223372036854775807);
     }
 
     [TestMethod()]
@@ -133,6 +152,9 @@ public class StringParseExtensionsTests
         new Action(() => "asd".ParseFloat()).Should().Throw<Exception>();
 
         "100".ParseFloat(NumberStyles.Float).Should().Be(100f);
+
+        "-100".AsSpan().ParseFloat().Should().Be(-100f);
+        "-100".ToArray().AsSpan().ParseFloat().Should().Be(-100f);
     }
 
     [TestMethod()]
@@ -144,6 +166,9 @@ public class StringParseExtensionsTests
         new Action(() => "asd".ParseDouble()).Should().Throw<Exception>();
 
         "100".ParseDouble(NumberStyles.Float).Should().Be(100d);
+
+        "-100".AsSpan().ParseDouble().Should().Be(-100d);
+        "-100".ToArray().AsSpan().ParseDouble().Should().Be(-100d);
     }
 
     [TestMethod()]
@@ -155,6 +180,9 @@ public class StringParseExtensionsTests
         new Action(() => "asd".ParseDecimal()).Should().Throw<Exception>();
 
         "100".ParseDecimal(NumberStyles.Number).Should().Be(100m);
+
+        "-100".AsSpan().ParseDecimal().Should().Be(-100m);
+        "-100".ToArray().AsSpan().ParseDecimal().Should().Be(-100m);
     }
 
     [TestMethod()]
@@ -164,6 +192,9 @@ public class StringParseExtensionsTests
         new Action(() => "asd".ParseDateTime()).Should().Throw<Exception>();
 
         "11:12:13".ParseDateTime(DateTimeStyles.NoCurrentDateDefault).Should().Be(new DateTime(1, 1, 1, 11, 12, 13));
+
+        "2022/12/31".AsSpan().ParseDateTime().Should().Be(new DateTime(2022, 12, 31));
+        "2022/12/31".ToArray().AsSpan().ParseDateTime().Should().Be(new DateTime(2022, 12, 31));
     }
 
     [TestMethod()]
@@ -172,6 +203,9 @@ public class StringParseExtensionsTests
         "1234_05_06".ParseDateTimeExact("yyyy_M_d").Should().Be(new DateTime(1234, 5, 6));
 
         new Action(() => "zz".ParseDateTimeExact("yyyy_M_d")).Should().Throw<Exception>();
+
+        "1234_05_06".AsSpan().ParseDateTimeExact("yyyy_M_d").Should().Be(new DateTime(1234, 5, 6));
+        "1234_05_06".ToArray().AsSpan().ParseDateTimeExact("yyyy_M_d").Should().Be(new DateTime(1234, 5, 6));
     }
 
     [TestMethod()]
