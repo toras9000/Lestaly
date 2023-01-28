@@ -8,7 +8,7 @@ namespace Lestaly;
 /// </summary>
 public static class CmdProc
 {
-    /// <summary>コマンドを実行して出力テキストを取得する</summary>
+    /// <summary>コマンドを実行して終了コードを取得する</summary>
     /// <param name="command">実行コマンド</param>
     /// <param name="arguments">引数リスト</param>
     /// <param name="workDir">作業ディレクトリ</param>
@@ -129,7 +129,7 @@ public static class CmdProc
         return proc.ExitCode;
     }
 
-    /// <summary></summary>
+    /// <summary>コマンドを実行して終了コードと出力テキストを取得する</summary>
     /// <param name="command">実行コマンド</param>
     /// <param name="arguments">引数リスト</param>
     /// <param name="workDir">作業ディレクトリ</param>
