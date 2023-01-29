@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System.IO;
+using System.Runtime.Serialization;
+using System.Text;
 
 namespace Lestaly;
 
@@ -63,4 +65,57 @@ public static class FileSystemInfoExtensions
     public static string RelativePathFrom(this FileSystemInfo self, DirectoryInfo baseDir, bool ignoreCase)
         => CometFlavor.Extensions.IO.FileSystemInfoExtensions.RelativePathFrom(self, baseDir, ignoreCase);
     #endregion
+
+    #region Throw
+    /// <summary>ファイルシステムオブジェクトが存在する場合に例外を送出する。</summary>
+    /// <param name="self">対象ファイル/ディレクトリ情報</param>
+    /// <param name="generator">例外オブジェクト生成デリゲート</param>
+    /// <returns>元のファイル/ディレクトリ情報</returns>
+    public static TInfo ThrowIfExists<TInfo>(this TInfo self, Func<TInfo, Exception>? generator = null) where TInfo : FileSystemInfo
+    {
+        if (self.Exists)
+        {
+            throw generator?.Invoke(self) ?? self switch
+            {
+                FileInfo f => new FileNotFoundException($"`{self.FullName}` is not found.", self.FullName),
+                DirectoryInfo d => new DirectoryNotFoundException($"`{self.FullName}` is not found."),
+                _ => new InvalidDataException(),
+            };
+        }
+        return self;
+    }
+
+    /// <summary>ファイルシステムオブジェクトが存在しない場合に例外を送出する。</summary>
+    /// <param name="self">対象ファイル/ディレクトリ情報</param>
+    /// <param name="generator">例外オブジェクト生成デリゲート</param>
+    /// <returns>元のファイル/ディレクトリ情報</returns>
+    public static TInfo ThrowIfNotExists<TInfo>(this TInfo self, Func<TInfo, Exception>? generator = null) where TInfo : FileSystemInfo
+    {
+        if (!self.Exists)
+        {
+            throw generator?.Invoke(self) ?? self switch
+            {
+                FileInfo f => new FileNotFoundException($"`{self.FullName}` is not found.", self.FullName),
+                DirectoryInfo d => new DirectoryNotFoundException($"`{self.FullName}` is not found."),
+                _ => new InvalidDataException(),
+            };
+        }
+        return self;
+    }
+
+    /// <summary>ファイルシステムオブジェクトが存在する場合にキャンセル例外を送出する。</summary>
+    /// <param name="self">対象ファイル/ディレクトリ情報</param>
+    /// <param name="generator">例外メッセージ生成デリゲート</param>
+    /// <returns>元のファイル/ディレクトリ情報</returns>
+    public static TInfo CanceIfExists<TInfo>(this TInfo self, Func<TInfo, string>? generator = null) where TInfo : FileSystemInfo
+    => self.ThrowIfExists(i => new OperationCanceledException(generator?.Invoke(i)));
+
+    /// <summary>ファイルシステムオブジェクトが存在しない場合にキャンセル例外を送出する。</summary>
+    /// <param name="self">対象ファイル/ディレクトリ情報</param>
+    /// <param name="generator">例外メッセージ生成デリゲート</param>
+    /// <returns>元のファイル/ディレクトリ情報</returns>
+    public static TInfo CanceIfNotExists<TInfo>(this TInfo self, Func<TInfo, string>? generator = null) where TInfo : FileSystemInfo
+    => self.ThrowIfNotExists(i => new OperationCanceledException(generator?.Invoke(i)));
+    #endregion
+
 }

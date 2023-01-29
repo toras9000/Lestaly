@@ -54,4 +54,85 @@ public class FileSystemInfoExtensionsTests
         dir.GetReadOnly().Should().Be(false);
     }
 
+    [TestMethod()]
+    public void ThrowIfExists()
+    {
+        using var tempDir = new TempDir();
+
+        var existFile = tempDir.Info.GetRelativeFile("asd.txt").Touch();
+        var notExistFile = tempDir.Info.GetRelativeFile("qwe.txt");
+
+        new Action(() => existFile.ThrowIfExists()).Should().Throw<Exception>();
+        new Action(() => existFile.ThrowIfExists(i => new ApplicationException())).Should().Throw<ApplicationException>();
+        new Action(() => notExistFile.ThrowIfExists()).Should().NotThrow();
+        new Action(() => notExistFile.ThrowIfExists(i => new ApplicationException())).Should().NotThrow();
+
+        var existDir = tempDir.Info.GetRelativeDirectory("abc").WithCreate();
+        var notExistDir = tempDir.Info.GetRelativeDirectory("def");
+
+        new Action(() => existDir.ThrowIfExists()).Should().Throw<Exception>();
+        new Action(() => existDir.ThrowIfExists(i => new ApplicationException())).Should().Throw<ApplicationException>();
+        new Action(() => notExistDir.ThrowIfExists()).Should().NotThrow();
+        new Action(() => notExistDir.ThrowIfExists(i => new ApplicationException())).Should().NotThrow();
+    }
+
+    [TestMethod()]
+    public void ThrowIfNotExists()
+    {
+        using var tempDir = new TempDir();
+
+        var existFile = tempDir.Info.GetRelativeFile("asd.txt").Touch();
+        var notExistFile = tempDir.Info.GetRelativeFile("qwe.txt");
+
+        new Action(() => notExistFile.ThrowIfNotExists()).Should().Throw<Exception>();
+        new Action(() => notExistFile.ThrowIfNotExists(i => new ApplicationException())).Should().Throw<ApplicationException>();
+        new Action(() => existFile.ThrowIfNotExists()).Should().NotThrow();
+        new Action(() => existFile.ThrowIfNotExists(i => new ApplicationException())).Should().NotThrow();
+
+        var existDir = tempDir.Info.GetRelativeDirectory("abc").WithCreate();
+        var notExistDir = tempDir.Info.GetRelativeDirectory("def");
+
+        new Action(() => notExistFile.ThrowIfNotExists()).Should().Throw<Exception>();
+        new Action(() => notExistFile.ThrowIfNotExists(i => new ApplicationException())).Should().Throw<ApplicationException>();
+        new Action(() => existFile.ThrowIfNotExists()).Should().NotThrow();
+        new Action(() => existFile.ThrowIfNotExists(i => new ApplicationException())).Should().NotThrow();
+    }
+
+    [TestMethod()]
+    public void CanceIfExists()
+    {
+        using var tempDir = new TempDir();
+
+        var existFile = tempDir.Info.GetRelativeFile("asd.txt").Touch();
+        var notExistFile = tempDir.Info.GetRelativeFile("qwe.txt");
+
+        new Action(() => existFile.CanceIfExists(i => "CF")).Should().Throw<OperationCanceledException>().WithMessage("CF");
+        new Action(() => notExistFile.CanceIfExists()).Should().NotThrow();
+
+        var existDir = tempDir.Info.GetRelativeDirectory("abc").WithCreate();
+        var notExistDir = tempDir.Info.GetRelativeDirectory("def");
+
+        new Action(() => existDir.CanceIfExists(i => "CD")).Should().Throw<OperationCanceledException>().WithMessage("CD");
+        new Action(() => notExistDir.CanceIfExists()).Should().NotThrow();
+    }
+
+    [TestMethod()]
+    public void CanceIfNotExists()
+    {
+        using var tempDir = new TempDir();
+
+        var existFile = tempDir.Info.GetRelativeFile("asd.txt").Touch();
+        var notExistFile = tempDir.Info.GetRelativeFile("qwe.txt");
+
+        new Action(() => notExistFile.CanceIfNotExists(i => "CF")).Should().Throw<OperationCanceledException>().WithMessage("CF");
+        new Action(() => existFile.CanceIfNotExists()).Should().NotThrow();
+
+        var existDir = tempDir.Info.GetRelativeDirectory("abc").WithCreate();
+        var notExistDir = tempDir.Info.GetRelativeDirectory("def");
+
+        new Action(() => notExistDir.CanceIfNotExists(i => "CD")).Should().Throw<OperationCanceledException>().WithMessage("CD");
+        new Action(() => existDir.CanceIfNotExists()).Should().NotThrow();
+    }
+
+
 }
