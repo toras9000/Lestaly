@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.RegularExpressions;
 
 namespace Lestaly;
 
@@ -102,5 +103,34 @@ public static class StringRegexExtensions
     public static string[] MatchSplit(this string self, string pattern, RegexOptions options)
     {
         return Regex.Split(self, pattern, options);
+    }
+
+    /// <summary>正規表現にマッチした個所を文字列置き換えする</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="pattern">正規表現パターン</param>
+    /// <param name="selector">マッチ結果を文字列に変換するセレクタ</param>
+    /// <param name="alt">マッチしなかった場合の代替文字列</param>
+    /// <returns>マッチした場合はセレクタの結果。マッチしない場合は null </returns>
+    [return: NotNullIfNotNull(nameof(alt))]
+    public static string? MatchSelect(this string self, string pattern, Func<Match, string> selector, string? alt = default)
+    {
+        var match = Regex.Match(self, pattern);
+        if (match.Success) return selector(match);
+        return alt;
+    }
+
+    /// <summary>正規表現にマッチした個所を文字列置き換えする</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="pattern">正規表現パターン</param>
+    /// <param name="options">正規表現オプション</param>
+    /// <param name="selector">マッチ結果を文字列に変換するセレクタ</param>
+    /// <param name="alt">マッチしなかった場合の代替文字列</param>
+    /// <returns>マッチした場合はセレクタの結果。マッチしない場合は null </returns>
+    [return: NotNullIfNotNull(nameof(alt))]
+    public static string? MatchSelect(this string self, string pattern, RegexOptions options, Func<Match, string> selector, string? alt = default)
+    {
+        var match = Regex.Match(self, pattern, options);
+        if (match.Success) return selector(match);
+        return alt;
     }
 }
