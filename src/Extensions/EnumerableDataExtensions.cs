@@ -91,6 +91,16 @@ public static class EnumerableDataExtensions
         return self.toParallelAsync(parallels, ordered, options => new TransformBlock<TSource, TResult>(transform, options), cancelToken);
     }
 
+    /// <summary>シーケンスの文字列を各行として保存する。</summary>
+    /// <param name="self">保存対象シーケンス</param>
+    /// <param name="file">保存ファイル</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>書き込み処理タスク</returns>
+    public static ValueTask WriteAllLinesAsync(this IEnumerable<string> self, FileInfo file, CancellationToken cancelToken = default)
+    {
+        return file.WriteAllLinesAsync(self, cancelToken);
+    }
+
     /// <summary>シーケンスデータをCSV(Charactor Separated Field)として保存する。</summary>
     /// <typeparam name="TSource">シーケンスの要素型</typeparam>
     /// <param name="self">保存対象シーケンス</param>
