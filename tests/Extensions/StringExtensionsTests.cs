@@ -6,6 +6,24 @@ namespace LestalyTest.Extensions;
 public class StringExtensionsTests
 {
     [TestMethod()]
+    public void OmitEmpty()
+    {
+        default(string).OmitEmpty().Should().BeNull();
+        "".OmitEmpty().Should().BeNull();
+        " ".OmitEmpty().Should().Be(" ");
+        " a ".OmitEmpty().Should().Be(" a ");
+    }
+
+    [TestMethod()]
+    public void OmitWhite()
+    {
+        default(string).OmitWhite().Should().BeNull();
+        "".OmitWhite().Should().BeNull();
+        " ".OmitWhite().Should().BeNull();
+        " a ".OmitWhite().Should().Be("a");
+    }
+
+    [TestMethod()]
     public void DropEmpty()
     {
         new[] { "", "abc", null, null, "  ", "", "def", null, }

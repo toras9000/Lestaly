@@ -60,6 +60,27 @@ public static class StringExtensions
     public static string WhenWhite(this string? self, Func<string> alt)
         => string.IsNullOrWhiteSpace(self) ? alt() : self;
 
+    /// <summary>文字列が空であれば null に替える。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <returns>空でない文字列、または null</returns>
+    public static string? OmitEmpty(this string? self)
+    {
+        if (self == null) return null;
+        if (self.Length == 0) return null;
+        return self;
+    }
+
+    /// <summary>文字列の空白をトリムし、空であれば null に替える</summary>
+    /// <param name="self">対象文字列</param>
+    /// <returns>空白がトリムされた文字列、または null</returns>
+    public static string? OmitWhite(this string? self)
+    {
+        if (self == null) return null;
+        var trimmed = self.AsSpan().Trim();
+        if (trimmed.Length == 0) return null;
+        return trimmed.ToString();
+    }
+
     /// <summary>
     /// 文字列の最初の行を取得する。
     /// </summary>
