@@ -8,6 +8,23 @@ namespace Lestaly;
 /// </summary>
 public static class StringEncodeExtensions
 {
+    /// <summary>バイト列をUTF8デコードした文字列として読み取る。</summary>
+    /// <param name="self">読み取り元バッファ</param>
+    /// <returns>読み取った文字列</returns>
+    public static string ReadUtf8(this ReadOnlySpan<byte> self)
+    {
+        return Encoding.UTF8.GetString(self);
+    }
+
+    /// <summary>文字列をUTF8エンコードしてバッファに書き込む</summary>
+    /// <param name="self">書き込み先バッファ</param>
+    /// <param name="text">書き込み文字列</param>
+    /// <returns>書き込んだバイト数</returns>
+    public static int WriteUtf8(this Span<byte> self, ReadOnlySpan<char> text)
+    {
+        return Encoding.UTF8.GetBytes(text, self);
+    }
+
     /// <summary>文字列をUTF8バイト列にエンコードする。</summary>
     /// <param name="self">バイト列</param>
     /// <returns>エンコードしたバイト列</returns>

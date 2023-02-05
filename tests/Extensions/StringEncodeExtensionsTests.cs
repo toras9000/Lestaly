@@ -7,6 +7,22 @@ namespace LestalyTest.Extensions;
 public class StringEncodeExtensionsTests
 {
     [TestMethod()]
+    public void ReadUtf8()
+    {
+        var encText = Encoding.UTF8.GetBytes("abcあいう");
+        encText.AsReadOnlySpan().ReadUtf8().Should().Be("abcあいう");
+    }
+
+    [TestMethod()]
+    public void WriteUtf8()
+    {
+        var buffer = new byte[100];
+
+        var len = buffer.AsSpan().WriteUtf8("defかきく");
+        buffer.AsSpan(0, len).ToArray().Should().Equal(Encoding.UTF8.GetBytes("defかきく"));
+    }
+
+    [TestMethod()]
     public void EncodeUtf8()
     {
         var text = "abcdef";
