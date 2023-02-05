@@ -1,4 +1,6 @@
-﻿namespace Lestaly;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace Lestaly;
 
 /// <summary>
 /// 例外を抑制した実行補助クラス
@@ -33,7 +35,7 @@ public static class Try
     /// <summary>非同期処理を実行する</summary>
     /// <param name="action">何らかの処理</param>
     /// <returns>例外が発生した場合はそのオブジェクト。発生しなければ null を返却。するタスク</returns>
-    public static async Task<Exception?> ActionAsync(Func<ValueTask> action)
+    public static async Task<Exception?> ActionAsync(Func<Task> action)
     {
         if (action != null)
         {
@@ -46,7 +48,7 @@ public static class Try
     /// <summary>非同期処理を実行する</summary>
     /// <param name="action">何らかの処理</param>
     /// <param name="alternater">例外発生時の代替処理</param>
-    public static async Task ActionAsync(Func<ValueTask> action, Func<Exception, ValueTask> alternater)
+    public static async Task ActionAsync(Func<Task> action, Func<Exception, Task> alternater)
     {
         if (action != null)
         {
@@ -97,7 +99,7 @@ public static class Try
     /// <param name="action">値を得る処理</param>
     /// <param name="alternate">処理で値を得られなかった場合の代替値</param>
     /// <returns>例外なく実行されたら処理の結果値。例外発生時は代替値。</returns>
-    public static async Task<(TResult? value, Exception? error)> FuncAsync<TResult>(Func<ValueTask<TResult>> action, TResult? alternate = default)
+    public static async Task<(TResult? value, Exception? error)> FuncAsync<TResult>(Func<Task<TResult?>> action, TResult? alternate = default)
     {
         if (action != null)
         {
@@ -112,7 +114,7 @@ public static class Try
     /// <param name="action">値を得る処理</param>
     /// <param name="alternater">例外発生時の代替処理</param>
     /// <returns>例外なく実行されたら処理の結果値。例外発生時は代替値。</returns>
-    public static async Task<TResult?> FuncAsync<TResult>(Func<ValueTask<TResult>> action, Func<Exception, ValueTask<TResult?>> alternater)
+    public static async Task<TResult?> FuncAsync<TResult>(Func<Task<TResult?>> action, Func<Exception, Task<TResult?>> alternater)
     {
         if (action != null)
         {
@@ -126,6 +128,6 @@ public static class Try
     /// <typeparam name="TResult">戻り値型</typeparam>
     /// <param name="action">値を得る処理</param>
     /// <returns>例外なく実行されたら処理の結果値。例外発生時は型のデフォルト値。</returns>
-    public static Task<TResult?> FuncOrDefaultAsync<TResult>(Func<ValueTask<TResult>> action)
-        => FuncAsync(action, _ => default);
+    public static Task<TResult?> FuncOrDefaultAsync<TResult>(Func<Task<TResult?>> action)
+        => FuncAsync(action, _ => Task.FromResult<TResult?>(default));
 }

@@ -38,7 +38,7 @@ public class TryTests
     {
         var err = new InvalidDataException("aaa");
 
-        (await FluentActions.Awaiting(() => Try.ActionAsync(() => ValueTask.CompletedTask)).Should().NotThrowAsync())
+        (await FluentActions.Awaiting(() => Try.ActionAsync(() => Task.CompletedTask)).Should().NotThrowAsync())
             .Which.Should().BeNull();
 
         (await FluentActions.Awaiting(() => Try.ActionAsync(() => throw err)).Should().NotThrowAsync())
@@ -49,9 +49,9 @@ public class TryTests
     public async Task ActionAsync_Alt()
     {
         var err = new InvalidDataException("aaa");
-        var alternater = new Mock<Func<Exception, ValueTask>>();
+        var alternater = new Mock<Func<Exception, Task>>();
 
-        await FluentActions.Awaiting(() => Try.ActionAsync(() => ValueTask.CompletedTask, alternater.Object)).Should().NotThrowAsync();
+        await FluentActions.Awaiting(() => Try.ActionAsync(() => Task.CompletedTask, alternater.Object)).Should().NotThrowAsync();
         alternater.Verify(m => m(It.IsAny<Exception>()), Times.Never());
 
         await FluentActions.Awaiting(() => Try.ActionAsync(() => throw err, alternater.Object)).Should().NotThrowAsync();
@@ -125,13 +125,13 @@ public class TryTests
     {
         var err = new InvalidDataException("aaa");
 
-        (await FluentActions.Awaiting(() => Try.FuncAsync(() => ValueTask.FromResult(1))).Should().NotThrowAsync())
+        (await FluentActions.Awaiting(() => Try.FuncAsync(() => Task.FromResult(1))).Should().NotThrowAsync())
             .Which.Should().Be((1, null));
 
         (await FluentActions.Awaiting(() => Try.FuncAsync(() => throw err, 5)).Should().NotThrowAsync())
             .Which.Should().Be((5, err));
 
-        (await FluentActions.Awaiting(() => Try.FuncAsync(() => ValueTask.FromResult("a"), "b")).Should().NotThrowAsync())
+        (await FluentActions.Awaiting(() => Try.FuncAsync(() => Task.FromResult<string?>("a"), "b")).Should().NotThrowAsync())
             .Which.Should().Be(("a", null));
 
         (await FluentActions.Awaiting(() => Try.FuncAsync(() => throw err, "b")).Should().NotThrowAsync())
@@ -143,33 +143,33 @@ public class TryTests
     {
         var err = new InvalidDataException("aaa");
 
-        (await FluentActions.Awaiting(() => Try.FuncAsync(() => ValueTask.FromResult(2), ex => ValueTask.FromResult(7))).Should().NotThrowAsync())
+        (await FluentActions.Awaiting(() => Try.FuncAsync(() => Task.FromResult(2), ex => Task.FromResult(7))).Should().NotThrowAsync())
             .Which.Should().Be(2);
 
-        (await FluentActions.Awaiting(() => Try.FuncAsync(() => throw err, ex => ValueTask.FromResult(7))).Should().NotThrowAsync())
+        (await FluentActions.Awaiting(() => Try.FuncAsync(() => throw err, ex => Task.FromResult(7))).Should().NotThrowAsync())
             .Which.Should().Be(7);
 
-        (await FluentActions.Awaiting(() => Try.FuncAsync(() => throw err, ex => ValueTask.FromResult(default(int)))).Should().NotThrowAsync())
+        (await FluentActions.Awaiting(() => Try.FuncAsync(() => throw err, ex => Task.FromResult(default(int)))).Should().NotThrowAsync())
             .Which.Should().Be(0);
 
 
-        (await FluentActions.Awaiting(() => Try.FuncAsync(() => ValueTask.FromResult("a"), ex => ValueTask.FromResult("b")!)).Should().NotThrowAsync())
+        (await FluentActions.Awaiting(() => Try.FuncAsync(() => Task.FromResult("a").AsNullable(), ex => Task.FromResult<string?>("b"))).Should().NotThrowAsync())
             .Which.Should().Be("a");
 
-        (await FluentActions.Awaiting(() => Try.FuncAsync(() => throw err, ex => ValueTask.FromResult("b")!)).Should().NotThrowAsync())
+        (await FluentActions.Awaiting(() => Try.FuncAsync(() => throw err, ex => Task.FromResult<string?>("b"))).Should().NotThrowAsync())
             .Which.Should().Be("b");
 
-        (await FluentActions.Awaiting(() => Try.FuncAsync(() => throw err, ex => ValueTask.FromResult(default(string)))).Should().NotThrowAsync())
+        (await FluentActions.Awaiting(() => Try.FuncAsync(() => throw err, ex => Task.FromResult(default(string)))).Should().NotThrowAsync())
             .Which.Should().BeNull();
     }
 
     [TestMethod()]
     public async Task FuncOrDefaultAsync()
     {
-        (await FluentActions.Awaiting(() => Try.FuncOrDefaultAsync(() => ValueTask.FromResult(2))).Should().NotThrowAsync())
+        (await FluentActions.Awaiting(() => Try.FuncOrDefaultAsync(() => Task.FromResult(2))).Should().NotThrowAsync())
             .Which.Should().Be(2);
 
-        (await FluentActions.Awaiting(() => Try.FuncOrDefaultAsync(() => ValueTask.FromResult("a"))).Should().NotThrowAsync())
+        (await FluentActions.Awaiting(() => Try.FuncOrDefaultAsync(() => Task.FromResult<string?>("a"))).Should().NotThrowAsync())
             .Which.Should().Be("a");
 
         var err = new InvalidDataException("aaa");
