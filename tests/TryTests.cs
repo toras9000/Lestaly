@@ -131,7 +131,7 @@ public class TryTests
         (await FluentActions.Awaiting(() => Try.FuncAsync(() => throw err, 5)).Should().NotThrowAsync())
             .Which.Should().Be((5, err));
 
-        (await FluentActions.Awaiting(() => Try.FuncAsync(() => Task.FromResult<string?>("a"), "b")).Should().NotThrowAsync())
+        (await FluentActions.Awaiting(() => Try.FuncAsync(() => Task.FromResult("a").AsNullable(), "b")).Should().NotThrowAsync())
             .Which.Should().Be(("a", null));
 
         (await FluentActions.Awaiting(() => Try.FuncAsync(() => throw err, "b")).Should().NotThrowAsync())
@@ -153,10 +153,10 @@ public class TryTests
             .Which.Should().Be(0);
 
 
-        (await FluentActions.Awaiting(() => Try.FuncAsync(() => Task.FromResult("a").AsNullable(), ex => Task.FromResult<string?>("b"))).Should().NotThrowAsync())
+        (await FluentActions.Awaiting(() => Try.FuncAsync(() => Task.FromResult("a").AsNullable(), ex => Task.FromResult("b").AsNullable())).Should().NotThrowAsync())
             .Which.Should().Be("a");
 
-        (await FluentActions.Awaiting(() => Try.FuncAsync(() => throw err, ex => Task.FromResult<string?>("b"))).Should().NotThrowAsync())
+        (await FluentActions.Awaiting(() => Try.FuncAsync(() => throw err, ex => Task.FromResult("b").AsNullable())).Should().NotThrowAsync())
             .Which.Should().Be("b");
 
         (await FluentActions.Awaiting(() => Try.FuncAsync(() => throw err, ex => Task.FromResult(default(string)))).Should().NotThrowAsync())
@@ -169,7 +169,7 @@ public class TryTests
         (await FluentActions.Awaiting(() => Try.FuncOrDefaultAsync(() => Task.FromResult(2))).Should().NotThrowAsync())
             .Which.Should().Be(2);
 
-        (await FluentActions.Awaiting(() => Try.FuncOrDefaultAsync(() => Task.FromResult<string?>("a"))).Should().NotThrowAsync())
+        (await FluentActions.Awaiting(() => Try.FuncOrDefaultAsync(() => Task.FromResult("a").AsNullable())).Should().NotThrowAsync())
             .Which.Should().Be("a");
 
         var err = new InvalidDataException("aaa");
