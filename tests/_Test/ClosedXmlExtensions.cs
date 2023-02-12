@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using ClosedXML.Excel;
 using Lestaly.Extensions;
 
-namespace LestalyTest._Test;
+namespace LestalyTest;
 
 public static class ClosedXmlExtensions
 {

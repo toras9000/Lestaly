@@ -3,7 +3,6 @@ using System.Drawing;
 using System.Globalization;
 using ClosedXML.Excel;
 using FluentAssertions;
-using LestalyTest._Test;
 using Lestaly;
 using Lestaly.Extensions;
 

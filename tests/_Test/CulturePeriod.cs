@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace LestalyTest._Test;
+namespace LestalyTest;
 
 /// <summary>
 /// カルチャ設定区間定義
