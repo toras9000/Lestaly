@@ -66,6 +66,20 @@ public static class FileSystemInfoExtensions
         => CometFlavor.Extensions.IO.FileSystemInfoExtensions.RelativePathFrom(self, baseDir, ignoreCase);
     #endregion
 
+    #region Check
+    /// <summary>ファイルシステムオブジェクトが存在する場合に null に置き換える。</summary>
+    /// <param name="self">対象ファイル/ディレクトリ情報</param>
+    /// <returns>元のファイル/ディレクトリ情報もしくは null</returns>
+    public static TInfo? OmitExists<TInfo>(this TInfo self) where TInfo : FileSystemInfo
+        => self.Exists ? default : self;
+
+    /// <summary>ファイルシステムオブジェクトが存在しない場合に例外を送出する。</summary>
+    /// <param name="self">対象ファイル/ディレクトリ情報</param>
+    /// <returns>元のファイル/ディレクトリ情報</returns>
+    public static TInfo? OmitNotExists<TInfo>(this TInfo self) where TInfo : FileSystemInfo
+        => self.Exists ? self : default;
+    #endregion
+
     #region Throw
     /// <summary>ファイルシステムオブジェクトが存在する場合に例外を送出する。</summary>
     /// <param name="self">対象ファイル/ディレクトリ情報</param>

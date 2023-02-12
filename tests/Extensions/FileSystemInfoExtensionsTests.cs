@@ -55,6 +55,42 @@ public class FileSystemInfoExtensionsTests
     }
 
     [TestMethod()]
+    public void OmitExists()
+    {
+        using var tempDir = new TempDir();
+
+        var existFile = tempDir.Info.GetRelativeFile("asd.txt").Touch();
+        var notExistFile = tempDir.Info.GetRelativeFile("qwe.txt");
+
+        existFile.OmitExists().Should().BeNull();
+        notExistFile.OmitExists().Should().NotBeNull();
+
+        var existDir = tempDir.Info.GetRelativeDirectory("abc").WithCreate();
+        var notExistDir = tempDir.Info.GetRelativeDirectory("def");
+
+        existDir.OmitExists().Should().BeNull();
+        notExistDir.OmitExists().Should().NotBeNull();
+    }
+
+    [TestMethod()]
+    public void OmitNotExists()
+    {
+        using var tempDir = new TempDir();
+
+        var existFile = tempDir.Info.GetRelativeFile("asd.txt").Touch();
+        var notExistFile = tempDir.Info.GetRelativeFile("qwe.txt");
+
+        existFile.OmitNotExists().Should().NotBeNull();
+        notExistFile.OmitNotExists().Should().BeNull();
+
+        var existDir = tempDir.Info.GetRelativeDirectory("abc").WithCreate();
+        var notExistDir = tempDir.Info.GetRelativeDirectory("def");
+
+        existDir.OmitNotExists().Should().NotBeNull();
+        notExistDir.OmitNotExists().Should().BeNull();
+    }
+
+    [TestMethod()]
     public void ThrowIfExists()
     {
         using var tempDir = new TempDir();
