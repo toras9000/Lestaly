@@ -81,6 +81,26 @@ public static class StringExtensions
         return trimmed.ToString();
     }
 
+    /// <summary>文字列がnullや空でなければ変換する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="converter">変換処理</param>
+    /// <returns>変換された値。もしくはデフォルト値</returns>
+    public static TResult? NotEmptyTo<TResult>(this string? self, Func<string, TResult> converter)
+    {
+        if (string.IsNullOrEmpty(self)) return default;
+        return converter(self);
+    }
+
+    /// <summary>文字列がnullや空白でなければ変換する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="converter">変換処理</param>
+    /// <returns>変換された値。もしくはデフォルト値</returns>
+    public static TResult? NotWhiteTo<TResult>(this string? self, Func<string, TResult> converter)
+    {
+        if (string.IsNullOrWhiteSpace(self)) return default;
+        return converter(self);
+    }
+
     /// <summary>
     /// 文字列の最初の行を取得する。
     /// </summary>

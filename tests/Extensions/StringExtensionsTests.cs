@@ -24,6 +24,34 @@ public class StringExtensionsTests
     }
 
     [TestMethod()]
+    public void NotEmptyTo()
+    {
+        default(string).NotEmptyTo(t => $"<<{t}>>").Should().BeNull();
+        "".NotEmptyTo(t => $"<<{t}>>").Should().BeNull();
+        " ".NotEmptyTo(t => $"<<{t}>>").Should().Be("<< >>");
+        " a ".NotEmptyTo(t => $"<<{t}>>").Should().Be("<< a >>");
+
+        default(string).NotEmptyTo(t => 100).Should().Be(0);
+        "".NotEmptyTo(t => 100).Should().Be(0);
+        " ".NotEmptyTo(t => 100).Should().Be(100);
+        " a ".NotEmptyTo(t => 100).Should().Be(100);
+    }
+
+    [TestMethod()]
+    public void NotWhiteTo()
+    {
+        default(string).NotWhiteTo(t => $"<<{t}>>").Should().BeNull();
+        "".NotWhiteTo(t => $"<<{t}>>").Should().BeNull();
+        " ".NotWhiteTo(t => $"<<{t}>>").Should().BeNull();
+        " a ".NotWhiteTo(t => $"<<{t}>>").Should().Be("<< a >>");
+
+        default(string).NotWhiteTo(t => 100).Should().Be(0);
+        "".NotWhiteTo(t => 100).Should().Be(0);
+        " ".NotWhiteTo(t => 100).Should().Be(0);
+        " a ".NotWhiteTo(t => 100).Should().Be(100);
+    }
+
+    [TestMethod()]
     public void DropEmpty()
     {
         new[] { "", "abc", null, null, "  ", "", "def", null, }
