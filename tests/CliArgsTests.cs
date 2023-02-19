@@ -1,8 +1,7 @@
 ﻿using CommandLine;
 using FluentAssertions;
-using Moq;
 
-namespace Lestaly.Tests;
+namespace LestalyTest;
 
 [TestClass()]
 public class CliArgsTests

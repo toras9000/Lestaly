@@ -1,8 +1,6 @@
-﻿using System.Globalization;
-using System.Text;
-using FluentAssertions;
+﻿using FluentAssertions;
 
-namespace Lestaly.Tests;
+namespace LestalyTest;
 
 [TestClass()]
 public class CmdProcTests

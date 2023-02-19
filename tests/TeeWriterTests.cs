@@ -1,10 +1,7 @@
-﻿using System.Buffers.Text;
-using System.Reactive.Disposables;
-using System.Runtime.InteropServices.Marshalling;
-using System.Text;
+﻿using System.Text;
 using FluentAssertions;
 
-namespace Lestaly.Tests;
+namespace LestalyTest;
 
 [TestClass()]
 public class TeeWriterTests
