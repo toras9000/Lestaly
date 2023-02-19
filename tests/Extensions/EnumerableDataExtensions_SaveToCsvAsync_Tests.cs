@@ -17,7 +17,7 @@ public class EnumerableDataExtensions_SaveToCsvAsync_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.txt");
+        var target = tempDir.Info.RelativeFile("test.txt");
 
         // 保存データ
         var data = new[]
@@ -50,7 +50,7 @@ public class EnumerableDataExtensions_SaveToCsvAsync_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.txt");
+        var target = tempDir.Info.RelativeFile("test.txt");
 
         // 保存データ
         var data = new[]
@@ -81,7 +81,7 @@ public class EnumerableDataExtensions_SaveToCsvAsync_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.txt");
+        var target = tempDir.Info.RelativeFile("test.txt");
 
         // 保存データ
         var data = new[]
@@ -114,7 +114,7 @@ public class EnumerableDataExtensions_SaveToCsvAsync_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.txt");
+        var target = tempDir.Info.RelativeFile("test.txt");
 
         // 保存データ
         var data = new[]
@@ -153,7 +153,7 @@ public class EnumerableDataExtensions_SaveToCsvAsync_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.txt");
+        var target = tempDir.Info.RelativeFile("test.txt");
 
         // 保存データ
         var data = new[]
@@ -186,7 +186,7 @@ public class EnumerableDataExtensions_SaveToCsvAsync_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.txt");
+        var target = tempDir.Info.RelativeFile("test.txt");
 
         // 保存データ
         var data = new[]
@@ -221,7 +221,7 @@ public class EnumerableDataExtensions_SaveToCsvAsync_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.txt");
+        var target = tempDir.Info.RelativeFile("test.txt");
 
         // 保存データ
         var data = new[]
@@ -260,7 +260,7 @@ public class EnumerableDataExtensions_SaveToCsvAsync_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.txt");
+        var target = tempDir.Info.RelativeFile("test.txt");
 
         // 保存データ
         var data = new[]
@@ -297,7 +297,7 @@ public class EnumerableDataExtensions_SaveToCsvAsync_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.txt");
+        var target = tempDir.Info.RelativeFile("test.txt");
 
         // 保存データ
         var data = new[]
@@ -334,7 +334,7 @@ public class EnumerableDataExtensions_SaveToCsvAsync_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.txt");
+        var target = tempDir.Info.RelativeFile("test.txt");
 
         // 保存データ
         var data = new[]
@@ -380,7 +380,7 @@ public class EnumerableDataExtensions_SaveToCsvAsync_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.txt");
+        var target = tempDir.Info.RelativeFile("test.txt");
 
         // 保存データ
         var data = new[]
@@ -426,7 +426,7 @@ public class EnumerableDataExtensions_SaveToCsvAsync_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.txt");
+        var target = tempDir.Info.RelativeFile("test.txt");
 
         // 保存データ
         var data = new[]
@@ -463,7 +463,7 @@ public class EnumerableDataExtensions_SaveToCsvAsync_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.txt");
+        var target = tempDir.Info.RelativeFile("test.txt");
 
         // 保存データ
         var data = new[]
@@ -518,7 +518,7 @@ public class EnumerableDataExtensions_SaveToCsvAsync_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.txt");
+        var target = tempDir.Info.RelativeFile("test.txt");
 
         // 保存データ
         var data = new[]
@@ -556,7 +556,7 @@ public class EnumerableDataExtensions_SaveToCsvAsync_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.txt");
+        var target = tempDir.Info.RelativeFile("test.txt");
 
         // 保存データ
         var data = new[]
@@ -595,7 +595,7 @@ public class EnumerableDataExtensions_SaveToCsvAsync_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.txt");
+        var target = tempDir.Info.RelativeFile("test.txt");
 
         // 保存データ
         var data = new[]

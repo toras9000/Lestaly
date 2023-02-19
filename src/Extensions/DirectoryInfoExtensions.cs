@@ -32,22 +32,32 @@ public delegate ValueTask AsyncDoFilesWalker(CometFlavor.Extensions.IO.IFileWalk
 public static class DirectoryInfoExtensions
 {
     #region FileSystemInfo
-    /// <summary>
-    /// ディレクトリからの相対パス位置に対する FileInfo を取得する。
-    /// </summary>
+    /// <summary>ディレクトリからの相対パス位置に対する FileInfo を取得する。</summary>
     /// <param name="self">基準となるディレクトリの DirectoryInfo</param>
     /// <param name="relativePath">基準ディレクトリからのパス。もし絶対パスの場合は基準ディレクトリは無関係にこの絶対パスが利用される。</param>
-    /// <returns>対象ファイルパスの FileInf。相対パスが空や空白の場合は null を返却。o</returns>
-    public static FileInfo? RelativeFile(this DirectoryInfo self, string relativePath)
+    /// <returns>対象ファイルパスの FileInfo。相対パスが空や空白の場合は null を返却。</returns>
+    public static FileInfo? RelativeFileAt(this DirectoryInfo self, string relativePath)
+        => CometFlavor.Extensions.IO.DirectoryInfoExtensions.RelativeFileAt(self, relativePath);
+
+    /// <summary>ディレクトリからの相対パス位置に対する FileInfo を取得する。</summary>
+    /// <param name="self">基準となるディレクトリの DirectoryInfo</param>
+    /// <param name="relativePath">基準ディレクトリからのパス。もし絶対パスの場合は基準ディレクトリは無関係にこの絶対パスが利用される。</param>
+    /// <returns>対象ファイルパスの FileInfo。</returns>
+    public static FileInfo RelativeFile(this DirectoryInfo self, string relativePath)
         => CometFlavor.Extensions.IO.DirectoryInfoExtensions.RelativeFile(self, relativePath);
 
-    /// <summary>
-    /// ディレクトリからの相対パス位置に対する DirectoryInfo を取得する。
-    /// </summary>
+    /// <summary>ディレクトリからの相対パス位置に対する DirectoryInfo を取得する。</summary>
     /// <param name="self">基準となるディレクトリのDirectoryInfo</param>
     /// <param name="relativePath">基準ディレクトリからのパス。もし絶対パスの場合は基準ディレクトリは無関係にこの絶対パスが利用される。</param>
     /// <returns>対象ディレクトリパスの DirectoryInfo。相対パスが空や空白の場合は null を返却。</returns>
-    public static DirectoryInfo? RelativeDirectory(this DirectoryInfo self, string relativePath)
+    public static DirectoryInfo? RelativeDirectoryAt(this DirectoryInfo self, string? relativePath)
+        => CometFlavor.Extensions.IO.DirectoryInfoExtensions.RelativeDirectoryAt(self, relativePath);
+
+    /// <summary>ディレクトリからの相対パス位置に対する DirectoryInfo を取得する。</summary>
+    /// <param name="self">基準となるディレクトリのDirectoryInfo</param>
+    /// <param name="relativePath">基準ディレクトリからのパス。もし絶対パスの場合は基準ディレクトリは無関係にこの絶対パスが利用される。</param>
+    /// <returns>対象ディレクトリパスの DirectoryInfo。相対パスが空や空白の場合は基準ディレクトリを返却。</returns>
+    public static DirectoryInfo RelativeDirectory(this DirectoryInfo self, string? relativePath)
         => CometFlavor.Extensions.IO.DirectoryInfoExtensions.RelativeDirectory(self, relativePath);
     #endregion
 

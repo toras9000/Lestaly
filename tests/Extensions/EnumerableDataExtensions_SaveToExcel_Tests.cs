@@ -28,7 +28,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.xlsx");
+        var target = tempDir.Info.RelativeFile("test.xlsx");
 
         // 保存データ
         var data = new[]
@@ -61,7 +61,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.xlsx");
+        var target = tempDir.Info.RelativeFile("test.xlsx");
 
         // 保存データ
         var data = new[]
@@ -94,7 +94,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.xlsx");
+        var target = tempDir.Info.RelativeFile("test.xlsx");
 
         // 保存データ
         var data = new[]
@@ -128,7 +128,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.xlsx");
+        var target = tempDir.Info.RelativeFile("test.xlsx");
 
         // 保存データ
         var data = Enumerable.Empty<ExcelHyperlink?>()
@@ -163,7 +163,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.xlsx");
+        var target = tempDir.Info.RelativeFile("test.xlsx");
 
         // 保存データ
         var data = new[]
@@ -193,7 +193,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.xlsx");
+        var target = tempDir.Info.RelativeFile("test.xlsx");
 
         // フィールドデータ
         var style1 = new ExcelStyle("aaa", BackColor: "red", ForeColor: "#00ff00");
@@ -252,7 +252,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.xlsx");
+        var target = tempDir.Info.RelativeFile("test.xlsx");
 
         // フィールドデータ
         var style1 = new ExcelStyle(new ExcelFormula("1+2"), DynamicValue: false);
@@ -292,7 +292,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.xlsx");
+        var target = tempDir.Info.RelativeFile("test.xlsx");
 
         // 保存データ
         var data = new[]
@@ -376,7 +376,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.xlsx");
+        var target = tempDir.Info.RelativeFile("test.xlsx");
 
         // 保存データ
         var data = new[]
@@ -431,7 +431,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.xlsx");
+        var target = tempDir.Info.RelativeFile("test.xlsx");
 
         // 保存データ
         var data = new[]
@@ -470,7 +470,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.xlsx");
+        var target = tempDir.Info.RelativeFile("test.xlsx");
 
         // 保存データ
         var data = Enumerable.Repeat(new { Value = 1, }, 0);
@@ -497,7 +497,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.xlsx");
+        var target = tempDir.Info.RelativeFile("test.xlsx");
 
         // 保存データ
         var data = new[]
@@ -537,7 +537,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.xlsx");
+        var target = tempDir.Info.RelativeFile("test.xlsx");
 
         // 保存データ
         var data = new[]
@@ -571,7 +571,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.xlsx");
+        var target = tempDir.Info.RelativeFile("test.xlsx");
 
         // 保存データ
         var data = new[]
@@ -605,7 +605,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.xlsx");
+        var target = tempDir.Info.RelativeFile("test.xlsx");
 
         // 保存データ
         var data = new[]
@@ -642,7 +642,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.xlsx");
+        var target = tempDir.Info.RelativeFile("test.xlsx");
 
         // 保存データ
         var data = new[]
@@ -681,7 +681,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.xlsx");
+        var target = tempDir.Info.RelativeFile("test.xlsx");
 
         // 保存データ
         var data = new[]
@@ -728,7 +728,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.xlsx");
+        var target = tempDir.Info.RelativeFile("test.xlsx");
 
         // 保存データ
         var data = new[]
@@ -766,7 +766,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.xlsx");
+        var target = tempDir.Info.RelativeFile("test.xlsx");
 
         // 保存データ
         var data = new[]
@@ -813,7 +813,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.xlsx");
+        var target = tempDir.Info.RelativeFile("test.xlsx");
 
         // 保存データ
         var data = new[]
@@ -861,7 +861,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.xlsx");
+        var target = tempDir.Info.RelativeFile("test.xlsx");
 
         // 保存データ
         var data = new[]
@@ -900,7 +900,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.xlsx");
+        var target = tempDir.Info.RelativeFile("test.xlsx");
 
         // 保存データ
         var data = new[]
@@ -957,7 +957,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.xlsx");
+        var target = tempDir.Info.RelativeFile("test.xlsx");
 
         // 保存データ
         var data = new[]
@@ -997,7 +997,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.xlsx");
+        var target = tempDir.Info.RelativeFile("test.xlsx");
 
         // 保存データ
         var data = new[]

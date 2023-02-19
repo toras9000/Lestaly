@@ -17,7 +17,7 @@ public class EnumerableDataExtensions_WriteAllLinesAsync_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.txt");
+        var target = tempDir.Info.RelativeFile("test.txt");
 
         // 保存データ
         await Enumerable.Range(10, 20)
@@ -37,7 +37,7 @@ public class EnumerableDataExtensions_WriteAllLinesAsync_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = tempDir.Info.GetRelativeFile("test.txt");
+        var target = tempDir.Info.RelativeFile("test.txt");
 
         // キャンセルソース
         var canceller = new CancellationTokenSource();

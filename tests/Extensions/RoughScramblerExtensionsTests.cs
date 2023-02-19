@@ -70,7 +70,7 @@ public class RoughScramblerExtensionsTests
     public void ScrambleTextToFile_Descramble()
     {
         var tempDir = new TempDir();
-        var testFile = tempDir.Info.GetRelativeFile("scramble.bin");
+        var testFile = tempDir.Info.RelativeFile("scramble.bin");
 
         var org = "abc";
         var scrambler = new RoughScrambler();
@@ -84,8 +84,8 @@ public class RoughScramblerExtensionsTests
     public void ScrambleTextToFile_Error()
     {
         var tempDir = new TempDir();
-        tempDir.Info.GetRelativeDirectory("scramble.bin").Create();
-        var testFile = tempDir.Info.GetRelativeFile("scramble.bin");
+        tempDir.Info.RelativeDirectory("scramble.bin").Create();
+        var testFile = tempDir.Info.RelativeFile("scramble.bin");
 
         var org = "abc";
         var scrambler = new RoughScrambler();
@@ -96,8 +96,8 @@ public class RoughScramblerExtensionsTests
     public void ScrambleTextToFile_IgnoreError()
     {
         var tempDir = new TempDir();
-        tempDir.Info.GetRelativeDirectory("scramble.bin").Create();
-        var testFile = tempDir.Info.GetRelativeFile("scramble.bin");
+        tempDir.Info.RelativeDirectory("scramble.bin").Create();
+        var testFile = tempDir.Info.RelativeFile("scramble.bin");
 
         var org = "abc";
         var scrambler = new RoughScrambler();
@@ -108,7 +108,7 @@ public class RoughScramblerExtensionsTests
     public void DescrambleTextFromFile_NoFile()
     {
         var tempDir = new TempDir();
-        var testFile = tempDir.Info.GetRelativeFile("nothing.bin");
+        var testFile = tempDir.Info.RelativeFile("nothing.bin");
 
         var scrambler = new RoughScrambler();
         scrambler.DescrambleTextFromFile(testFile).Should().BeNull();
@@ -118,7 +118,7 @@ public class RoughScramblerExtensionsTests
     public void DescrambleTextFromFile_NoScrambled()
     {
         var tempDir = new TempDir();
-        var testFile = tempDir.Info.GetRelativeFile("test.bin");
+        var testFile = tempDir.Info.RelativeFile("test.bin");
         testFile.WriteAllText("a");
 
         var scrambler = new RoughScrambler();
@@ -129,7 +129,7 @@ public class RoughScramblerExtensionsTests
     public async Task ScrambleTextToFileAsync_Descramble()
     {
         var tempDir = new TempDir();
-        var testFile = tempDir.Info.GetRelativeFile("scramble.bin");
+        var testFile = tempDir.Info.RelativeFile("scramble.bin");
 
         var org = "abc";
         var scrambler = new RoughScrambler();
@@ -143,8 +143,8 @@ public class RoughScramblerExtensionsTests
     public async Task ScrambleTextToFileAsync_Error()
     {
         var tempDir = new TempDir();
-        tempDir.Info.GetRelativeDirectory("scramble.bin").Create();
-        var testFile = tempDir.Info.GetRelativeFile("scramble.bin");
+        tempDir.Info.RelativeDirectory("scramble.bin").Create();
+        var testFile = tempDir.Info.RelativeFile("scramble.bin");
 
         var org = "abc";
         var scrambler = new RoughScrambler();
@@ -155,8 +155,8 @@ public class RoughScramblerExtensionsTests
     public async Task ScrambleTextToFileAsync_IgnoreError()
     {
         var tempDir = new TempDir();
-        tempDir.Info.GetRelativeDirectory("scramble.bin").Create();
-        var testFile = tempDir.Info.GetRelativeFile("scramble.bin");
+        tempDir.Info.RelativeDirectory("scramble.bin").Create();
+        var testFile = tempDir.Info.RelativeFile("scramble.bin");
 
         var org = "abc";
         var scrambler = new RoughScrambler();
@@ -167,7 +167,7 @@ public class RoughScramblerExtensionsTests
     public async Task DescrambleTextFromFileAsync_NoFile()
     {
         var tempDir = new TempDir();
-        var testFile = tempDir.Info.GetRelativeFile("nothing.bin");
+        var testFile = tempDir.Info.RelativeFile("nothing.bin");
 
         var scrambler = new RoughScrambler();
         (await scrambler.DescrambleTextFromFileAsync(testFile)).Should().BeNull();
@@ -177,7 +177,7 @@ public class RoughScramblerExtensionsTests
     public async Task DescrambleTextFromFileAsync_NoScrambled()
     {
         var tempDir = new TempDir();
-        var testFile = tempDir.Info.GetRelativeFile("test.bin");
+        var testFile = tempDir.Info.RelativeFile("test.bin");
         testFile.WriteAllText("a");
 
         var scrambler = new RoughScrambler();
@@ -189,7 +189,7 @@ public class RoughScramblerExtensionsTests
     public void ScrambleObjectToFile_Descramble()
     {
         var tempDir = new TempDir();
-        var testFile = tempDir.Info.GetRelativeFile("scramble.bin");
+        var testFile = tempDir.Info.RelativeFile("scramble.bin");
 
         var org = new TestItem("abc", 123, DateTime.Now);
         var scrambler = new RoughScrambler();
@@ -203,8 +203,8 @@ public class RoughScramblerExtensionsTests
     public void ScrambleObjectToFile_Error()
     {
         var tempDir = new TempDir();
-        tempDir.Info.GetRelativeDirectory("scramble.bin").Create();
-        var testFile = tempDir.Info.GetRelativeFile("scramble.bin");
+        tempDir.Info.RelativeDirectory("scramble.bin").Create();
+        var testFile = tempDir.Info.RelativeFile("scramble.bin");
 
         var org = new TestItem("abc", 123, DateTime.Now);
         var scrambler = new RoughScrambler();
@@ -215,8 +215,8 @@ public class RoughScramblerExtensionsTests
     public void ScrambleObjectToFile_IgnoreError()
     {
         var tempDir = new TempDir();
-        tempDir.Info.GetRelativeDirectory("scramble.bin").Create();
-        var testFile = tempDir.Info.GetRelativeFile("scramble.bin");
+        tempDir.Info.RelativeDirectory("scramble.bin").Create();
+        var testFile = tempDir.Info.RelativeFile("scramble.bin");
 
         var org = new TestItem("abc", 123, DateTime.Now);
         var scrambler = new RoughScrambler();
@@ -227,7 +227,7 @@ public class RoughScramblerExtensionsTests
     public void ScrambleObjectToFile_NoFile()
     {
         var tempDir = new TempDir();
-        var testFile = tempDir.Info.GetRelativeFile("scramble.bin");
+        var testFile = tempDir.Info.RelativeFile("scramble.bin");
 
         var scrambler = new RoughScrambler();
         scrambler.DescrambleObjectFromFile<TestItem>(testFile).Should().BeNull();
@@ -237,7 +237,7 @@ public class RoughScramblerExtensionsTests
     public void ScrambleObjectToFile_NoScrambled()
     {
         var tempDir = new TempDir();
-        var testFile = tempDir.Info.GetRelativeFile("test.bin");
+        var testFile = tempDir.Info.RelativeFile("test.bin");
         testFile.WriteAllText("a");
 
         var scrambler = new RoughScrambler();
@@ -248,7 +248,7 @@ public class RoughScramblerExtensionsTests
     public async Task ScrambleObjectToFileAsync_Descramble()
     {
         var tempDir = new TempDir();
-        var testFile = tempDir.Info.GetRelativeFile("scramble.bin");
+        var testFile = tempDir.Info.RelativeFile("scramble.bin");
 
         var org = new TestItem("abc", 123, DateTime.Now);
         var scrambler = new RoughScrambler();
@@ -262,8 +262,8 @@ public class RoughScramblerExtensionsTests
     public async Task ScrambleObjectToFileAsync_Error()
     {
         var tempDir = new TempDir();
-        tempDir.Info.GetRelativeDirectory("scramble.bin").Create();
-        var testFile = tempDir.Info.GetRelativeFile("scramble.bin");
+        tempDir.Info.RelativeDirectory("scramble.bin").Create();
+        var testFile = tempDir.Info.RelativeFile("scramble.bin");
 
         var org = new TestItem("abc", 123, DateTime.Now);
         var scrambler = new RoughScrambler();
@@ -274,8 +274,8 @@ public class RoughScramblerExtensionsTests
     public async Task ScrambleObjectToFileAsync_IgnoreError()
     {
         var tempDir = new TempDir();
-        tempDir.Info.GetRelativeDirectory("scramble.bin").Create();
-        var testFile = tempDir.Info.GetRelativeFile("scramble.bin");
+        tempDir.Info.RelativeDirectory("scramble.bin").Create();
+        var testFile = tempDir.Info.RelativeFile("scramble.bin");
 
         var org = new TestItem("abc", 123, DateTime.Now);
         var scrambler = new RoughScrambler();
@@ -286,7 +286,7 @@ public class RoughScramblerExtensionsTests
     public async Task DescrambleObjectFromFileAsync_NoFile()
     {
         var tempDir = new TempDir();
-        var testFile = tempDir.Info.GetRelativeFile("nothing.bin");
+        var testFile = tempDir.Info.RelativeFile("nothing.bin");
 
         var scrambler = new RoughScrambler();
         (await scrambler.DescrambleObjectFromFileAsync<TestItem>(testFile)).Should().BeNull();
@@ -296,7 +296,7 @@ public class RoughScramblerExtensionsTests
     public async Task DescrambleObjectFromFileAsync_NoScrambled()
     {
         var tempDir = new TempDir();
-        var testFile = tempDir.Info.GetRelativeFile("test.bin");
+        var testFile = tempDir.Info.RelativeFile("test.bin");
         testFile.WriteAllText("a");
 
         var scrambler = new RoughScrambler();

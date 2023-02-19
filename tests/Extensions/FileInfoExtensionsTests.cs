@@ -11,7 +11,7 @@ public class FileExtensionsTests
     {
         using var tempDir = new TempDir();
 
-        var file = tempDir.Info.GetRelativeFile("asd.txt");
+        var file = tempDir.Info.RelativeFile("asd.txt");
         file.Exists.Should().Be(false);
         file.Touch();
         file.Exists.Should().Be(true);

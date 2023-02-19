@@ -11,7 +11,7 @@ public class FileSystemInfoExtensionsTests
     {
         using var tempDir = new TempDir();
 
-        var file = tempDir.Info.GetRelativeFile("asd.txt").Touch();
+        var file = tempDir.Info.RelativeFile("asd.txt").Touch();
         file.GetReadOnly().Should().Be(false);
         file.Attributes |= FileAttributes.ReadOnly;
         file.GetReadOnly().Should().Be(true);
@@ -22,7 +22,7 @@ public class FileSystemInfoExtensionsTests
     {
         using var tempDir = new TempDir();
 
-        var dir = tempDir.Info.GetRelativeDirectory("def").WithCreate();
+        var dir = tempDir.Info.RelativeDirectory("def").WithCreate();
         dir.GetReadOnly().Should().Be(false);
         dir.Attributes |= FileAttributes.ReadOnly;
         dir.GetReadOnly().Should().Be(true);
@@ -33,7 +33,7 @@ public class FileSystemInfoExtensionsTests
     {
         using var tempDir = new TempDir();
 
-        var file = tempDir.Info.GetRelativeFile("asd.txt").Touch();
+        var file = tempDir.Info.RelativeFile("asd.txt").Touch();
         file.GetReadOnly().Should().Be(false);
         file.SetReadOnly(true);
         file.GetReadOnly().Should().Be(true);
@@ -46,7 +46,7 @@ public class FileSystemInfoExtensionsTests
     {
         using var tempDir = new TempDir();
 
-        var dir = tempDir.Info.GetRelativeDirectory("def").WithCreate();
+        var dir = tempDir.Info.RelativeDirectory("def").WithCreate();
         dir.GetReadOnly().Should().Be(false);
         dir.SetReadOnly(true);
         dir.GetReadOnly().Should().Be(true);
@@ -59,14 +59,14 @@ public class FileSystemInfoExtensionsTests
     {
         using var tempDir = new TempDir();
 
-        var existFile = tempDir.Info.GetRelativeFile("asd.txt").Touch();
-        var notExistFile = tempDir.Info.GetRelativeFile("qwe.txt");
+        var existFile = tempDir.Info.RelativeFile("asd.txt").Touch();
+        var notExistFile = tempDir.Info.RelativeFile("qwe.txt");
 
         existFile.OmitExists().Should().BeNull();
         notExistFile.OmitExists().Should().NotBeNull();
 
-        var existDir = tempDir.Info.GetRelativeDirectory("abc").WithCreate();
-        var notExistDir = tempDir.Info.GetRelativeDirectory("def");
+        var existDir = tempDir.Info.RelativeDirectory("abc").WithCreate();
+        var notExistDir = tempDir.Info.RelativeDirectory("def");
 
         existDir.OmitExists().Should().BeNull();
         notExistDir.OmitExists().Should().NotBeNull();
@@ -77,14 +77,14 @@ public class FileSystemInfoExtensionsTests
     {
         using var tempDir = new TempDir();
 
-        var existFile = tempDir.Info.GetRelativeFile("asd.txt").Touch();
-        var notExistFile = tempDir.Info.GetRelativeFile("qwe.txt");
+        var existFile = tempDir.Info.RelativeFile("asd.txt").Touch();
+        var notExistFile = tempDir.Info.RelativeFile("qwe.txt");
 
         existFile.OmitNotExists().Should().NotBeNull();
         notExistFile.OmitNotExists().Should().BeNull();
 
-        var existDir = tempDir.Info.GetRelativeDirectory("abc").WithCreate();
-        var notExistDir = tempDir.Info.GetRelativeDirectory("def");
+        var existDir = tempDir.Info.RelativeDirectory("abc").WithCreate();
+        var notExistDir = tempDir.Info.RelativeDirectory("def");
 
         existDir.OmitNotExists().Should().NotBeNull();
         notExistDir.OmitNotExists().Should().BeNull();
@@ -95,16 +95,16 @@ public class FileSystemInfoExtensionsTests
     {
         using var tempDir = new TempDir();
 
-        var existFile = tempDir.Info.GetRelativeFile("asd.txt").Touch();
-        var notExistFile = tempDir.Info.GetRelativeFile("qwe.txt");
+        var existFile = tempDir.Info.RelativeFile("asd.txt").Touch();
+        var notExistFile = tempDir.Info.RelativeFile("qwe.txt");
 
         new Action(() => existFile.ThrowIfExists()).Should().Throw<Exception>();
         new Action(() => existFile.ThrowIfExists(i => new ApplicationException())).Should().Throw<ApplicationException>();
         new Action(() => notExistFile.ThrowIfExists()).Should().NotThrow();
         new Action(() => notExistFile.ThrowIfExists(i => new ApplicationException())).Should().NotThrow();
 
-        var existDir = tempDir.Info.GetRelativeDirectory("abc").WithCreate();
-        var notExistDir = tempDir.Info.GetRelativeDirectory("def");
+        var existDir = tempDir.Info.RelativeDirectory("abc").WithCreate();
+        var notExistDir = tempDir.Info.RelativeDirectory("def");
 
         new Action(() => existDir.ThrowIfExists()).Should().Throw<Exception>();
         new Action(() => existDir.ThrowIfExists(i => new ApplicationException())).Should().Throw<ApplicationException>();
@@ -117,16 +117,16 @@ public class FileSystemInfoExtensionsTests
     {
         using var tempDir = new TempDir();
 
-        var existFile = tempDir.Info.GetRelativeFile("asd.txt").Touch();
-        var notExistFile = tempDir.Info.GetRelativeFile("qwe.txt");
+        var existFile = tempDir.Info.RelativeFile("asd.txt").Touch();
+        var notExistFile = tempDir.Info.RelativeFile("qwe.txt");
 
         new Action(() => notExistFile.ThrowIfNotExists()).Should().Throw<Exception>();
         new Action(() => notExistFile.ThrowIfNotExists(i => new ApplicationException())).Should().Throw<ApplicationException>();
         new Action(() => existFile.ThrowIfNotExists()).Should().NotThrow();
         new Action(() => existFile.ThrowIfNotExists(i => new ApplicationException())).Should().NotThrow();
 
-        var existDir = tempDir.Info.GetRelativeDirectory("abc").WithCreate();
-        var notExistDir = tempDir.Info.GetRelativeDirectory("def");
+        var existDir = tempDir.Info.RelativeDirectory("abc").WithCreate();
+        var notExistDir = tempDir.Info.RelativeDirectory("def");
 
         new Action(() => notExistFile.ThrowIfNotExists()).Should().Throw<Exception>();
         new Action(() => notExistFile.ThrowIfNotExists(i => new ApplicationException())).Should().Throw<ApplicationException>();
@@ -139,14 +139,14 @@ public class FileSystemInfoExtensionsTests
     {
         using var tempDir = new TempDir();
 
-        var existFile = tempDir.Info.GetRelativeFile("asd.txt").Touch();
-        var notExistFile = tempDir.Info.GetRelativeFile("qwe.txt");
+        var existFile = tempDir.Info.RelativeFile("asd.txt").Touch();
+        var notExistFile = tempDir.Info.RelativeFile("qwe.txt");
 
         new Action(() => existFile.CanceIfExists(i => "CF")).Should().Throw<OperationCanceledException>().WithMessage("CF");
         new Action(() => notExistFile.CanceIfExists()).Should().NotThrow();
 
-        var existDir = tempDir.Info.GetRelativeDirectory("abc").WithCreate();
-        var notExistDir = tempDir.Info.GetRelativeDirectory("def");
+        var existDir = tempDir.Info.RelativeDirectory("abc").WithCreate();
+        var notExistDir = tempDir.Info.RelativeDirectory("def");
 
         new Action(() => existDir.CanceIfExists(i => "CD")).Should().Throw<OperationCanceledException>().WithMessage("CD");
         new Action(() => notExistDir.CanceIfExists()).Should().NotThrow();
@@ -157,14 +157,14 @@ public class FileSystemInfoExtensionsTests
     {
         using var tempDir = new TempDir();
 
-        var existFile = tempDir.Info.GetRelativeFile("asd.txt").Touch();
-        var notExistFile = tempDir.Info.GetRelativeFile("qwe.txt");
+        var existFile = tempDir.Info.RelativeFile("asd.txt").Touch();
+        var notExistFile = tempDir.Info.RelativeFile("qwe.txt");
 
         new Action(() => notExistFile.CanceIfNotExists(i => "CF")).Should().Throw<OperationCanceledException>().WithMessage("CF");
         new Action(() => existFile.CanceIfNotExists()).Should().NotThrow();
 
-        var existDir = tempDir.Info.GetRelativeDirectory("abc").WithCreate();
-        var notExistDir = tempDir.Info.GetRelativeDirectory("def");
+        var existDir = tempDir.Info.RelativeDirectory("abc").WithCreate();
+        var notExistDir = tempDir.Info.RelativeDirectory("def");
 
         new Action(() => notExistDir.CanceIfNotExists(i => "CD")).Should().Throw<OperationCanceledException>().WithMessage("CD");
         new Action(() => existDir.CanceIfNotExists()).Should().NotThrow();

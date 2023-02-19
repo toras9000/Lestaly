@@ -34,6 +34,36 @@ public static class FileInfoExtensions
         => CometFlavor.Extensions.IO.FileInfoExtensions.GetAnotherExtension(self, extension);
     #endregion
 
+    #region FileSystemInfo
+    /// <summary>ディレクトリからの相対パス位置に対する FileInfo を取得する。</summary>
+    /// <param name="self">基準となるディレクトリの DirectoryInfo</param>
+    /// <param name="relativePath">基準ディレクトリからのパス。もし絶対パスの場合は基準ディレクトリは無関係にこの絶対パスが利用される。</param>
+    /// <returns>対象ファイルパスの FileInfo。相対パスが空や空白の場合は null を返却。</returns>
+    public static FileInfo? RelativeFileAt(this FileInfo self, string relativePath)
+        => self.Directory!.RelativeFileAt(relativePath);
+
+    /// <summary>ディレクトリからの相対パス位置に対する FileInfo を取得する。</summary>
+    /// <param name="self">基準となるディレクトリの DirectoryInfo</param>
+    /// <param name="relativePath">基準ディレクトリからのパス。もし絶対パスの場合は基準ディレクトリは無関係にこの絶対パスが利用される。</param>
+    /// <returns>対象ファイルパスの FileInfo。相対パスが空や空白の場合は例外を送出。</returns>
+    public static FileInfo RelativeFile(this FileInfo self, string relativePath)
+        => self.Directory!.RelativeFile(relativePath);
+
+    /// <summary>ディレクトリからの相対パス位置に対する DirectoryInfo を取得する。</summary>
+    /// <param name="self">基準となるディレクトリのDirectoryInfo</param>
+    /// <param name="relativePath">基準ディレクトリからのパス。もし絶対パスの場合は基準ディレクトリは無関係にこの絶対パスが利用される。</param>
+    /// <returns>対象ディレクトリパスの DirectoryInfo。相対パスが空や空白の場合は null を返却。</returns>
+    public static DirectoryInfo? RelativeDirectoryAt(this FileInfo self, string? relativePath)
+        => self.Directory!.RelativeDirectoryAt(relativePath);
+
+    /// <summary>ディレクトリからの相対パス位置に対する DirectoryInfo を取得する。</summary>
+    /// <param name="self">基準となるディレクトリのDirectoryInfo</param>
+    /// <param name="relativePath">基準ディレクトリからのパス。もし絶対パスの場合は基準ディレクトリは無関係にこの絶対パスが利用される。</param>
+    /// <returns>対象ディレクトリパスの DirectoryInfo。相対パスが空や空白の場合は基準ディレクトリを返却。</returns>
+    public static DirectoryInfo RelativeDirectory(this FileInfo self, string? relativePath)
+        => self.Directory!.RelativeDirectory(relativePath);
+    #endregion
+
     #region Read
     /// <summary>
     /// ファイル内容の全バイト列を読み出す。

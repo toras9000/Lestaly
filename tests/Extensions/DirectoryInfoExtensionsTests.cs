@@ -27,7 +27,7 @@ public class DirectoryInfoExtensionsTests
         using var tempDir = new TempDir();
         foreach (var path in data)
         {
-            tempDir.Info.GetRelativeFile(path).WithDirectoryCreate().WriteAllText(path);
+            tempDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllText(path);
         }
 
         var actual = tempDir.Info.SelectFiles(c => c.Item.RelativePathFrom(tempDir.Info, ignoreCase: true))
@@ -58,7 +58,7 @@ public class DirectoryInfoExtensionsTests
         using var tempDir = new TempDir();
         foreach (var path in data)
         {
-            tempDir.Info.GetRelativeFile(path).WithDirectoryCreate().WriteAllText(path);
+            tempDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllText(path);
         }
 
         {// exclude file
@@ -127,7 +127,7 @@ public class DirectoryInfoExtensionsTests
         using var tempDir = new TempDir();
         foreach (var path in data)
         {
-            tempDir.Info.GetRelativeFile(path).WithDirectoryCreate().WriteAllText(path);
+            tempDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllText(path);
         }
 
         {// filter file
