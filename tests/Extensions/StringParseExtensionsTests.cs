@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Numerics;
 using FluentAssertions;
 
 namespace LestalyTest.Extensions;
@@ -432,6 +433,108 @@ public class StringParseExtensionsTests
     }
     #endregion
 
+    #region ParseNumber(.NET7)
+    [TestMethod()]
+    public void ParseNumber()
+    {
+        // string
+        $"{Byte.MinValue}".ParseNumber<Byte>().Should().Be(Byte.MinValue);
+        $"{UInt16.MinValue}".ParseNumber<UInt16>().Should().Be(UInt16.MinValue);
+        $"{UInt32.MinValue}".ParseNumber<UInt32>().Should().Be(UInt32.MinValue);
+        $"{UInt64.MinValue}".ParseNumber<UInt64>().Should().Be(UInt64.MinValue);
+        $"{UInt128.MinValue}".ParseNumber<UInt128>().Should().Be(UInt128.MinValue);
+        $"{SByte.MinValue}".ParseNumber<SByte>().Should().Be(SByte.MinValue);
+        $"{Int16.MinValue}".ParseNumber<Int16>().Should().Be(Int16.MinValue);
+        $"{Int32.MinValue}".ParseNumber<Int32>().Should().Be(Int32.MinValue);
+        $"{Int64.MinValue}".ParseNumber<Int64>().Should().Be(Int64.MinValue);
+        $"{Int128.MinValue}".ParseNumber<Int128>().Should().Be(Int128.MinValue);
+        $"{Byte.MaxValue}".ParseNumber<Byte>().Should().Be(Byte.MaxValue);
+        $"{UInt16.MaxValue}".ParseNumber<UInt16>().Should().Be(UInt16.MaxValue);
+        $"{UInt32.MaxValue}".ParseNumber<UInt32>().Should().Be(UInt32.MaxValue);
+        $"{UInt64.MaxValue}".ParseNumber<UInt64>().Should().Be(UInt64.MaxValue);
+        $"{UInt128.MaxValue}".ParseNumber<UInt128>().Should().Be(UInt128.MaxValue);
+        $"{SByte.MaxValue}".ParseNumber<SByte>().Should().Be(SByte.MaxValue);
+        $"{Int16.MaxValue}".ParseNumber<Int16>().Should().Be(Int16.MaxValue);
+        $"{Int32.MaxValue}".ParseNumber<Int32>().Should().Be(Int32.MaxValue);
+        $"{Int64.MaxValue}".ParseNumber<Int64>().Should().Be(Int64.MaxValue);
+        $"{Int128.MaxValue}".ParseNumber<Int128>().Should().Be(Int128.MaxValue);
+        new Action(() => "-129".ParseNumber<SByte>()).Should().Throw<Exception>();
+        new Action(() => "-32769".ParseNumber<Int16>()).Should().Throw<Exception>();
+        new Action(() => "-2147483649".ParseNumber<Int32>()).Should().Throw<Exception>();
+        new Action(() => "-9223372036854775809".ParseNumber<Int64>()).Should().Throw<Exception>();
+        new Action(() => "-170141183460469231731687303715884105729".ParseNumber<UInt128>()).Should().Throw<Exception>();
+        new Action(() => "256".ParseNumber<Byte>()).Should().Throw<Exception>();
+        new Action(() => "65536".ParseNumber<UInt16>()).Should().Throw<Exception>();
+        new Action(() => "4294967296".ParseNumber<UInt32>()).Should().Throw<Exception>();
+        new Action(() => "18446744073709552000".ParseNumber<UInt64>()).Should().Throw<Exception>();
+        new Action(() => "340282366920938463463374607431768211456".ParseNumber<UInt128>()).Should().Throw<Exception>();
+
+        // ReadOnlySpan
+        $"{Byte.MinValue}".AsSpan().ParseNumber<Byte>().Should().Be(Byte.MinValue);
+        $"{UInt16.MinValue}".AsSpan().ParseNumber<UInt16>().Should().Be(UInt16.MinValue);
+        $"{UInt32.MinValue}".AsSpan().ParseNumber<UInt32>().Should().Be(UInt32.MinValue);
+        $"{UInt64.MinValue}".AsSpan().ParseNumber<UInt64>().Should().Be(UInt64.MinValue);
+        $"{UInt128.MinValue}".AsSpan().ParseNumber<UInt128>().Should().Be(UInt128.MinValue);
+        $"{SByte.MinValue}".AsSpan().ParseNumber<SByte>().Should().Be(SByte.MinValue);
+        $"{Int16.MinValue}".AsSpan().ParseNumber<Int16>().Should().Be(Int16.MinValue);
+        $"{Int32.MinValue}".AsSpan().ParseNumber<Int32>().Should().Be(Int32.MinValue);
+        $"{Int64.MinValue}".AsSpan().ParseNumber<Int64>().Should().Be(Int64.MinValue);
+        $"{Int128.MinValue}".AsSpan().ParseNumber<Int128>().Should().Be(Int128.MinValue);
+        $"{Byte.MaxValue}".AsSpan().ParseNumber<Byte>().Should().Be(Byte.MaxValue);
+        $"{UInt16.MaxValue}".AsSpan().ParseNumber<UInt16>().Should().Be(UInt16.MaxValue);
+        $"{UInt32.MaxValue}".AsSpan().ParseNumber<UInt32>().Should().Be(UInt32.MaxValue);
+        $"{UInt64.MaxValue}".AsSpan().ParseNumber<UInt64>().Should().Be(UInt64.MaxValue);
+        $"{UInt128.MaxValue}".AsSpan().ParseNumber<UInt128>().Should().Be(UInt128.MaxValue);
+        $"{SByte.MaxValue}".AsSpan().ParseNumber<SByte>().Should().Be(SByte.MaxValue);
+        $"{Int16.MaxValue}".AsSpan().ParseNumber<Int16>().Should().Be(Int16.MaxValue);
+        $"{Int32.MaxValue}".AsSpan().ParseNumber<Int32>().Should().Be(Int32.MaxValue);
+        $"{Int64.MaxValue}".AsSpan().ParseNumber<Int64>().Should().Be(Int64.MaxValue);
+        $"{Int128.MaxValue}".AsSpan().ParseNumber<Int128>().Should().Be(Int128.MaxValue);
+        new Action(() => "-129".AsSpan().ParseNumber<SByte>()).Should().Throw<Exception>();
+        new Action(() => "-32769".AsSpan().ParseNumber<Int16>()).Should().Throw<Exception>();
+        new Action(() => "-2147483649".AsSpan().ParseNumber<Int32>()).Should().Throw<Exception>();
+        new Action(() => "-9223372036854775809".AsSpan().ParseNumber<Int64>()).Should().Throw<Exception>();
+        new Action(() => "-170141183460469231731687303715884105729".AsSpan().ParseNumber<UInt128>()).Should().Throw<Exception>();
+        new Action(() => "256".AsSpan().ParseNumber<Byte>()).Should().Throw<Exception>();
+        new Action(() => "65536".AsSpan().ParseNumber<UInt16>()).Should().Throw<Exception>();
+        new Action(() => "4294967296".AsSpan().ParseNumber<UInt32>()).Should().Throw<Exception>();
+        new Action(() => "18446744073709552000".AsSpan().ParseNumber<UInt64>()).Should().Throw<Exception>();
+        new Action(() => "340282366920938463463374607431768211456".AsSpan().ParseNumber<UInt128>()).Should().Throw<Exception>();
+
+        // Span
+        $"{Byte.MinValue}".ToArray().AsSpan().ParseNumber<Byte>().Should().Be(Byte.MinValue);
+        $"{UInt16.MinValue}".ToArray().AsSpan().ParseNumber<UInt16>().Should().Be(UInt16.MinValue);
+        $"{UInt32.MinValue}".ToArray().AsSpan().ParseNumber<UInt32>().Should().Be(UInt32.MinValue);
+        $"{UInt64.MinValue}".ToArray().AsSpan().ParseNumber<UInt64>().Should().Be(UInt64.MinValue);
+        $"{UInt128.MinValue}".ToArray().AsSpan().ParseNumber<UInt128>().Should().Be(UInt128.MinValue);
+        $"{SByte.MinValue}".ToArray().AsSpan().ParseNumber<SByte>().Should().Be(SByte.MinValue);
+        $"{Int16.MinValue}".ToArray().AsSpan().ParseNumber<Int16>().Should().Be(Int16.MinValue);
+        $"{Int32.MinValue}".ToArray().AsSpan().ParseNumber<Int32>().Should().Be(Int32.MinValue);
+        $"{Int64.MinValue}".ToArray().AsSpan().ParseNumber<Int64>().Should().Be(Int64.MinValue);
+        $"{Int128.MinValue}".ToArray().AsSpan().ParseNumber<Int128>().Should().Be(Int128.MinValue);
+        $"{Byte.MaxValue}".ToArray().AsSpan().ParseNumber<Byte>().Should().Be(Byte.MaxValue);
+        $"{UInt16.MaxValue}".ToArray().AsSpan().ParseNumber<UInt16>().Should().Be(UInt16.MaxValue);
+        $"{UInt32.MaxValue}".ToArray().AsSpan().ParseNumber<UInt32>().Should().Be(UInt32.MaxValue);
+        $"{UInt64.MaxValue}".ToArray().AsSpan().ParseNumber<UInt64>().Should().Be(UInt64.MaxValue);
+        $"{UInt128.MaxValue}".ToArray().AsSpan().ParseNumber<UInt128>().Should().Be(UInt128.MaxValue);
+        $"{SByte.MaxValue}".ToArray().AsSpan().ParseNumber<SByte>().Should().Be(SByte.MaxValue);
+        $"{Int16.MaxValue}".ToArray().AsSpan().ParseNumber<Int16>().Should().Be(Int16.MaxValue);
+        $"{Int32.MaxValue}".ToArray().AsSpan().ParseNumber<Int32>().Should().Be(Int32.MaxValue);
+        $"{Int64.MaxValue}".ToArray().AsSpan().ParseNumber<Int64>().Should().Be(Int64.MaxValue);
+        $"{Int128.MaxValue}".ToArray().AsSpan().ParseNumber<Int128>().Should().Be(Int128.MaxValue);
+        new Action(() => "-129".ToArray().AsSpan().ParseNumber<SByte>()).Should().Throw<Exception>();
+        new Action(() => "-32769".ToArray().AsSpan().ParseNumber<Int16>()).Should().Throw<Exception>();
+        new Action(() => "-2147483649".ToArray().AsSpan().ParseNumber<Int32>()).Should().Throw<Exception>();
+        new Action(() => "-9223372036854775809".ToArray().AsSpan().ParseNumber<Int64>()).Should().Throw<Exception>();
+        new Action(() => "-170141183460469231731687303715884105729".ToArray().AsSpan().ParseNumber<UInt128>()).Should().Throw<Exception>();
+        new Action(() => "256".ToArray().AsSpan().ParseNumber<Byte>()).Should().Throw<Exception>();
+        new Action(() => "65536".ToArray().AsSpan().ParseNumber<UInt16>()).Should().Throw<Exception>();
+        new Action(() => "4294967296".ToArray().AsSpan().ParseNumber<UInt32>()).Should().Throw<Exception>();
+        new Action(() => "18446744073709552000".ToArray().AsSpan().ParseNumber<UInt64>()).Should().Throw<Exception>();
+        new Action(() => "340282366920938463463374607431768211456".ToArray().AsSpan().ParseNumber<UInt128>()).Should().Throw<Exception>();
+    }
+    #endregion
+
     #region TryParse
     [TestMethod()]
     public void TryParseUInt8()
@@ -860,6 +963,108 @@ public class StringParseExtensionsTests
     }
     #endregion
 
+    #region TryParseNumber(.NET7)
+    [TestMethod()]
+    public void TryParseNumber()
+    {
+        // string
+        $"{Byte.MinValue}".TryParseNumber<Byte>().Should().Be(Byte.MinValue);
+        $"{UInt16.MinValue}".TryParseNumber<UInt16>().Should().Be(UInt16.MinValue);
+        $"{UInt32.MinValue}".TryParseNumber<UInt32>().Should().Be(UInt32.MinValue);
+        $"{UInt64.MinValue}".TryParseNumber<UInt64>().Should().Be(UInt64.MinValue);
+        $"{UInt128.MinValue}".TryParseNumber<UInt128>().Should().Be(UInt128.MinValue);
+        $"{SByte.MinValue}".TryParseNumber<SByte>().Should().Be(SByte.MinValue);
+        $"{Int16.MinValue}".TryParseNumber<Int16>().Should().Be(Int16.MinValue);
+        $"{Int32.MinValue}".TryParseNumber<Int32>().Should().Be(Int32.MinValue);
+        $"{Int64.MinValue}".TryParseNumber<Int64>().Should().Be(Int64.MinValue);
+        $"{Int128.MinValue}".TryParseNumber<Int128>().Should().Be(Int128.MinValue);
+        $"{Byte.MaxValue}".TryParseNumber<Byte>().Should().Be(Byte.MaxValue);
+        $"{UInt16.MaxValue}".TryParseNumber<UInt16>().Should().Be(UInt16.MaxValue);
+        $"{UInt32.MaxValue}".TryParseNumber<UInt32>().Should().Be(UInt32.MaxValue);
+        $"{UInt64.MaxValue}".TryParseNumber<UInt64>().Should().Be(UInt64.MaxValue);
+        $"{UInt128.MaxValue}".TryParseNumber<UInt128>().Should().Be(UInt128.MaxValue);
+        $"{SByte.MaxValue}".TryParseNumber<SByte>().Should().Be(SByte.MaxValue);
+        $"{Int16.MaxValue}".TryParseNumber<Int16>().Should().Be(Int16.MaxValue);
+        $"{Int32.MaxValue}".TryParseNumber<Int32>().Should().Be(Int32.MaxValue);
+        $"{Int64.MaxValue}".TryParseNumber<Int64>().Should().Be(Int64.MaxValue);
+        $"{Int128.MaxValue}".TryParseNumber<Int128>().Should().Be(Int128.MaxValue);
+        "-129".TryParseNumber<SByte>().Should().BeNull();
+        "-32769".TryParseNumber<Int16>().Should().BeNull();
+        "-2147483649".TryParseNumber<Int32>().Should().BeNull();
+        "-9223372036854775809".TryParseNumber<Int64>().Should().BeNull();
+        "-170141183460469231731687303715884105729".TryParseNumber<UInt128>().Should().BeNull();
+        "256".TryParseNumber<Byte>().Should().BeNull();
+        "65536".TryParseNumber<UInt16>().Should().BeNull();
+        "4294967296".TryParseNumber<UInt32>().Should().BeNull();
+        "18446744073709552000".TryParseNumber<UInt64>().Should().BeNull();
+        "340282366920938463463374607431768211456".TryParseNumber<UInt128>().Should().BeNull();
+
+        // ReadOnlySpan
+        $"{Byte.MinValue}".AsSpan().TryParseNumber<Byte>().Should().Be(Byte.MinValue);
+        $"{UInt16.MinValue}".AsSpan().TryParseNumber<UInt16>().Should().Be(UInt16.MinValue);
+        $"{UInt32.MinValue}".AsSpan().TryParseNumber<UInt32>().Should().Be(UInt32.MinValue);
+        $"{UInt64.MinValue}".AsSpan().TryParseNumber<UInt64>().Should().Be(UInt64.MinValue);
+        $"{UInt128.MinValue}".AsSpan().TryParseNumber<UInt128>().Should().Be(UInt128.MinValue);
+        $"{SByte.MinValue}".AsSpan().TryParseNumber<SByte>().Should().Be(SByte.MinValue);
+        $"{Int16.MinValue}".AsSpan().TryParseNumber<Int16>().Should().Be(Int16.MinValue);
+        $"{Int32.MinValue}".AsSpan().TryParseNumber<Int32>().Should().Be(Int32.MinValue);
+        $"{Int64.MinValue}".AsSpan().TryParseNumber<Int64>().Should().Be(Int64.MinValue);
+        $"{Int128.MinValue}".AsSpan().TryParseNumber<Int128>().Should().Be(Int128.MinValue);
+        $"{Byte.MaxValue}".AsSpan().TryParseNumber<Byte>().Should().Be(Byte.MaxValue);
+        $"{UInt16.MaxValue}".AsSpan().TryParseNumber<UInt16>().Should().Be(UInt16.MaxValue);
+        $"{UInt32.MaxValue}".AsSpan().TryParseNumber<UInt32>().Should().Be(UInt32.MaxValue);
+        $"{UInt64.MaxValue}".AsSpan().TryParseNumber<UInt64>().Should().Be(UInt64.MaxValue);
+        $"{UInt128.MaxValue}".AsSpan().TryParseNumber<UInt128>().Should().Be(UInt128.MaxValue);
+        $"{SByte.MaxValue}".AsSpan().TryParseNumber<SByte>().Should().Be(SByte.MaxValue);
+        $"{Int16.MaxValue}".AsSpan().TryParseNumber<Int16>().Should().Be(Int16.MaxValue);
+        $"{Int32.MaxValue}".AsSpan().TryParseNumber<Int32>().Should().Be(Int32.MaxValue);
+        $"{Int64.MaxValue}".AsSpan().TryParseNumber<Int64>().Should().Be(Int64.MaxValue);
+        $"{Int128.MaxValue}".AsSpan().TryParseNumber<Int128>().Should().Be(Int128.MaxValue);
+        "-129".AsSpan().TryParseNumber<SByte>().Should().BeNull();
+        "-32769".AsSpan().TryParseNumber<Int16>().Should().BeNull();
+        "-2147483649".AsSpan().TryParseNumber<Int32>().Should().BeNull();
+        "-9223372036854775809".AsSpan().TryParseNumber<Int64>().Should().BeNull();
+        "-170141183460469231731687303715884105729".AsSpan().TryParseNumber<UInt128>().Should().BeNull();
+        "256".AsSpan().TryParseNumber<Byte>().Should().BeNull();
+        "65536".AsSpan().TryParseNumber<UInt16>().Should().BeNull();
+        "4294967296".AsSpan().TryParseNumber<UInt32>().Should().BeNull();
+        "18446744073709552000".AsSpan().TryParseNumber<UInt64>().Should().BeNull();
+        "340282366920938463463374607431768211456".AsSpan().TryParseNumber<UInt128>().Should().BeNull();
+
+        // Span
+        $"{Byte.MinValue}".ToArray().AsSpan().TryParseNumber<Byte>().Should().Be(Byte.MinValue);
+        $"{UInt16.MinValue}".ToArray().AsSpan().TryParseNumber<UInt16>().Should().Be(UInt16.MinValue);
+        $"{UInt32.MinValue}".ToArray().AsSpan().TryParseNumber<UInt32>().Should().Be(UInt32.MinValue);
+        $"{UInt64.MinValue}".ToArray().AsSpan().TryParseNumber<UInt64>().Should().Be(UInt64.MinValue);
+        $"{UInt128.MinValue}".ToArray().AsSpan().TryParseNumber<UInt128>().Should().Be(UInt128.MinValue);
+        $"{SByte.MinValue}".ToArray().AsSpan().TryParseNumber<SByte>().Should().Be(SByte.MinValue);
+        $"{Int16.MinValue}".ToArray().AsSpan().TryParseNumber<Int16>().Should().Be(Int16.MinValue);
+        $"{Int32.MinValue}".ToArray().AsSpan().TryParseNumber<Int32>().Should().Be(Int32.MinValue);
+        $"{Int64.MinValue}".ToArray().AsSpan().TryParseNumber<Int64>().Should().Be(Int64.MinValue);
+        $"{Int128.MinValue}".ToArray().AsSpan().TryParseNumber<Int128>().Should().Be(Int128.MinValue);
+        $"{Byte.MaxValue}".ToArray().AsSpan().TryParseNumber<Byte>().Should().Be(Byte.MaxValue);
+        $"{UInt16.MaxValue}".ToArray().AsSpan().TryParseNumber<UInt16>().Should().Be(UInt16.MaxValue);
+        $"{UInt32.MaxValue}".ToArray().AsSpan().TryParseNumber<UInt32>().Should().Be(UInt32.MaxValue);
+        $"{UInt64.MaxValue}".ToArray().AsSpan().TryParseNumber<UInt64>().Should().Be(UInt64.MaxValue);
+        $"{UInt128.MaxValue}".ToArray().AsSpan().TryParseNumber<UInt128>().Should().Be(UInt128.MaxValue);
+        $"{SByte.MaxValue}".ToArray().AsSpan().TryParseNumber<SByte>().Should().Be(SByte.MaxValue);
+        $"{Int16.MaxValue}".ToArray().AsSpan().TryParseNumber<Int16>().Should().Be(Int16.MaxValue);
+        $"{Int32.MaxValue}".ToArray().AsSpan().TryParseNumber<Int32>().Should().Be(Int32.MaxValue);
+        $"{Int64.MaxValue}".ToArray().AsSpan().TryParseNumber<Int64>().Should().Be(Int64.MaxValue);
+        $"{Int128.MaxValue}".ToArray().AsSpan().TryParseNumber<Int128>().Should().Be(Int128.MaxValue);
+        "-129".ToArray().AsSpan().TryParseNumber<SByte>().Should().BeNull();
+        "-32769".ToArray().AsSpan().TryParseNumber<Int16>().Should().BeNull();
+        "-2147483649".ToArray().AsSpan().TryParseNumber<Int32>().Should().BeNull();
+        "-9223372036854775809".ToArray().AsSpan().TryParseNumber<Int64>().Should().BeNull();
+        "-170141183460469231731687303715884105729".ToArray().AsSpan().TryParseNumber<UInt128>().Should().BeNull();
+        "256".ToArray().AsSpan().TryParseNumber<Byte>().Should().BeNull();
+        "65536".ToArray().AsSpan().TryParseNumber<UInt16>().Should().BeNull();
+        "4294967296".ToArray().AsSpan().TryParseNumber<UInt32>().Should().BeNull();
+        "18446744073709552000".ToArray().AsSpan().TryParseNumber<UInt64>().Should().BeNull();
+        "340282366920938463463374607431768211456".ToArray().AsSpan().TryParseNumber<UInt128>().Should().BeNull();
+    }
+    #endregion
+
     #region TryParseHex
     [TestMethod()]
     public void TryParseHex8()
@@ -948,6 +1153,108 @@ public class StringParseExtensionsTests
         "8000000000000000".ToArray().AsSpan().TryParseHex64().Should().Be(0x8000000000000000);
         "FFFFFFFFFFFFFFFF".ToArray().AsSpan().TryParseHex64().Should().Be(0xFFFFFFFFFFFFFFFF);
         "10000000000000000".ToArray().AsSpan().TryParseHex64().Should().BeNull();
+    }
+    #endregion
+
+    #region TryParseHexNumber(.NET7)
+    [TestMethod()]
+    public void TryParseHexNumber()
+    {
+        // string
+        $"{Byte.MinValue:X}".TryParseHexNumber<Byte>().Should().Be(Byte.MinValue);
+        $"{UInt16.MinValue:X}".TryParseHexNumber<UInt16>().Should().Be(UInt16.MinValue);
+        $"{UInt32.MinValue:X}".TryParseHexNumber<UInt32>().Should().Be(UInt32.MinValue);
+        $"{UInt64.MinValue:X}".TryParseHexNumber<UInt64>().Should().Be(UInt64.MinValue);
+        $"{UInt128.MinValue:X}".TryParseHexNumber<UInt128>().Should().Be(UInt128.MinValue);
+        $"{SByte.MinValue:X}".TryParseHexNumber<SByte>().Should().Be(SByte.MinValue);
+        $"{Int16.MinValue:X}".TryParseHexNumber<Int16>().Should().Be(Int16.MinValue);
+        $"{Int32.MinValue:X}".TryParseHexNumber<Int32>().Should().Be(Int32.MinValue);
+        $"{Int64.MinValue:X}".TryParseHexNumber<Int64>().Should().Be(Int64.MinValue);
+        $"{Int128.MinValue:X}".TryParseHexNumber<Int128>().Should().Be(Int128.MinValue);
+        $"{Byte.MaxValue:X}".TryParseHexNumber<Byte>().Should().Be(Byte.MaxValue);
+        $"{UInt16.MaxValue:X}".TryParseHexNumber<UInt16>().Should().Be(UInt16.MaxValue);
+        $"{UInt32.MaxValue:X}".TryParseHexNumber<UInt32>().Should().Be(UInt32.MaxValue);
+        $"{UInt64.MaxValue:X}".TryParseHexNumber<UInt64>().Should().Be(UInt64.MaxValue);
+        $"{UInt128.MaxValue:X}".TryParseHexNumber<UInt128>().Should().Be(UInt128.MaxValue);
+        $"{SByte.MaxValue:X}".TryParseHexNumber<SByte>().Should().Be(SByte.MaxValue);
+        $"{Int16.MaxValue:X}".TryParseHexNumber<Int16>().Should().Be(Int16.MaxValue);
+        $"{Int32.MaxValue:X}".TryParseHexNumber<Int32>().Should().Be(Int32.MaxValue);
+        $"{Int64.MaxValue:X}".TryParseHexNumber<Int64>().Should().Be(Int64.MaxValue);
+        $"{Int128.MaxValue:X}".TryParseHexNumber<Int128>().Should().Be(Int128.MaxValue);
+        $"1{0:X2}".TryParseHexNumber<SByte>().Should().BeNull();
+        $"1{0:X4}".TryParseHexNumber<Int16>().Should().BeNull();
+        $"1{0:X8}".TryParseHexNumber<Int32>().Should().BeNull();
+        $"1{0:X16}".TryParseHexNumber<Int64>().Should().BeNull();
+        $"1{0:X32}".TryParseHexNumber<Int128>().Should().BeNull();
+        $"1{0:X2}".TryParseHexNumber<Byte>().Should().BeNull();
+        $"1{0:X4}".TryParseHexNumber<UInt16>().Should().BeNull();
+        $"1{0:X8}".TryParseHexNumber<UInt32>().Should().BeNull();
+        $"1{0:X16}".TryParseHexNumber<UInt64>().Should().BeNull();
+        $"1{0:X32}".TryParseHexNumber<UInt128>().Should().BeNull();
+
+        // ReadOnlySpan
+        $"{Byte.MinValue:X}".AsSpan().TryParseHexNumber<Byte>().Should().Be(Byte.MinValue);
+        $"{UInt16.MinValue:X}".AsSpan().TryParseHexNumber<UInt16>().Should().Be(UInt16.MinValue);
+        $"{UInt32.MinValue:X}".AsSpan().TryParseHexNumber<UInt32>().Should().Be(UInt32.MinValue);
+        $"{UInt64.MinValue:X}".AsSpan().TryParseHexNumber<UInt64>().Should().Be(UInt64.MinValue);
+        $"{UInt128.MinValue:X}".AsSpan().TryParseHexNumber<UInt128>().Should().Be(UInt128.MinValue);
+        $"{SByte.MinValue:X}".AsSpan().TryParseHexNumber<SByte>().Should().Be(SByte.MinValue);
+        $"{Int16.MinValue:X}".AsSpan().TryParseHexNumber<Int16>().Should().Be(Int16.MinValue);
+        $"{Int32.MinValue:X}".AsSpan().TryParseHexNumber<Int32>().Should().Be(Int32.MinValue);
+        $"{Int64.MinValue:X}".AsSpan().TryParseHexNumber<Int64>().Should().Be(Int64.MinValue);
+        $"{Int128.MinValue:X}".AsSpan().TryParseHexNumber<Int128>().Should().Be(Int128.MinValue);
+        $"{Byte.MaxValue:X}".AsSpan().TryParseHexNumber<Byte>().Should().Be(Byte.MaxValue);
+        $"{UInt16.MaxValue:X}".AsSpan().TryParseHexNumber<UInt16>().Should().Be(UInt16.MaxValue);
+        $"{UInt32.MaxValue:X}".AsSpan().TryParseHexNumber<UInt32>().Should().Be(UInt32.MaxValue);
+        $"{UInt64.MaxValue:X}".AsSpan().TryParseHexNumber<UInt64>().Should().Be(UInt64.MaxValue);
+        $"{UInt128.MaxValue:X}".AsSpan().TryParseHexNumber<UInt128>().Should().Be(UInt128.MaxValue);
+        $"{SByte.MaxValue:X}".AsSpan().TryParseHexNumber<SByte>().Should().Be(SByte.MaxValue);
+        $"{Int16.MaxValue:X}".AsSpan().TryParseHexNumber<Int16>().Should().Be(Int16.MaxValue);
+        $"{Int32.MaxValue:X}".AsSpan().TryParseHexNumber<Int32>().Should().Be(Int32.MaxValue);
+        $"{Int64.MaxValue:X}".AsSpan().TryParseHexNumber<Int64>().Should().Be(Int64.MaxValue);
+        $"{Int128.MaxValue:X}".AsSpan().TryParseHexNumber<Int128>().Should().Be(Int128.MaxValue);
+        $"1{0:X2}".AsSpan().TryParseHexNumber<SByte>().Should().BeNull();
+        $"1{0:X4}".AsSpan().TryParseHexNumber<Int16>().Should().BeNull();
+        $"1{0:X8}".AsSpan().TryParseHexNumber<Int32>().Should().BeNull();
+        $"1{0:X16}".AsSpan().TryParseHexNumber<Int64>().Should().BeNull();
+        $"1{0:X32}".AsSpan().TryParseHexNumber<Int128>().Should().BeNull();
+        $"1{0:X2}".AsSpan().TryParseHexNumber<Byte>().Should().BeNull();
+        $"1{0:X4}".AsSpan().TryParseHexNumber<UInt16>().Should().BeNull();
+        $"1{0:X8}".AsSpan().TryParseHexNumber<UInt32>().Should().BeNull();
+        $"1{0:X16}".AsSpan().TryParseHexNumber<UInt64>().Should().BeNull();
+        $"1{0:X32}".AsSpan().TryParseHexNumber<UInt128>().Should().BeNull();
+
+        // Span
+        $"{Byte.MinValue:X}".ToArray().AsSpan().TryParseHexNumber<Byte>().Should().Be(Byte.MinValue);
+        $"{UInt16.MinValue:X}".ToArray().AsSpan().TryParseHexNumber<UInt16>().Should().Be(UInt16.MinValue);
+        $"{UInt32.MinValue:X}".ToArray().AsSpan().TryParseHexNumber<UInt32>().Should().Be(UInt32.MinValue);
+        $"{UInt64.MinValue:X}".ToArray().AsSpan().TryParseHexNumber<UInt64>().Should().Be(UInt64.MinValue);
+        $"{UInt128.MinValue:X}".ToArray().AsSpan().TryParseHexNumber<UInt128>().Should().Be(UInt128.MinValue);
+        $"{SByte.MinValue:X}".ToArray().AsSpan().TryParseHexNumber<SByte>().Should().Be(SByte.MinValue);
+        $"{Int16.MinValue:X}".ToArray().AsSpan().TryParseHexNumber<Int16>().Should().Be(Int16.MinValue);
+        $"{Int32.MinValue:X}".ToArray().AsSpan().TryParseHexNumber<Int32>().Should().Be(Int32.MinValue);
+        $"{Int64.MinValue:X}".ToArray().AsSpan().TryParseHexNumber<Int64>().Should().Be(Int64.MinValue);
+        $"{Int128.MinValue:X}".ToArray().AsSpan().TryParseHexNumber<Int128>().Should().Be(Int128.MinValue);
+        $"{Byte.MaxValue:X}".ToArray().AsSpan().TryParseHexNumber<Byte>().Should().Be(Byte.MaxValue);
+        $"{UInt16.MaxValue:X}".ToArray().AsSpan().TryParseHexNumber<UInt16>().Should().Be(UInt16.MaxValue);
+        $"{UInt32.MaxValue:X}".ToArray().AsSpan().TryParseHexNumber<UInt32>().Should().Be(UInt32.MaxValue);
+        $"{UInt64.MaxValue:X}".ToArray().AsSpan().TryParseHexNumber<UInt64>().Should().Be(UInt64.MaxValue);
+        $"{UInt128.MaxValue:X}".ToArray().AsSpan().TryParseHexNumber<UInt128>().Should().Be(UInt128.MaxValue);
+        $"{SByte.MaxValue:X}".ToArray().AsSpan().TryParseHexNumber<SByte>().Should().Be(SByte.MaxValue);
+        $"{Int16.MaxValue:X}".ToArray().AsSpan().TryParseHexNumber<Int16>().Should().Be(Int16.MaxValue);
+        $"{Int32.MaxValue:X}".ToArray().AsSpan().TryParseHexNumber<Int32>().Should().Be(Int32.MaxValue);
+        $"{Int64.MaxValue:X}".ToArray().AsSpan().TryParseHexNumber<Int64>().Should().Be(Int64.MaxValue);
+        $"{Int128.MaxValue:X}".ToArray().AsSpan().TryParseHexNumber<Int128>().Should().Be(Int128.MaxValue);
+        $"1{0:X2}".ToArray().AsSpan().TryParseHexNumber<SByte>().Should().BeNull();
+        $"1{0:X4}".ToArray().AsSpan().TryParseHexNumber<Int16>().Should().BeNull();
+        $"1{0:X8}".ToArray().AsSpan().TryParseHexNumber<Int32>().Should().BeNull();
+        $"1{0:X16}".ToArray().AsSpan().TryParseHexNumber<Int64>().Should().BeNull();
+        $"1{0:X32}".ToArray().AsSpan().TryParseHexNumber<Int128>().Should().BeNull();
+        $"1{0:X2}".ToArray().AsSpan().TryParseHexNumber<Byte>().Should().BeNull();
+        $"1{0:X4}".ToArray().AsSpan().TryParseHexNumber<UInt16>().Should().BeNull();
+        $"1{0:X8}".ToArray().AsSpan().TryParseHexNumber<UInt32>().Should().BeNull();
+        $"1{0:X16}".ToArray().AsSpan().TryParseHexNumber<UInt64>().Should().BeNull();
+        $"1{0:X32}".ToArray().AsSpan().TryParseHexNumber<UInt128>().Should().BeNull();
     }
     #endregion
 
@@ -1074,6 +1381,108 @@ public class StringParseExtensionsTests
         "   1   ".AsSpan().TryParseBin64(trim: false, snake: true).Should().BeNull();
         "11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111".AsSpan().TryParseBin64(trim: true, snake: true).Should().Be(0xFFFFFFFFFFFFFFFF);
         "11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111".AsSpan().TryParseBin64(trim: true, snake: false).Should().BeNull();
+    }
+    #endregion
+
+    #region TryParseBinNumber(.NET7)
+    [TestMethod()]
+    public void TryParseBinNumber()
+    {
+        // string
+        $"{new string('0', 8)}".TryParseBinNumber<Byte>().Should().Be(0);
+        $"{new string('0', 16)}".TryParseBinNumber<UInt16>().Should().Be(0);
+        $"{new string('0', 32)}".TryParseBinNumber<UInt32>().Should().Be(0);
+        $"{new string('0', 64)}".TryParseBinNumber<UInt64>().Should().Be(0);
+        $"{new string('0', 128)}".TryParseBinNumber<UInt128>().Should().Be(UInt128.Zero);
+        $"{new string('0', 8)}".TryParseBinNumber<SByte>().Should().Be(0);
+        $"{new string('0', 16)}".TryParseBinNumber<Int16>().Should().Be(0);
+        $"{new string('0', 32)}".TryParseBinNumber<Int32>().Should().Be(0);
+        $"{new string('0', 64)}".TryParseBinNumber<Int64>().Should().Be(0);
+        $"{new string('0', 128)}".TryParseBinNumber<Int128>().Should().Be(Int128.Zero);
+        $"{new string('1', 8)}".TryParseBinNumber<Byte>().Should().Be(Byte.MaxValue);
+        $"{new string('1', 16)}".TryParseBinNumber<UInt16>().Should().Be(UInt16.MaxValue);
+        $"{new string('1', 32)}".TryParseBinNumber<UInt32>().Should().Be(UInt32.MaxValue);
+        $"{new string('1', 64)}".TryParseBinNumber<UInt64>().Should().Be(UInt64.MaxValue);
+        $"{new string('1', 128)}".TryParseBinNumber<UInt128>().Should().Be(UInt128.MaxValue);
+        $"{new string('1', 8)}".TryParseBinNumber<SByte>().Should().Be(unchecked((SByte)Byte.MaxValue));
+        $"{new string('1', 16)}".TryParseBinNumber<Int16>().Should().Be(unchecked((Int16)UInt16.MaxValue));
+        $"{new string('1', 32)}".TryParseBinNumber<Int32>().Should().Be(unchecked((Int32)UInt32.MaxValue));
+        $"{new string('1', 64)}".TryParseBinNumber<Int64>().Should().Be(unchecked((Int64)UInt64.MaxValue));
+        $"{new string('1', 128)}".TryParseBinNumber<Int128>().Should().Be(unchecked((Int128)UInt128.MaxValue));
+        $"1{new string('0', 8)}".TryParseBinNumber<Byte>().Should().BeNull();
+        $"1{new string('0', 16)}".TryParseBinNumber<UInt16>().Should().BeNull();
+        $"1{new string('0', 32)}".TryParseBinNumber<UInt32>().Should().BeNull();
+        $"1{new string('0', 64)}".TryParseBinNumber<UInt64>().Should().BeNull();
+        $"1{new string('0', 128)}".TryParseBinNumber<UInt128>().Should().BeNull();
+        $"1{new string('0', 8)}".TryParseBinNumber<SByte>().Should().BeNull();
+        $"1{new string('0', 16)}".TryParseBinNumber<Int16>().Should().BeNull();
+        $"1{new string('0', 32)}".TryParseBinNumber<Int32>().Should().BeNull();
+        $"1{new string('0', 64)}".TryParseBinNumber<Int64>().Should().BeNull();
+        $"1{new string('0', 128)}".TryParseBinNumber<Int128>().Should().BeNull();
+
+        // ReadOnlySpan
+        $"{new string('0', 8)}".AsSpan().TryParseBinNumber<Byte>().Should().Be(0);
+        $"{new string('0', 16)}".AsSpan().TryParseBinNumber<UInt16>().Should().Be(0);
+        $"{new string('0', 32)}".AsSpan().TryParseBinNumber<UInt32>().Should().Be(0);
+        $"{new string('0', 64)}".AsSpan().TryParseBinNumber<UInt64>().Should().Be(0);
+        $"{new string('0', 128)}".AsSpan().TryParseBinNumber<UInt128>().Should().Be(UInt128.Zero);
+        $"{new string('0', 8)}".AsSpan().TryParseBinNumber<SByte>().Should().Be(0);
+        $"{new string('0', 16)}".AsSpan().TryParseBinNumber<Int16>().Should().Be(0);
+        $"{new string('0', 32)}".AsSpan().TryParseBinNumber<Int32>().Should().Be(0);
+        $"{new string('0', 64)}".AsSpan().TryParseBinNumber<Int64>().Should().Be(0);
+        $"{new string('0', 128)}".AsSpan().TryParseBinNumber<Int128>().Should().Be(Int128.Zero);
+        $"{new string('1', 8)}".AsSpan().TryParseBinNumber<Byte>().Should().Be(Byte.MaxValue);
+        $"{new string('1', 16)}".AsSpan().TryParseBinNumber<UInt16>().Should().Be(UInt16.MaxValue);
+        $"{new string('1', 32)}".AsSpan().TryParseBinNumber<UInt32>().Should().Be(UInt32.MaxValue);
+        $"{new string('1', 64)}".AsSpan().TryParseBinNumber<UInt64>().Should().Be(UInt64.MaxValue);
+        $"{new string('1', 128)}".AsSpan().TryParseBinNumber<UInt128>().Should().Be(UInt128.MaxValue);
+        $"{new string('1', 8)}".AsSpan().TryParseBinNumber<SByte>().Should().Be(unchecked((SByte)Byte.MaxValue));
+        $"{new string('1', 16)}".AsSpan().TryParseBinNumber<Int16>().Should().Be(unchecked((Int16)UInt16.MaxValue));
+        $"{new string('1', 32)}".AsSpan().TryParseBinNumber<Int32>().Should().Be(unchecked((Int32)UInt32.MaxValue));
+        $"{new string('1', 64)}".AsSpan().TryParseBinNumber<Int64>().Should().Be(unchecked((Int64)UInt64.MaxValue));
+        $"{new string('1', 128)}".AsSpan().TryParseBinNumber<Int128>().Should().Be(unchecked((Int128)UInt128.MaxValue));
+        $"1{new string('0', 8)}".AsSpan().TryParseBinNumber<Byte>().Should().BeNull();
+        $"1{new string('0', 16)}".AsSpan().TryParseBinNumber<UInt16>().Should().BeNull();
+        $"1{new string('0', 32)}".AsSpan().TryParseBinNumber<UInt32>().Should().BeNull();
+        $"1{new string('0', 64)}".AsSpan().TryParseBinNumber<UInt64>().Should().BeNull();
+        $"1{new string('0', 128)}".AsSpan().TryParseBinNumber<UInt128>().Should().BeNull();
+        $"1{new string('0', 8)}".AsSpan().TryParseBinNumber<SByte>().Should().BeNull();
+        $"1{new string('0', 16)}".AsSpan().TryParseBinNumber<Int16>().Should().BeNull();
+        $"1{new string('0', 32)}".AsSpan().TryParseBinNumber<Int32>().Should().BeNull();
+        $"1{new string('0', 64)}".AsSpan().TryParseBinNumber<Int64>().Should().BeNull();
+        $"1{new string('0', 128)}".AsSpan().TryParseBinNumber<Int128>().Should().BeNull();
+
+        // Span
+        $"{new string('0', 8)}".ToArray().AsSpan().TryParseBinNumber<Byte>().Should().Be(0);
+        $"{new string('0', 16)}".ToArray().AsSpan().TryParseBinNumber<UInt16>().Should().Be(0);
+        $"{new string('0', 32)}".ToArray().AsSpan().TryParseBinNumber<UInt32>().Should().Be(0);
+        $"{new string('0', 64)}".ToArray().AsSpan().TryParseBinNumber<UInt64>().Should().Be(0);
+        $"{new string('0', 128)}".ToArray().AsSpan().TryParseBinNumber<UInt128>().Should().Be(UInt128.Zero);
+        $"{new string('0', 8)}".ToArray().AsSpan().TryParseBinNumber<SByte>().Should().Be(0);
+        $"{new string('0', 16)}".ToArray().AsSpan().TryParseBinNumber<Int16>().Should().Be(0);
+        $"{new string('0', 32)}".ToArray().AsSpan().TryParseBinNumber<Int32>().Should().Be(0);
+        $"{new string('0', 64)}".ToArray().AsSpan().TryParseBinNumber<Int64>().Should().Be(0);
+        $"{new string('0', 128)}".ToArray().AsSpan().TryParseBinNumber<Int128>().Should().Be(Int128.Zero);
+        $"{new string('1', 8)}".ToArray().AsSpan().TryParseBinNumber<Byte>().Should().Be(Byte.MaxValue);
+        $"{new string('1', 16)}".ToArray().AsSpan().TryParseBinNumber<UInt16>().Should().Be(UInt16.MaxValue);
+        $"{new string('1', 32)}".ToArray().AsSpan().TryParseBinNumber<UInt32>().Should().Be(UInt32.MaxValue);
+        $"{new string('1', 64)}".ToArray().AsSpan().TryParseBinNumber<UInt64>().Should().Be(UInt64.MaxValue);
+        $"{new string('1', 128)}".ToArray().AsSpan().TryParseBinNumber<UInt128>().Should().Be(UInt128.MaxValue);
+        $"{new string('1', 8)}".ToArray().AsSpan().TryParseBinNumber<SByte>().Should().Be(unchecked((SByte)Byte.MaxValue));
+        $"{new string('1', 16)}".ToArray().AsSpan().TryParseBinNumber<Int16>().Should().Be(unchecked((Int16)UInt16.MaxValue));
+        $"{new string('1', 32)}".ToArray().AsSpan().TryParseBinNumber<Int32>().Should().Be(unchecked((Int32)UInt32.MaxValue));
+        $"{new string('1', 64)}".ToArray().AsSpan().TryParseBinNumber<Int64>().Should().Be(unchecked((Int64)UInt64.MaxValue));
+        $"{new string('1', 128)}".ToArray().AsSpan().TryParseBinNumber<Int128>().Should().Be(unchecked((Int128)UInt128.MaxValue));
+        $"1{new string('0', 8)}".ToArray().AsSpan().TryParseBinNumber<Byte>().Should().BeNull();
+        $"1{new string('0', 16)}".ToArray().AsSpan().TryParseBinNumber<UInt16>().Should().BeNull();
+        $"1{new string('0', 32)}".ToArray().AsSpan().TryParseBinNumber<UInt32>().Should().BeNull();
+        $"1{new string('0', 64)}".ToArray().AsSpan().TryParseBinNumber<UInt64>().Should().BeNull();
+        $"1{new string('0', 128)}".ToArray().AsSpan().TryParseBinNumber<UInt128>().Should().BeNull();
+        $"1{new string('0', 8)}".ToArray().AsSpan().TryParseBinNumber<SByte>().Should().BeNull();
+        $"1{new string('0', 16)}".ToArray().AsSpan().TryParseBinNumber<Int16>().Should().BeNull();
+        $"1{new string('0', 32)}".ToArray().AsSpan().TryParseBinNumber<Int32>().Should().BeNull();
+        $"1{new string('0', 64)}".ToArray().AsSpan().TryParseBinNumber<Int64>().Should().BeNull();
+        $"1{new string('0', 128)}".ToArray().AsSpan().TryParseBinNumber<Int128>().Should().BeNull();
     }
     #endregion
 
@@ -1342,6 +1751,31 @@ public class StringParseExtensionsTests
         "0b10000000000000000000000000000000000000000000000000000000000000000".ToArray().AsSpan().TryParseWithPrefix64().Should().BeNull();
         "a".ToArray().AsSpan().TryParseWithPrefix64().Should().BeNull();
         "0xG".ToArray().AsSpan().TryParseWithPrefix64().Should().BeNull();
+    }
+    #endregion
+
+    #region TryParseNumberWithPrefix(.NET7)
+    [TestMethod()]
+    public void TryParseNumberWithPrefix()
+    {
+        "12345678".TryParseNumberWithPrefix<UInt32>().Should().Be(12345678);
+        "0x12345678".TryParseNumberWithPrefix<UInt32>().Should().Be(0x12345678);
+        "0X12345678".TryParseNumberWithPrefix<UInt32>().Should().Be(0x12345678);
+        "&h12345678".TryParseNumberWithPrefix<UInt32>().Should().Be(0x12345678);
+        "&H12345678".TryParseNumberWithPrefix<UInt32>().Should().Be(0x12345678);
+        "#12345678".TryParseNumberWithPrefix<UInt32>().Should().Be(0x12345678);
+
+        "0x12".TryParseNumberWithPrefix<Byte>().Should().Be(0x12);
+        "0x12".TryParseNumberWithPrefix<UInt16>().Should().Be(0x12);
+        "0x12".TryParseNumberWithPrefix<UInt32>().Should().Be(0x12);
+        "0x12".TryParseNumberWithPrefix<UInt64>().Should().Be(0x12);
+        "0x12".TryParseNumberWithPrefix<UInt128>().Should().Be((UInt128)0x12);
+
+        "xyz".TryParseNumberWithPrefix<Byte>().Should().BeNull();
+        "xyz".TryParseNumberWithPrefix<UInt16>().Should().BeNull();
+        "xyz".TryParseNumberWithPrefix<UInt32>().Should().BeNull();
+        "xyz".TryParseNumberWithPrefix<UInt64>().Should().BeNull();
+        "xyz".TryParseNumberWithPrefix<UInt128>().Should().BeNull();
     }
     #endregion
 
