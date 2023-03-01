@@ -87,4 +87,22 @@ public class EnumerableExtensionsTests
             v5.Should().Be(104);
         }
     }
+
+    [TestMethod()]
+    public async Task ToPseudoAsyncEnumerable()
+    {
+        var data = new[] { 1, 3, 5, 7, };
+
+        var tid = Environment.CurrentManagedThreadId;
+
+        var actual = new List<int>();
+        await foreach (var item in data.ToPseudoAsyncEnumerable())
+        {
+            actual.Add(item);
+            Environment.CurrentManagedThreadId.Should().Be(tid);
+        }
+
+        actual.Should().Equal(data);
+    }
+
 }

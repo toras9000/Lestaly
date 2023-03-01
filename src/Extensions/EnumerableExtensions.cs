@@ -138,6 +138,24 @@ public static class EnumerableExtensions
         value5 = enumerator.MoveNext() ? enumerator.Current : default;
     }
 
+    /// <summary>シーケンスを非同期シーケンス型に変換する</summary>
+    /// <remarks>型は IAsyncEnumerable となるが、列挙は同期的であるため型合わせだけの意味の変換となる。</remarks>
+    /// <typeparam name="TSource">シーケンスの要素型</typeparam>
+    /// <param name="self">元になるシーケンス</param>
+    /// <returns>非同期シーケンス</returns>
+    public static IAsyncEnumerable<TSource> ToPseudoAsyncEnumerable<TSource>(this IEnumerable<TSource> self)
+    {
+        if (self == null) throw new ArgumentNullException(nameof(self));
 
+        static async IAsyncEnumerable<T> enumerateAsync<T>(IEnumerable<T> source)
+        {
+            foreach (var item in source)
+            {
+                yield return await Task.FromResult(item).ConfigureAwait(false);
+            }
+        }
+
+        return enumerateAsync(self);
+    }
 
 }
