@@ -199,7 +199,7 @@ public class EnumerableDataExtensions_SaveToCsvAsync_Tests
         // 実行オプション
         var options = new SaveToCsvOptions()
         {
-            CaptionSelector = m => m.Name.StartsWith("T") ? $"<{m.Name}>" : null,
+            CaptionSelector = (m, i) => m.Name.StartsWith("T") ? $"<{m.Name}>" : null,
         };
 
         // テスト対象実行
@@ -477,7 +477,7 @@ public class EnumerableDataExtensions_SaveToCsvAsync_Tests
             IncludeFields = true,
             UseCaptionAttribute = false,
             SortCaption = true,
-            CaptionSelector = m => m.Name switch
+            CaptionSelector = (m, i) => m.Name switch
             {
                 nameof(ColNameItem.Prop1) => "ccc",
                 nameof(ColNameItem.Prop2) => "bbb",

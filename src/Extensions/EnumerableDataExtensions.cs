@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks.Dataflow;
 using ClosedXML.Excel;
+using CometFlavor.Extensions.Text;
 using CometFlavor.Reflection;
 
 namespace Lestaly;
@@ -446,7 +447,7 @@ public static class EnumerableDataExtensions
             var column = exporters[i].column;
             for (var a = 0; a < column.Span; a++)
             {
-                var caption = (column.Span == 1) ? column.Caption : $"{column.Caption}[{a}]";
+                var caption = column.Captions[a];
                 headerCell.CellRight(offset).Value = caption;
                 offset++;
             }
@@ -703,44 +704,86 @@ public static class EnumerableDataExtensions
                     returnType = propInfo.PropertyType;
                 }
 
-                // キャプション取得の属性利用が指定されていれば、その情報を取得する。
-                var caption = default(string);
-                var order = default(int);
-                if (options.UseCaptionAttribute)
-                {
-                    var display = member.GetCustomAttribute<DisplayAttribute>();
-                    caption = display?.Name;
-                    order = display?.GetOrder() ?? 0;
-                }
-
-                // デリゲートによるキャプション名取得。こちらが指定されたら優先する。
-                if (options.CaptionSelector?.Invoke(member) is string selectedCaption)
-                {
-                    caption = selectedCaption;
-                }
-
-                // 上の処理でカラム名が決定されなかった場合、メンバ名をカラム名として利用する。
-                caption ??= member.Name;
-
                 // カラム数取得の属性利用が指定されていれば、その情報を取得する。
                 var span = 1;
                 if (options.UseColumnSpanAttribute)
                 {
                     var maxLenAttr = member.GetCustomAttribute<MaxLengthAttribute>();
-                    if (maxLenAttr != null)
+                    if (maxLenAttr != null && 1 < maxLenAttr.Length)
                     {
                         span = maxLenAttr.Length;
                     }
                 }
 
                 // デリゲートによるカラム数取得。こちらが指定されたら優先する。
-                if (options.ColumnSpanSelector?.Invoke(member) is int selectedSpan)
+                if (options.ColumnSpanSelector?.Invoke(member) is int selectedSpan && 1 < selectedSpan)
                 {
                     span = selectedSpan;
                 }
 
+                // カラムキャプションを作成する。
+                // とりあえずカラムに出力するメンバ名からデフォルトの名称を作成。
+                var captions = (span <= 1) ? new[] { member.Name, } : Enumerable.Range(0, span).Select(i => $"{member.Name}[{i}]").ToArray();
+
+                // キャプション取得の属性利用が指定されていれば、その情報を取得する。
+                var order = default(int);
+                if (options.UseCaptionAttribute)
+                {
+                    // Display 属性の取得を試みる
+                    var display = member.GetCustomAttribute<DisplayAttribute>();
+                    if (display != null)
+                    {
+                        // 属性から順序を取得
+                        order = display.GetOrder() ?? 0;
+
+                        // 名前が指定されていれば、カラム名に採用する
+                        if (!string.IsNullOrWhiteSpace(display.Name))
+                        {
+                            if (span <= 1)
+                            {
+                                // 単独カラムの場合はそのままカラム名にする
+                                captions[0] = display.Name;
+                            }
+                            else if (display.GroupName is var separator && !string.IsNullOrEmpty(separator))
+                            {
+                                // GroupName プロパティに文字列が指定されていればそれをセパレータとみなし、分割した文字列をカラム名にする。
+                                var names = (display.Name ?? "").Split(separator);
+                                for (var i = 0; i < names.Length && i < captions.Length; i++)
+                                {
+                                    if (names[i] is var name && !string.IsNullOrWhiteSpace(name))
+                                    {
+                                        // カラム位置に対応する有効な名前があればカラム名に採用
+                                        captions[i] = name;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                // セパレータ無しの場合は名前に添え時付きのカラム名とする
+                                for (var i = 0; i < captions.Length; i++)
+                                {
+                                    captions[i] = $"{display.Name}[{i}]";
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // デリゲートによるキャプション名取得。こちらが指定されたら優先する。
+                if (options.CaptionSelector != null)
+                {
+                    for (var i = 0; i < captions.Length; i++)
+                    {
+                        var name = options.CaptionSelector.Invoke(member, i);
+                        if (!string.IsNullOrWhiteSpace(name))
+                        {
+                            captions[i] = name;
+                        }
+                    }
+                }
+
                 // カラム情報を作る
-                return new TypeColumn<TSource>(member, returnType, getter, span, caption, order);
+                return new TypeColumn<TSource>(member, returnType, getter, span, captions, order);
             })
             .OrderBy(c => options.UseCaptionAttribute ? c.Order : 0)    // 属性利用時はその Order プロパティを最優先。
             .ThenBy(c => options.SortCaption ? c.Caption : "")          // キャンプションソートが指定されていればそのソート
@@ -804,7 +847,11 @@ public static class EnumerableDataExtensions
     /// <param name="MemberType">メンバの取得値型</param>
     /// <param name="Getter">メンバからの値取得デリゲート</param>
     /// <param name="Span">メンバが利用するカラム数</param>
-    /// <param name="Caption">カラムキャプション</param>
+    /// <param name="Captions">カラムキャプション</param>
     /// <param name="Order">カラムの順序</param>
-    private record TypeColumn<TSource>(MemberInfo Member, Type MemberType, Func<TSource, object?> Getter, int Span, string Caption, int Order);
+    private record TypeColumn<TSource>(MemberInfo Member, Type MemberType, Func<TSource, object?> Getter, int Span, string[] Captions, int Order)
+    {
+        /// <summary>代表キャプション</summary>
+        public string Caption => this.Captions?.FirstOrDefault() ?? this.Member.Name;
+    }
 }

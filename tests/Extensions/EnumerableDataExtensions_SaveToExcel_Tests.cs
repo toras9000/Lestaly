@@ -462,6 +462,177 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
     }
 
     [TestMethod]
+    public void SaveToExcel_Expand_CaptionSelector()
+    {
+        // テスト用に一時ディレクトリ
+        using var tempDir = new TempDir();
+
+        // 保存データ
+        var data = new[]
+        {
+            new { Expand =new ExcelExpand(new object[0]), },
+        };
+
+        // テストヘルパメソッド
+        void validateExpandCaptions(int span, Func<int, string?> selector, params string[] expects)
+        {
+            // テスト用のファイル名作成
+            var tempFile = tempDir.Info.RelativeFile($"{Guid.NewGuid()}.xlsx");
+
+            // テスト対象実行
+            data.SaveToExcel(tempFile.FullName, new SaveToExcelOptions()
+            {
+                ColumnSpanSelector = m => span,
+                CaptionSelector = (m, i) => selector(i),
+            });
+
+            // 検証
+            using var book = new XLWorkbook(tempFile.FullName);
+            var sheet = book.Worksheets.First();
+            var actuals = sheet.RowsUsed().First().CellsUsed().Select(c => c.GetText());
+            actuals.Should().Equal(expects);
+        }
+
+        // テストパターン
+        validateExpandCaptions(4,
+            i => i switch { 0 => "aaa", 1 => "bbb", 2 => "ccc", 3 => "ddd", _ => "xxx", },
+            "aaa", "bbb", "ccc", "ddd"
+        );
+
+        validateExpandCaptions(4,
+            i => i switch { 0 => "aaa", 3 => "ddd", _ => null, },
+            "aaa", "Expand[1]", "Expand[2]", "ddd"
+        );
+
+        validateExpandCaptions(4,
+            i => i switch { 2 => "aaa", 3 => "ddd", _ => null, },
+            "Expand[0]", "Expand[1]", "aaa", "ddd"
+        );
+
+        validateExpandCaptions(4,
+            i => null,
+            "Expand[0]", "Expand[1]", "Expand[2]", "Expand[3]"
+        );
+
+    }
+
+    class ExpandCaptionItem
+    {
+        [MaxLength(4)]
+        [Display(Name = "aaa|bbb|ccc|ddd", GroupName = "|")]
+        public ExcelExpand? All { get; set; }
+
+        [MaxLength(4)]
+        [Display(Name = "eee|||hhh", GroupName = "|")]
+        public ExcelExpand? Side { get; set; }
+
+        [MaxLength(7)]
+        [Display(Name = "||iii|jjj||", GroupName = "|")]
+        public ExcelExpand? Middle { get; set; }
+
+        [MaxLength(3)]
+        [Display(Name = "asd|qwe")]
+        public ExcelExpand? Single { get; set; }
+
+        [MaxLength(2)]
+        [Display()]
+        public ExcelExpand? NoName { get; set; }
+    }
+
+    [TestMethod]
+    public void SaveToExcel_Expand_CaptionAttr()
+    {
+        // テスト用に一時ディレクトリ
+        using var tempDir = new TempDir();
+
+        // 保存データ
+        var data = new[]
+        {
+            new ExpandCaptionItem
+            {
+                All = new ExcelExpand(new object[0]),
+                Side = new ExcelExpand(new object[0]),
+                Middle = new ExcelExpand(new object[0]),
+                Single = new ExcelExpand(new object[0]),
+                NoName = new ExcelExpand(new object[0]),
+            },
+        };
+
+        // テスト用のファイル名作成
+        var tempFile = tempDir.Info.RelativeFile($"{Guid.NewGuid()}.xlsx");
+
+        // テスト対象実行
+        data.SaveToExcel(tempFile.FullName, new SaveToExcelOptions()
+        {
+            UseColumnSpanAttribute = true,
+            UseCaptionAttribute = true,
+        });
+
+        // 検証
+        using var book = new XLWorkbook(tempFile.FullName);
+        var sheet = book.Worksheets.First();
+        var actuals = sheet.RowsUsed().First().CellsUsed().Select(c => c.GetText());
+        actuals.Should().Equal(
+            "aaa", "bbb", "ccc", "ddd",
+            "eee", "Side[1]", "Side[2]", "hhh",
+            "Middle[0]", "Middle[1]", "iii", "jjj", "Middle[4]", "Middle[5]", "Middle[6]",
+            "asd|qwe[0]", "asd|qwe[1]", "asd|qwe[2]",
+            "NoName[0]", "NoName[1]"
+        );
+    }
+
+    [TestMethod]
+    public void SaveToExcel_Expand_CaptionAttrAndSelector()
+    {
+        // テスト用に一時ディレクトリ
+        using var tempDir = new TempDir();
+
+        // 保存データ
+        var data = new[]
+        {
+            new ExpandCaptionItem
+            {
+                All = new ExcelExpand(new object[0]),
+                Side = new ExcelExpand(new object[0]),
+                Middle = new ExcelExpand(new object[0]),
+                Single = new ExcelExpand(new object[0]),
+                NoName = new ExcelExpand(new object[0]),
+            },
+        };
+
+        // テスト用のファイル名作成
+        var tempFile = tempDir.Info.RelativeFile($"{Guid.NewGuid()}.xlsx");
+
+        // テスト対象実行
+        data.SaveToExcel(tempFile.FullName, new SaveToExcelOptions()
+        {
+            UseColumnSpanAttribute = true,
+            UseCaptionAttribute = true,
+            CaptionSelector = (m, i) => m.Name switch
+            {
+                nameof(ExpandCaptionItem.All) => i switch { 2 => "zzz", _ => null, },
+                nameof(ExpandCaptionItem.Side) => i switch { 1 => "yyy", 3 => "xxx", _ => null, },
+                nameof(ExpandCaptionItem.Middle) => i switch { 3 => "www", 6 => "vvv", _ => null, },
+                nameof(ExpandCaptionItem.Single) => i switch { 1 => "uuu", _ => null, },
+                nameof(ExpandCaptionItem.NoName) => i switch { 0 => "ttt", _ => null, },
+                _ => null,
+            },
+        });
+
+        // 検証
+        using var book = new XLWorkbook(tempFile.FullName);
+        var sheet = book.Worksheets.First();
+        var actuals = sheet.RowsUsed().First().CellsUsed().Select(c => c.GetText());
+        actuals.Should().Equal(
+            "aaa", "bbb", "zzz", "ddd",
+            "eee", "yyy", "Side[2]", "xxx",
+            "Middle[0]", "Middle[1]", "iii", "www", "Middle[4]", "Middle[5]", "vvv",
+            "asd|qwe[0]", "uuu", "asd|qwe[2]",
+            "ttt", "NoName[1]"
+        );
+    }
+
+    [TestMethod]
     public void SaveToExcel_Min()
     {
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
@@ -655,7 +826,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         // 実行オプション
         var options = new SaveToExcelOptions()
         {
-            CaptionSelector = m => m.Name.StartsWith("T") ? $"<{m.Name}>" : null,
+            CaptionSelector = (m, i) => m.Name.StartsWith("T") ? $"<{m.Name}>" : null,
         };
 
         // テスト対象実行
@@ -914,7 +1085,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
             IncludeFields = true,
             UseCaptionAttribute = false,
             SortCaption = true,
-            CaptionSelector = m => m.Name switch
+            CaptionSelector = (m, i) => m.Name switch
             {
                 nameof(ColNameItem.Prop1) => "ccc",
                 nameof(ColNameItem.Prop2) => "bbb",

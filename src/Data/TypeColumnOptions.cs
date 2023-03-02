@@ -15,7 +15,7 @@ public class TypeColumnOptions
 
     /// <summary>カラムのキャプション文字列の取得デリゲート</summary>
     /// <remarks><see cref="UseCaptionAttribute"/> が有効で属性から名称が得られる場合でも、このデリゲートで取得された名称を優先して使用する。</remarks>
-    public Func<MemberInfo, string?>? CaptionSelector { get; set; } = null;
+    public Func<MemberInfo, int, string?>? CaptionSelector { get; set; } = null;
 
     /// <summary>属性からカラム名と順序を利用するか否か</summary>
     /// <remarks>プロパティに付与された <see cref="System.ComponentModel.DataAnnotations.DisplayAttribute"/> を参照する。</remarks>
