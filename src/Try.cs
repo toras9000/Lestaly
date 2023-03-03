@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace Lestaly;
+﻿namespace Lestaly;
 
 /// <summary>
 /// 例外を抑制した実行補助クラス

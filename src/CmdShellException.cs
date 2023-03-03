@@ -1,7 +1,4 @@
-﻿using System.Diagnostics;
-using System.Text;
-
-namespace Lestaly;
+﻿namespace Lestaly;
 
 /// <summary>
 /// シェルでのコマンド実行クラスの例外

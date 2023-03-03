@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-
-namespace Lestaly;
+﻿namespace Lestaly;
 
 /// <summary>
 /// Excelテキスト保存オプション

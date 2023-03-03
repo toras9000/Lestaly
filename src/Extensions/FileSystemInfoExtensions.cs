@@ -1,8 +1,4 @@
-﻿using System.IO;
-using System.Runtime.Serialization;
-using System.Text;
-
-namespace Lestaly;
+﻿namespace Lestaly;
 
 /// <summary>
 /// FileSystemInfo に対する拡張メソッド
