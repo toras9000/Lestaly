@@ -11,14 +11,6 @@ namespace LestalyTest.Extensions;
 [TestClass()]
 public class EnumerableDataExtensions_SaveToExcel_Tests
 {
-    private (int width, int height) detectDataArea<T>(IEnumerable<T> data, bool withField = false)
-    {
-        var width = typeof(T).GetProperties().Length;
-        if (withField) width += typeof(T).GetFields().Length;
-        var height = data.Count();
-        return (width, height);
-    }
-
     [TestMethod]
     public void SaveToExcel_Default()
     {
@@ -48,8 +40,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         // 検証
         using var book = new XLWorkbook(target.FullName);
         var sheet = book.Worksheets.First();
-        var area = detectDataArea(data);
-        sheet.GetRangeData(row: 1, col: 1, area.width, 1 + area.height).Should().BeEquivalentTo(expect);
+        sheet.GetUsedData().Should().BeEquivalentTo(expect);
     }
 
     [TestMethod]
@@ -81,8 +72,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         // 検証
         using var book = new XLWorkbook(target.FullName);
         var sheet = book.Worksheets.First();
-        var area = detectDataArea(data);
-        sheet.GetRangeData(row: 1, col: 1, area.width, 1 + area.height).Should().BeEquivalentTo(expect);
+        sheet.GetUsedData().Should().BeEquivalentTo(expect);
     }
 
     [TestMethod]
@@ -115,8 +105,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         // 検証
         using var book = new XLWorkbook(target.FullName);
         var sheet = book.Worksheets.First();
-        var area = detectDataArea(data);
-        sheet.GetRangeData(row: 1, col: 1, area.width, 1 + area.height).Should().BeEquivalentTo(expect);
+        sheet.GetUsedData().Should().BeEquivalentTo(expect);
     }
 
     [TestMethod]
@@ -655,8 +644,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         // 検証
         using var book = new XLWorkbook(target.FullName);
         var sheet = book.Worksheets.First();
-        var area = detectDataArea(data);
-        sheet.GetRangeData(row: 1, col: 1, area.width, 1 + area.height).Should().BeEquivalentTo(expect);
+        sheet.GetUsedData().Should().BeEquivalentTo(expect);
     }
 
     [TestMethod]
@@ -695,8 +683,10 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         // 検証
         using var book = new XLWorkbook(target.FullName);
         var sheet = book.Worksheets.First();
-        var area = detectDataArea(data);
-        sheet.GetRangeData(row: 1 + 4, col: 1 + 2, area.width, 1 + area.height).Should().BeEquivalentTo(expect);
+        var used = sheet.RangeUsed();
+        used.FirstCell().WorksheetRow().RowNumber().Should().Be(1 + 4);
+        used.FirstCell().WorksheetColumn().ColumnNumber().Should().Be(1 + 2);
+        sheet.GetUsedData().Should().BeEquivalentTo(expect);
     }
 
     [TestMethod]
@@ -839,8 +829,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         // 検証
         using var book = new XLWorkbook(target.FullName);
         var sheet = book.Worksheets.First();
-        var area = detectDataArea(data);
-        sheet.GetRangeData(row: 1, col: 1, area.width, 1 + area.height).Should().BeEquivalentTo(expect);
+        sheet.GetUsedData().Should().BeEquivalentTo(expect);
     }
 
     [TestMethod]
@@ -878,8 +867,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         // 検証
         using var book = new XLWorkbook(target.FullName);
         var sheet = book.Worksheets.First();
-        var area = detectDataArea(data);
-        sheet.GetRangeData(row: 1, col: 1, 1, 1 + area.height).Should().BeEquivalentTo(expect);
+        sheet.GetUsedData().Should().BeEquivalentTo(expect);
     }
 
     class TestItem
@@ -924,8 +912,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         // 検証
         using var book = new XLWorkbook(target.FullName);
         var sheet = book.Worksheets.First();
-        var area = detectDataArea(data);
-        sheet.GetRangeData(row: 1, col: 1, area.width, 1 + area.height).Should().BeEquivalentTo(expect);
+        sheet.GetUsedData().Should().BeEquivalentTo(expect);
     }
 
     [TestMethod]
@@ -962,8 +949,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         // 検証
         using var book = new XLWorkbook(target.FullName);
         var sheet = book.Worksheets.First();
-        var area = detectDataArea(data, withField: true);
-        sheet.GetRangeData(row: 1, col: 1, area.width, 1 + area.height).Should().BeEquivalentTo(expect);
+        sheet.GetUsedData().Should().BeEquivalentTo(expect);
     }
 
     class ColOrderItem
@@ -1010,8 +996,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         // 検証
         using var book = new XLWorkbook(target.FullName);
         var sheet = book.Worksheets.First();
-        var area = detectDataArea(data, withField: true);
-        sheet.GetRangeData(row: 1, col: 1, area.width, 1 + area.height).Should().BeEquivalentTo(expect);
+        sheet.GetUsedData().Should().BeEquivalentTo(expect);
     }
 
     class ColNameItem
@@ -1058,8 +1043,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         // 検証
         using var book = new XLWorkbook(target.FullName);
         var sheet = book.Worksheets.First();
-        var area = detectDataArea(data, withField: true);
-        sheet.GetRangeData(row: 1, col: 1, area.width, 1 + area.height).Should().BeEquivalentTo(expect);
+        sheet.GetUsedData().Should().BeEquivalentTo(expect);
     }
 
     [TestMethod]
@@ -1106,8 +1090,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         // 検証
         using var book = new XLWorkbook(target.FullName);
         var sheet = book.Worksheets.First();
-        var area = detectDataArea(data, withField: true);
-        sheet.GetRangeData(row: 1, col: 1, area.width, 1 + area.height).Should().BeEquivalentTo(expect);
+        sheet.GetUsedData().Should().BeEquivalentTo(expect);
     }
 
     class FieldNameItem
@@ -1155,8 +1138,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         // 検証
         using var book = new XLWorkbook(target.FullName);
         var sheet = book.Worksheets.First();
-        var area = detectDataArea(data, withField: true);
-        sheet.GetRangeData(row: 1, col: 1, area.width, 1 + area.height).Should().BeEquivalentTo(expect);
+        sheet.GetUsedData().Should().BeEquivalentTo(expect);
     }
 
     [TestMethod]
@@ -1198,8 +1180,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         // 検証
         using var book = new XLWorkbook(target.FullName);
         var sheet = book.Worksheets.First();
-        var area = detectDataArea(data, withField: true);
-        sheet.GetRangeData(row: 1, col: 1, area.width, 1 + area.height).Should().BeEquivalentTo(expect);
+        sheet.GetUsedData().Should().BeEquivalentTo(expect);
     }
 
 

@@ -26,4 +26,13 @@ public static class ClosedXmlExtensions
             .Select(row => row.Cells().Select(cell => cell.GetFormattedString()).ToArray())
             .ToArray();
     }
+
+    public static object?[][] GetUsedData(this IXLWorksheet self)
+    {
+        var range = self.RangeUsed();
+        return range.Rows()
+            .Select(row => row.Cells().Select(c => c.ToObjectValue()).ToArray())
+            .ToArray();
+    }
+
 }
