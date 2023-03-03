@@ -6,7 +6,7 @@ using Lestaly;
 namespace LestalyTest.Extensions;
 
 [TestClass()]
-public class EnumerableDataExtensions_SaveToCsvAsync_Tests
+public class EnumerableDataExtensions_SaveToCsv_Tests
 {
     [TestMethod]
     public async Task SaveToCsvAsync_Default()

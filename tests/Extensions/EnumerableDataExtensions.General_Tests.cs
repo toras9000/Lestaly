@@ -6,7 +6,7 @@ using Lestaly;
 namespace LestalyTest.Extensions;
 
 [TestClass()]
-public class EnumerableDataExtensions_WriteAllLinesAsync_Tests
+public class EnumerableDataExtensions_General_Tests
 {
     [TestMethod]
     public async Task WriteAllLinesAsync()

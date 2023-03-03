@@ -4,10 +4,10 @@ using FluentAssertions;
 namespace LestalyTest.Extensions;
 
 [TestClass()]
-public class EnumerableDataExtensions_PrallelAsync_Tests
+public class EnumerableDataExtensions_ToParallel_Tests
 {
     [TestMethod]
-    public async Task ParallelAsync_ParallelNum()
+    public async Task ToParallelAsync_ParallelNum()
     {
         var actives = new HashSet<int>();
         var history = new List<int>();
@@ -41,7 +41,7 @@ public class EnumerableDataExtensions_PrallelAsync_Tests
     }
 
     [TestMethod]
-    public async Task ParallelAsync_NoOrder()
+    public async Task ToParallelAsync_NoOrder()
     {
         var source = Enumerable.Range(0, 10).ToArray();
         var results = await source
@@ -56,7 +56,7 @@ public class EnumerableDataExtensions_PrallelAsync_Tests
     }
 
     [TestMethod]
-    public async Task ParallelAsync_Ordered()
+    public async Task ToParallelAsync_Ordered()
     {
         var source = Enumerable.Range(0, 10).ToArray();
         var results = await source
