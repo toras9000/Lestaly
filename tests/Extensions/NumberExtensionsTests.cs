@@ -48,4 +48,92 @@ public class NumberExtensionsTests
         ((ulong)18446744073709551615u).ToHumanize(si: false).Should().Be("15.9E");
         ((ulong)18446744073709551615u).ToHumanize(si: true).Should().Be("18.4E");
     }
+
+    [TestMethod()]
+    public void ToBinaryString_Value()
+    {
+        ((sbyte)1).ToBinaryString("0b_", 8).Should().Be("0b_00000001");
+        ((short)1).ToBinaryString("0b_", 8).Should().Be("0b_00000000_00000001");
+        ((int)1).ToBinaryString("0b_", 8).Should().Be("0b_00000000_00000000_00000000_00000001");
+        ((long)1).ToBinaryString("0b_", 8).Should().Be("0b_00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000001");
+        ((byte)1).ToBinaryString("0b_", 8).Should().Be("0b_00000001");
+        ((ushort)1).ToBinaryString("0b_", 8).Should().Be("0b_00000000_00000001");
+        ((uint)1).ToBinaryString("0b_", 8).Should().Be("0b_00000000_00000000_00000000_00000001");
+        ((ulong)1).ToBinaryString("0b_", 8).Should().Be("0b_00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000001");
+
+        ((sbyte)5).ToBinaryString("0b_", 8).Should().Be("0b_00000101");
+        ((short)5).ToBinaryString("0b_", 8).Should().Be("0b_00000000_00000101");
+        ((int)5).ToBinaryString("0b_", 8).Should().Be("0b_00000000_00000000_00000000_00000101");
+        ((long)5).ToBinaryString("0b_", 8).Should().Be("0b_00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000101");
+        ((byte)5).ToBinaryString("0b_", 8).Should().Be("0b_00000101");
+        ((ushort)5).ToBinaryString("0b_", 8).Should().Be("0b_00000000_00000101");
+        ((uint)5).ToBinaryString("0b_", 8).Should().Be("0b_00000000_00000000_00000000_00000101");
+        ((ulong)5).ToBinaryString("0b_", 8).Should().Be("0b_00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000101");
+
+        ((sbyte)-1).ToBinaryString("0b_", 8).Should().Be("0b_11111111");
+        ((short)-1).ToBinaryString("0b_", 8).Should().Be("0b_11111111_11111111");
+        ((int)-1).ToBinaryString("0b_", 8).Should().Be("0b_11111111_11111111_11111111_11111111");
+        ((long)-1).ToBinaryString("0b_", 8).Should().Be("0b_11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111");
+        unchecked((byte)-1).ToBinaryString("0b_", 8).Should().Be("0b_11111111");
+        unchecked((ushort)-1).ToBinaryString("0b_", 8).Should().Be("0b_11111111_11111111");
+        unchecked((uint)-1).ToBinaryString("0b_", 8).Should().Be("0b_11111111_11111111_11111111_11111111");
+        unchecked((ulong)-1).ToBinaryString("0b_", 8).Should().Be("0b_11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111");
+
+        unchecked((sbyte)0x80).ToBinaryString("0b_", 8).Should().Be("0b_10000000");
+        unchecked((short)0x8000).ToBinaryString("0b_", 8).Should().Be("0b_10000000_00000000");
+        unchecked((int)0x80000000).ToBinaryString("0b_", 8).Should().Be("0b_10000000_00000000_00000000_00000000");
+        unchecked((long)0x8000000000000000).ToBinaryString("0b_", 8).Should().Be("0b_10000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000");
+        unchecked((byte)0x80).ToBinaryString("0b_", 8).Should().Be("0b_10000000");
+        unchecked((ushort)0x8000).ToBinaryString("0b_", 8).Should().Be("0b_10000000_00000000");
+        unchecked((uint)0x80000000).ToBinaryString("0b_", 8).Should().Be("0b_10000000_00000000_00000000_00000000");
+        unchecked((ulong)0x8000000000000000).ToBinaryString("0b_", 8).Should().Be("0b_10000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000");
+    }
+
+    [TestMethod()]
+    public void ToBinaryString_Separate()
+    {
+        ((sbyte)0).ToBinaryString("0b_", 8).Should().Be("0b_00000000");
+        ((short)0).ToBinaryString("0b_", 8).Should().Be("0b_00000000_00000000");
+        ((int)0).ToBinaryString("0b_", 8).Should().Be("0b_00000000_00000000_00000000_00000000");
+        ((long)0).ToBinaryString("0b_", 8).Should().Be("0b_00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000");
+        ((byte)0).ToBinaryString("0b_", 8).Should().Be("0b_00000000");
+        ((ushort)0).ToBinaryString("0b_", 8).Should().Be("0b_00000000_00000000");
+        ((uint)0).ToBinaryString("0b_", 8).Should().Be("0b_00000000_00000000_00000000_00000000");
+        ((ulong)0).ToBinaryString("0b_", 8).Should().Be("0b_00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000");
+
+        ((sbyte)0).ToBinaryString("0b_", 32).Should().Be("0b_00000000");
+        ((short)0).ToBinaryString("0b_", 32).Should().Be("0b_0000000000000000");
+        ((int)0).ToBinaryString("0b_", 32).Should().Be("0b_00000000000000000000000000000000");
+        ((long)0).ToBinaryString("0b_", 32).Should().Be("0b_00000000000000000000000000000000_00000000000000000000000000000000");
+        ((byte)0).ToBinaryString("0b_", 32).Should().Be("0b_00000000");
+        ((ushort)0).ToBinaryString("0b_", 32).Should().Be("0b_0000000000000000");
+        ((uint)0).ToBinaryString("0b_", 32).Should().Be("0b_00000000000000000000000000000000");
+        ((ulong)0).ToBinaryString("0b_", 32).Should().Be("0b_00000000000000000000000000000000_00000000000000000000000000000000");
+
+        ((sbyte)0).ToBinaryString("0b_", 1).Should().Be("0b_0_0_0_0_0_0_0_0");
+        ((short)0).ToBinaryString("0b_", 1).Should().Be("0b_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0");
+        ((int)0).ToBinaryString("0b_", 1).Should().Be("0b_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0");
+        ((long)0).ToBinaryString("0b_", 1).Should().Be("0b_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0");
+        ((byte)0).ToBinaryString("0b_", 1).Should().Be("0b_0_0_0_0_0_0_0_0");
+        ((ushort)0).ToBinaryString("0b_", 1).Should().Be("0b_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0");
+        ((uint)0).ToBinaryString("0b_", 1).Should().Be("0b_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0");
+        ((ulong)0).ToBinaryString("0b_", 1).Should().Be("0b_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0");
+
+        ((sbyte)0).ToBinaryString("0b_", 0).Should().Be("0b_00000000");
+        ((short)0).ToBinaryString("0b_", 0).Should().Be("0b_0000000000000000");
+        ((int)0).ToBinaryString("0b_", 0).Should().Be("0b_00000000000000000000000000000000");
+        ((long)0).ToBinaryString("0b_", 0).Should().Be("0b_0000000000000000000000000000000000000000000000000000000000000000");
+        ((byte)0).ToBinaryString("0b_", 0).Should().Be("0b_00000000");
+        ((ushort)0).ToBinaryString("0b_", 0).Should().Be("0b_0000000000000000");
+        ((uint)0).ToBinaryString("0b_", 0).Should().Be("0b_00000000000000000000000000000000");
+        ((ulong)0).ToBinaryString("0b_", 0).Should().Be("0b_0000000000000000000000000000000000000000000000000000000000000000");
+    }
+
+    [TestMethod()]
+    public void ToBinaryString_Prefix()
+    {
+        ((byte)0).ToBinaryString("asd", 0).Should().Be("asd00000000");
+        ((byte)0).ToBinaryString("", 0).Should().Be("00000000");
+        ((byte)0).ToBinaryString(null!, 0).Should().Be("00000000");
+    }
 }
