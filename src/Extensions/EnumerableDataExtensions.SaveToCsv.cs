@@ -216,7 +216,7 @@ public static partial class EnumerableDataExtensions
         await writer.WriteLineAsync(makeLine(columns.Select(c => c.Caption))).ConfigureAwait(false);
 
         // シーケンス要素を出力
-        await foreach (var elem in self.ConfigureAwait(false))
+        await foreach (var elem in self.WithCancellation(cancelToken).ConfigureAwait(false))
         {
             var line = makeLine(columns.Select(c => c.Getter(elem)?.ToString()));
             await writer.WriteLineAsync(line).ConfigureAwait(false);

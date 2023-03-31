@@ -147,7 +147,7 @@ public static partial class EnumerableDataExtensions
 
         // データ出力
         var dataCell = baseCell;
-        await foreach (var data in self.ConfigureAwait(false))
+        await foreach (var data in self.WithCancellation(cancelToken).ConfigureAwait(false))
         {
             dataCell = dataCell.CellBelow();
             offset = 0;
