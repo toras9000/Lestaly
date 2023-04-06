@@ -1070,22 +1070,22 @@ public class StringParseExtensionsTests
     public void TryParseHex8()
     {
         // string
-        "0".TryParseHex8().Should().Be(0);
-        "80".TryParseHex8().Should().Be(0x80);
-        "FF".TryParseHex8().Should().Be(0xFF);
-        "100".TryParseHex8().Should().BeNull();
+        "0".TryParseHexNumber8().Should().Be(0);
+        "80".TryParseHexNumber8().Should().Be(0x80);
+        "FF".TryParseHexNumber8().Should().Be(0xFF);
+        "100".TryParseHexNumber8().Should().BeNull();
 
         // ReadOnlySpan
-        "0".AsSpan().TryParseHex8().Should().Be(0);
-        "80".AsSpan().TryParseHex8().Should().Be(0x80);
-        "FF".AsSpan().TryParseHex8().Should().Be(0xFF);
-        "100".AsSpan().TryParseHex8().Should().BeNull();
+        "0".AsSpan().TryParseHexNumber8().Should().Be(0);
+        "80".AsSpan().TryParseHexNumber8().Should().Be(0x80);
+        "FF".AsSpan().TryParseHexNumber8().Should().Be(0xFF);
+        "100".AsSpan().TryParseHexNumber8().Should().BeNull();
 
         // Span
-        "0".ToArray().AsSpan().TryParseHex8().Should().Be(0);
-        "80".ToArray().AsSpan().TryParseHex8().Should().Be(0x80);
-        "FF".ToArray().AsSpan().TryParseHex8().Should().Be(0xFF);
-        "100".ToArray().AsSpan().TryParseHex8().Should().BeNull();
+        "0".ToArray().AsSpan().TryParseHexNumber8().Should().Be(0);
+        "80".ToArray().AsSpan().TryParseHexNumber8().Should().Be(0x80);
+        "FF".ToArray().AsSpan().TryParseHexNumber8().Should().Be(0xFF);
+        "100".ToArray().AsSpan().TryParseHexNumber8().Should().BeNull();
 
     }
 
@@ -1093,66 +1093,66 @@ public class StringParseExtensionsTests
     public void TryParseHex16()
     {
         // string
-        "0".TryParseHex16().Should().Be(0);
-        "8000".TryParseHex16().Should().Be(0x8000);
-        "FFFF".TryParseHex16().Should().Be(0xFFFF);
-        "10000".TryParseHex16().Should().BeNull();
+        "0".TryParseHexNumber16().Should().Be(0);
+        "8000".TryParseHexNumber16().Should().Be(0x8000);
+        "FFFF".TryParseHexNumber16().Should().Be(0xFFFF);
+        "10000".TryParseHexNumber16().Should().BeNull();
 
         // ReadOnlySpan
-        "0".AsSpan().TryParseHex16().Should().Be(0);
-        "8000".AsSpan().TryParseHex16().Should().Be(0x8000);
-        "FFFF".AsSpan().TryParseHex16().Should().Be(0xFFFF);
-        "10000".AsSpan().TryParseHex16().Should().BeNull();
+        "0".AsSpan().TryParseHexNumber16().Should().Be(0);
+        "8000".AsSpan().TryParseHexNumber16().Should().Be(0x8000);
+        "FFFF".AsSpan().TryParseHexNumber16().Should().Be(0xFFFF);
+        "10000".AsSpan().TryParseHexNumber16().Should().BeNull();
 
         // Span
-        "0".ToArray().AsSpan().TryParseHex16().Should().Be(0);
-        "8000".ToArray().AsSpan().TryParseHex16().Should().Be(0x8000);
-        "FFFF".ToArray().AsSpan().TryParseHex16().Should().Be(0xFFFF);
-        "10000".ToArray().AsSpan().TryParseHex16().Should().BeNull();
+        "0".ToArray().AsSpan().TryParseHexNumber16().Should().Be(0);
+        "8000".ToArray().AsSpan().TryParseHexNumber16().Should().Be(0x8000);
+        "FFFF".ToArray().AsSpan().TryParseHexNumber16().Should().Be(0xFFFF);
+        "10000".ToArray().AsSpan().TryParseHexNumber16().Should().BeNull();
     }
 
     [TestMethod()]
     public void TryParseHex32()
     {
         // string
-        "0".TryParseHex32().Should().Be(0);
-        "80000000".TryParseHex32().Should().Be(0x80000000);
-        "FFFFFFFF".TryParseHex32().Should().Be(0xFFFFFFFF);
-        "100000000".TryParseHex32().Should().BeNull();
+        "0".TryParseHexNumber32().Should().Be(0);
+        "80000000".TryParseHexNumber32().Should().Be(0x80000000);
+        "FFFFFFFF".TryParseHexNumber32().Should().Be(0xFFFFFFFF);
+        "100000000".TryParseHexNumber32().Should().BeNull();
 
         // ReadOnlySpan
-        "0".AsSpan().TryParseHex32().Should().Be(0);
-        "80000000".AsSpan().TryParseHex32().Should().Be(0x80000000);
-        "FFFFFFFF".AsSpan().TryParseHex32().Should().Be(0xFFFFFFFF);
-        "100000000".AsSpan().TryParseHex32().Should().BeNull();
+        "0".AsSpan().TryParseHexNumber32().Should().Be(0);
+        "80000000".AsSpan().TryParseHexNumber32().Should().Be(0x80000000);
+        "FFFFFFFF".AsSpan().TryParseHexNumber32().Should().Be(0xFFFFFFFF);
+        "100000000".AsSpan().TryParseHexNumber32().Should().BeNull();
 
         // Span
-        "0".ToArray().AsSpan().TryParseHex32().Should().Be(0);
-        "80000000".ToArray().AsSpan().TryParseHex32().Should().Be(0x80000000);
-        "FFFFFFFF".ToArray().AsSpan().TryParseHex32().Should().Be(0xFFFFFFFF);
-        "100000000".ToArray().AsSpan().TryParseHex32().Should().BeNull();
+        "0".ToArray().AsSpan().TryParseHexNumber32().Should().Be(0);
+        "80000000".ToArray().AsSpan().TryParseHexNumber32().Should().Be(0x80000000);
+        "FFFFFFFF".ToArray().AsSpan().TryParseHexNumber32().Should().Be(0xFFFFFFFF);
+        "100000000".ToArray().AsSpan().TryParseHexNumber32().Should().BeNull();
     }
 
     [TestMethod()]
     public void TryParseHex64()
     {
         // string
-        "0".TryParseHex64().Should().Be(0);
-        "8000000000000000".TryParseHex64().Should().Be(0x8000000000000000);
-        "FFFFFFFFFFFFFFFF".TryParseHex64().Should().Be(0xFFFFFFFFFFFFFFFF);
-        "10000000000000000".TryParseHex64().Should().BeNull();
+        "0".TryParseHexNumber64().Should().Be(0);
+        "8000000000000000".TryParseHexNumber64().Should().Be(0x8000000000000000);
+        "FFFFFFFFFFFFFFFF".TryParseHexNumber64().Should().Be(0xFFFFFFFFFFFFFFFF);
+        "10000000000000000".TryParseHexNumber64().Should().BeNull();
 
         // ReadOnlySpan
-        "0".AsSpan().TryParseHex64().Should().Be(0);
-        "8000000000000000".AsSpan().TryParseHex64().Should().Be(0x8000000000000000);
-        "FFFFFFFFFFFFFFFF".AsSpan().TryParseHex64().Should().Be(0xFFFFFFFFFFFFFFFF);
-        "10000000000000000".AsSpan().TryParseHex64().Should().BeNull();
+        "0".AsSpan().TryParseHexNumber64().Should().Be(0);
+        "8000000000000000".AsSpan().TryParseHexNumber64().Should().Be(0x8000000000000000);
+        "FFFFFFFFFFFFFFFF".AsSpan().TryParseHexNumber64().Should().Be(0xFFFFFFFFFFFFFFFF);
+        "10000000000000000".AsSpan().TryParseHexNumber64().Should().BeNull();
 
         // Span
-        "0".ToArray().AsSpan().TryParseHex64().Should().Be(0);
-        "8000000000000000".ToArray().AsSpan().TryParseHex64().Should().Be(0x8000000000000000);
-        "FFFFFFFFFFFFFFFF".ToArray().AsSpan().TryParseHex64().Should().Be(0xFFFFFFFFFFFFFFFF);
-        "10000000000000000".ToArray().AsSpan().TryParseHex64().Should().BeNull();
+        "0".ToArray().AsSpan().TryParseHexNumber64().Should().Be(0);
+        "8000000000000000".ToArray().AsSpan().TryParseHexNumber64().Should().Be(0x8000000000000000);
+        "FFFFFFFFFFFFFFFF".ToArray().AsSpan().TryParseHexNumber64().Should().Be(0xFFFFFFFFFFFFFFFF);
+        "10000000000000000".ToArray().AsSpan().TryParseHexNumber64().Should().BeNull();
     }
     #endregion
 
@@ -1263,124 +1263,124 @@ public class StringParseExtensionsTests
     public void TryParseBin8()
     {
         // string
-        "0".TryParseBin8(trim: true, snake: true).Should().Be(0);
-        "1".TryParseBin8(trim: true, snake: true).Should().Be(1);
-        "10".TryParseBin8(trim: true, snake: true).Should().Be(2);
-        "11111111".TryParseBin8(trim: true, snake: true).Should().Be(0xFF);
-        "100000000".TryParseBin8(trim: true, snake: true).Should().BeNull();
+        "0".TryParseBinNumber8(trim: true, snake: true).Should().Be(0);
+        "1".TryParseBinNumber8(trim: true, snake: true).Should().Be(1);
+        "10".TryParseBinNumber8(trim: true, snake: true).Should().Be(2);
+        "11111111".TryParseBinNumber8(trim: true, snake: true).Should().Be(0xFF);
+        "100000000".TryParseBinNumber8(trim: true, snake: true).Should().BeNull();
 
         // ReadOnlySpan
-        "0".AsSpan().TryParseBin8(trim: true, snake: true).Should().Be(0);
-        "1".AsSpan().TryParseBin8(trim: true, snake: true).Should().Be(1);
-        "10".AsSpan().TryParseBin8(trim: true, snake: true).Should().Be(2);
-        "11111111".AsSpan().TryParseBin8(trim: true, snake: true).Should().Be(0xFF);
-        "100000000".AsSpan().TryParseBin8(trim: true, snake: true).Should().BeNull();
+        "0".AsSpan().TryParseBinNumber8(trim: true, snake: true).Should().Be(0);
+        "1".AsSpan().TryParseBinNumber8(trim: true, snake: true).Should().Be(1);
+        "10".AsSpan().TryParseBinNumber8(trim: true, snake: true).Should().Be(2);
+        "11111111".AsSpan().TryParseBinNumber8(trim: true, snake: true).Should().Be(0xFF);
+        "100000000".AsSpan().TryParseBinNumber8(trim: true, snake: true).Should().BeNull();
 
         // Span
-        "0".ToArray().AsSpan().TryParseBin8(trim: true, snake: true).Should().Be(0);
-        "1".ToArray().AsSpan().TryParseBin8(trim: true, snake: true).Should().Be(1);
-        "10".ToArray().AsSpan().TryParseBin8(trim: true, snake: true).Should().Be(2);
-        "11111111".ToArray().AsSpan().TryParseBin8(trim: true, snake: true).Should().Be(0xFF);
-        "100000000".ToArray().AsSpan().TryParseBin8(trim: true, snake: true).Should().BeNull();
+        "0".ToArray().AsSpan().TryParseBinNumber8(trim: true, snake: true).Should().Be(0);
+        "1".ToArray().AsSpan().TryParseBinNumber8(trim: true, snake: true).Should().Be(1);
+        "10".ToArray().AsSpan().TryParseBinNumber8(trim: true, snake: true).Should().Be(2);
+        "11111111".ToArray().AsSpan().TryParseBinNumber8(trim: true, snake: true).Should().Be(0xFF);
+        "100000000".ToArray().AsSpan().TryParseBinNumber8(trim: true, snake: true).Should().BeNull();
 
         // parameters
-        "   1   ".AsSpan().TryParseBin8(trim: true, snake: true).Should().Be(1);
-        "   1   ".AsSpan().TryParseBin8(trim: false, snake: true).Should().BeNull();
-        "1111_1111".AsSpan().TryParseBin8(trim: true, snake: true).Should().Be(0xFF);
-        "1111_1111".AsSpan().TryParseBin8(trim: true, snake: false).Should().BeNull();
+        "   1   ".AsSpan().TryParseBinNumber8(trim: true, snake: true).Should().Be(1);
+        "   1   ".AsSpan().TryParseBinNumber8(trim: false, snake: true).Should().BeNull();
+        "1111_1111".AsSpan().TryParseBinNumber8(trim: true, snake: true).Should().Be(0xFF);
+        "1111_1111".AsSpan().TryParseBinNumber8(trim: true, snake: false).Should().BeNull();
     }
 
     [TestMethod()]
     public void TryParseBin16()
     {
         // string
-        "0".TryParseBin16(trim: true, snake: true).Should().Be(0);
-        "1".TryParseBin16(trim: true, snake: true).Should().Be(1);
-        "10".TryParseBin16(trim: true, snake: true).Should().Be(2);
-        "1111111111111111".TryParseBin16(trim: true, snake: true).Should().Be(0xFFFF);
-        "10000000000000000".TryParseBin16(trim: true, snake: true).Should().BeNull();
+        "0".TryParseBinNumber16(trim: true, snake: true).Should().Be(0);
+        "1".TryParseBinNumber16(trim: true, snake: true).Should().Be(1);
+        "10".TryParseBinNumber16(trim: true, snake: true).Should().Be(2);
+        "1111111111111111".TryParseBinNumber16(trim: true, snake: true).Should().Be(0xFFFF);
+        "10000000000000000".TryParseBinNumber16(trim: true, snake: true).Should().BeNull();
 
         // ReadOnlySpan
-        "0".AsSpan().TryParseBin16(trim: true, snake: true).Should().Be(0);
-        "1".AsSpan().TryParseBin16(trim: true, snake: true).Should().Be(1);
-        "10".AsSpan().TryParseBin16(trim: true, snake: true).Should().Be(2);
-        "1111111111111111".AsSpan().TryParseBin16(trim: true, snake: true).Should().Be(0xFFFF);
-        "10000000000000000".AsSpan().TryParseBin16(trim: true, snake: true).Should().BeNull();
+        "0".AsSpan().TryParseBinNumber16(trim: true, snake: true).Should().Be(0);
+        "1".AsSpan().TryParseBinNumber16(trim: true, snake: true).Should().Be(1);
+        "10".AsSpan().TryParseBinNumber16(trim: true, snake: true).Should().Be(2);
+        "1111111111111111".AsSpan().TryParseBinNumber16(trim: true, snake: true).Should().Be(0xFFFF);
+        "10000000000000000".AsSpan().TryParseBinNumber16(trim: true, snake: true).Should().BeNull();
 
         // Span
-        "0".ToArray().AsSpan().TryParseBin16(trim: true, snake: true).Should().Be(0);
-        "1".ToArray().AsSpan().TryParseBin16(trim: true, snake: true).Should().Be(1);
-        "10".ToArray().AsSpan().TryParseBin16(trim: true, snake: true).Should().Be(2);
-        "1111111111111111".ToArray().AsSpan().TryParseBin16(trim: true, snake: true).Should().Be(0xFFFF);
-        "10000000000000000".ToArray().AsSpan().TryParseBin16(trim: true, snake: true).Should().BeNull();
+        "0".ToArray().AsSpan().TryParseBinNumber16(trim: true, snake: true).Should().Be(0);
+        "1".ToArray().AsSpan().TryParseBinNumber16(trim: true, snake: true).Should().Be(1);
+        "10".ToArray().AsSpan().TryParseBinNumber16(trim: true, snake: true).Should().Be(2);
+        "1111111111111111".ToArray().AsSpan().TryParseBinNumber16(trim: true, snake: true).Should().Be(0xFFFF);
+        "10000000000000000".ToArray().AsSpan().TryParseBinNumber16(trim: true, snake: true).Should().BeNull();
 
         // parameters
-        "   1   ".AsSpan().TryParseBin16(trim: true, snake: true).Should().Be(1);
-        "   1   ".AsSpan().TryParseBin16(trim: false, snake: true).Should().BeNull();
-        "11111111_11111111".AsSpan().TryParseBin16(trim: true, snake: true).Should().Be(0xFFFF);
-        "11111111_11111111".AsSpan().TryParseBin16(trim: true, snake: false).Should().BeNull();
+        "   1   ".AsSpan().TryParseBinNumber16(trim: true, snake: true).Should().Be(1);
+        "   1   ".AsSpan().TryParseBinNumber16(trim: false, snake: true).Should().BeNull();
+        "11111111_11111111".AsSpan().TryParseBinNumber16(trim: true, snake: true).Should().Be(0xFFFF);
+        "11111111_11111111".AsSpan().TryParseBinNumber16(trim: true, snake: false).Should().BeNull();
     }
 
     [TestMethod()]
     public void TryParseBin32()
     {
         // string
-        "0".TryParseBin32(trim: true, snake: true).Should().Be(0);
-        "1".TryParseBin32(trim: true, snake: true).Should().Be(1);
-        "10".TryParseBin32(trim: true, snake: true).Should().Be(2);
-        "11111111111111111111111111111111".TryParseBin32(trim: true, snake: true).Should().Be(0xFFFFFFFF);
-        "100000000000000000000000000000000".TryParseBin32(trim: true, snake: true).Should().BeNull();
+        "0".TryParseBinNumber32(trim: true, snake: true).Should().Be(0);
+        "1".TryParseBinNumber32(trim: true, snake: true).Should().Be(1);
+        "10".TryParseBinNumber32(trim: true, snake: true).Should().Be(2);
+        "11111111111111111111111111111111".TryParseBinNumber32(trim: true, snake: true).Should().Be(0xFFFFFFFF);
+        "100000000000000000000000000000000".TryParseBinNumber32(trim: true, snake: true).Should().BeNull();
 
         // ReadOnlySpan
-        "0".AsSpan().TryParseBin32(trim: true, snake: true).Should().Be(0);
-        "1".AsSpan().TryParseBin32(trim: true, snake: true).Should().Be(1);
-        "10".AsSpan().TryParseBin32(trim: true, snake: true).Should().Be(2);
-        "11111111111111111111111111111111".AsSpan().TryParseBin32(trim: true, snake: true).Should().Be(0xFFFFFFFF);
-        "100000000000000000000000000000000".AsSpan().TryParseBin32(trim: true, snake: true).Should().BeNull();
+        "0".AsSpan().TryParseBinNumber32(trim: true, snake: true).Should().Be(0);
+        "1".AsSpan().TryParseBinNumber32(trim: true, snake: true).Should().Be(1);
+        "10".AsSpan().TryParseBinNumber32(trim: true, snake: true).Should().Be(2);
+        "11111111111111111111111111111111".AsSpan().TryParseBinNumber32(trim: true, snake: true).Should().Be(0xFFFFFFFF);
+        "100000000000000000000000000000000".AsSpan().TryParseBinNumber32(trim: true, snake: true).Should().BeNull();
 
         // Span
-        "0".ToArray().AsSpan().TryParseBin32(trim: true, snake: true).Should().Be(0);
-        "1".ToArray().AsSpan().TryParseBin32(trim: true, snake: true).Should().Be(1);
-        "10".ToArray().AsSpan().TryParseBin32(trim: true, snake: true).Should().Be(2);
-        "11111111111111111111111111111111".ToArray().AsSpan().TryParseBin32(trim: true, snake: true).Should().Be(0xFFFFFFFF);
-        "100000000000000000000000000000000".ToArray().AsSpan().TryParseBin32(trim: true, snake: true).Should().BeNull();
+        "0".ToArray().AsSpan().TryParseBinNumber32(trim: true, snake: true).Should().Be(0);
+        "1".ToArray().AsSpan().TryParseBinNumber32(trim: true, snake: true).Should().Be(1);
+        "10".ToArray().AsSpan().TryParseBinNumber32(trim: true, snake: true).Should().Be(2);
+        "11111111111111111111111111111111".ToArray().AsSpan().TryParseBinNumber32(trim: true, snake: true).Should().Be(0xFFFFFFFF);
+        "100000000000000000000000000000000".ToArray().AsSpan().TryParseBinNumber32(trim: true, snake: true).Should().BeNull();
 
         // parameters
-        "   1   ".AsSpan().TryParseBin32(trim: true, snake: true).Should().Be(1);
-        "   1   ".AsSpan().TryParseBin32(trim: false, snake: true).Should().BeNull();
-        "11111111_11111111_11111111_11111111".AsSpan().TryParseBin32(trim: true, snake: true).Should().Be(0xFFFFFFFF);
-        "11111111_11111111_11111111_11111111".AsSpan().TryParseBin32(trim: true, snake: false).Should().BeNull();
+        "   1   ".AsSpan().TryParseBinNumber32(trim: true, snake: true).Should().Be(1);
+        "   1   ".AsSpan().TryParseBinNumber32(trim: false, snake: true).Should().BeNull();
+        "11111111_11111111_11111111_11111111".AsSpan().TryParseBinNumber32(trim: true, snake: true).Should().Be(0xFFFFFFFF);
+        "11111111_11111111_11111111_11111111".AsSpan().TryParseBinNumber32(trim: true, snake: false).Should().BeNull();
     }
 
     [TestMethod()]
     public void TryParseBin64()
     {
         // string
-        "0".TryParseBin64(trim: true, snake: true).Should().Be(0);
-        "1".TryParseBin64(trim: true, snake: true).Should().Be(1);
-        "10".TryParseBin64(trim: true, snake: true).Should().Be(2);
-        "1111111111111111111111111111111111111111111111111111111111111111".TryParseBin64(trim: true, snake: true).Should().Be(0xFFFFFFFFFFFFFFFF);
-        "10000000000000000000000000000000000000000000000000000000000000000".TryParseBin64(trim: true, snake: true).Should().BeNull();
+        "0".TryParseBinNumber64(trim: true, snake: true).Should().Be(0);
+        "1".TryParseBinNumber64(trim: true, snake: true).Should().Be(1);
+        "10".TryParseBinNumber64(trim: true, snake: true).Should().Be(2);
+        "1111111111111111111111111111111111111111111111111111111111111111".TryParseBinNumber64(trim: true, snake: true).Should().Be(0xFFFFFFFFFFFFFFFF);
+        "10000000000000000000000000000000000000000000000000000000000000000".TryParseBinNumber64(trim: true, snake: true).Should().BeNull();
 
         // ReadOnlySpan
-        "0".AsSpan().TryParseBin64(trim: true, snake: true).Should().Be(0);
-        "1".AsSpan().TryParseBin64(trim: true, snake: true).Should().Be(1);
-        "10".AsSpan().TryParseBin64(trim: true, snake: true).Should().Be(2);
-        "1111111111111111111111111111111111111111111111111111111111111111".AsSpan().TryParseBin64(trim: true, snake: true).Should().Be(0xFFFFFFFFFFFFFFFF);
-        "10000000000000000000000000000000000000000000000000000000000000000".AsSpan().TryParseBin64(trim: true, snake: true).Should().BeNull();
+        "0".AsSpan().TryParseBinNumber64(trim: true, snake: true).Should().Be(0);
+        "1".AsSpan().TryParseBinNumber64(trim: true, snake: true).Should().Be(1);
+        "10".AsSpan().TryParseBinNumber64(trim: true, snake: true).Should().Be(2);
+        "1111111111111111111111111111111111111111111111111111111111111111".AsSpan().TryParseBinNumber64(trim: true, snake: true).Should().Be(0xFFFFFFFFFFFFFFFF);
+        "10000000000000000000000000000000000000000000000000000000000000000".AsSpan().TryParseBinNumber64(trim: true, snake: true).Should().BeNull();
 
         // Span
-        "0".ToArray().AsSpan().TryParseBin64(trim: true, snake: true).Should().Be(0);
-        "1".ToArray().AsSpan().TryParseBin64(trim: true, snake: true).Should().Be(1);
-        "10".ToArray().AsSpan().TryParseBin64(trim: true, snake: true).Should().Be(2);
-        "1111111111111111111111111111111111111111111111111111111111111111".ToArray().AsSpan().TryParseBin64(trim: true, snake: true).Should().Be(0xFFFFFFFFFFFFFFFF);
-        "10000000000000000000000000000000000000000000000000000000000000000".ToArray().AsSpan().TryParseBin64(trim: true, snake: true).Should().BeNull();
+        "0".ToArray().AsSpan().TryParseBinNumber64(trim: true, snake: true).Should().Be(0);
+        "1".ToArray().AsSpan().TryParseBinNumber64(trim: true, snake: true).Should().Be(1);
+        "10".ToArray().AsSpan().TryParseBinNumber64(trim: true, snake: true).Should().Be(2);
+        "1111111111111111111111111111111111111111111111111111111111111111".ToArray().AsSpan().TryParseBinNumber64(trim: true, snake: true).Should().Be(0xFFFFFFFFFFFFFFFF);
+        "10000000000000000000000000000000000000000000000000000000000000000".ToArray().AsSpan().TryParseBinNumber64(trim: true, snake: true).Should().BeNull();
 
         // parameters
-        "   1   ".AsSpan().TryParseBin64(trim: true, snake: true).Should().Be(1);
-        "   1   ".AsSpan().TryParseBin64(trim: false, snake: true).Should().BeNull();
-        "11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111".AsSpan().TryParseBin64(trim: true, snake: true).Should().Be(0xFFFFFFFFFFFFFFFF);
-        "11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111".AsSpan().TryParseBin64(trim: true, snake: false).Should().BeNull();
+        "   1   ".AsSpan().TryParseBinNumber64(trim: true, snake: true).Should().Be(1);
+        "   1   ".AsSpan().TryParseBinNumber64(trim: false, snake: true).Should().BeNull();
+        "11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111".AsSpan().TryParseBinNumber64(trim: true, snake: true).Should().Be(0xFFFFFFFFFFFFFFFF);
+        "11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111".AsSpan().TryParseBinNumber64(trim: true, snake: false).Should().BeNull();
     }
     #endregion
 
