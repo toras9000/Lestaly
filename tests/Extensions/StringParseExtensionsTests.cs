@@ -1065,9 +1065,9 @@ public class StringParseExtensionsTests
     }
     #endregion
 
-    #region TryParseHex
+    #region TryParseHexNumber
     [TestMethod()]
-    public void TryParseHex8()
+    public void TryParseHexNumber8()
     {
         // string
         "0".TryParseHexNumber8().Should().Be(0);
@@ -1090,7 +1090,7 @@ public class StringParseExtensionsTests
     }
 
     [TestMethod()]
-    public void TryParseHex16()
+    public void TryParseHexNumber16()
     {
         // string
         "0".TryParseHexNumber16().Should().Be(0);
@@ -1112,7 +1112,7 @@ public class StringParseExtensionsTests
     }
 
     [TestMethod()]
-    public void TryParseHex32()
+    public void TryParseHexNumber32()
     {
         // string
         "0".TryParseHexNumber32().Should().Be(0);
@@ -1134,7 +1134,7 @@ public class StringParseExtensionsTests
     }
 
     [TestMethod()]
-    public void TryParseHex64()
+    public void TryParseHexNumber64()
     {
         // string
         "0".TryParseHexNumber64().Should().Be(0);
@@ -1258,9 +1258,48 @@ public class StringParseExtensionsTests
     }
     #endregion
 
-    #region TryParseBin
+    #region TryParseHex(.NET7)
     [TestMethod()]
-    public void TryParseBin8()
+    public void TryParseHex()
+    {
+        // string
+        "123".TryParseHex<ushort>().Should().Be(0x123);
+        "0x123".TryParseHex<ushort>().Should().Be(0x123);
+        "0X123".TryParseHex<ushort>().Should().Be(0x123);
+        "&h123".TryParseHex<ushort>().Should().Be(0x123);
+        "&H123".TryParseHex<ushort>().Should().Be(0x123);
+        "#123".TryParseHex<ushort>().Should().Be(0x123);
+        "123h".TryParseHex<ushort>().Should().Be(0x123);
+        "123H".TryParseHex<ushort>().Should().Be(0x123);
+        "X123".TryParseHex<ushort>().Should().BeNull();
+
+        // ReadOnlySpan
+        "123".AsSpan().TryParseHex<ushort>().Should().Be(0x123);
+        "0x123".AsSpan().TryParseHex<ushort>().Should().Be(0x123);
+        "0X123".AsSpan().TryParseHex<ushort>().Should().Be(0x123);
+        "&h123".AsSpan().TryParseHex<ushort>().Should().Be(0x123);
+        "&H123".AsSpan().TryParseHex<ushort>().Should().Be(0x123);
+        "#123".AsSpan().TryParseHex<ushort>().Should().Be(0x123);
+        "123h".AsSpan().TryParseHex<ushort>().Should().Be(0x123);
+        "123H".AsSpan().TryParseHex<ushort>().Should().Be(0x123);
+        "X123".AsSpan().TryParseHex<ushort>().Should().BeNull();
+
+        // Span
+        "123".ToArray().AsSpan().TryParseHex<ushort>().Should().Be(0x123);
+        "0x123".ToArray().AsSpan().TryParseHex<ushort>().Should().Be(0x123);
+        "0X123".ToArray().AsSpan().TryParseHex<ushort>().Should().Be(0x123);
+        "&h123".ToArray().AsSpan().TryParseHex<ushort>().Should().Be(0x123);
+        "&H123".ToArray().AsSpan().TryParseHex<ushort>().Should().Be(0x123);
+        "#123".ToArray().AsSpan().TryParseHex<ushort>().Should().Be(0x123);
+        "123h".ToArray().AsSpan().TryParseHex<ushort>().Should().Be(0x123);
+        "123H".ToArray().AsSpan().TryParseHex<ushort>().Should().Be(0x123);
+        "X123".ToArray().AsSpan().TryParseHex<ushort>().Should().BeNull();
+    }
+    #endregion
+
+    #region TryParseBinNumber
+    [TestMethod()]
+    public void TryParseBinNumber8()
     {
         // string
         "0".TryParseBinNumber8(trim: true, snake: true).Should().Be(0);
@@ -1291,7 +1330,7 @@ public class StringParseExtensionsTests
     }
 
     [TestMethod()]
-    public void TryParseBin16()
+    public void TryParseBinNumber16()
     {
         // string
         "0".TryParseBinNumber16(trim: true, snake: true).Should().Be(0);
@@ -1322,7 +1361,7 @@ public class StringParseExtensionsTests
     }
 
     [TestMethod()]
-    public void TryParseBin32()
+    public void TryParseBinNumber32()
     {
         // string
         "0".TryParseBinNumber32(trim: true, snake: true).Should().Be(0);
@@ -1353,7 +1392,7 @@ public class StringParseExtensionsTests
     }
 
     [TestMethod()]
-    public void TryParseBin64()
+    public void TryParseBinNumber64()
     {
         // string
         "0".TryParseBinNumber64(trim: true, snake: true).Should().Be(0);
@@ -1483,6 +1522,40 @@ public class StringParseExtensionsTests
         $"1{new string('0', 32)}".ToArray().AsSpan().TryParseBinNumber<Int32>().Should().BeNull();
         $"1{new string('0', 64)}".ToArray().AsSpan().TryParseBinNumber<Int64>().Should().BeNull();
         $"1{new string('0', 128)}".ToArray().AsSpan().TryParseBinNumber<Int128>().Should().BeNull();
+    }
+    #endregion
+
+    #region TryParseBin(.NET7)
+    [TestMethod()]
+    public void TryParseBin()
+    {
+        // string
+        "1_0100".TryParseBin<ushort>(snake: true).Should().Be(0x14);
+        "0b1_0100".TryParseBin<ushort>().Should().Be(0x14);
+        "0B1_0100".TryParseBin<ushort>().Should().Be(0x14);
+        "&b1_0100".TryParseBin<ushort>().Should().Be(0x14);
+        "&B1_0100".TryParseBin<ushort>().Should().Be(0x14);
+        "1_0100b".TryParseBin<ushort>().Should().Be(0x14);
+        "1_0100B".TryParseBin<ushort>().Should().Be(0x14);
+        "B1_0100".TryParseBin<ushort>().Should().BeNull();
+
+        // ReadOnlySpan
+        "1_0100".AsSpan().TryParseBin<ushort>().Should().Be(0x14);
+        "0b1_0100".AsSpan().TryParseBin<ushort>().Should().Be(0x14);
+        "&b1_0100".AsSpan().TryParseBin<ushort>().Should().Be(0x14);
+        "&B1_0100".AsSpan().TryParseBin<ushort>().Should().Be(0x14);
+        "1_0100b".AsSpan().TryParseBin<ushort>().Should().Be(0x14);
+        "1_0100B".AsSpan().TryParseBin<ushort>().Should().Be(0x14);
+        "B1_0100".AsSpan().TryParseBin<ushort>().Should().BeNull();
+
+        // Span
+        "1_0100".ToArray().AsSpan().TryParseBin<ushort>().Should().Be(0x14);
+        "0b1_0100".ToArray().AsSpan().TryParseBin<ushort>().Should().Be(0x14);
+        "&b1_0100".ToArray().AsSpan().TryParseBin<ushort>().Should().Be(0x14);
+        "&B1_0100".ToArray().AsSpan().TryParseBin<ushort>().Should().Be(0x14);
+        "1_0100b".ToArray().AsSpan().TryParseBin<ushort>().Should().Be(0x14);
+        "1_0100B".ToArray().AsSpan().TryParseBin<ushort>().Should().Be(0x14);
+        "B1_0100".ToArray().AsSpan().TryParseBin<ushort>().Should().BeNull();
     }
     #endregion
 
