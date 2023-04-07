@@ -1,4 +1,6 @@
-﻿using System.Globalization;
+﻿using System.Buffers;
+using System.Buffers.Text;
+using System.Globalization;
 using System.Numerics;
 
 namespace Lestaly;
@@ -45,7 +47,7 @@ public static class NumberExtensions
     /// 数値を2進数表現で文字列化する。
     /// </summary>
     /// <typeparam name="TValue">値の型</typeparam>
-    /// <param name="self">対象の型</param>
+    /// <param name="self">文字列化する値</param>
     /// <param name="prefix">プレフィックス文字列</param>
     /// <param name="sepa">区切り記号の間隔。ゼロの場合は区切り記号無し。</param>
     /// <returns>2進文字列</returns>
@@ -61,42 +63,79 @@ public static class NumberExtensions
 
         // バッファを用意してプレフィクスを格納
         var buff = (stackalloc char[prefix.Length + bits + bits]);
-        prefix.CopyTo(buff);
 
         // ビットの文字列化。
-        // 特にセパレータを埋める処理をシンプルにする目的で、まずは下位ビットから逆順で文字列化していく。
-        var bin = buff.Slice(prefix.Length);
-        var adv = 0;
-        if (sepa <= 0)
+        var space = buff.Length;
+        var thick = 0;
+        for (var i = 0; i < bits; i++)
         {
-            // セパレータ無しの場合はシンプルに埋める
-            for (var i = 0; i < bits; i++)
+            if (sepa != 0 && thick == sepa)
             {
-                bin[i] = (self & (TValue.One << i)) == TValue.Zero ? '0' : '1';
+                buff[space - 1] = '_';
+                space--;
+                thick = 0;
             }
-        }
-        else
-        {
-            // セパレータを挟みながら文字列化する
-            var thick = 0;
-            for (var i = 0; i < bits; i++)
-            {
-                if (thick == sepa)
-                {
-                    bin[adv + i] = '_';
-                    adv++;
-                    thick = 0;
-                }
-                bin[adv + i] = (self & (TValue.One << i)) == TValue.Zero ? '0' : '1';
-                thick++;
-            }
+
+            buff[space - 1] = (self & (TValue.One << i)) == TValue.Zero ? '0' : '1';
+            space--;
+            thick++;
         }
 
-        // 逆順で文字列化したものをひっくり返す。
-        bin.Slice(0, adv + bits).Reverse();
+        // プレフィックスを付与
+        prefix.CopyTo(buff[(space - prefix.Length)..]);
+        space -= prefix.Length;
 
         // 文字列化結果を返却
-        return buff.Slice(0, prefix.Length + adv + bits).ToString();
+        return buff[space..].ToString();
     }
-#endif 
+
+    /// <summary>
+    /// 数値を16進数表現で文字列化する。
+    /// </summary>
+    /// <typeparam name="TValue">値の型</typeparam>
+    /// <param name="self">文字列化する値</param>
+    /// <param name="prefix">プレフィックス文字列</param>
+    /// <param name="sepa">区切り記号の間隔。ゼロの場合は区切り記号無し。</param>
+    /// <returns>16進文字列</returns>
+    public static string ToHexString<TValue>(this TValue self, string prefix = "0x", int sepa = 8) where TValue : struct, IBinaryInteger<TValue>
+    {
+        if (sepa < 0) throw new ArgumentException($"Invalid {nameof(sepa)}");
+
+        // 念のためnull除去
+        prefix ??= "";
+
+        // ビット幅取得
+        var bits = self.GetByteCount() * 8;
+
+        // 1桁分のビットマスク
+        var mask = (TValue.One << 0) | (TValue.One << 1) | (TValue.One << 2) | (TValue.One << 3);
+
+        // バッファを用意
+        var buff = (stackalloc char[prefix.Length + bits]);
+
+        // HEX文字列化。
+        var space = buff.Length;
+        var thick = 0;
+        for (var i = 0; i < bits; i += 4)
+        {
+            if (sepa != 0 && thick == sepa)
+            {
+                buff[space - 1] = '_';
+                space--;
+                thick = 0;
+            }
+            var nibble = (self >> i) & mask;
+            nibble.TryFormat(buff[(space - 1)..], out var _, "X", CultureInfo.InvariantCulture);
+            space--;
+            thick++;
+        }
+
+        // プレフィックスを付与
+        prefix.CopyTo(buff[(space - prefix.Length)..]);
+        space -= prefix.Length;
+
+        // 文字列化結果を返却
+        return buff[space..].ToString();
+    }
+#endif
 }

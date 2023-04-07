@@ -136,4 +136,92 @@ public class NumberExtensionsTests
         ((byte)0).ToBinaryString("", 0).Should().Be("00000000");
         ((byte)0).ToBinaryString(null!, 0).Should().Be("00000000");
     }
+
+    [TestMethod()]
+    public void ToHexString_Value()
+    {
+        ((sbyte)1).ToHexString("0x", 8).Should().Be("0x01");
+        ((short)1).ToHexString("0x", 8).Should().Be("0x0001");
+        ((int)1).ToHexString("0x", 8).Should().Be("0x00000001");
+        ((long)1).ToHexString("0x", 8).Should().Be("0x00000000_00000001");
+        ((byte)1).ToHexString("0x", 8).Should().Be("0x01");
+        ((ushort)1).ToHexString("0x", 8).Should().Be("0x0001");
+        ((uint)1).ToHexString("0x", 8).Should().Be("0x00000001");
+        ((ulong)1).ToHexString("0x", 8).Should().Be("0x00000000_00000001");
+
+        ((sbyte)46).ToHexString("0x", 8).Should().Be("0x2E");
+        ((short)46).ToHexString("0x", 8).Should().Be("0x002E");
+        ((int)46).ToHexString("0x", 8).Should().Be("0x0000002E");
+        ((long)46).ToHexString("0x", 8).Should().Be("0x00000000_0000002E");
+        ((byte)46).ToHexString("0x", 8).Should().Be("0x2E");
+        ((ushort)46).ToHexString("0x", 8).Should().Be("0x002E");
+        ((uint)46).ToHexString("0x", 8).Should().Be("0x0000002E");
+        ((ulong)46).ToHexString("0x", 8).Should().Be("0x00000000_0000002E");
+
+        ((sbyte)-1).ToHexString("0x", 8).Should().Be("0xFF");
+        ((short)-1).ToHexString("0x", 8).Should().Be("0xFFFF");
+        ((int)-1).ToHexString("0x", 8).Should().Be("0xFFFFFFFF");
+        ((long)-1).ToHexString("0x", 8).Should().Be("0xFFFFFFFF_FFFFFFFF");
+        unchecked((byte)-1).ToHexString("0x", 8).Should().Be("0xFF");
+        unchecked((ushort)-1).ToHexString("0x", 8).Should().Be("0xFFFF");
+        unchecked((uint)-1).ToHexString("0x", 8).Should().Be("0xFFFFFFFF");
+        unchecked((ulong)-1).ToHexString("0x", 8).Should().Be("0xFFFFFFFF_FFFFFFFF");
+
+        unchecked((sbyte)0x80).ToHexString("0x", 8).Should().Be("0x80");
+        unchecked((short)0x8000).ToHexString("0x", 8).Should().Be("0x8000");
+        unchecked((int)0x80000000).ToHexString("0x", 8).Should().Be("0x80000000");
+        unchecked((long)0x8000000000000000).ToHexString("0x", 8).Should().Be("0x80000000_00000000");
+        unchecked((byte)0x80).ToHexString("0x", 8).Should().Be("0x80");
+        unchecked((ushort)0x8000).ToHexString("0x", 8).Should().Be("0x8000");
+        unchecked((uint)0x80000000).ToHexString("0x", 8).Should().Be("0x80000000");
+        unchecked((ulong)0x8000000000000000).ToHexString("0x", 8).Should().Be("0x80000000_00000000");
+    }
+
+    [TestMethod()]
+    public void ToHexString_Separate()
+    {
+        ((sbyte)0).ToHexString("0x", 8).Should().Be("0x00");
+        ((short)0).ToHexString("0x", 8).Should().Be("0x0000");
+        ((int)0).ToHexString("0x", 8).Should().Be("0x00000000");
+        ((long)0).ToHexString("0x", 8).Should().Be("0x00000000_00000000");
+        ((byte)0).ToHexString("0x", 8).Should().Be("0x00");
+        ((ushort)0).ToHexString("0x", 8).Should().Be("0x0000");
+        ((uint)0).ToHexString("0x", 8).Should().Be("0x00000000");
+        ((ulong)0).ToHexString("0x", 8).Should().Be("0x00000000_00000000");
+
+        ((sbyte)0).ToHexString("0x", 3).Should().Be("0x00");
+        ((short)0).ToHexString("0x", 3).Should().Be("0x0_000");
+        ((int)0).ToHexString("0x", 3).Should().Be("0x00_000_000");
+        ((long)0).ToHexString("0x", 3).Should().Be("0x0_000_000_000_000_000");
+        ((byte)0).ToHexString("0x", 3).Should().Be("0x00");
+        ((ushort)0).ToHexString("0x", 3).Should().Be("0x0_000");
+        ((uint)0).ToHexString("0x", 3).Should().Be("0x00_000_000");
+        ((ulong)0).ToHexString("0x", 3).Should().Be("0x0_000_000_000_000_000");
+
+        ((sbyte)0).ToHexString("0x", 1).Should().Be("0x0_0");
+        ((short)0).ToHexString("0x", 1).Should().Be("0x0_0_0_0");
+        ((int)0).ToHexString("0x", 1).Should().Be("0x0_0_0_0_0_0_0_0");
+        ((long)0).ToHexString("0x", 1).Should().Be("0x0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0");
+        ((byte)0).ToHexString("0x", 1).Should().Be("0x0_0");
+        ((ushort)0).ToHexString("0x", 1).Should().Be("0x0_0_0_0");
+        ((uint)0).ToHexString("0x", 1).Should().Be("0x0_0_0_0_0_0_0_0");
+        ((ulong)0).ToHexString("0x", 1).Should().Be("0x0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0");
+
+        ((sbyte)0).ToHexString("0x", 0).Should().Be("0x00");
+        ((short)0).ToHexString("0x", 0).Should().Be("0x0000");
+        ((int)0).ToHexString("0x", 0).Should().Be("0x00000000");
+        ((long)0).ToHexString("0x", 0).Should().Be("0x0000000000000000");
+        ((byte)0).ToHexString("0x", 0).Should().Be("0x00");
+        ((ushort)0).ToHexString("0x", 0).Should().Be("0x0000");
+        ((uint)0).ToHexString("0x", 0).Should().Be("0x00000000");
+        ((ulong)0).ToHexString("0x", 0).Should().Be("0x0000000000000000");
+    }
+
+    [TestMethod()]
+    public void ToHexString_Prefix()
+    {
+        ((byte)0).ToHexString("asd", 0).Should().Be("asd00");
+        ((byte)0).ToHexString("", 0).Should().Be("00");
+        ((byte)0).ToHexString(null!, 0).Should().Be("00");
+    }
 }
