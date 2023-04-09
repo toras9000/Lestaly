@@ -40,7 +40,7 @@
     <SourceRoot Include="$(MSBuildThisFileDirectory)" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="ClosedXML" Version="0.100.3" />
+    <PackageReference Include="ClosedXML" Version="0.101.0" />
     <PackageReference Include="CometFlavor" Version="0.20.0" />
     <PackageReference Include="CometFlavor.Unicode" Version="0.2.0" />
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
