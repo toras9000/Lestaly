@@ -9,6 +9,19 @@ public sealed class ConsoleWig : IConsoleWig
 {
     /// <summary>コンソール関連のユーティリティ I/F</summary>
     public static IConsoleWig Facade { get; }
+
+    /// <summary>指定したテキストを出力する。</summary>
+    /// <param name="text">テキスト</param>
+    /// <returns>呼び出し元インスタンス自身</returns>
+    public static IConsoleWig Write(string text)
+        => Facade.Write(text);
+
+    /// <summary>指定したテキスト行を出力する。</summary>
+    /// <param name="text">テキスト</param>
+    /// <returns>呼び出し元インスタンス自身</returns>
+    public static IConsoleWig WriteLine(string text)
+        => Facade.WriteLine(text);
+
     /// <summary>指定したカラーでテキストを出力する。</summary>
     /// <param name="color">色</param>
     /// <param name="text">テキスト</param>
@@ -101,6 +114,24 @@ public sealed class ConsoleWig : IConsoleWig
 /// </summary>
 public interface IConsoleWig
 {
+    /// <summary>指定したテキストを出力する。</summary>
+    /// <param name="text">テキスト</param>
+    /// <returns>呼び出し元インスタンス自身</returns>
+    public IConsoleWig Write(string text)
+    {
+        Console.Write(text);
+        return this;
+    }
+
+    /// <summary>指定したテキスト行を出力する。</summary>
+    /// <param name="text">テキスト</param>
+    /// <returns>呼び出し元インスタンス自身</returns>
+    public IConsoleWig WriteLine(string text)
+    {
+        Console.Write(text);
+        return this;
+    }
+
     /// <summary>指定したカラーでテキストを出力する。</summary>
     /// <param name="color">色</param>
     /// <param name="text">テキスト</param>
