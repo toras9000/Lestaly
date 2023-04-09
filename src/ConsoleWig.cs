@@ -5,12 +5,107 @@ namespace Lestaly;
 /// <summary>
 /// コンソール関連のユーティリティ
 /// </summary>
-public static class ConsoleWig
+public sealed class ConsoleWig : IConsoleWig
+{
+    /// <summary>コンソール関連のユーティリティ I/F</summary>
+    public static IConsoleWig Facade { get; }
+    /// <summary>指定したカラーでテキストを出力する。</summary>
+    /// <param name="color">色</param>
+    /// <param name="text">テキスト</param>
+    /// <returns>呼び出し元インスタンス自身</returns>
+    public static IConsoleWig WriteColord(ConsoleColor color, string text)
+        => Facade.WriteColord(color, text);
+
+    /// <summary>指定したカラーでテキスト行を出力する。</summary>
+    /// <param name="color">色</param>
+    /// <param name="text">テキスト</param>
+    /// <returns>呼び出し元インスタンス自身</returns>
+    public static IConsoleWig WriteLineColord(ConsoleColor color, string text)
+        => Facade.WriteLineColord(color, text);
+
+    /// <summary>行を読み取る</summary>
+    /// <remarks>このメソッドは入力がリダイレクトされている場合には例外を発する。</remarks>
+    /// <returns>入力されたテキスト</returns>
+    public static string ReadLine()
+        => Facade.ReadLine();
+
+    /// <summary>入力エコー無しで1行分のキー入力を読み取る</summary>
+    /// <returns>読み取った行テキスト</returns>
+    public static string ReadLineIntercepted()
+        => Facade.ReadLineIntercepted();
+
+    /// <summary>入力を行末または指定のキーワードが入力されるまで読み取る。</summary>
+    /// <param name="keyword">入力を終了するキーワード</param>
+    /// <param name="comparison">文字列比較方法</param>
+    /// <param name="breakOnReturn">入力終了後に改行を出力するか否か</param>
+    /// <returns>入力された文字列</returns>
+    public static string ReadKeysLineReaction(string keyword, StringComparison comparison = StringComparison.Ordinal, bool breakOnReturn = true)
+        => Facade.ReadKeysLineReaction(keyword, comparison, breakOnReturn);
+
+    /// <summary>入力を行末または一定時間アイドル指定のキーワードが入力されるまで読み取る。</summary>
+    /// <param name="completer">入力アイドル時に完了判定する処理</param>
+    /// <param name="timeout">入力アイドル時間 [ms]</param>
+    /// <param name="breakOnReturn">入力終了後に改行を出力するか否か</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>入力された文字列を得るタスク</returns>
+    public static Task<string> ReadKeysLineIfAsync(Func<string, bool> completer, int timeout = 100, bool breakOnReturn = true, CancellationToken cancelToken = default)
+        => Facade.ReadKeysLineIfAsync(completer, timeout, breakOnReturn, cancelToken);
+
+    /// <summary>バッファ内のキー入力をスキップする。</summary>
+    /// <param name="maxCount">最大スキップ数。継続的に入力される場合や</param>
+    /// <returns>呼び出し元インスタンス自身</returns>
+    public static IConsoleWig SkipInputChars(int maxCount = int.MaxValue)
+        => Facade.SkipInputChars(maxCount);
+
+    /// <summary>出力テキスト色を設定して区間を作成する</summary>
+    /// <param name="color">色</param>
+    /// <returns>設定区間。Disposeすると元の値を復元する。</returns>
+    public static Period ForegroundColorPeriod(ConsoleColor color)
+        => Facade.ForegroundColorPeriod(color);
+
+    /// <summary>出力エンコーディングを設定して区間を作成する</summary>
+    /// <param name="encoding">設定するエンコーディング</param>
+    /// <returns>設定区間。Disposeすると元の値を復元する。</returns>
+    public static Period OutputEncodingPeriod(Encoding encoding)
+        => Facade.OutputEncodingPeriod(encoding);
+
+    /// <summary>入力エンコーディングを設定して区間を作成する</summary>
+    /// <param name="encoding">設定するエンコーディング</param>
+    /// <returns>設定区間。Disposeすると元の値を復元する。</returns>
+    public static Period InputEncodingPeriod(Encoding encoding)
+        => Facade.InputEncodingPeriod(encoding);
+
+    /// <summary>キャンセルキーイベントを指定のアクションでハンドルする区間を作成する</summary>
+    /// <remarks>このメソッドではイベントハンドラで指定のアクションを呼び出すのみ。デフォルト動作(プロセス終了)の抑止などが必要であれば指定のキャンセル処理内で行う。</remarks>
+    /// <param name="onCancel">キャンセル処理</param>
+    /// <returns>設定区間。Disposeするとイベントハンドルを解除する。</returns>
+    public static Period CancelKeyHandlePeriod(Action<ConsoleCancelEventArgs> onCancel)
+        => Facade.CancelKeyHandlePeriod(onCancel);
+
+    /// <summary>キャンセルキーイベントで指定のキャンセルソースをキャンセルする区間を作成する</summary>
+    /// <remarks>このメソッドではイベントハンドラでデフォルト動作(プロセス終了)を抑止する。</remarks>
+    /// <param name="cancelSource">キャンセルソース</param>
+    /// <returns>設定区間。Disposeするとイベントハンドルを解除する。</returns>
+    public static Period CancelKeyHandlePeriod(CancellationTokenSource cancelSource)
+        => Facade.CancelKeyHandlePeriod(cancelSource);
+
+    /// <summary>静的コンストラクタ</summary>
+    static ConsoleWig()
+    {
+        Facade = new ConsoleWig();
+    }
+}
+
+/// <summary>
+/// コンソール関連のユーティリティ
+/// </summary>
+public interface IConsoleWig
 {
     /// <summary>指定したカラーでテキストを出力する。</summary>
     /// <param name="color">色</param>
     /// <param name="text">テキスト</param>
-    public static void WriteColord(ConsoleColor color, string text)
+    /// <returns>呼び出し元インスタンス自身</returns>
+    public IConsoleWig WriteColord(ConsoleColor color, string text)
     {
         var original = Console.ForegroundColor;
         try
@@ -22,12 +117,14 @@ public static class ConsoleWig
         {
             Console.ForegroundColor = original;
         }
+        return this;
     }
 
     /// <summary>指定したカラーでテキスト行を出力する。</summary>
     /// <param name="color">色</param>
     /// <param name="text">テキスト</param>
-    public static void WriteLineColord(ConsoleColor color, string text)
+    /// <returns>呼び出し元インスタンス自身</returns>
+    public IConsoleWig WriteLineColord(ConsoleColor color, string text)
     {
         var original = Console.ForegroundColor;
         try
@@ -39,24 +136,20 @@ public static class ConsoleWig
         {
             Console.ForegroundColor = original;
         }
+        return this;
     }
 
-    /// <summary>指定のキャプションを出力した後に行を読み取る</summary>
-    /// <remarks>このメソッドは入力がリダイレクトされている場合には例外を発する。</remarks>
-    /// <param name="caption">キャプション文字列</param>
+    /// <summary>行を読み取る</summary>
     /// <returns>入力されたテキスト</returns>
-    public static string ReadLine(string? caption = null)
+    public string ReadLine()
     {
-        if (caption.IsNotEmpty()) Console.Write(caption);
         return Console.ReadLine() ?? "";
     }
 
     /// <summary>入力エコー無しで1行分のキー入力を読み取る</summary>
-    /// <param name="caption">キャプション文字列</param>
     /// <returns>読み取った行テキスト</returns>
-    public static string ReadLineIntercepted(string? caption = null)
+    public string ReadLineIntercepted()
     {
-        if (caption.IsNotEmpty()) Console.Write(caption);
         var buff = new StringBuilder();
         while (true)
         {
@@ -85,7 +178,7 @@ public static class ConsoleWig
     /// <param name="comparison">文字列比較方法</param>
     /// <param name="breakOnReturn">入力終了後に改行を出力するか否か</param>
     /// <returns>入力された文字列</returns>
-    public static string ReadKeysLineReaction(string keyword, StringComparison comparison = StringComparison.Ordinal, bool breakOnReturn = true)
+    public string ReadKeysLineReaction(string keyword, StringComparison comparison = StringComparison.Ordinal, bool breakOnReturn = true)
     {
         if (string.IsNullOrEmpty(keyword)) throw new ArgumentException($"Invalid {nameof(keyword)}");
         var buff = new StringBuilder();
@@ -125,7 +218,7 @@ public static class ConsoleWig
     /// <param name="breakOnReturn">入力終了後に改行を出力するか否か</param>
     /// <param name="cancelToken">キャンセルトークン</param>
     /// <returns>入力された文字列を得るタスク</returns>
-    public static async Task<string> ReadKeysLineIfAsync(Func<string, bool> completer, int timeout = 100, bool breakOnReturn = true, CancellationToken cancelToken = default)
+    public async Task<string> ReadKeysLineIfAsync(Func<string, bool> completer, int timeout = 100, bool breakOnReturn = true, CancellationToken cancelToken = default)
     {
         if (completer == null) throw new ArgumentNullException(nameof(completer));
         if (timeout <= 0) throw new ArgumentOutOfRangeException(nameof(timeout));
@@ -171,7 +264,8 @@ public static class ConsoleWig
 
     /// <summary>バッファ内のキー入力をスキップする。</summary>
     /// <param name="maxCount">最大スキップ数。継続的に入力される場合や</param>
-    public static void SkipInputChars(int maxCount = int.MaxValue)
+    /// <returns>呼び出し元インスタンス自身</returns>
+    public IConsoleWig SkipInputChars(int maxCount = int.MaxValue)
     {
         if (maxCount < 0) throw new ArgumentOutOfRangeException(nameof(maxCount));
         for (var i = 0; i < maxCount; i++)
@@ -179,12 +273,13 @@ public static class ConsoleWig
             if (!Console.KeyAvailable) break;
             Console.ReadKey(intercept: true);
         }
+        return this;
     }
 
     /// <summary>出力テキスト色を設定して区間を作成する</summary>
     /// <param name="color">色</param>
     /// <returns>設定区間。Disposeすると元の値を復元する。</returns>
-    public static Period ForegroundColorPeriod(ConsoleColor color)
+    public Period ForegroundColorPeriod(ConsoleColor color)
     {
         var original = Console.ForegroundColor;
         Console.ForegroundColor = color;
@@ -194,7 +289,7 @@ public static class ConsoleWig
     /// <summary>出力エンコーディングを設定して区間を作成する</summary>
     /// <param name="encoding">設定するエンコーディング</param>
     /// <returns>設定区間。Disposeすると元の値を復元する。</returns>
-    public static Period OutputEncodingPeriod(Encoding encoding)
+    public Period OutputEncodingPeriod(Encoding encoding)
     {
         var original = Console.OutputEncoding;
         Console.OutputEncoding = encoding;
@@ -204,7 +299,7 @@ public static class ConsoleWig
     /// <summary>入力エンコーディングを設定して区間を作成する</summary>
     /// <param name="encoding">設定するエンコーディング</param>
     /// <returns>設定区間。Disposeすると元の値を復元する。</returns>
-    public static Period InputEncodingPeriod(Encoding encoding)
+    public Period InputEncodingPeriod(Encoding encoding)
     {
         var original = Console.InputEncoding;
         Console.InputEncoding = encoding;
@@ -215,7 +310,7 @@ public static class ConsoleWig
     /// <remarks>このメソッドではイベントハンドラで指定のアクションを呼び出すのみ。デフォルト動作(プロセス終了)の抑止などが必要であれば指定のキャンセル処理内で行う。</remarks>
     /// <param name="onCancel">キャンセル処理</param>
     /// <returns>設定区間。Disposeするとイベントハンドルを解除する。</returns>
-    public static Period CancelKeyHandlePeriod(Action<ConsoleCancelEventArgs> onCancel)
+    public Period CancelKeyHandlePeriod(Action<ConsoleCancelEventArgs> onCancel)
     {
         var handler = new ConsoleCancelEventHandler((_, args) => { try { onCancel?.Invoke(args); } catch { } });
         Console.CancelKeyPress += handler;
@@ -226,10 +321,11 @@ public static class ConsoleWig
     /// <remarks>このメソッドではイベントハンドラでデフォルト動作(プロセス終了)を抑止する。</remarks>
     /// <param name="cancelSource">キャンセルソース</param>
     /// <returns>設定区間。Disposeするとイベントハンドルを解除する。</returns>
-    public static Period CancelKeyHandlePeriod(CancellationTokenSource cancelSource)
+    public Period CancelKeyHandlePeriod(CancellationTokenSource cancelSource)
     {
         var handler = new ConsoleCancelEventHandler((_, args) => { try { cancelSource.Cancel(); args.Cancel = true; } catch { } });
         Console.CancelKeyPress += handler;
         return new Period(() => Console.CancelKeyPress -= handler);
     }
 }
+
