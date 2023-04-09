@@ -36,6 +36,13 @@ public sealed class ConsoleWig : IConsoleWig
     public static IConsoleWig WriteLineColord(ConsoleColor color, string text)
         => Facade.WriteLineColord(color, text);
 
+    /// <summary>指定したハイパーリンクを出力する</summary>
+    /// <param name="uri">リンク先URI</param>
+    /// <param name="text">リンクテキスト</param>
+    /// <returns>呼び出し元インスタンス自身</returns>
+    public IConsoleWig WriteLink(Uri uri, string? text = null)
+        => Facade.WriteLink(uri, text);
+
     /// <summary>行を読み取る</summary>
     /// <remarks>このメソッドは入力がリダイレクトされている場合には例外を発する。</remarks>
     /// <returns>入力されたテキスト</returns>
@@ -167,6 +174,23 @@ public interface IConsoleWig
         {
             Console.ForegroundColor = original;
         }
+        return this;
+    }
+
+    /// <summary>指定したハイパーリンクを出力する</summary>
+    /// <param name="uri">リンク先URI</param>
+    /// <param name="text">リンクテキスト</param>
+    /// <returns>呼び出し元インスタンス自身</returns>
+    public IConsoleWig WriteLink(Uri uri, string? text = null)
+    {
+        // 以下ページで紹介されているエスケープシーケンスを出力する。
+        // ただしハイパーリンクとして機能するかどうかはターミナルソフトでの対応次第となる。
+        // https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda
+
+        const string ESC = "\x1b";
+        const string OSC = $"{ESC}]";
+        const string ST = $@"{ESC}\";
+        Write($@"{OSC}8;;{uri.AbsoluteUri}{ST}{text ?? uri.ToString()}{OSC}8;;{ST}");
         return this;
     }
 
