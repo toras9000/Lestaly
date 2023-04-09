@@ -13,11 +13,13 @@ public static class Paved
     public static async Task<T?> RunAsync<T>(Func<ValueTask<T>> action, Action<PavedOptions<T>>? configuration = null)
     {
         var options = new PavedOptions<T>();
+        var console = ConsoleWig.Facade;
         var result = default(T);
         var pause = false;
         try
         {
             configuration?.Invoke(options);
+            if (options.Console != null) console = options.Console;
 
             result = await action();
         }
@@ -33,7 +35,7 @@ public static class Paved
             }
             else
             {
-                ConsoleWig.WriteLineColord(ConsoleColor.Yellow, "Operation cancelled.");
+                console.WriteLineColord(ConsoleColor.Yellow, "Operation cancelled.");
             }
         }
         catch (Exception ex)
@@ -51,11 +53,11 @@ public static class Paved
                 switch (pex.Kind)
                 {
                 case PavedMessageKind.Error:
-                    ConsoleWig.WriteLineColord(ConsoleColor.Red, pex.Message);
+                    console.WriteLineColord(ConsoleColor.Red, pex.Message);
                     break;
                 case PavedMessageKind.Warning:
                 case PavedMessageKind.Cancelled:
-                    ConsoleWig.WriteLineColord(ConsoleColor.Yellow, pex.Message);
+                    console.WriteLineColord(ConsoleColor.Yellow, pex.Message);
                     break;
                 case PavedMessageKind.Information:
                 default:
@@ -65,7 +67,7 @@ public static class Paved
             }
             else
             {
-                ConsoleWig.WriteLineColord(ConsoleColor.Red, ex.ToString());
+                console.WriteLineColord(ConsoleColor.Red, ex.ToString());
             }
         }
 
@@ -90,11 +92,12 @@ public static class Paved
     {
         return RunAsync(async () => { await action(); return 0; }, options =>
         {
+            var console = ConsoleWig.Facade;
             options.ErrorHandler = (ex) =>
             {
                 if (ex is OperationCanceledException)
                 {
-                    ConsoleWig.WriteLineColord(ConsoleColor.Yellow, "Operation cancelled.");
+                    console.WriteLineColord(ConsoleColor.Yellow, "Operation cancelled.");
                     return 254;
                 }
                 if (ex is PavedMessageException pex)
@@ -103,14 +106,14 @@ public static class Paved
                     switch (pex.Kind)
                     {
                     case PavedMessageKind.Error:
-                        ConsoleWig.WriteLineColord(ConsoleColor.Red, pex.Message);
+                        console.WriteLineColord(ConsoleColor.Red, pex.Message);
                         break;
                     case PavedMessageKind.Warning:
-                        ConsoleWig.WriteLineColord(ConsoleColor.Yellow, pex.Message);
+                        console.WriteLineColord(ConsoleColor.Yellow, pex.Message);
                         break;
                     case PavedMessageKind.Cancelled:
                         exitCode = 254;
-                        ConsoleWig.WriteLineColord(ConsoleColor.Yellow, pex.Message);
+                        console.WriteLineColord(ConsoleColor.Yellow, pex.Message);
                         break;
                     case PavedMessageKind.Information:
                     default:
@@ -124,10 +127,11 @@ public static class Paved
                     return exitCode;
                 }
 
-                ConsoleWig.WriteLineColord(ConsoleColor.Red, ex.ToString());
+                console.WriteLineColord(ConsoleColor.Red, ex.ToString());
                 return 255;
             };
             configuration?.Invoke(options);
+            if (options.Console != null) console = options.Console;
         });
     }
 }

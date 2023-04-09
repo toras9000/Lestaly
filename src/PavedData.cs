@@ -20,6 +20,9 @@ public class PavedOptions<T>
     /// <summary>エラー時ハンドラ</summary>
     public Func<Exception, T>? ErrorHandler { get; set; } = null;
 
+    /// <summary>コンソール出力I/F</summary>
+    public IConsoleWig? Console { get; set; } = null;
+
     #region 設定処理
     /// <summary>一時停止無しに設定する。</summary>
     public PavedOptions<T> NoPause()
