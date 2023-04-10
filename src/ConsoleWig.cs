@@ -40,7 +40,7 @@ public sealed class ConsoleWig : IConsoleWig
     /// <param name="uri">リンク先URI</param>
     /// <param name="text">リンクテキスト</param>
     /// <returns>呼び出し元インスタンス自身</returns>
-    public IConsoleWig WriteLink(Uri uri, string? text = null)
+    public static IConsoleWig WriteLink(Uri uri, string? text = null)
         => Facade.WriteLink(uri, text);
 
     /// <summary>行を読み取る</summary>
@@ -135,7 +135,7 @@ public interface IConsoleWig
     /// <returns>呼び出し元インスタンス自身</returns>
     public IConsoleWig WriteLine(string text)
     {
-        Console.Write(text);
+        Console.WriteLine(text);
         return this;
     }
 
