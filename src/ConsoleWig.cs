@@ -40,7 +40,7 @@ public sealed class ConsoleWig : IConsoleWig
     /// <param name="uri">リンク先URI</param>
     /// <param name="text">リンクテキスト</param>
     /// <returns>呼び出し元インスタンス自身</returns>
-    public static IConsoleWig WriteLink(Uri uri, string? text = null)
+    public static IConsoleWig WriteLink(string uri, string? text = null)
         => Facade.WriteLink(uri, text);
 
     /// <summary>行を読み取る</summary>
@@ -181,7 +181,7 @@ public interface IConsoleWig
     /// <param name="uri">リンク先URI</param>
     /// <param name="text">リンクテキスト</param>
     /// <returns>呼び出し元インスタンス自身</returns>
-    public IConsoleWig WriteLink(Uri uri, string? text = null)
+    public IConsoleWig WriteLink(string uri, string? text = null)
     {
         // 以下ページで紹介されているエスケープシーケンスを出力する。
         // ただしハイパーリンクとして機能するかどうかはターミナルソフトでの対応次第となる。
@@ -190,7 +190,7 @@ public interface IConsoleWig
         const string ESC = "\x1b";
         const string OSC = $"{ESC}]";
         const string ST = $@"{ESC}\";
-        Write($@"{OSC}8;;{uri.AbsoluteUri}{ST}{text ?? uri.ToString()}{OSC}8;;{ST}");
+        Write($@"{OSC}8;;{uri}{ST}{text ?? uri}{OSC}8;;{ST}");
         return this;
     }
 
