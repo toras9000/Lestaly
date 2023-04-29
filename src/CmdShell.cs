@@ -13,7 +13,7 @@ public static class CmdShell
     /// <param name="workDir">作業ディレクトリ</param>
     /// <param name="cancelToken">キャンセルトークン</param>
     /// <returns>呼び出しプロセスの終了コード</returns>
-    public static async Task<int> ExecAsync(string command, IEnumerable<string>? arguments = null, string? workDir = null, CancellationToken cancelToken = default)
+    public static async Task<CmdExit> ExecAsync(string command, IEnumerable<string>? arguments = null, CancellationToken cancelToken = default, string? workDir = null)
     {
         // 実行するコマンドの情報を設定
         var target = new ProcessStartInfo();
@@ -50,6 +50,6 @@ public static class CmdShell
             throw new CmdProcCancelException(null, $"The process was killed by cancellation.");
         }
 
-        return proc.ExitCode;
+        return new(proc.ExitCode);
     }
 }

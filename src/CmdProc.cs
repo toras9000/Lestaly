@@ -3,6 +3,20 @@ using System.Text;
 
 namespace Lestaly;
 
+/// <summary>コマンドの終了コード値表現型</summary>
+/// <param name="Code">終了コード</param>
+public record struct CmdExit(int Code)
+{
+    /// <summary>終了コードを整数値に暗黙変換演算子オーバーロード</summary>
+    /// <param name="exit">終了コード値表現型</param>
+    public static implicit operator int(CmdExit exit) => exit.Code;
+}
+
+/// <summary>コマンドの実行結果値表現型</summary>
+/// <param name="ExitCode">終了コード</param>
+/// <param name="Output">コマンドの出力</param>
+public record struct CmdResult(int ExitCode, string Output);
+
 /// <summary>
 /// コマンド実行クラス
 /// </summary>
@@ -11,6 +25,7 @@ public static class CmdProc
     /// <summary>コマンドを実行して終了コードを取得する</summary>
     /// <param name="command">実行コマンド</param>
     /// <param name="arguments">引数リスト</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
     /// <param name="workDir">作業ディレクトリ</param>
     /// <param name="environments">環境変数</param>
     /// <param name="stdOutWriter">標準出力のリダイレクト書き込み先ライター。nullの場合はリダイレクトなし。</param>
@@ -18,9 +33,8 @@ public static class CmdProc
     /// <param name="stdInReader">標準入力のリダイレクト読み込み元リーダー。nullの場合はリダイレクトなし。</param>
     /// <param name="outEncoding">プロセスの出力テキスト読み取り時のエンコーディング</param>
     /// <param name="inEncoding">プロセスの入力テキストを書き込む際のエンコーディング</param>
-    /// <param name="cancelToken">キャンセルトークン</param>
     /// <returns>呼び出しプロセスの終了コード</returns>
-    public static async Task<int> ExecAsync(string command, IEnumerable<string>? arguments = null, string? workDir = null, IEnumerable<KeyValuePair<string, string?>>? environments = null, TextWriter? stdOutWriter = null, TextWriter? stdErrWriter = null, TextReader? stdInReader = null, Encoding? outEncoding = null, Encoding? inEncoding = null, CancellationToken cancelToken = default)
+    public static async Task<CmdExit> ExecAsync(string command, IEnumerable<string>? arguments = null, CancellationToken cancelToken = default, string? workDir = null, IEnumerable<KeyValuePair<string, string?>>? environments = null, TextWriter? stdOutWriter = null, TextWriter? stdErrWriter = null, TextReader? stdInReader = null, Encoding? outEncoding = null, Encoding? inEncoding = null)
     {
         // 実行するコマンドの情報を設定
         var target = new ProcessStartInfo();
@@ -126,12 +140,13 @@ public static class CmdProc
             throw new CmdProcCancelException(null, $"The process was killed by cancellation.");
         }
 
-        return proc.ExitCode;
+        return new(proc.ExitCode);
     }
 
     /// <summary>コマンドを実行して終了コードと出力テキストを取得する</summary>
     /// <param name="command">実行コマンド</param>
     /// <param name="arguments">引数リスト</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
     /// <param name="workDir">作業ディレクトリ</param>
     /// <param name="environments">環境変数</param>
     /// <param name="readStdOut">標準出力を読み取るか否か</param>
@@ -139,9 +154,8 @@ public static class CmdProc
     /// <param name="inputText">標準入力に書き込むテキスト。nullの場合は書き込みなし。</param>
     /// <param name="outEncoding">プロセスの出力テキスト読み取り時のエンコーディング</param>
     /// <param name="inEncoding">プロセスの入力テキストを書き込む際のエンコーディング</param>
-    /// <param name="cancelToken">キャンセルトークン</param>
     /// <returns>呼び出しプロセスの終了コードと出力テキスト</returns>
-    public static async Task<(int ExitCode, string Output)> RunAsync(string command, IEnumerable<string>? arguments = null, string? workDir = null, IEnumerable<KeyValuePair<string, string?>>? environments = null, bool readStdOut = true, bool readStdErr = true, string? inputText = null, Encoding? outEncoding = null, Encoding? inEncoding = null, CancellationToken cancelToken = default)
+    public static async Task<CmdResult> RunAsync(string command, IEnumerable<string>? arguments = null, CancellationToken cancelToken = default, string? workDir = null, IEnumerable<KeyValuePair<string, string?>>? environments = null, bool readStdOut = true, bool readStdErr = true, string? inputText = null, Encoding? outEncoding = null, Encoding? inEncoding = null)
     {
         // リダイレクト先とする文字列のライター
         using var strWriter = new StringWriter();
@@ -154,12 +168,12 @@ public static class CmdProc
         try
         {
             // コマンドを実行
-            var result = await CmdProc.ExecAsync(command, arguments, workDir, environments, stdOutWriter, stdErrWriter, stdInReader, outEncoding, inEncoding, cancelToken).ConfigureAwait(false);
+            var result = await CmdProc.ExecAsync(command, arguments, cancelToken, workDir, environments, stdOutWriter, stdErrWriter, stdInReader, outEncoding, inEncoding).ConfigureAwait(false);
 
             // 出力テキストを取り出し
             var output = strWriter.ToString();
 
-            return (result, output);
+            return new(result, output);
         }
         catch (CmdProcCancelException cancelEx)
         {
@@ -171,6 +185,7 @@ public static class CmdProc
     /// <summary>コマンドを実行して出力テキストを取得する</summary>
     /// <param name="command">実行コマンド</param>
     /// <param name="arguments">引数リスト</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
     /// <param name="workDir">作業ディレクトリ</param>
     /// <param name="environments">環境変数</param>
     /// <param name="readStdErr">標準エラーを読み取るか否か</param>
@@ -178,15 +193,14 @@ public static class CmdProc
     /// <param name="outEncoding">プロセスの出力テキスト読み取り時のエンコーディング</param>
     /// <param name="inEncoding">プロセスの入力テキストを書き込む際のエンコーディング</param>
     /// <param name="allowExitCodes">正常とみなす終了コード。指定がない場合はゼロのみを正常とする。</param>
-    /// <param name="cancelToken">キャンセルトークン</param>
     /// <returns>呼び出しプロセスの出力テキスト</returns>
-    public static async Task<string> CallAsync(string command, IEnumerable<string>? arguments = null, string? workDir = null, IEnumerable<KeyValuePair<string, string?>>? environments = null, bool readStdErr = true, string? inputText = null, Encoding? outEncoding = null, Encoding? inEncoding = null, IEnumerable<int>? allowExitCodes = null, CancellationToken cancelToken = default)
+    public static async Task<string> CallAsync(string command, IEnumerable<string>? arguments = null, CancellationToken cancelToken = default, string? workDir = null, IEnumerable<KeyValuePair<string, string?>>? environments = null, bool readStdErr = true, string? inputText = null, Encoding? outEncoding = null, Encoding? inEncoding = null, IEnumerable<int>? allowExitCodes = null)
     {
         // 正常とみなす終了コード
         var validCodes = allowExitCodes ?? new[] { 0, };
 
         // コマンドを実行
-        var result = await CmdProc.RunAsync(command, arguments, workDir, environments, readStdOut: true, readStdErr, inputText, outEncoding, inEncoding, cancelToken).ConfigureAwait(false);
+        var result = await CmdProc.RunAsync(command, arguments, cancelToken, workDir, environments, readStdOut: true, readStdErr, inputText, outEncoding, inEncoding).ConfigureAwait(false);
 
         // 実行完了した場合は終了コードが正常を示すか検証。正常でない場合は例外を送出。
         if (!validCodes.Contains(result.ExitCode))
@@ -195,5 +209,62 @@ public static class CmdProc
         }
 
         return result.Output;
+    }
+
+    /// <summary>コマンド終了コードに対して有効判定を行う</summary>
+    /// <remarks>終了コードが許容する値でない場合は例外をスローする</remarks>
+    /// <param name="self">コマンド終了コード値型</param>
+    /// <param name="allowExitCodes">許容する(エラーではない)終了コード値</param>
+    /// <param name="ex">終了コードがエラー値の場合にスローする例外オブジェクトジェネレータ</param>
+    /// <returns>許容値だった場合にその終了コード値を返す</returns>
+    public static async Task<int> AsSuccessCode(this Task<CmdExit> self, IEnumerable<int>? allowExitCodes = null, Func<int, Exception>? ex = null)
+    {
+        // 正常とみなす終了コード
+        var validCodes = allowExitCodes ?? new[] { 0, };
+
+        // コマンドを実行
+        var exit = await self.ConfigureAwait(false);
+
+        // 実行完了した場合は終了コードが正常を示すか検証。正常でない場合は例外を送出。
+        if (!validCodes.Contains(exit.Code))
+        {
+            throw ex?.Invoke(exit.Code) ?? new CmdProcExitCodeException(exit.Code, "", message: $"Faild. ExitCode={exit.Code}");
+        }
+
+        return exit.Code;
+    }
+
+    /// <summary>コマンド実行結果に対して有効判定を行う</summary>
+    /// <remarks>終了コードが許容する値でない場合は例外をスローする</remarks>
+    /// <param name="self">コマンド終了コード値型</param>
+    /// <param name="allowCodes">許容する(エラーではない)終了コード値</param>
+    /// <param name="ex">終了コードがエラー値の場合にスローする例外オブジェクトジェネレータ</param>
+    /// <returns>終了コードが許容値だった場合には実行結果をそのまま返す</returns>
+    public static async Task<CmdResult> AsSuccessCode(this Task<CmdResult> self, IEnumerable<int>? allowCodes = null, Func<int, Exception>? ex = null)
+    {
+        // 正常とみなす終了コード
+        var validCodes = allowCodes ?? new[] { 0, };
+
+        // コマンドを実行
+        var result = await self.ConfigureAwait(false);
+
+        // 実行完了した場合は終了コードが正常を示すか検証。正常でない場合は例外を送出。
+        if (!validCodes.Contains(result.ExitCode))
+        {
+            throw ex?.Invoke(result.ExitCode) ?? new CmdProcExitCodeException(result.ExitCode, result.Output, message: $"Faild. ExitCode={result.ExitCode}");
+        }
+
+        return result;
+    }
+
+    /// <summary>コマンドが正常終了の場合に出力を取得する</summary>
+    /// <remarks>終了コードが許容する値でない場合は例外をスローする</remarks>
+    /// <param name="self">コマンド終了コード値型</param>
+    /// <param name="allowCodes">許容する(エラーではない)終了コード値</param>
+    /// <param name="ex">終了コードがエラー値の場合にスローする例外オブジェクトジェネレータ</param>
+    /// <returns>許容値だった場合に出力文字列を返す</returns>
+    public static async Task<string> AsSuccessOutput(this Task<CmdResult> self, IEnumerable<int>? allowCodes = null, Func<int, Exception>? ex = null)
+    {
+        return (await self.AsSuccessCode(allowCodes, ex)).Output;
     }
 }
