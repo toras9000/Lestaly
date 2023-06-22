@@ -19,8 +19,13 @@ public sealed class ConsoleWig : IConsoleWig
     /// <summary>指定したテキスト行を出力する。</summary>
     /// <param name="text">テキスト</param>
     /// <returns>呼び出し元インスタンス自身</returns>
-    public static IConsoleWig WriteLine(string text)
+    public static IConsoleWig WriteLine(string text = "")
         => Facade.WriteLine(text);
+
+    /// <summary>改行を出力する。</summary>
+    /// <returns>呼び出し元インスタンス自身</returns>
+    public static IConsoleWig NewLine()
+        => Facade.NewLine();
 
     /// <summary>指定したカラーでテキストを出力する。</summary>
     /// <param name="color">色</param>
@@ -109,11 +114,23 @@ public sealed class ConsoleWig : IConsoleWig
     public static Period CancelKeyHandlePeriod(CancellationTokenSource cancelSource)
         => Facade.CancelKeyHandlePeriod(cancelSource);
 
+    /// <summary>キャンセルキーイベントでキャンセルされるトークンを持つ区間を作成する</summary>
+    /// <returns>キャンセルトークン保持区間。Disposeするとイベントハンドルを解除する。</returns>
+    public static ICancelTokenPeriod CreateCancelKeyHandlePeriod()
+        => Facade.CreateCancelKeyHandlePeriod();
+
     /// <summary>静的コンストラクタ</summary>
     static ConsoleWig()
     {
         Facade = new ConsoleWig();
     }
+}
+
+/// <summary>キャンセルトークンを保持する区間</summary>
+public interface ICancelTokenPeriod : IDisposable
+{
+    /// <summary>キャンセルトークン</summary>
+    CancellationToken Token { get; }
 }
 
 /// <summary>
@@ -133,9 +150,17 @@ public interface IConsoleWig
     /// <summary>指定したテキスト行を出力する。</summary>
     /// <param name="text">テキスト</param>
     /// <returns>呼び出し元インスタンス自身</returns>
-    public IConsoleWig WriteLine(string text)
+    public IConsoleWig WriteLine(string text = "")
     {
         Console.WriteLine(text);
+        return this;
+    }
+
+    /// <summary>改行を出力する。</summary>
+    /// <returns>呼び出し元インスタンス自身</returns>
+    public IConsoleWig NewLine()
+    {
+        Console.WriteLine();
         return this;
     }
 
@@ -382,5 +407,44 @@ public interface IConsoleWig
         Console.CancelKeyPress += handler;
         return new Period(() => Console.CancelKeyPress -= handler);
     }
-}
 
+    /// <summary>キャンセルキーイベントでキャンセルされるトークンを持つ区間を作成する</summary>
+    /// <returns>キャンセルトークン保持区間。Disposeするとイベントハンドルを解除する。</returns>
+    public ICancelTokenPeriod CreateCancelKeyHandlePeriod()
+    {
+        return new CancelKeyTokenPeriod();
+    }
+
+    /// <summary>
+    /// キャンセルキーイベントによってキャンセルされるキャンセルトークンを保持する区間
+    /// </summary>
+    private sealed class CancelKeyTokenPeriod : ICancelTokenPeriod
+    {
+        /// <summary>デフォルトコンストラクタ</summary>
+        public CancelKeyTokenPeriod()
+        {
+            this.canceller = new CancellationTokenSource();
+            Console.CancelKeyPress += cancelKeyHandler;
+        }
+
+        /// <summary>キャンセルトークン</summary>
+        public CancellationToken Token => this.canceller.Token;
+
+        /// <summary>インスタンスを破棄する</summary>
+        public void Dispose()
+        {
+            Console.CancelKeyPress -= cancelKeyHandler;
+            this.canceller.Dispose();
+        }
+
+        /// <summary>キャンセルトークンソース</summary>
+        private CancellationTokenSource canceller;
+
+        /// <summary>キャンセルキーイベントハンドラ</summary>
+        private void cancelKeyHandler(object? sender, ConsoleCancelEventArgs e)
+        {
+            this.canceller.Cancel();
+            e.Cancel = true;
+        }
+    }
+}
