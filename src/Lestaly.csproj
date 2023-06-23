@@ -10,6 +10,7 @@
     <PackageId>Lestaly</PackageId>
     <PackageDescription>Ad hoc code that can be useful in certain situations.</PackageDescription>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
   </PropertyGroup>
   <PropertyGroup>
     <Authors>toras9000</Authors>
@@ -38,6 +39,7 @@
   </PropertyGroup>
   <ItemGroup>
     <SourceRoot Include="$(MSBuildThisFileDirectory)" />
+    <None Include="../readme.md" Pack="true" PackagePath="\" Visible="false" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="ClosedXML" Version="0.101.0" />
