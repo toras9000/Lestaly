@@ -1,5 +1,6 @@
 ﻿using System.Buffers;
 using System.Text;
+using CometFlavor.Utility;
 
 namespace Lestaly;
 
@@ -203,10 +204,19 @@ public static class StringEncodeExtensions
     /// <returns>エスケープした文字列</returns>
     public static string EscapeUriData(this string self) => Uri.EscapeDataString(self);
 
-
     /// <summary>URIデータ文字列のルールでエスケープされた文字列をアンエスケープする。</summary>
     /// <param name="self">文字列</param>
     /// <returns>アンエスケープした文字列</returns>
     public static string UnescapeUriData(this string self) => Uri.UnescapeDataString(self);
 
+
+    /// <summary>文字列をファイル名に利用するためにエスケープする。</summary>
+    /// <param name="self">文字列</param>
+    /// <returns>必要に応じてエスケープされたファイル名用文字列</returns>
+    public static string ToFileName(this string self) => PathUtility.EscapeFileName(self);
+
+    /// <summary>文字列を相対パスに利用するためにエスケープする。</summary>
+    /// <param name="self">文字列</param>
+    /// <returns>必要に応じてエスケープされたファイル名用文字列</returns>
+    public static string ToRelativePath(this string self) => PathUtility.EscapeRelativePath(self);
 }
