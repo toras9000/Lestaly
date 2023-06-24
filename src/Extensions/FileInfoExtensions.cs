@@ -13,7 +13,7 @@ public static class FileInfoExtensions
     /// </summary>
     /// <param name="self">対象ファイルのFileInfo</param>
     /// <returns>拡張子を除いたファイル名</returns>
-    public static string GetNameWithoutExtension(this FileInfo self)
+    public static string BaseName(this FileInfo self)
         => CometFlavor.Extensions.IO.FileInfoExtensions.GetNameWithoutExtension(self);
 
     /// <summary>
@@ -21,7 +21,7 @@ public static class FileInfoExtensions
     /// </summary>
     /// <param name="self">対象ファイルのFileInfo</param>
     /// <returns>拡張子</returns>
-    public static string GetExtension(this FileInfo self)
+    public static string Extension(this FileInfo self)
         => CometFlavor.Extensions.IO.FileInfoExtensions.GetExtension(self);
 
     /// <summary>

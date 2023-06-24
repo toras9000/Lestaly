@@ -10,7 +10,7 @@ public static class ThisSource
     /// <summary>呼び出し元ソースファイルパスを示すファイル情報を取得する。</summary>
     /// <param name="path">この引数は省略する必要がある。</param>
     /// <returns>呼び出し元ソースファイル情報</returns>
-    public static FileInfo GetFile([CallerFilePath] string path = "")
+    public static FileInfo File([CallerFilePath] string path = "")
         => new FileInfo(path);
 
     /// <summary>呼び出し元ソースファイルからの相対パスで示されるファイル情報を取得する。</summary>
@@ -44,10 +44,10 @@ public static class ThisSource
     /// <summary>呼び出し元行番号を取得する</summary>
     /// <param name="lineNumber">この引数は省略する必要がある。</param>
     /// <returns>行番号</returns>
-    public static int GetLineNumber([CallerLineNumber] int lineNumber = 0) => lineNumber;
+    public static int LineNumber([CallerLineNumber] int lineNumber = 0) => lineNumber;
 
     /// <summary>呼び出し元メンバー名を取得する</summary>
     /// <param name="member">この引数は省略する必要がある。</param>
     /// <returns>メンバー名</returns>
-    public static string GetMemberName([CallerMemberName] string member = "") => member;
+    public static string MemberName([CallerMemberName] string member = "") => member;
 }
