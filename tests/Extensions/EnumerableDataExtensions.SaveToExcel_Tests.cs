@@ -1184,4 +1184,20 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
     }
 
 
+    [TestMethod]
+    public void SaveToExcelOptions_DataTypes()
+    {
+        var hyperlink = new ExcelHyperlink("https://google.com", "disptext", "tooltip");
+        hyperlink.ToString().Should().Be("disptext|https://google.com");
+
+        var formula = new ExcelFormula("A1 & A2", false);
+        formula.ToString().Should().Be("A1 & A2");
+
+        var style = new ExcelStyle(123, "backcolor", "forecolor");
+        style.ToString().Should().Be("123");
+
+        var expand = new ExcelExpand(new object[] { "aaa", 100, "bbb", 200 });
+        expand.ToString().Should().Be("aaa|100|bbb|200");
+    }
+
 }

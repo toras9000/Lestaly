@@ -37,12 +37,27 @@ public class SaveToExcelOptions : TypeColumnOptions
 /// <param name="Target">リンク先</param>
 /// <param name="Display">表示名</param>
 /// <param name="Tooltip">ツールチップ</param>
-public record ExcelHyperlink(string Target, string? Display = null, string? Tooltip = null);
+public record ExcelHyperlink(string Target, string? Display = null, string? Tooltip = null)
+{
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return this.Display.Mux(this.Target, '|');
+    }
+}
+
 
 /// <summary>式を表すデータ型</summary>
 /// <param name="Expression">式</param>
 /// <param name="IsR1C1">式</param>
-public record ExcelFormula(string Expression, bool IsR1C1 = false);
+public record ExcelFormula(string Expression, bool IsR1C1 = false)
+{
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return this.Expression;
+    }
+}
 
 /// <summary>書式付きの値を表すデータ型</summary>
 /// <param name="Value">出力する値</param>
@@ -54,7 +69,14 @@ public record ExcelFormula(string Expression, bool IsR1C1 = false);
 /// 動的評価では ExcelHyperlink/ExcelFormula が有効となる。
 /// 動的評価を有効にした場合、パフォーマンスは大きく落ちるため注意。
 /// </param>
-public record ExcelStyle(object Value, string? BackColor = null, string? ForeColor = null, ExcelStyleExtra? Extra = null, bool DynamicValue = false);
+public record ExcelStyle(object Value, string? BackColor = null, string? ForeColor = null, ExcelStyleExtra? Extra = null, bool DynamicValue = false)
+{
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return this.Value?.ToString() ?? "";
+    }
+}
 
 /// <summary>書式付き値を型への追加書式情報</summary>
 /// <param name="Font">利用するフォント名</param>
@@ -76,4 +98,11 @@ public record ExcelStyleExtra(string? Font = null, double FontSize = double.NaN,
 /// 動的評価では ExcelHyperlink/ExcelFormula/ExcelStyle が有効となる。
 /// 動的評価を有効にした場合、パフォーマンスは大きく落ちるため注意。
 /// </param>
-public record ExcelExpand(IReadOnlyCollection<object> Values, bool DynamicValue = false);
+public record ExcelExpand(IReadOnlyCollection<object> Values, bool DynamicValue = false)
+{
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return this.Values?.Select(e => e?.ToString()).JoinString("|") ?? "";
+    }
+}
