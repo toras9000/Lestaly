@@ -301,6 +301,36 @@ public static class StringExtensions
         return mixer(self, sequel);
     }
 
+    /// <summary>2つの文字列の両方がnull/空でない場合に合成した文字列を返却する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="sequel">後続文字列</param>
+    /// <param name="joiner">結合キャラクタ</param>
+    /// <returns>合成した文字列。いずれかがnull/空であれば空文字列を返却する。</returns>
+    public static string TieIn(this string? self, string? sequel, char joiner)
+    {
+        if (string.IsNullOrEmpty(self) || string.IsNullOrEmpty(sequel))
+        {
+            return "";
+        }
+
+        return $"{self}{joiner}{sequel}";
+    }
+
+    /// <summary>2つの文字列の両方がnull/空でない場合に合成した文字列を返却する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="sequel">後続文字列</param>
+    /// <param name="joiner">結合文字列</param>
+    /// <returns>合成した文字列。いずれかがnull/空であれば空文字列を返却する。</returns>
+    public static string TieIn(this string? self, string? sequel, string joiner)
+    {
+        if (string.IsNullOrEmpty(self) || string.IsNullOrEmpty(sequel))
+        {
+            return "";
+        }
+
+        return $"{self}{joiner}{sequel}";
+    }
+
     /// <summary>2つの文字列の両方がnull/空でない場合に合成した文字列を、片方がnull/空でなければそれを返却する。</summary>
     /// <param name="self">対象文字列</param>
     /// <param name="sequel">後続文字列</param>
@@ -323,6 +353,30 @@ public static class StringExtensions
         if (string.IsNullOrEmpty(sequel)) return self;
         if (mixer == null) throw new ArgumentNullException(nameof(mixer));
         return mixer(self, sequel);
+    }
+
+    /// <summary>2つの文字列の両方がnull/空でない場合に合成した文字列を、片方がnull/空でなければそれを返却する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="sequel">後続文字列</param>
+    /// <param name="joiner">結合キャラクタ</param>
+    /// <returns>合成した文字列。いずれかがnull/空以外であればそれを、両方null/空であれば空文字列を返却する。</returns>
+    public static string Mux(this string? self, string? sequel, char joiner)
+    {
+        if (string.IsNullOrEmpty(self)) return sequel ?? "";
+        if (string.IsNullOrEmpty(sequel)) return self;
+        return $"{self}{joiner}{sequel}";
+    }
+
+    /// <summary>2つの文字列の両方がnull/空でない場合に合成した文字列を、片方がnull/空でなければそれを返却する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="sequel">後続文字列</param>
+    /// <param name="joiner">結合文字列</param>
+    /// <returns>合成した文字列。いずれかがnull/空以外であればそれを、両方null/空であれば空文字列を返却する。</returns>
+    public static string Mux(this string? self, string? sequel, string joiner)
+    {
+        if (string.IsNullOrEmpty(self)) return sequel ?? "";
+        if (string.IsNullOrEmpty(sequel)) return self;
+        return $"{self}{joiner}{sequel}";
     }
 
     /// <summary>

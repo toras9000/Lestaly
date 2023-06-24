@@ -114,6 +114,16 @@ public class StringExtensionsTests
         "abc".TieIn("", (x, y) => $"({x}/{y})").Should().Be("");
         "".TieIn("xxx", (x, y) => $"({x}/{y})").Should().Be("");
         default(string).TieIn(null, (x, y) => $"({x}/{y})").Should().Be("");
+
+        "abc".TieIn("xxx", '/').Should().Be("abc/xxx");
+        "abc".TieIn("", '/').Should().Be("");
+        "".TieIn("xxx", '/').Should().Be("");
+        default(string).TieIn(null, '/').Should().Be("");
+
+        "abc".TieIn("xxx", "/").Should().Be("abc/xxx");
+        "abc".TieIn("", "/").Should().Be("");
+        "".TieIn("xxx", "/").Should().Be("");
+        default(string).TieIn(null, "/").Should().Be("");
     }
 
     [TestMethod()]
@@ -131,6 +141,16 @@ public class StringExtensionsTests
         "abc".Mux("", (x, y) => $"({x}/{y})").Should().Be("abc");
         "".Mux("xxx", (x, y) => $"({x}/{y})").Should().Be("xxx");
         default(string).Mux(null, (x, y) => $"({x}/{y})").Should().Be("");
+
+        "abc".Mux("xxx", '/').Should().Be("abc/xxx");
+        "abc".Mux("", '/').Should().Be("abc");
+        "".Mux("xxx", '/').Should().Be("xxx");
+        default(string).Mux(null, '/').Should().Be("");
+
+        "abc".Mux("xxx", "/").Should().Be("abc/xxx");
+        "abc".Mux("", "/").Should().Be("abc");
+        "".Mux("xxx", "/").Should().Be("xxx");
+        default(string).Mux(null, "/").Should().Be("");
     }
 
     [TestMethod()]
