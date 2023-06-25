@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Text.Json;
 
 namespace Lestaly;
 
@@ -324,6 +325,82 @@ public static class FileInfoExtensions
     /// <returns>ストリームリーダー</returns>
     public static StreamWriter CreateTextWriter(this FileInfo self, FileStreamOptions options, Encoding? encoding = null)
         => CometFlavor.Extensions.IO.FileInfoExtensions.CreateTextWriter(self, options, encoding);
+    #endregion
+
+    #region Read JSON
+    /// <summary>ファイルからJSONデータを読み取る</summary>
+    /// <typeparam name="TObject">JSONをデシリアライズする型</typeparam>
+    /// <param name="self">読み取り元ファイル</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>デシリアライズしたインスタンス</returns>
+    public static ValueTask<TObject?> ReadJsonAsync<TObject>(this FileInfo self, CancellationToken cancelToken)
+        => self.ReadJsonAsync<TObject>(default, cancelToken);
+
+    /// <summary>ファイルからJSONデータを読み取る</summary>
+    /// <typeparam name="TObject">JSONをデシリアライズする型</typeparam>
+    /// <param name="self">読み取り元ファイル</param>
+    /// <param name="options">デシリアライズオプション</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>デシリアライズしたインスタンス</returns>
+    public static async ValueTask<TObject?> ReadJsonAsync<TObject>(this FileInfo self, JsonSerializerOptions? options = null, CancellationToken cancelToken = default)
+    {
+        using var stream = self.OpenRead();
+        return await JsonSerializer.DeserializeAsync<TObject>(stream, options, cancelToken).ConfigureAwait(false);
+    }
+
+    /// <summary>ファイルからJSONデータを読み取る</summary>
+    /// <typeparam name="TObject">JSONをデシリアライズする型</typeparam>
+    /// <param name="self">読み取り元ファイル</param>
+    /// <param name="template">
+    /// JSONをデシリアライズする型を示す値。
+    /// インスタンス値が利用されることはなく型情報のみを参照する。
+    /// 型情報は静的な型が参照される。インスタンスの実体型は影響を与えない。
+    /// </param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>デシリアライズしたインスタンス</returns>
+    public static ValueTask<TObject?> ReadJsonByTemplateAsync<TObject>(this FileInfo self, TObject? template, CancellationToken cancelToken)
+        => self.ReadJsonByTemplateAsync<TObject>(template, default, cancelToken);
+
+    /// <summary>ファイルからJSONデータを読み取る</summary>
+    /// <typeparam name="TObject">JSONをデシリアライズする型</typeparam>
+    /// <param name="self">読み取り元ファイル</param>
+    /// <param name="template">
+    /// JSONをデシリアライズする型を示す値。
+    /// インスタンス値が利用されることはなく型情報のみを参照する。
+    /// 型情報は静的な型が参照される。インスタンスの実体型は影響を与えない。
+    /// </param>
+    /// <param name="options">デシリアライズオプション</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>デシリアライズしたインスタンス</returns>
+    public static async ValueTask<TObject?> ReadJsonByTemplateAsync<TObject>(this FileInfo self, TObject? template, JsonSerializerOptions? options = null, CancellationToken cancelToken = default)
+    {
+        _ = template;
+        using var stream = self.OpenRead();
+        var decoded = await JsonSerializer.DeserializeAsync(stream, typeof(TObject), options, cancelToken).ConfigureAwait(false);
+        return (TObject?)decoded;
+    }
+    #endregion
+
+    #region Write JSON
+    /// <summary>オブジェクトをJSON形式でファイルに保存する</summary>
+    /// <typeparam name="TObject">JSONにデシリアライズする型</typeparam>
+    /// <param name="self">保存先ファイル</param>
+    /// <param name="value">保存するオブジェクト</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    public static ValueTask WriteJsonAsync<TObject>(this FileInfo self, TObject value, CancellationToken cancelToken)
+        => self.WriteJsonAsync(value, default, cancelToken);
+
+    /// <summary>オブジェクトをJSON形式でファイルに保存する</summary>
+    /// <typeparam name="TObject">JSONにデシリアライズする型</typeparam>
+    /// <param name="self">保存先ファイル</param>
+    /// <param name="value">保存するオブジェクト</param>
+    /// <param name="options">シリアライズオプション</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    public static async ValueTask WriteJsonAsync<TObject>(this FileInfo self, TObject value, JsonSerializerOptions? options = null, CancellationToken cancelToken = default)
+    {
+        using var stream = self.OpenWrite();
+        await JsonSerializer.SerializeAsync(stream, value, options, cancelToken).ConfigureAwait(false);
+    }
     #endregion
 
     #region FileSystem
