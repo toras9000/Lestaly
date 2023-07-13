@@ -42,7 +42,7 @@
     <None Include="../readme.md" Pack="true" PackagePath="\" Visible="false" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="ClosedXML" Version="0.101.0" />
+    <PackageReference Include="ClosedXML" Version="0.102.0" />
     <PackageReference Include="CometFlavor" Version="0.22.0" />
     <PackageReference Include="CometFlavor.Unicode" Version="0.2.0" />
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
