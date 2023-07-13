@@ -31,15 +31,15 @@ public sealed class ConsoleWig : IConsoleWig
     /// <param name="color">色</param>
     /// <param name="text">テキスト</param>
     /// <returns>呼び出し元インスタンス自身</returns>
-    public static IConsoleWig WriteColord(ConsoleColor color, string text)
-        => Facade.WriteColord(color, text);
+    public static IConsoleWig WriteColored(ConsoleColor color, string text)
+        => Facade.WriteColored(color, text);
 
     /// <summary>指定したカラーでテキスト行を出力する。</summary>
     /// <param name="color">色</param>
     /// <param name="text">テキスト</param>
     /// <returns>呼び出し元インスタンス自身</returns>
-    public static IConsoleWig WriteLineColord(ConsoleColor color, string text)
-        => Facade.WriteLineColord(color, text);
+    public static IConsoleWig WriteLineColored(ConsoleColor color, string text)
+        => Facade.WriteLineColored(color, text);
 
     /// <summary>指定したハイパーリンクを出力する</summary>
     /// <param name="uri">リンク先URI</param>
@@ -168,7 +168,7 @@ public interface IConsoleWig
     /// <param name="color">色</param>
     /// <param name="text">テキスト</param>
     /// <returns>呼び出し元インスタンス自身</returns>
-    public IConsoleWig WriteColord(ConsoleColor color, string text)
+    public IConsoleWig WriteColored(ConsoleColor color, string text)
     {
         var original = Console.ForegroundColor;
         try
@@ -187,7 +187,7 @@ public interface IConsoleWig
     /// <param name="color">色</param>
     /// <param name="text">テキスト</param>
     /// <returns>呼び出し元インスタンス自身</returns>
-    public IConsoleWig WriteLineColord(ConsoleColor color, string text)
+    public IConsoleWig WriteLineColored(ConsoleColor color, string text)
     {
         var original = Console.ForegroundColor;
         try

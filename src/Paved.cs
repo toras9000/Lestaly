@@ -35,7 +35,7 @@ public static class Paved
             }
             else
             {
-                console.WriteLineColord(ConsoleColor.Yellow, "Operation cancelled.");
+                console.WriteLineColored(ConsoleColor.Yellow, "Operation cancelled.");
             }
         }
         catch (Exception ex)
@@ -53,11 +53,11 @@ public static class Paved
                 switch (pex.Kind)
                 {
                 case PavedMessageKind.Error:
-                    console.WriteLineColord(ConsoleColor.Red, pex.Message);
+                    console.WriteLineColored(ConsoleColor.Red, pex.Message);
                     break;
                 case PavedMessageKind.Warning:
                 case PavedMessageKind.Cancelled:
-                    console.WriteLineColord(ConsoleColor.Yellow, pex.Message);
+                    console.WriteLineColored(ConsoleColor.Yellow, pex.Message);
                     break;
                 case PavedMessageKind.Information:
                 default:
@@ -67,7 +67,7 @@ public static class Paved
             }
             else
             {
-                console.WriteLineColord(ConsoleColor.Red, ex.ToString());
+                console.WriteLineColored(ConsoleColor.Red, ex.ToString());
             }
         }
 
@@ -97,7 +97,7 @@ public static class Paved
             {
                 if (ex is OperationCanceledException)
                 {
-                    console.WriteLineColord(ConsoleColor.Yellow, "Operation cancelled.");
+                    console.WriteLineColored(ConsoleColor.Yellow, "Operation cancelled.");
                     return 254;
                 }
                 if (ex is PavedMessageException pex)
@@ -106,14 +106,14 @@ public static class Paved
                     switch (pex.Kind)
                     {
                     case PavedMessageKind.Error:
-                        console.WriteLineColord(ConsoleColor.Red, pex.Message);
+                        console.WriteLineColored(ConsoleColor.Red, pex.Message);
                         break;
                     case PavedMessageKind.Warning:
-                        console.WriteLineColord(ConsoleColor.Yellow, pex.Message);
+                        console.WriteLineColored(ConsoleColor.Yellow, pex.Message);
                         break;
                     case PavedMessageKind.Cancelled:
                         exitCode = 254;
-                        console.WriteLineColord(ConsoleColor.Yellow, pex.Message);
+                        console.WriteLineColored(ConsoleColor.Yellow, pex.Message);
                         break;
                     case PavedMessageKind.Information:
                     default:
@@ -127,7 +127,7 @@ public static class Paved
                     return exitCode;
                 }
 
-                console.WriteLineColord(ConsoleColor.Red, ex.ToString());
+                console.WriteLineColored(ConsoleColor.Red, ex.ToString());
                 return 255;
             };
             configuration?.Invoke(options);
