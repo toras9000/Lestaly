@@ -1,4 +1,6 @@
-﻿namespace Lestaly;
+﻿using System.Numerics;
+
+namespace Lestaly;
 
 /// <summary>
 /// Span に対する拡張メソッド
@@ -18,4 +20,92 @@ public static class SpanExtensions
     /// <returns>読み取り専用スパン</returns>
     public static ReadOnlySpan<T> AsReadOnlySpan<T>(this T[] self) => self;
 
+    /// <summary>配列の読み取り専用スパンを作成する。</summary>
+    /// <remarks>暗黙の型変換が評価されない場面用。たとえば拡張メソッドのオーバーロード解決など。</remarks>
+    /// <typeparam name="T">要素の型</typeparam>
+    /// <param name="self">対象配列</param>
+    /// <param name="start">スライス開始位置</param>
+    /// <returns>読み取り専用スパン</returns>
+    public static ReadOnlySpan<T> AsReadOnlySpan<T>(this T[] self, int start) => self.AsSpan(start);
+
+    /// <summary>配列の読み取り専用スパンを作成する。</summary>
+    /// <remarks>暗黙の型変換が評価されない場面用。たとえば拡張メソッドのオーバーロード解決など。</remarks>
+    /// <typeparam name="T">要素の型</typeparam>
+    /// <param name="self">対象配列</param>
+    /// <param name="start">スライス開始位置</param>
+    /// <param name="length">スライス長</param>
+    /// <returns>読み取り専用スパン</returns>
+    public static ReadOnlySpan<T> AsReadOnlySpan<T>(this T[] self, int start, int length) => self.AsSpan(start, length);
+
+
+    #region Endian
+
+#if NET7_0_OR_GREATER
+    /// <summary>バイト列からリトルエンディアンで整数を読み取る</summary>
+    /// <typeparam name="TResult">読み取り結果とする型</typeparam>
+    /// <param name="self">読み取り元スパン</param>
+    /// <returns>読み取り結果</returns>
+    public static TResult AtLittleEndian<TResult>(this ReadOnlySpan<byte> self) where TResult : struct, IBinaryInteger<TResult>, IMinMaxValue<TResult>
+        => TResult.ReadLittleEndian(self, 0 <= TResult.Sign(TResult.MinValue));
+
+    /// <summary>バイト列からリトルエンディアンで整数を読み取る</summary>
+    /// <typeparam name="TResult">読み取り結果とする型</typeparam>
+    /// <param name="self">読み取り元スパン</param>
+    /// <returns>読み取り結果</returns>
+    public static TResult AtLittleEndian<TResult>(this Span<byte> self) where TResult : struct, IBinaryInteger<TResult>, IMinMaxValue<TResult>
+        => TResult.ReadLittleEndian(self, 0 <= TResult.Sign(TResult.MinValue));
+
+    /// <summary>バイト列からリトルエンディアンで整数を読み取る</summary>
+    /// <typeparam name="TResult">読み取り結果とする型</typeparam>
+    /// <param name="self">読み取り元スパン</param>
+    /// <returns>読み取り結果</returns>
+    public static TResult AtLittleEndian<TResult>(this byte[] self) where TResult : struct, IBinaryInteger<TResult>, IMinMaxValue<TResult>
+        => TResult.ReadLittleEndian(self, 0 <= TResult.Sign(TResult.MinValue));
+
+    /// <summary>バイト列からビッグエンディアンで整数を読み取る</summary>
+    /// <typeparam name="TResult">読み取り結果とする型</typeparam>
+    /// <param name="self">読み取り元スパン</param>
+    /// <returns>読み取り結果</returns>
+    public static TResult AtBigEndian<TResult>(this ReadOnlySpan<byte> self) where TResult : struct, IBinaryInteger<TResult>, IMinMaxValue<TResult>
+        => TResult.ReadBigEndian(self, 0 <= TResult.Sign(TResult.MinValue));
+
+    /// <summary>バイト列からビッグエンディアンで整数を読み取る</summary>
+    /// <typeparam name="TResult">読み取り結果とする型</typeparam>
+    /// <param name="self">読み取り元スパン</param>
+    /// <returns>読み取り結果</returns>
+    public static TResult AtBigEndian<TResult>(this Span<byte> self) where TResult : struct, IBinaryInteger<TResult>, IMinMaxValue<TResult>
+        => TResult.ReadBigEndian(self, 0 <= TResult.Sign(TResult.MinValue));
+
+    /// <summary>バイト列からビッグエンディアンで整数を読み取る</summary>
+    /// <typeparam name="TResult">読み取り結果とする型</typeparam>
+    /// <param name="self">読み取り元スパン</param>
+    /// <returns>読み取り結果</returns>
+    public static TResult AtBigEndian<TResult>(this byte[] self) where TResult : struct, IBinaryInteger<TResult>, IMinMaxValue<TResult>
+        => TResult.ReadBigEndian(self, 0 <= TResult.Sign(TResult.MinValue));
+
+    /// <summary>バイト列から指定のエンディアンで整数を読み取る</summary>
+    /// <typeparam name="TResult">読み取り結果とする型</typeparam>
+    /// <param name="self">読み取り元スパン</param>
+    /// <param name="little">リトルエンディアンか否か</param>
+    /// <returns>読み取り結果</returns>
+    public static TResult AtEndian<TResult>(this ReadOnlySpan<byte> self, bool little) where TResult : struct, IBinaryInteger<TResult>, IMinMaxValue<TResult>
+        => little ? TResult.ReadLittleEndian(self, 0 <= TResult.Sign(TResult.MinValue)) : TResult.ReadBigEndian(self, 0 <= TResult.Sign(TResult.MinValue));
+
+    /// <summary>バイト列から指定のエンディアンで整数を読み取る</summary>
+    /// <typeparam name="TResult">読み取り結果とする型</typeparam>
+    /// <param name="self">読み取り元スパン</param>
+    /// <param name="little">リトルエンディアンか否か</param>
+    /// <returns>読み取り結果</returns>
+    public static TResult AtEndian<TResult>(this Span<byte> self, bool little) where TResult : struct, IBinaryInteger<TResult>, IMinMaxValue<TResult>
+        => little ? TResult.ReadLittleEndian(self, 0 <= TResult.Sign(TResult.MinValue)) : TResult.ReadBigEndian(self, 0 <= TResult.Sign(TResult.MinValue));
+
+    /// <summary>バイト列から指定のエンディアンで整数を読み取る</summary>
+    /// <typeparam name="TResult">読み取り結果とする型</typeparam>
+    /// <param name="self">読み取り元スパン</param>
+    /// <param name="little">リトルエンディアンか否か</param>
+    /// <returns>読み取り結果</returns>
+    public static TResult AtEndian<TResult>(this byte[] self, bool little) where TResult : struct, IBinaryInteger<TResult>, IMinMaxValue<TResult>
+        => little ? TResult.ReadLittleEndian(self, 0 <= TResult.Sign(TResult.MinValue)) : TResult.ReadBigEndian(self, 0 <= TResult.Sign(TResult.MinValue));
+#endif 
+    #endregion
 }
