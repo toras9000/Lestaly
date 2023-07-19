@@ -37,4 +37,8 @@ public class TypeColumnOptions
 
     /// <summary>展開データが最大カラム数を超えた場合にサイレントに破棄するか否かを示す。</summary>
     public bool DropSpanOver { get; set; } = false;
+
+    /// <summary>動的コンパイルベースのメンバアクセサを利用するか否か</summary>
+    /// <remarks>処理データ数が少ない場合、これを指定するとオーバヘッドによりかえってパフォーマンスを落とす事になるので注意。10万件以上が目安。</remarks>
+    public bool UseCompiledGetter { get; set; } = false;
 }

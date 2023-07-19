@@ -879,6 +879,43 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
     }
 
     [TestMethod]
+    public void SaveToExcel_Compiled()
+    {
+        using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
+
+        // テスト用に一時ディレクトリ
+        using var tempDir = new TempDir();
+
+        // テストファイル
+        var target = tempDir.Info.RelativeFile("test.xlsx");
+
+        // 保存データ
+        var data = new[]
+        {
+            new TestItem{ PropRef = "a1", PropVal = 11, FieldRef = "b1", FieldVal = 101, },
+            new TestItem{ PropRef = "a2", PropVal = 12, FieldRef = "b2", FieldVal = 102, },
+        };
+
+        // 実行オプション
+        var options = new SaveToExcelOptions()
+        {
+            UseCompiledGetter = false,
+        };
+
+        // テスト対象実行
+        data.SaveToExcel(target.FullName, options);
+
+        // 期待値
+        var expect = new List<object?[]> { new object?[] { "PropRef", "PropVal", } };
+        expect.AddRange(data.Select(d => new object?[] { d.PropRef, d.PropVal, }));
+
+        // 検証
+        using var book = new XLWorkbook(target.FullName);
+        var sheet = book.Worksheets.First();
+        sheet.GetUsedData().Should().BeEquivalentTo(expect);
+    }
+
+    [TestMethod]
     public void SaveToExcel_NoField()
     {
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
@@ -937,6 +974,44 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         var options = new SaveToExcelOptions()
         {
             IncludeFields = true,
+        };
+
+        // テスト対象実行
+        data.SaveToExcel(target.FullName, options);
+
+        // 期待値
+        var expect = new List<object?[]> { new object?[] { "FieldRef", "FieldVal", "PropRef", "PropVal", } };
+        expect.AddRange(data.Select(d => new object?[] { d.FieldRef, d.FieldVal, d.PropRef, d.PropVal, }));
+
+        // 検証
+        using var book = new XLWorkbook(target.FullName);
+        var sheet = book.Worksheets.First();
+        sheet.GetUsedData().Should().BeEquivalentTo(expect);
+    }
+
+    [TestMethod]
+    public void SaveToExcel_IncludeFieldCompiled()
+    {
+        using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
+
+        // テスト用に一時ディレクトリ
+        using var tempDir = new TempDir();
+
+        // テストファイル
+        var target = tempDir.Info.RelativeFile("test.xlsx");
+
+        // 保存データ
+        var data = new[]
+        {
+            new TestItem{ PropRef = "a1", PropVal = 11, FieldRef = "b1", FieldVal = 101, },
+            new TestItem{ PropRef = "a2", PropVal = 12, FieldRef = "b2", FieldVal = 102, },
+        };
+
+        // 実行オプション
+        var options = new SaveToExcelOptions()
+        {
+            IncludeFields = true,
+            UseCompiledGetter = true,
         };
 
         // テスト対象実行

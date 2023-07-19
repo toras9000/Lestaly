@@ -381,18 +381,17 @@ public static partial class EnumerableDataExtensions
             .Select(member =>
             {
                 // メンバのゲッターを作成
-                // フィールドはリフレクションにて、プロパティは取得用デリゲート生成にて。
                 var getter = default(Func<TSource, object?>);
                 var returnType = default(Type);
                 if (member is FieldInfo fieldInfo)
                 {
-                    getter = o => fieldInfo.GetValue(o);
+                    getter = options.UseCompiledGetter ? MemberAccessor.CompileFieldGetter<TSource>(fieldInfo, nonPublic: false) : o => fieldInfo.GetValue(o);
                     returnType = fieldInfo.FieldType;
                 }
                 else
                 {
                     var propInfo = (PropertyInfo)member;
-                    getter = MemberAccessor.CreatePropertyGetter<TSource>(propInfo, nonPublic: false);
+                    getter = options.UseCompiledGetter ? MemberAccessor.CompilePropertyGetter<TSource>(propInfo, nonPublic: false) : MemberAccessor.CreatePropertyGetter<TSource>(propInfo, nonPublic: false);
                     returnType = propInfo.PropertyType;
                 }
 
