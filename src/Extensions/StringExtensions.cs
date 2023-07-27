@@ -100,6 +100,86 @@ public static class StringExtensions
         return converter(self);
     }
 
+    /// <summary>文字列が指定のテキストのいずれかで始まるかを判定する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="values">始まるかを判定する文字列。nullや空の要素は無視される。</param>
+    /// <param name="ignoreCase">大文字/小文字の違いを無視するか否か(序数ベース)</param>
+    /// <returns>いずれかで始まっているか否か</returns>
+    public static bool StartsWithAny(this string self, string[] values, bool ignoreCase)
+        => self == null ? false : self.AsSpan().StartsWithAny(values, ignoreCase);
+
+    /// <summary>文字列が指定のテキストのいずれかで始まるかを判定する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="values">始まるかを判定する文字列。nullや空の要素は無視される。</param>
+    /// <param name="comparison">文字列比較方法</param>
+    /// <returns>いずれかで始まっているか否か</returns>
+    public static bool StartsWithAny(this string self, string[] values, StringComparison comparison = StringComparison.Ordinal)
+        => self == null ? false : self.AsSpan().StartsWithAny(values, comparison);
+
+    /// <summary>文字列が指定のテキストのいずれかで始まるかを判定する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="values">始まるかを判定する文字列。nullや空の要素は無視される。</param>
+    /// <param name="ignoreCase">大文字/小文字の違いを無視するか否か(序数ベース)</param>
+    /// <returns>いずれかで始まっているか否か</returns>
+    public static bool StartsWithAny(this ReadOnlySpan<char> self, string[] values, bool ignoreCase)
+        => self.StartsWithAny(values, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
+
+    /// <summary>文字列が指定のテキストのいずれかで始まるかを判定する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="values">始まるかを判定する文字列。nullや空の要素は無視される。</param>
+    /// <param name="comparison">文字列比較方法</param>
+    /// <returns>いずれかで始まっているか否か</returns>
+    public static bool StartsWithAny(this ReadOnlySpan<char> self, string[] values, StringComparison comparison = StringComparison.Ordinal)
+    {
+        for (var i = 0; i < values.Length; i++)
+        {
+            var value = values[i];
+            if (string.IsNullOrEmpty(value)) continue;
+            if (self.StartsWith(value, comparison)) return true;
+        }
+        return false;
+    }
+
+    /// <summary>文字列が指定のテキストのいずれかで終わるかを判定する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="values">終わるかを判定する文字列。nullや空の要素は無視される。</param>
+    /// <param name="ignoreCase">大文字/小文字の違いを無視するか否か(序数ベース)</param>
+    /// <returns>いずれかで終わっているか否か</returns>
+    public static bool EndsWithAny(this string self, string[] values, bool ignoreCase)
+        => self == null ? false : self.AsSpan().EndsWithAny(values, ignoreCase);
+
+    /// <summary>文字列が指定のテキストのいずれかで終わるかを判定する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="values">終わるかを判定する文字列。nullや空の要素は無視される。</param>
+    /// <param name="comparison">文字列比較方法</param>
+    /// <returns>いずれかで終わっているか否か</returns>
+    public static bool EndsWithAny(this string self, string[] values, StringComparison comparison = StringComparison.Ordinal)
+        => self == null ? false : self.AsSpan().EndsWithAny(values, comparison);
+
+    /// <summary>文字列が指定のテキストのいずれかで終わるかを判定する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="values">終わるかを判定する文字列。nullや空の要素は無視される。</param>
+    /// <param name="ignoreCase">大文字/小文字の違いを無視するか否か(序数ベース)</param>
+    /// <returns>いずれかで終わっているか否か</returns>
+    public static bool EndsWithAny(this ReadOnlySpan<char> self, string[] values, bool ignoreCase)
+        => self.EndsWithAny(values, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
+
+    /// <summary>文字列が指定のテキストのいずれかで終わるかを判定する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="values">終わるかを判定する文字列。nullや空の要素は無視される。</param>
+    /// <param name="comparison">文字列比較方法</param>
+    /// <returns>いずれかで終わっているか否か</returns>
+    public static bool EndsWithAny(this ReadOnlySpan<char> self, string[] values, StringComparison comparison = StringComparison.Ordinal)
+    {
+        for (var i = 0; i < values.Length; i++)
+        {
+            var value = values[i];
+            if (string.IsNullOrEmpty(value)) continue;
+            if (self.EndsWith(value, comparison)) return true;
+        }
+        return false;
+    }
+
     /// <summary>
     /// 文字列の最初の行を取得する。
     /// </summary>
