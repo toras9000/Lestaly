@@ -25,14 +25,24 @@ public class StringEncodeExtensionsTests
     [TestMethod()]
     public void EncodeUtf8()
     {
-        var text = "abcdef";
+        {
+            var text = "abcdef";
+            var expect = Encoding.UTF8.GetBytes(text);
 
-        var expect = Encoding.UTF8.GetBytes(text);
+            text.EncodeUtf8().Should().Equal(expect);
+            text.ToArray().EncodeUtf8().Should().Equal(expect);
+            text.ToArray().AsSpan().EncodeUtf8().Should().Equal(expect);
+            text.AsSpan().EncodeUtf8().Should().Equal(expect);
+        }
+        {
+            var text = new string('a', 2000);
+            var expect = Encoding.UTF8.GetBytes(text);
 
-        text.EncodeUtf8().Should().Equal(expect);
-        text.ToArray().EncodeUtf8().Should().Equal(expect);
-        text.ToArray().AsSpan().EncodeUtf8().Should().Equal(expect);
-        text.AsSpan().EncodeUtf8().Should().Equal(expect);
+            text.EncodeUtf8().Should().Equal(expect);
+            text.ToArray().EncodeUtf8().Should().Equal(expect);
+            text.ToArray().AsSpan().EncodeUtf8().Should().Equal(expect);
+            text.AsSpan().EncodeUtf8().Should().Equal(expect);
+        }
     }
 
     [TestMethod()]
