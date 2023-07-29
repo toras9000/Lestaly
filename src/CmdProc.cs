@@ -28,13 +28,13 @@ public static class CmdProc
     /// <param name="cancelToken">キャンセルトークン</param>
     /// <param name="workDir">作業ディレクトリ</param>
     /// <param name="environments">環境変数</param>
-    /// <param name="stdOutWriter">標準出力のリダイレクト書き込み先ライター。nullの場合はリダイレクトなし。</param>
-    /// <param name="stdErrWriter">標準エラーのリダイレクト書き込み先ライター。nullの場合はリダイレクトなし。</param>
-    /// <param name="stdInReader">標準入力のリダイレクト読み込み元リーダー。nullの場合はリダイレクトなし。</param>
+    /// <param name="stdOut">標準出力のリダイレクト書き込み先ライター。nullの場合はリダイレクトなし。</param>
+    /// <param name="stdErr">標準エラーのリダイレクト書き込み先ライター。nullの場合はリダイレクトなし。</param>
+    /// <param name="stdIn">標準入力のリダイレクト読み込み元リーダー。nullの場合はリダイレクトなし。</param>
     /// <param name="outEncoding">プロセスの出力テキスト読み取り時のエンコーディング</param>
     /// <param name="inEncoding">プロセスの入力テキストを書き込む際のエンコーディング</param>
     /// <returns>呼び出しプロセスの終了コード</returns>
-    public static async Task<CmdExit> ExecAsync(string command, IEnumerable<string>? arguments = null, CancellationToken cancelToken = default, string? workDir = null, IEnumerable<KeyValuePair<string, string?>>? environments = null, TextWriter? stdOutWriter = null, TextWriter? stdErrWriter = null, TextReader? stdInReader = null, Encoding? outEncoding = null, Encoding? inEncoding = null)
+    public static async Task<CmdExit> ExecAsync(string command, IEnumerable<string>? arguments = null, CancellationToken cancelToken = default, string? workDir = null, IEnumerable<KeyValuePair<string, string?>>? environments = null, TextWriter? stdOut = null, TextWriter? stdErr = null, TextReader? stdIn = null, Encoding? outEncoding = null, Encoding? inEncoding = null)
     {
         // 実行するコマンドの情報を設定
         var target = new ProcessStartInfo();
@@ -53,17 +53,17 @@ public static class CmdProc
         }
         target.CreateNoWindow = true;
         target.UseShellExecute = false;
-        if (stdOutWriter != null)
+        if (stdOut != null)
         {
             target.RedirectStandardOutput = true;
             if (outEncoding != null) target.StandardOutputEncoding = outEncoding;
         }
-        if (stdErrWriter != null)
+        if (stdErr != null)
         {
             target.RedirectStandardError = true;
             if (outEncoding != null) target.StandardErrorEncoding = outEncoding;
         }
-        if (stdInReader != null)
+        if (stdIn != null)
         {
             target.RedirectStandardInput = true;
             if (inEncoding != null) target.StandardInputEncoding = inEncoding;
@@ -110,9 +110,9 @@ public static class CmdProc
 
         // 指定に応じたリダイレクトタスクを生成
         // 出力はすべて読み取れるようにキャンセルなし。入力はプロセス終了したらもう無意味なので中断させる。
-        var stdoutRedirector = stdOutWriter == null ? Task.CompletedTask : redirectProcStream(proc.StandardOutput, stdOutWriter, CancellationToken.None);
-        var stderrRedirector = stdErrWriter == null ? Task.CompletedTask : redirectProcStream(proc.StandardError, stdErrWriter, CancellationToken.None);
-        var stdinRedirector = stdInReader == null ? Task.CompletedTask : redirectProcStream(stdInReader, proc.StandardInput, completeCanceller.Token);
+        var stdoutRedirector = stdOut == null ? Task.CompletedTask : redirectProcStream(proc.StandardOutput, stdOut, CancellationToken.None);
+        var stderrRedirector = stdErr == null ? Task.CompletedTask : redirectProcStream(proc.StandardError, stdErr, CancellationToken.None);
+        var stdinRedirector = stdIn == null ? Task.CompletedTask : redirectProcStream(stdIn, proc.StandardInput, completeCanceller.Token);
 
         // コマンドの終了を待機
         var killed = false;

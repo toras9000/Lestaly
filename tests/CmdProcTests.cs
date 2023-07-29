@@ -9,7 +9,7 @@ public class CmdProcTests
     public async Task ExecAsync_Normal()
     {
         var writer = new StringWriter();
-        var exit = await CmdProc.ExecAsync("ipconfig", new[] { "/all", }, stdOutWriter: writer);
+        var exit = await CmdProc.ExecAsync("ipconfig", new[] { "/all", }, stdOut: writer);
         var output = writer.ToString();
         exit.Code.Should().Be(0);
         output.Should().Contain("DHCP");
@@ -19,7 +19,7 @@ public class CmdProcTests
     public async Task ExecAsync_NonZero()
     {
         // cmd /? はリダイレクトしないと入力待ちになってしまうことに注意
-        var exit = await CmdProc.ExecAsync("cmd", new[] { "/?", }, stdOutWriter: TextWriter.Null);
+        var exit = await CmdProc.ExecAsync("cmd", new[] { "/?", }, stdOut: TextWriter.Null);
         exit.Code.Should().Be(1);
     }
 
@@ -41,7 +41,7 @@ public class CmdProcTests
 
         using var stdInReader = new StringReader(" ");
 
-        await FluentActions.Awaiting(() => CmdProc.ExecAsync("cmd", new[] { "/C", "pause" }, stdInReader: stdInReader, cancelToken: canceller.Token))
+        await FluentActions.Awaiting(() => CmdProc.ExecAsync("cmd", new[] { "/C", "pause" }, stdIn: stdInReader, cancelToken: canceller.Token))
               .Should().NotThrowAsync();
     }
 
