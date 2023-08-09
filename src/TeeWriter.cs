@@ -292,7 +292,7 @@ public class TeeWriter : TextWriter, ITeeWriter, IDisposable
     #endregion
 
     #region 出力 (インタフェース)
-    /// <inheritdoc cref="ITeeWriter.Write(char)">
+    /// <inheritdoc cref="ITeeWriter.Write(char)" />
     ITeeWriter ITeeWriter.Write(char value)
     {
         foreach (var writer in this.companions)
@@ -302,7 +302,7 @@ public class TeeWriter : TextWriter, ITeeWriter, IDisposable
         return this;
     }
 
-    /// <inheritdoc cref="ITeeWriter.Write(string?)">
+    /// <inheritdoc cref="ITeeWriter.Write(string?)" />
     ITeeWriter ITeeWriter.Write(string? value)
     {
         foreach (var writer in this.companions)
@@ -312,7 +312,7 @@ public class TeeWriter : TextWriter, ITeeWriter, IDisposable
         return this;
     }
 
-    /// <inheritdoc cref="ITeeWriter.Write(ReadOnlySpan{char})">
+    /// <inheritdoc cref="ITeeWriter.Write(ReadOnlySpan{char})" />
     ITeeWriter ITeeWriter.Write(ReadOnlySpan<char> value)
     {
         foreach (var writer in this.companions)
@@ -322,7 +322,7 @@ public class TeeWriter : TextWriter, ITeeWriter, IDisposable
         return this;
     }
 
-    /// <inheritdoc cref="ITeeWriter.Write(StringBuilder?)">
+    /// <inheritdoc cref="ITeeWriter.Write(StringBuilder?)" />
     ITeeWriter ITeeWriter.Write(StringBuilder? value)
     {
         foreach (var writer in this.companions)
@@ -332,7 +332,7 @@ public class TeeWriter : TextWriter, ITeeWriter, IDisposable
         return this;
     }
 
-    /// <inheritdoc cref="ITeeWriter.Write(object?)">
+    /// <inheritdoc cref="ITeeWriter.Write(object?)" />
     ITeeWriter ITeeWriter.Write(object? value)
     {
         foreach (var writer in this.companions)
@@ -342,7 +342,7 @@ public class TeeWriter : TextWriter, ITeeWriter, IDisposable
         return this;
     }
 
-    /// <inheritdoc cref="ITeeWriter.WriteLine()">
+    /// <inheritdoc cref="ITeeWriter.WriteLine()" />
     ITeeWriter ITeeWriter.WriteLine()
     {
         foreach (var writer in this.companions)
@@ -352,7 +352,7 @@ public class TeeWriter : TextWriter, ITeeWriter, IDisposable
         return this;
     }
 
-    /// <inheritdoc cref="ITeeWriter.WriteLine(string?)">
+    /// <inheritdoc cref="ITeeWriter.WriteLine(string?)" />
     ITeeWriter ITeeWriter.WriteLine(string? value)
     {
         foreach (var writer in this.companions)
@@ -362,7 +362,7 @@ public class TeeWriter : TextWriter, ITeeWriter, IDisposable
         return this;
     }
 
-    /// <inheritdoc cref="ITeeWriter.WriteLine(ReadOnlySpan{char})">
+    /// <inheritdoc cref="ITeeWriter.WriteLine(ReadOnlySpan{char})" />
     ITeeWriter ITeeWriter.WriteLine(ReadOnlySpan<char> value)
     {
         foreach (var writer in this.companions)
@@ -372,7 +372,7 @@ public class TeeWriter : TextWriter, ITeeWriter, IDisposable
         return this;
     }
 
-    /// <inheritdoc cref="ITeeWriter.WriteLine(StringBuilder?)">
+    /// <inheritdoc cref="ITeeWriter.WriteLine(StringBuilder?)" />
     ITeeWriter ITeeWriter.WriteLine(StringBuilder? value)
     {
         foreach (var writer in this.companions)
@@ -382,7 +382,7 @@ public class TeeWriter : TextWriter, ITeeWriter, IDisposable
         return this;
     }
 
-    /// <inheritdoc cref="ITeeWriter.WriteLine(object?)">
+    /// <inheritdoc cref="ITeeWriter.WriteLine(object?)" />
     ITeeWriter ITeeWriter.WriteLine(object? value)
     {
         foreach (var writer in this.companions)
@@ -392,7 +392,7 @@ public class TeeWriter : TextWriter, ITeeWriter, IDisposable
         return this;
     }
 
-    /// <inheritdoc cref="ITeeWriter.Flush()">
+    /// <inheritdoc cref="ITeeWriter.Flush()" />
     ITeeWriter ITeeWriter.Flush()
     {
         foreach (var writer in this.companions)
@@ -402,7 +402,7 @@ public class TeeWriter : TextWriter, ITeeWriter, IDisposable
         return this;
     }
 
-    /// <inheritdoc cref="ITeeWriter.WriteAsync(string?)">
+    /// <inheritdoc cref="ITeeWriter.WriteAsync(string?)" />
     async Task<ITeeWriter> ITeeWriter.WriteAsync(string? value)
     {
         foreach (var writer in this.companions)
@@ -412,7 +412,7 @@ public class TeeWriter : TextWriter, ITeeWriter, IDisposable
         return this;
     }
 
-    /// <inheritdoc cref="ITeeWriter.WriteAsync(ReadOnlyMemory{char}, CancellationToken)">
+    /// <inheritdoc cref="ITeeWriter.WriteAsync(ReadOnlyMemory{char}, CancellationToken)" />
     async Task<ITeeWriter> ITeeWriter.WriteAsync(ReadOnlyMemory<char> value, CancellationToken cancelToken)
     {
         foreach (var writer in this.companions)
@@ -422,7 +422,7 @@ public class TeeWriter : TextWriter, ITeeWriter, IDisposable
         return this;
     }
 
-    /// <inheritdoc cref="ITeeWriter.WriteAsync(StringBuilder?, CancellationToken)">
+    /// <inheritdoc cref="ITeeWriter.WriteAsync(StringBuilder?, CancellationToken)" />
     async Task<ITeeWriter> ITeeWriter.WriteAsync(StringBuilder? value, CancellationToken cancelToken)
     {
         foreach (var writer in this.companions)
@@ -432,7 +432,7 @@ public class TeeWriter : TextWriter, ITeeWriter, IDisposable
         return this;
     }
 
-    /// <inheritdoc cref="ITeeWriter.WriteLineAsync()">
+    /// <inheritdoc cref="ITeeWriter.WriteLineAsync()" />
     async Task<ITeeWriter> ITeeWriter.WriteLineAsync()
     {
         foreach (var writer in this.companions)
@@ -442,7 +442,7 @@ public class TeeWriter : TextWriter, ITeeWriter, IDisposable
         return this;
     }
 
-    /// <inheritdoc cref="ITeeWriter.WriteLineAsync(string?)">
+    /// <inheritdoc cref="ITeeWriter.WriteLineAsync(string?)" />
     async Task<ITeeWriter> ITeeWriter.WriteLineAsync(string? value)
     {
         foreach (var writer in this.companions)
@@ -452,7 +452,7 @@ public class TeeWriter : TextWriter, ITeeWriter, IDisposable
         return this;
     }
 
-    /// <inheritdoc cref="ITeeWriter.WriteLineAsync(ReadOnlyMemory{char}, CancellationToken)">
+    /// <inheritdoc cref="ITeeWriter.WriteLineAsync(ReadOnlyMemory{char}, CancellationToken)" />
     async Task<ITeeWriter> ITeeWriter.WriteLineAsync(ReadOnlyMemory<char> value, CancellationToken cancelToken)
     {
         foreach (var writer in this.companions)
@@ -462,7 +462,7 @@ public class TeeWriter : TextWriter, ITeeWriter, IDisposable
         return this;
     }
 
-    /// <inheritdoc cref="ITeeWriter.WriteLineAsync(StringBuilder?, CancellationToken)">
+    /// <inheritdoc cref="ITeeWriter.WriteLineAsync(StringBuilder?, CancellationToken)" />
     async Task<ITeeWriter> ITeeWriter.WriteLineAsync(StringBuilder? value, CancellationToken cancelToken)
     {
         foreach (var writer in this.companions)
@@ -472,7 +472,7 @@ public class TeeWriter : TextWriter, ITeeWriter, IDisposable
         return this;
     }
 
-    /// <inheritdoc cref="ITeeWriter.FlushAsync()">
+    /// <inheritdoc cref="ITeeWriter.FlushAsync()" />
     async Task<ITeeWriter> ITeeWriter.FlushAsync()
     {
         foreach (var writer in this.companions)
