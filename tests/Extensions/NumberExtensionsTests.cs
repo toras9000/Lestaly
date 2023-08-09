@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System.Buffers.Binary;
+using FluentAssertions;
 
 namespace LestalyTest.Extensions;
 
@@ -223,5 +224,174 @@ public class NumberExtensionsTests
         ((byte)0).ToHexString("asd", 0).Should().Be("asd00");
         ((byte)0).ToHexString("", 0).Should().Be("00");
         ((byte)0).ToHexString(null!, 0).Should().Be("00");
+    }
+
+    [TestMethod()]
+    public void ToLittleEndian_BinaryInteger()
+    {
+        var buff = new byte[100];
+
+        ((byte)0x12).ToLittleEndian(buff).Should().Be(1);
+        buff.Should().StartWith(new byte[] { 0x12, });
+
+        ((sbyte)0x12).ToLittleEndian(buff).Should().Be(1);
+        buff.Should().StartWith(new byte[] { 0x12, });
+
+        ((ushort)0x1234).ToLittleEndian(buff).Should().Be(2);
+        buff.Should().StartWith(new byte[] { 0x34, 0x12, });
+
+        ((short)0x1234).ToLittleEndian(buff).Should().Be(2);
+        buff.Should().StartWith(new byte[] { 0x34, 0x12, });
+
+        ((uint)0x12345678).ToLittleEndian(buff).Should().Be(4);
+        buff.Should().StartWith(new byte[] { 0x78, 0x56, 0x34, 0x12, });
+
+        ((int)0x12345678).ToLittleEndian(buff).Should().Be(4);
+        buff.Should().StartWith(new byte[] { 0x78, 0x56, 0x34, 0x12, });
+
+        (0x123456789ABCDEF0uL).ToLittleEndian(buff).Should().Be(8);
+        buff.Should().StartWith(new byte[] { 0xF0, 0xDE, 0xBC, 0x9A, 0x78, 0x56, 0x34, 0x12, });
+
+        (0x123456789ABCDEF0L).ToLittleEndian(buff).Should().Be(8);
+        buff.Should().StartWith(new byte[] { 0xF0, 0xDE, 0xBC, 0x9A, 0x78, 0x56, 0x34, 0x12, });
+    }
+
+    [TestMethod()]
+    public void ToLittleEndian_FloatingPoint()
+    {
+        var buff = new byte[100];
+
+        BinaryPrimitives.ReadHalfLittleEndian(stackalloc byte[] { 0x12, 0x34 }).ToLittleEndian(buff).Should().Be(2);
+        buff.Should().StartWith(new byte[] { 0x12, 0x34, });
+
+        BinaryPrimitives.ReadSingleLittleEndian(stackalloc byte[] { 0x12, 0x34, 0x56, 0x78, }).ToLittleEndian(buff).Should().Be(4);
+        buff.Should().StartWith(new byte[] { 0x12, 0x34, 0x56, 0x78, });
+
+        BinaryPrimitives.ReadDoubleLittleEndian(stackalloc byte[] { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0, }).ToLittleEndian(buff).Should().Be(8);
+        buff.Should().StartWith(new byte[] { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0, });
+    }
+
+    [TestMethod()]
+    public void ToBigEndian_BinaryInteger()
+    {
+        var buff = new byte[100];
+
+        ((byte)0x12).ToBigEndian(buff).Should().Be(1);
+        buff.Should().StartWith(new byte[] { 0x12, });
+
+        ((sbyte)0x12).ToBigEndian(buff).Should().Be(1);
+        buff.Should().StartWith(new byte[] { 0x12, });
+
+        ((ushort)0x1234).ToBigEndian(buff).Should().Be(2);
+        buff.Should().StartWith(new byte[] { 0x12, 0x34, });
+
+        ((short)0x1234).ToBigEndian(buff).Should().Be(2);
+        buff.Should().StartWith(new byte[] { 0x12, 0x34, });
+
+        ((uint)0x12345678).ToBigEndian(buff).Should().Be(4);
+        buff.Should().StartWith(new byte[] { 0x12, 0x34, 0x56, 0x78, });
+
+        ((int)0x12345678).ToBigEndian(buff).Should().Be(4);
+        buff.Should().StartWith(new byte[] { 0x12, 0x34, 0x56, 0x78, });
+
+        (0x123456789ABCDEF0uL).ToBigEndian(buff).Should().Be(8);
+        buff.Should().StartWith(new byte[] { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0, });
+
+        (0x123456789ABCDEF0L).ToBigEndian(buff).Should().Be(8);
+        buff.Should().StartWith(new byte[] { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0, });
+    }
+
+    [TestMethod()]
+    public void ToBigEndian_FloatingPoint()
+    {
+        var buff = new byte[100];
+
+        BinaryPrimitives.ReadHalfBigEndian(stackalloc byte[] { 0x12, 0x34 }).ToBigEndian(buff).Should().Be(2);
+        buff.Should().StartWith(new byte[] { 0x12, 0x34, });
+
+        BinaryPrimitives.ReadSingleBigEndian(stackalloc byte[] { 0x12, 0x34, 0x56, 0x78, }).ToBigEndian(buff).Should().Be(4);
+        buff.Should().StartWith(new byte[] { 0x12, 0x34, 0x56, 0x78, });
+
+        BinaryPrimitives.ReadDoubleBigEndian(stackalloc byte[] { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0, }).ToBigEndian(buff).Should().Be(8);
+        buff.Should().StartWith(new byte[] { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0, });
+    }
+
+    [TestMethod()]
+    public void ToEndian_BinaryInteger()
+    {
+        var buff = new byte[100];
+
+        ((byte)0x12).ToEndian(little: true, buff).Should().Be(1);
+        buff.Should().StartWith(new byte[] { 0x12, });
+
+        ((sbyte)0x12).ToEndian(little: true, buff).Should().Be(1);
+        buff.Should().StartWith(new byte[] { 0x12, });
+
+        ((ushort)0x1234).ToEndian(little: true, buff).Should().Be(2);
+        buff.Should().StartWith(new byte[] { 0x34, 0x12, });
+
+        ((short)0x1234).ToEndian(little: true, buff).Should().Be(2);
+        buff.Should().StartWith(new byte[] { 0x34, 0x12, });
+
+        ((uint)0x12345678).ToEndian(little: true, buff).Should().Be(4);
+        buff.Should().StartWith(new byte[] { 0x78, 0x56, 0x34, 0x12, });
+
+        ((int)0x12345678).ToEndian(little: true, buff).Should().Be(4);
+        buff.Should().StartWith(new byte[] { 0x78, 0x56, 0x34, 0x12, });
+
+        (0x123456789ABCDEF0uL).ToEndian(little: true, buff).Should().Be(8);
+        buff.Should().StartWith(new byte[] { 0xF0, 0xDE, 0xBC, 0x9A, 0x78, 0x56, 0x34, 0x12, });
+
+        (0x123456789ABCDEF0L).ToEndian(little: true, buff).Should().Be(8);
+        buff.Should().StartWith(new byte[] { 0xF0, 0xDE, 0xBC, 0x9A, 0x78, 0x56, 0x34, 0x12, });
+
+
+        ((byte)0x12).ToEndian(little: false, buff).Should().Be(1);
+        buff.Should().StartWith(new byte[] { 0x12, });
+
+        ((sbyte)0x12).ToEndian(little: false, buff).Should().Be(1);
+        buff.Should().StartWith(new byte[] { 0x12, });
+
+        ((ushort)0x1234).ToEndian(little: false, buff).Should().Be(2);
+        buff.Should().StartWith(new byte[] { 0x12, 0x34, });
+
+        ((short)0x1234).ToEndian(little: false, buff).Should().Be(2);
+        buff.Should().StartWith(new byte[] { 0x12, 0x34, });
+
+        ((uint)0x12345678).ToEndian(little: false, buff).Should().Be(4);
+        buff.Should().StartWith(new byte[] { 0x12, 0x34, 0x56, 0x78, });
+
+        ((int)0x12345678).ToEndian(little: false, buff).Should().Be(4);
+        buff.Should().StartWith(new byte[] { 0x12, 0x34, 0x56, 0x78, });
+
+        (0x123456789ABCDEF0uL).ToEndian(little: false, buff).Should().Be(8);
+        buff.Should().StartWith(new byte[] { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0, });
+
+        (0x123456789ABCDEF0L).ToEndian(little: false, buff).Should().Be(8);
+        buff.Should().StartWith(new byte[] { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0, });
+    }
+
+    [TestMethod()]
+    public void ToEndian_FloatingPoint()
+    {
+        var buff = new byte[100];
+
+        BinaryPrimitives.ReadHalfBigEndian(stackalloc byte[] { 0x12, 0x34 }).ToEndian(little: true, buff).Should().Be(2);
+        buff.Should().StartWith(new byte[] { 0x34, 0x12, });
+
+        BinaryPrimitives.ReadSingleBigEndian(stackalloc byte[] { 0x12, 0x34, 0x56, 0x78, }).ToEndian(little: true, buff).Should().Be(4);
+        buff.Should().StartWith(new byte[] { 0x78, 0x56, 0x34, 0x12, });
+
+        BinaryPrimitives.ReadDoubleBigEndian(stackalloc byte[] { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0, }).ToEndian(little: true, buff).Should().Be(8);
+        buff.Should().StartWith(new byte[] { 0xF0, 0xDE, 0xBC, 0x9A, 0x78, 0x56, 0x34, 0x12, });
+
+        BinaryPrimitives.ReadHalfBigEndian(stackalloc byte[] { 0x12, 0x34 }).ToEndian(little: false, buff).Should().Be(2);
+        buff.Should().StartWith(new byte[] { 0x12, 0x34, });
+
+        BinaryPrimitives.ReadSingleBigEndian(stackalloc byte[] { 0x12, 0x34, 0x56, 0x78, }).ToEndian(little: false, buff).Should().Be(4);
+        buff.Should().StartWith(new byte[] { 0x12, 0x34, 0x56, 0x78, });
+
+        BinaryPrimitives.ReadDoubleBigEndian(stackalloc byte[] { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0, }).ToEndian(little: false, buff).Should().Be(8);
+        buff.Should().StartWith(new byte[] { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0, });
     }
 }

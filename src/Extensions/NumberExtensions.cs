@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using System.Buffers.Binary;
 using System.Buffers.Text;
 using System.Globalization;
 using System.Numerics;
@@ -43,9 +44,7 @@ public static class NumberExtensions
         => NumberUtils.ToHumanize(self, si, numInfo);
 
 #if NET7_0_OR_GREATER
-    /// <summary>
-    /// 数値を2進数表現で文字列化する。
-    /// </summary>
+    /// <summary>数値を2進数表現で文字列化する。</summary>
     /// <typeparam name="TValue">値の型</typeparam>
     /// <param name="self">文字列化する値</param>
     /// <param name="prefix">プレフィックス文字列</param>
@@ -89,9 +88,7 @@ public static class NumberExtensions
         return buff[space..].ToString();
     }
 
-    /// <summary>
-    /// 数値を16進数表現で文字列化する。
-    /// </summary>
+    /// <summary>数値を16進数表現で文字列化する。</summary>
     /// <typeparam name="TValue">値の型</typeparam>
     /// <param name="self">文字列化する値</param>
     /// <param name="prefix">プレフィックス文字列</param>
@@ -137,5 +134,114 @@ public static class NumberExtensions
         // 文字列化結果を返却
         return buff[space..].ToString();
     }
+
+    /// <summary>数値をリトルエンディアンのバイト列でバッファに書き込む。</summary>
+    /// <typeparam name="TValue">値の型</typeparam>
+    /// <param name="self">バイナリ列として格納する値</param>
+    /// <param name="destination">格納先バッファ。</param>
+    /// <returns>書き込んだバイト数</returns>
+    public static int ToLittleEndian<TValue>(this TValue self, Span<byte> destination) where TValue : struct, IBinaryInteger<TValue>
+        => self.WriteLittleEndian(destination);
+
+    /// <summary>数値をリトルエンディアンのバイト列でバッファに書き込む。</summary>
+    /// <param name="self">バイナリ列として格納する値</param>
+    /// <param name="destination">格納先バッファ。</param>
+    /// <returns>書き込んだバイト数</returns>
+    public static int ToLittleEndian(this Half self, Span<byte> destination)
+    {
+        BinaryPrimitives.WriteHalfLittleEndian(destination, self);
+        return 2;
+    }
+
+    /// <summary>数値をリトルエンディアンのバイト列でバッファに書き込む。</summary>
+    /// <param name="self">バイナリ列として格納する値</param>
+    /// <param name="destination">格納先バッファ。</param>
+    /// <returns>書き込んだバイト数</returns>
+    public static int ToLittleEndian(this Single self, Span<byte> destination)
+    {
+        BinaryPrimitives.WriteSingleLittleEndian(destination, self);
+        return 4;
+    }
+
+    /// <summary>数値をリトルエンディアンのバイト列でバッファに書き込む。</summary>
+    /// <param name="self">バイナリ列として格納する値</param>
+    /// <param name="destination">格納先バッファ。</param>
+    /// <returns>書き込んだバイト数</returns>
+    public static int ToLittleEndian(this Double self, Span<byte> destination)
+    {
+        BinaryPrimitives.WriteDoubleLittleEndian(destination, self);
+        return 8;
+    }
+
+    /// <summary>数値をビッグエンディアンのバイト列でバッファに書き込む。</summary>
+    /// <typeparam name="TValue">値の型</typeparam>
+    /// <param name="self">バイナリ列として格納する値</param>
+    /// <param name="destination">格納先バッファ。</param>
+    /// <returns>書き込んだバイト数</returns>
+    public static int ToBigEndian<TValue>(this TValue self, Span<byte> destination) where TValue : struct, IBinaryInteger<TValue>
+        => self.WriteBigEndian(destination);
+
+    /// <summary>数値をビッグエンディアンのバイト列でバッファに書き込む。</summary>
+    /// <param name="self">バイナリ列として格納する値</param>
+    /// <param name="destination">格納先バッファ。</param>
+    /// <returns>書き込んだバイト数</returns>
+    public static int ToBigEndian(this Half self, Span<byte> destination)
+    {
+        BinaryPrimitives.WriteHalfBigEndian(destination, self);
+        return 2;
+    }
+
+    /// <summary>数値をビッグエンディアンのバイト列でバッファに書き込む。</summary>
+    /// <param name="self">バイナリ列として格納する値</param>
+    /// <param name="destination">格納先バッファ。</param>
+    /// <returns>書き込んだバイト数</returns>
+    public static int ToBigEndian(this Single self, Span<byte> destination)
+    {
+        BinaryPrimitives.WriteSingleBigEndian(destination, self);
+        return 4;
+    }
+
+    /// <summary>数値をビッグエンディアンのバイト列でバッファに書き込む。</summary>
+    /// <param name="self">バイナリ列として格納する値</param>
+    /// <param name="destination">格納先バッファ。</param>
+    /// <returns>書き込んだバイト数</returns>
+    public static int ToBigEndian(this Double self, Span<byte> destination)
+    {
+        BinaryPrimitives.WriteDoubleBigEndian(destination, self);
+        return 8;
+    }
+
+    /// <summary>数値を指定したエンディアンのバイト列でバッファに書き込む。</summary>
+    /// <typeparam name="TValue">値の型</typeparam>
+    /// <param name="self">バイナリ列として格納する値</param>
+    /// <param name="little">リトルエンディアンか否か</param>
+    /// <param name="destination">格納先バッファ。</param>
+    /// <returns>書き込んだバイト数</returns>
+    public static int ToEndian<TValue>(this TValue self, bool little, Span<byte> destination) where TValue : struct, IBinaryInteger<TValue>
+        => little ? self.ToLittleEndian(destination) : self.ToBigEndian(destination);
+
+    /// <summary>数値を指定したエンディアンのバイト列でバッファに書き込む。</summary>
+    /// <param name="self">バイナリ列として格納する値</param>
+    /// <param name="little">リトルエンディアンか否か</param>
+    /// <param name="destination">格納先バッファ。</param>
+    /// <returns>書き込んだバイト数</returns>
+    public static int ToEndian(this Half self, bool little, Span<byte> destination)
+        => little ? self.ToLittleEndian(destination) : self.ToBigEndian(destination);
+
+    /// <summary>数値を指定したエンディアンのバイト列でバッファに書き込む。</summary>
+    /// <param name="self">バイナリ列として格納する値</param>
+    /// <param name="little">リトルエンディアンか否か</param>
+    /// <param name="destination">格納先バッファ。</param>
+    /// <returns>書き込んだバイト数</returns>
+    public static int ToEndian(this Single self, bool little, Span<byte> destination)
+        => little ? self.ToLittleEndian(destination) : self.ToBigEndian(destination);
+
+    /// <summary>数値を指定したエンディアンのバイト列でバッファに書き込む。</summary>
+    /// <param name="self">バイナリ列として格納する値</param>
+    /// <param name="little">リトルエンディアンか否か</param>
+    /// <param name="destination">格納先バッファ。</param>
+    /// <returns>書き込んだバイト数</returns>
+    public static int ToEndian(this Double self, bool little, Span<byte> destination)
+        => little ? self.ToLittleEndian(destination) : self.ToBigEndian(destination);
 #endif
 }
