@@ -119,6 +119,46 @@ public class StringExtensionsTests
     }
 
     [TestMethod()]
+    public void EnsureStarts()
+    {
+        "abcd".EnsureStarts("a", ignoreCase: false).Should().Be("abcd");
+        "abcd".EnsureStarts("A", ignoreCase: false).Should().Be("Aabcd");
+
+        "abcd".EnsureStarts("a", ignoreCase: true).Should().Be("abcd");
+        "abcd".EnsureStarts("A", ignoreCase: true).Should().Be("abcd");
+
+        "abcd".EnsureStarts("a", StringComparison.Ordinal).Should().Be("abcd");
+        "abcd".EnsureStarts("A", StringComparison.Ordinal).Should().Be("Aabcd");
+
+        "abcd".EnsureStarts("a", StringComparison.OrdinalIgnoreCase).Should().Be("abcd");
+        "abcd".EnsureStarts("A", StringComparison.OrdinalIgnoreCase).Should().Be("abcd");
+
+        "a".EnsureStarts("a").Should().Be("a");
+        "".EnsureStarts("a").Should().Be("a");
+        default(string)!.EnsureStarts("a").Should().Be("a");
+    }
+
+    [TestMethod()]
+    public void EnsureEnds()
+    {
+        "abcd".EnsureEnds("d", ignoreCase: false).Should().Be("abcd");
+        "abcd".EnsureEnds("D", ignoreCase: false).Should().Be("abcdD");
+
+        "abcd".EnsureEnds("d", ignoreCase: true).Should().Be("abcd");
+        "abcd".EnsureEnds("D", ignoreCase: true).Should().Be("abcd");
+
+        "abcd".EnsureEnds("d", StringComparison.Ordinal).Should().Be("abcd");
+        "abcd".EnsureEnds("D", StringComparison.Ordinal).Should().Be("abcdD");
+
+        "abcd".EnsureEnds("d", StringComparison.OrdinalIgnoreCase).Should().Be("abcd");
+        "abcd".EnsureEnds("D", StringComparison.OrdinalIgnoreCase).Should().Be("abcd");
+
+        "a".EnsureEnds("a").Should().Be("a");
+        "".EnsureEnds("a").Should().Be("a");
+        default(string)!.EnsureEnds("a").Should().Be("a");
+    }
+
+    [TestMethod()]
     public void DropEmpty()
     {
         new[] { "", "abc", null, null, "  ", "", "def", null, }

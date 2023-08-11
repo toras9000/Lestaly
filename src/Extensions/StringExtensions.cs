@@ -180,6 +180,38 @@ public static class StringExtensions
         return false;
     }
 
+    /// <summary>文字列が指定の文字列で始まるよう必要であれば付与する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="value">必要であれば付与する文字列。</param>
+    /// <param name="comparison">文字列比較方法</param>
+    /// <returns>すでに指定文字列で始まっていれば元の文字列、そうでなければ指定文字列を先頭に付与した文字列。</returns>
+    public static string EnsureStarts(this string? self, string value, StringComparison comparison = StringComparison.Ordinal)
+        => self?.StartsWith(value, comparison) == true ? self : value + self;
+
+    /// <summary>文字列が指定の文字列で始まるよう必要であれば付与する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="value">必要であれば付与する文字列。</param>
+    /// <param name="ignoreCase">大文字/小文字の違いを無視するか否か(序数ベース)</param>
+    /// <returns>すでに指定文字列で始まっていれば元の文字列、そうでなければ指定文字列を先頭に付与した文字列。</returns>
+    public static string EnsureStarts(this string? self, string value, bool ignoreCase)
+        => self?.StartsWith(value, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal) == true ? self : value + self;
+
+    /// <summary>文字列が指定の文字で終わるよう必要であれば付与する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="value">必要であれば付与する文字列。</param>
+    /// <param name="comparison">文字列比較方法</param>
+    /// <returns>すでに指定文字列で終わっていれば元の文字列、そうでなければ指定文字を末尾に付与した文字列。</returns>
+    public static string EnsureEnds(this string? self, string value, StringComparison comparison = StringComparison.Ordinal)
+        => self?.EndsWith(value, comparison) == true ? self : self + value;
+
+    /// <summary>文字列が指定の文字で終わるよう必要であれば付与する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="value">必要であれば付与する文字列。</param>
+    /// <param name="ignoreCase">大文字/小文字の違いを無視するか否か(序数ベース)</param>
+    /// <returns>すでに指定文字列で終わっていれば元の文字列、そうでなければ指定文字を末尾に付与した文字列。</returns>
+    public static string EnsureEnds(this string? self, string value, bool ignoreCase)
+        => self?.EndsWith(value, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal) == true ? self : self + value;
+
     /// <summary>
     /// 文字列の最初の行を取得する。
     /// </summary>
