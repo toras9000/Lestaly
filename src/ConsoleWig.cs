@@ -1,4 +1,7 @@
-﻿using System.Text;
+﻿using System.Diagnostics;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Lestaly;
 
@@ -67,7 +70,7 @@ public sealed class ConsoleWig : IConsoleWig
     public static string ReadKeysLineReaction(string keyword, StringComparison comparison = StringComparison.Ordinal, bool breakOnReturn = true)
         => Facade.ReadKeysLineReaction(keyword, comparison, breakOnReturn);
 
-    /// <summary>入力を行末または一定時間アイドル指定のキーワードが入力されるまで読み取る。</summary>
+    /// <summary>入力を行末または指定の条件に適合した入力が行われるまで読み取る。</summary>
     /// <param name="completer">入力アイドル時に完了判定する処理</param>
     /// <param name="timeout">入力アイドル時間 [ms]</param>
     /// <param name="breakOnReturn">入力終了後に改行を出力するか否か</param>
@@ -75,6 +78,30 @@ public sealed class ConsoleWig : IConsoleWig
     /// <returns>入力された文字列を得るタスク</returns>
     public static Task<string> ReadKeysLineIfAsync(Func<string, bool> completer, int timeout = 100, bool breakOnReturn = true, CancellationToken cancelToken = default)
         => Facade.ReadKeysLineIfAsync(completer, timeout, breakOnReturn, cancelToken);
+
+    /// <summary>入力を行末または指定のパターンにマッチした入力が行われるまで読み取る。</summary>
+    /// <param name="pattern">入力アイドル時に完了判定するパターン。マッチすれば</param>
+    /// <param name="timeout">入力アイドル時間 [ms]</param>
+    /// <param name="breakOnReturn">入力終了後に改行を出力するか否か</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>入力された文字列を得るタスク</returns>
+    public Task<string> ReadKeysLineMatchAsync(Regex pattern, int timeout = 100, bool breakOnReturn = true, CancellationToken cancelToken = default)
+        => Facade.ReadKeysLineMatchAsync(pattern, timeout, breakOnReturn, cancelToken);
+
+    /// <summary>キー入力を読み取る</summary>
+    /// <param name="intercept">キー入力をインターセプトする(出力に出さない)かどうか。</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>押下されたキー情報</returns>
+    public static Task<ConsoleKeyInfo> ReadKeyAsync(bool intercept, CancellationToken cancelToken = default)
+        => Facade.ReadKeyAsync(intercept, cancelToken);
+
+    /// <summary>キー入力を読み取る</summary>
+    /// <param name="intercept">キー入力をインターセプトする(出力に出さない)かどうか。</param>
+    /// <param name="timeout">タイムアウト時間[ms]</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>押下されたキー情報</returns>
+    public static Task<ConsoleKeyInfo?> WaitKeyAsync(bool intercept, int timeout, CancellationToken cancelToken = default)
+        => Facade.WaitKeyAsync(intercept, timeout, cancelToken);
 
     /// <summary>バッファ内のキー入力をスキップする。</summary>
     /// <param name="maxCount">最大スキップ数。継続的に入力される場合や</param>
@@ -292,7 +319,7 @@ public interface IConsoleWig
         return buff.ToString();
     }
 
-    /// <summary>入力を行末または一定時間アイドル指定のキーワードが入力されるまで読み取る。</summary>
+    /// <summary>入力を行末または指定の条件に適合した入力が行われるまで読み取る。</summary>
     /// <param name="completer">入力アイドル時に完了判定する処理</param>
     /// <param name="timeout">入力アイドル時間 [ms]</param>
     /// <param name="breakOnReturn">入力終了後に改行を出力するか否か</param>
@@ -340,6 +367,54 @@ public interface IConsoleWig
         // 指定により改行出力してから終了
         if (breakOnReturn) Console.WriteLine();
         return string.Concat(buff);
+    }
+
+    /// <summary>入力を行末または指定のパターンにマッチした入力が行われるまで読み取る。</summary>
+    /// <param name="pattern">入力アイドル時に完了判定するパターン。マッチすれば</param>
+    /// <param name="timeout">入力アイドル時間 [ms]</param>
+    /// <param name="breakOnReturn">入力終了後に改行を出力するか否か</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>入力された文字列を得るタスク</returns>
+    public Task<string> ReadKeysLineMatchAsync(Regex pattern, int timeout = 100, bool breakOnReturn = true, CancellationToken cancelToken = default)
+        => ReadKeysLineIfAsync(pattern.IsMatch, timeout, breakOnReturn, cancelToken);
+
+    /// <summary>キー入力を読み取る</summary>
+    /// <param name="intercept">キー入力をインターセプトする(出力に出さない)かどうか。</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>押下されたキー情報</returns>
+    public async Task<ConsoleKeyInfo> ReadKeyAsync(bool intercept, CancellationToken cancelToken = default)
+    {
+        while (true)
+        {
+            if (Console.KeyAvailable)
+            {
+                return Console.ReadKey(intercept);
+            }
+            await Task.Delay(30, cancelToken).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>キー入力を読み取る</summary>
+    /// <param name="intercept">キー入力をインターセプトする(出力に出さない)かどうか。</param>
+    /// <param name="timeout">タイムアウト時間[ms]</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>押下されたキー情報</returns>
+    public async Task<ConsoleKeyInfo?> WaitKeyAsync(bool intercept, int timeout, CancellationToken cancelToken = default)
+    {
+        var watch = Stopwatch.StartNew();
+        while (true)
+        {
+            if (Console.KeyAvailable)
+            {
+                return Console.ReadKey(intercept);
+            }
+            if (timeout <= watch.ElapsedMilliseconds)
+            {
+                break;
+            }
+            await Task.Delay(30, cancelToken).ConfigureAwait(false);
+        }
+        return null;
     }
 
     /// <summary>バッファ内のキー入力をスキップする。</summary>
