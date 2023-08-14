@@ -25,4 +25,20 @@ public static class DateTimeExtensions
     {
         return new DateTime(self.Year, self.Month, self.Day, time.Hour, time.Minute, time.Second, time.Millisecond, self.Kind);
     }
+
+    /// <summary>日時から日付のみオブジェクトを取得する</summary>
+    /// <param name="self">ベースとなる日時</param>
+    /// <returns>日付のみオブジェクト</returns>
+    public static DateOnly ToDateOnly(this DateTime self)
+    {
+        return DateOnly.FromDateTime(self);
+    }
+
+    /// <summary>日時から時刻のみオブジェクトを取得する</summary>
+    /// <param name="self">ベースとなる日時</param>
+    /// <returns>時刻のみオブジェクト</returns>
+    public static TimeOnly ToTimeOnly(this DateTime self)
+    {
+        return TimeOnly.FromDateTime(self);
+    }
 }
