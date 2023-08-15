@@ -8,9 +8,9 @@ public static class Paved
     /// <summary>例外を捕捉して処理を実行する。</summary>
     /// <typeparam name="T">戻り値の型</typeparam>
     /// <param name="action">実行処理</param>
-    /// <param name="configuration ">実行オプション設定デリゲート</param>
+    /// <param name="config ">実行オプション設定デリゲート</param>
     /// <returns>処理の戻り値</returns>
-    public static async Task<T?> RunAsync<T>(Func<ValueTask<T>> action, Action<PavedOptions<T>>? configuration = null)
+    public static async Task<T?> RunAsync<T>(Func<ValueTask<T>> action, Action<PavedOptions<T>>? config = null)
     {
         var options = new PavedOptions<T>();
         var console = ConsoleWig.Facade;
@@ -18,7 +18,7 @@ public static class Paved
         var pause = false;
         try
         {
-            configuration?.Invoke(options);
+            config?.Invoke(options);
             if (options.Console != null) console = options.Console;
 
             result = await action();
@@ -77,8 +77,16 @@ public static class Paved
         // オプションで要求されていてリダイレクトされていない場合に一時停止する
         if (pause && !Console.IsInputRedirected)
         {
-            Console.WriteLine(options.PauseMessage ?? "(Press any key to exit.)");
-            Console.ReadKey(true);
+            if (0 < options.PauseTime)
+            {
+                Console.WriteLine(options.PauseMessage ?? "(Press any key to exit.)");
+                await ConsoleWig.WaitKeyAsync(intercept: true, options.PauseTime).ConfigureAwait(false);
+            }
+            else
+            {
+                Console.WriteLine(options.PauseMessage ?? "(Press any key to exit.)");
+                Console.ReadKey(true);
+            }
         }
 
         return result;
@@ -86,9 +94,9 @@ public static class Paved
 
     /// <summary>例外を捕捉して処理を実行する。</summary>
     /// <param name="action">実行処理</param>
-    /// <param name="configuration ">実行オプション設定デリゲート</param>
+    /// <param name="config ">実行オプション設定デリゲート</param>
     /// <returns>エラーコード</returns>
-    public static Task<int> RunAsync(Func<ValueTask> action, Action<PavedOptions<int>>? configuration = null)
+    public static Task<int> RunAsync(Func<ValueTask> action, Action<PavedOptions<int>>? config = null)
     {
         return RunAsync(async () => { await action(); return 0; }, options =>
         {
@@ -130,7 +138,7 @@ public static class Paved
                 console.WriteLineColored(ConsoleColor.Red, ex.ToString());
                 return 255;
             };
-            configuration?.Invoke(options);
+            config?.Invoke(options);
             if (options.Console != null) console = options.Console;
         });
     }

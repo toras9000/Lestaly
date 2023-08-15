@@ -17,6 +17,9 @@ public class PavedOptions<T>
     /// <summary>一時停止時メッセージ</summary>
     public string? PauseMessage { get; set; } = null;
 
+    /// <summary>一時停止時間[ms]</summary>
+    public int PauseTime { get; set; } = Timeout.Infinite;
+
     /// <summary>エラー時ハンドラ</summary>
     public Func<Exception, T>? ErrorHandler { get; set; } = null;
 
@@ -34,11 +37,12 @@ public class PavedOptions<T>
     }
 
     /// <summary>いずれかの要因による一時停止ありに設定する。</summary>
-    public PavedOptions<T> AnyPause()
+    public PavedOptions<T> AnyPause(int timeout = Timeout.Infinite)
     {
         this.PauseOnError = true;
         this.PauseOnExit = true;
         this.PauseOnCancel = true;
+        this.PauseTime = timeout;
         return this;
     }
     #endregion
