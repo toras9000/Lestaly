@@ -23,6 +23,9 @@ public class PavedOptions<T>
     /// <summary>エラー時ハンドラ</summary>
     public Func<Exception, T>? ErrorHandler { get; set; } = null;
 
+    /// <summary>キャンセル時ハンドラ</summary>
+    public Func<Exception, T>? CancelHandler { get; set; } = null;
+
     /// <summary>コンソール出力I/F</summary>
     public IConsoleWig? Console { get; set; } = null;
 

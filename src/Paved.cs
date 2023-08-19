@@ -23,15 +23,16 @@ public static class Paved
 
             result = await action();
         }
-        catch (OperationCanceledException ex)
+        catch (Exception ex) when (ex is OperationCanceledException or CmdProcCancelException or CmdShellCancelException)
         {
             // キャンセル発生時の一時停止フラグを評価
             pause = options.PauseOnCancel == true;
 
             // エラーハンドラがあればそれを実行。無ければ例外メッセージを出力しておく。
-            if (options.ErrorHandler != null)
+            var handler = options.CancelHandler ?? options.ErrorHandler;
+            if (handler != null)
             {
-                result = options.ErrorHandler(ex);
+                result = handler(ex);
             }
             else
             {
