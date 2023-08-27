@@ -75,6 +75,7 @@ public static class CmdProc
         // 出力ストリームのリダイレクトタスクを生成するローカル関数
         async Task redirectProcStream(TextReader reader, TextWriter writer, CancellationToken breaker)
         {
+            await Task.Yield();
             try
             {
                 var buffers = new[] { new char[1024], new char[1024], };
