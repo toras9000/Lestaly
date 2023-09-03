@@ -19,6 +19,8 @@ public class HttpClientExtensionsTests
         builder.Logging.ClearProviders();
         TestServer = builder.Build();
         TestServer.MapGet("/base64/{*encoded}", (string encoded) => Results.Bytes(Convert.FromBase64String(encoded)));
+        TestServer.MapGet("/plain/{*text}", (string text) => Results.Text(text));
+        TestServer.MapGet("/error/{*code}", (int code) => Results.StatusCode(code));
         TestServer.RunAsync($"http://*:{TestPort}");
     }
 
@@ -62,4 +64,13 @@ public class HttpClientExtensionsTests
         }
     }
 
+    [TestMethod()]
+    public async Task TryGetAsync()
+    {
+        var client = new HttpClient();
+
+        (await client.TryGetAsync(new Uri($"http://localhost:{TestPort}/plain/abc"))).Should().Be("abc");
+        (await client.TryGetAsync(new Uri($"http://localhost:{TestPort}/error/404"))).Should().BeNull();
+        (await client.TryGetAsync(new Uri($"http://localhost:{TestPort + 100}/plain/abc"))).Should().BeNull();
+    }
 }

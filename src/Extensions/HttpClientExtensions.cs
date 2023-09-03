@@ -48,4 +48,28 @@ public static class HttpClientExtensions
 
         return file;
     }
+
+    /// <summary>GET要求の応答が正常HTTPステータスの場合にボディテキストを取得する。</summary>
+    /// <param name="self">クライアント</param>
+    /// <param name="resource">要求URI</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>正常ステータスの場合は応答ボディ。アクセス不可/異常ステータスの場合はnull</returns>
+    public static async Task<string?> TryGetAsync(this HttpClient self, Uri resource, CancellationToken cancelToken = default)
+    {
+        var body = default(string);
+        try
+        {
+            using var response = await self.GetAsync(resource, cancelToken).ConfigureAwait(false);
+            if (response.IsSuccessStatusCode)
+            {
+                body = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            }
+        }
+        catch
+        {
+        }
+
+        return body;
+    }
+
 }
