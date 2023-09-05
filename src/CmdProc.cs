@@ -166,7 +166,7 @@ public static class CmdProc
     /// <returns>許容値だった場合に出力文字列を返す</returns>
     public static async Task<string> AsSuccessOutput(this Task<CmdResult> self, IEnumerable<int>? allowCodes = null, Func<int, Exception>? ex = null)
     {
-        return (await self.AsSuccessCode(allowCodes, ex)).Output;
+        return (await self.AsSuccessCode(allowCodes, ex).ConfigureAwait(false)).Output;
     }
 
     /// <summary>コマンドを実行して終了コードを取得する</summary>
@@ -181,7 +181,7 @@ public static class CmdProc
     /// <param name="outEncoding">プロセスの出力テキスト読み取り時のエンコーディング</param>
     /// <param name="inEncoding">プロセスの入力テキストを書き込む際のエンコーディング</param>
     /// <returns>呼び出しプロセスの終了コード</returns>
-    private static async Task<CmdExit> execAsync(string command, Action<ProcessStartInfo>? argumenter = null, CancellationToken cancelToken = default, string? workDir = null, IEnumerable<KeyValuePair<string, string?>>? environments = null, TextWriter? stdOut = null, TextWriter? stdErr = null, TextReader? stdIn = null, Encoding? outEncoding = null, Encoding? inEncoding = null)
+    internal static async Task<CmdExit> execAsync(string command, Action<ProcessStartInfo>? argumenter, CancellationToken cancelToken = default, string? workDir = null, IEnumerable<KeyValuePair<string, string?>>? environments = null, TextWriter? stdOut = null, TextWriter? stdErr = null, TextReader? stdIn = null, Encoding? outEncoding = null, Encoding? inEncoding = null)
     {
         // 実行するコマンドの情報を設定
         var target = new ProcessStartInfo();
@@ -303,7 +303,7 @@ public static class CmdProc
     /// <param name="outEncoding">プロセスの出力テキスト読み取り時のエンコーディング</param>
     /// <param name="inEncoding">プロセスの入力テキストを書き込む際のエンコーディング</param>
     /// <returns>呼び出しプロセスの終了コードと出力テキスト</returns>
-    public static async Task<CmdResult> runAsync(string command, Action<ProcessStartInfo>? argumenter = null, CancellationToken cancelToken = default, string? workDir = null, IEnumerable<KeyValuePair<string, string?>>? environments = null, bool readStdOut = true, bool readStdErr = true, string? inputText = null, Encoding? outEncoding = null, Encoding? inEncoding = null)
+    internal static async Task<CmdResult> runAsync(string command, Action<ProcessStartInfo>? argumenter, CancellationToken cancelToken = default, string? workDir = null, IEnumerable<KeyValuePair<string, string?>>? environments = null, bool readStdOut = true, bool readStdErr = true, string? inputText = null, Encoding? outEncoding = null, Encoding? inEncoding = null)
     {
         // リダイレクト先とする文字列のライター
         using var strWriter = new StringWriter();
@@ -342,7 +342,7 @@ public static class CmdProc
     /// <param name="inEncoding">プロセスの入力テキストを書き込む際のエンコーディング</param>
     /// <param name="allowExitCodes">正常とみなす終了コード。指定がない場合はゼロのみを正常とする。</param>
     /// <returns>呼び出しプロセスの出力テキスト</returns>
-    public static async Task<string> callAsync(string command, Action<ProcessStartInfo>? argumenter = null, CancellationToken cancelToken = default, string? workDir = null, IEnumerable<KeyValuePair<string, string?>>? environments = null, bool readStdErr = true, string? inputText = null, Encoding? outEncoding = null, Encoding? inEncoding = null, IEnumerable<int>? allowExitCodes = null)
+    internal static async Task<string> callAsync(string command, Action<ProcessStartInfo>? argumenter, CancellationToken cancelToken = default, string? workDir = null, IEnumerable<KeyValuePair<string, string?>>? environments = null, bool readStdErr = true, string? inputText = null, Encoding? outEncoding = null, Encoding? inEncoding = null, IEnumerable<int>? allowExitCodes = null)
     {
         // 正常とみなす終了コード
         var validCodes = allowExitCodes ?? new[] { 0, };
@@ -362,7 +362,7 @@ public static class CmdProc
     /// <summary>引数リストをもとに設定するコマンド引数設定デリゲートを生成する</summary>
     /// <param name="arguments">引数リスト</param>
     /// <returns>引数設定デリゲート</returns>
-    private static Action<ProcessStartInfo>? listArgumenter(IEnumerable<string>? arguments)
+    internal static Action<ProcessStartInfo>? listArgumenter(IEnumerable<string>? arguments)
     {
         if (arguments == null) return null;
 
