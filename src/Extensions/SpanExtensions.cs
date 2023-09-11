@@ -38,9 +38,7 @@ public static class SpanExtensions
     /// <returns>読み取り専用スパン</returns>
     public static ReadOnlySpan<T> AsReadOnlySpan<T>(this T[] self, int start, int length) => self.AsSpan(start, length);
 
-
     #region Endian
-
 #if NET7_0_OR_GREATER
     /// <summary>バイト列からリトルエンディアンで整数を読み取る</summary>
     /// <typeparam name="TResult">読み取り結果とする型</typeparam>
@@ -164,6 +162,40 @@ public static class SpanExtensions
     /// <returns>読み取り結果</returns>
     public static Double AtDoubleFloatEndian(this ReadOnlySpan<byte> self, bool little)
         => little ? BinaryPrimitives.ReadDoubleLittleEndian(self) : BinaryPrimitives.ReadDoubleBigEndian(self);
+
+    /// <summary>整数をリトルエンディアンでバッファに書き込む</summary>
+    /// <typeparam name="TValue">整数の型</typeparam>
+    /// <param name="self">書き込むバッファ</param>
+    /// <param name="value">書き込む整数</param>
+    /// <returns>書き込んだ領域の後ろを指すスパン</returns>
+    public static Span<byte> WriteByLittleEndian<TValue>(this Span<byte> self, TValue value) where TValue : struct, IBinaryInteger<TValue>
+    {
+        var length = value.ToLittleEndian(self);
+        return self[length..];
+    }
+
+    /// <summary>整数をビッグエンディアンでバッファに書き込む</summary>
+    /// <typeparam name="TValue">整数の型</typeparam>
+    /// <param name="self">書き込むバッファ</param>
+    /// <param name="value">書き込む整数</param>
+    /// <returns>書き込んだ領域の後ろを指すスパン</returns>
+    public static Span<byte> WriteByBigEndian<TValue>(this Span<byte> self, TValue value) where TValue : struct, IBinaryInteger<TValue>
+    {
+        var length = value.ToBigEndian(self);
+        return self[length..];
+    }
+
+    /// <summary>整数を指定のエンディアンでバッファに書き込む</summary>
+    /// <typeparam name="TValue">整数の型</typeparam>
+    /// <param name="self">書き込むバッファ</param>
+    /// <param name="little">リトルエンディアンか否か</param>
+    /// <param name="value">書き込む整数</param>
+    /// <returns>書き込んだ領域の後ろを指すスパン</returns>
+    public static Span<byte> WriteByEndian<TValue>(this Span<byte> self, bool little, TValue value) where TValue : struct, IBinaryInteger<TValue>
+    {
+        var length = value.ToEndian(little, self);
+        return self[length..];
+    }
 #endif 
     #endregion
 }

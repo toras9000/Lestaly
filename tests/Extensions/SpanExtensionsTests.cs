@@ -123,4 +123,37 @@ public class SpanExtensionsTests
         BitConverter.SingleToUInt32Bits(data.AsReadOnlySpan(0, 4).AtSingleFloatEndian(little: false)).Should().Be(0x12345678u);
         BitConverter.DoubleToUInt64Bits(data.AsReadOnlySpan(0, 8).AtDoubleFloatEndian(little: false)).Should().Be(0x123456789ABCDEF0uL);
     }
+
+    [TestMethod()]
+    public void WriteByLittleEndian()
+    {
+        var buffer = new byte[32];
+
+        buffer.AsSpan().WriteByLittleEndian<byte>(0x12).WriteByLittleEndian<byte>(0x34);
+        buffer.AsSpan(0, 2).ToArray().Should().Equal(0x12, 0x34);
+
+        buffer.AsSpan().WriteByLittleEndian<ushort>(0x1234).WriteByLittleEndian<ushort>(0x5678);
+        buffer.AsSpan(0, 4).ToArray().Should().Equal(0x34, 0x12, 0x78, 0x56);
+    }
+
+    [TestMethod()]
+    public void WriteByBigEndian()
+    {
+        var buffer = new byte[32];
+
+        buffer.AsSpan().WriteByBigEndian<byte>(0x12).WriteByBigEndian<byte>(0x34);
+        buffer.AsSpan(0, 2).ToArray().Should().Equal(0x12, 0x34);
+
+        buffer.AsSpan().WriteByBigEndian<ushort>(0x1234).WriteByBigEndian<ushort>(0x5678);
+        buffer.AsSpan(0, 4).ToArray().Should().Equal(0x12, 0x34, 0x56, 0x78);
+    }
+
+    [TestMethod()]
+    public void WriteByEndian()
+    {
+        var buffer = new byte[32];
+
+        buffer.AsSpan().WriteByEndian<ushort>(little: true, 0x1234).WriteByEndian<ushort>(little: false, 0x5678);
+        buffer.AsSpan(0, 4).ToArray().Should().Equal(0x34, 0x12, 0x56, 0x78);
+    }
 }
