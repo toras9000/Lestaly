@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -12,6 +11,12 @@ public sealed class ConsoleWig : IConsoleWig
 {
     /// <summary>コンソール関連のユーティリティ I/F</summary>
     public static IConsoleWig Facade { get; }
+
+    /// <summary>Console.In の 代替リーダー</summary>
+    /// <remarks>
+    /// このプロパティは主に Async 操作を利用する目的の、標準 Console.In を代替するリーダインスタンスを返す。
+    /// </remarks>
+    public static ConsoleInReader InReader => inReader.Value;
 
     /// <summary>指定したテキストを出力する。</summary>
     /// <param name="text">テキスト</param>
@@ -151,6 +156,9 @@ public sealed class ConsoleWig : IConsoleWig
     {
         Facade = new ConsoleWig();
     }
+
+    /// <summary>ConsoleInWrapper の遅延生成</summary>
+    private static Lazy<ConsoleInReader> inReader = new Lazy<ConsoleInReader>(() => new ConsoleInReader());
 }
 
 /// <summary>キャンセルトークンを保持する区間</summary>
