@@ -212,18 +212,14 @@ public static class StringExtensions
     public static string EnsureEnds(this string? self, string value, bool ignoreCase)
         => self?.EndsWith(value, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal) == true ? self : self + value;
 
-    /// <summary>
-    /// 文字列の最初の行を取得する。
-    /// </summary>
+    /// <summary>文字列の最初の行を取得する。</summary>
     /// <param name="self">対象文字列</param>
     /// <returns>最初の行文字列</returns>
     [return: NotNullIfNotNull(nameof(self))]
     public static string? FirstLine(this string? self)
         => CometFlavor.Extensions.Text.StringExtensions.FirstLine(self);
 
-    /// <summary>
-    /// 文字列の最後の行を取得する。
-    /// </summary>
+    /// <summary>文字列の最後の行を取得する。</summary>
     /// <param name="self">対象文字列</param>
     /// <returns>最後の行文字列</returns>
     [return: NotNullIfNotNull(nameof(self))]
@@ -336,13 +332,13 @@ public static class StringExtensions
     /// <param name="self">文字列のシーケンス</param>
     /// <returns>null/空以外のシーケンス</returns>
     public static IEnumerable<string> DropEmpty(this IEnumerable<string?> self)
-        => self.Where((string? s) => !string.IsNullOrEmpty(s))!;
+        => self.Where(s => !string.IsNullOrEmpty(s))!;
 
     /// <summary>文字列のシーケンスからnull/空白文字列を取り除く。</summary>
     /// <param name="self">文字列のシーケンス</param>
     /// <returns>null/空白文字列以外のシーケンス</returns>
     public static IEnumerable<string> DropWhite(this IEnumerable<string?> self)
-        => self.Where((string? s) => !string.IsNullOrWhiteSpace(s))!;
+        => self.Where(s => !string.IsNullOrWhiteSpace(s))!;
 
     /// <summary>文字列を連結する。</summary>
     /// <param name="self">文字列のシーケンス</param>
@@ -491,9 +487,7 @@ public static class StringExtensions
         return $"{self}{joiner}{sequel}";
     }
 
-    /// <summary>
-    /// 文字列をクォートする。
-    /// </summary>
+    /// <summary>文字列をクォートする。</summary>
     /// <param name="text">対象文字列。nullの場合は空文字列と同じ扱いとする。</param>
     /// <param name="quote">クォートキャラクタ</param>
     /// <param name="escape">対象文字列中のクォートキャラクタをエスケープするキャラクタ</param>
@@ -510,25 +504,19 @@ public static class StringExtensions
     public static string? Unquote(this string self, ReadOnlySpan<char> quotes = default, char? escape = null)
         => CometFlavor.Extensions.Text.StringExtensions.Unquote(self, quotes, escape);
 
-    /// <summary>
-    /// 文字列のテキスト要素を列挙する。
-    /// </summary>
+    /// <summary>文字列のテキスト要素を列挙する。</summary>
     /// <param name="self">対象文字列</param>
     /// <returns>テキスト要素シーケンス</returns>
     public static IEnumerable<string> AsTextElements(this string self)
         => CometFlavor.Extensions.Text.StringExtensions.AsTextElements(self);
 
-    /// <summary>
-    /// 文字列のテキスト要素数を取得する。
-    /// </summary>
+    /// <summary>文字列のテキスト要素数を取得する。</summary>
     /// <param name="self">対象文字列</param>
     /// <returns>テキスト要素数</returns>
     public static int TextElementCount(this string self)
         => CometFlavor.Extensions.Text.StringExtensions.TextElementCount(self);
 
-    /// <summary>
-    /// 文字列の先頭から指定された長さの文字要素を切り出す。
-    /// </summary>
+    /// <summary>文字列の先頭から指定された長さの文字要素を切り出す。</summary>
     /// <param name="self">元になる文字列。nullまたは空の場合は元のインスタンスをそのまま返却する。</param>
     /// <param name="count">切り出す文字要素の長さ。</param>
     /// <returns>切り出された文字列</returns>
@@ -536,9 +524,7 @@ public static class StringExtensions
     public static string? CutLeftElements(this string? self, int count)
         => CometFlavor.Extensions.Text.StringExtensions.CutLeftElements(self, count);
 
-    /// <summary>
-    /// 文字列の末尾にある指定された長さの文字要素を切り出す。
-    /// </summary>
+    /// <summary>文字列の末尾にある指定された長さの文字要素を切り出す。</summary>
     /// <param name="self">元になる文字列。nullまたは空の場合は元のインスタンスをそのまま返却する。</param>
     /// <param name="count">切り出す文字要素の長さ。</param>
     /// <returns>切り出された文字列</returns>
