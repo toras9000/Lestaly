@@ -72,4 +72,43 @@ public static class HttpClientExtensions
         return body;
     }
 
+    /// <summary>GET要求の応答が正常HTTPステータスの場合にボディテキストを取得する。</summary>
+    /// <param name="self">クライアント</param>
+    /// <param name="resource">要求URI</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>HTTP応答ステータスコード。アクセス不可/異常ステータスの場合はnull</returns>
+    public static async Task<int?> GetStatusAsync(this HttpClient self, Uri resource, CancellationToken cancelToken = default)
+    {
+        var status = default(int);
+        try
+        {
+            using var response = await self.GetAsync(resource, cancelToken).ConfigureAwait(false);
+            status = (int)response.StatusCode;
+        }
+        catch
+        {
+        }
+
+        return status;
+    }
+
+    /// <summary>GET要求の応答が正常HTTPステータスの場合にボディテキストを取得する。</summary>
+    /// <param name="self">クライアント</param>
+    /// <param name="resource">要求URI</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>HTTP応答ステータスコード。アクセス不可/異常ステータスの場合はnull</returns>
+    public static async Task<bool> IsSuccessStatusAsync(this HttpClient self, Uri resource, CancellationToken cancelToken = default)
+    {
+        var success = false;
+        try
+        {
+            using var response = await self.GetAsync(resource, cancelToken).ConfigureAwait(false);
+            success = response.IsSuccessStatusCode;
+        }
+        catch
+        {
+        }
+
+        return success;
+    }
 }
