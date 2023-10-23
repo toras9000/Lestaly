@@ -92,6 +92,24 @@ public class CmdCx
         return this;
     }
 
+    /// <summary>呼び出しプロセスの作業ディレクトリを構成する</summary>
+    /// <param name="dir">作業ディレクトリ</param>
+    /// <returns>自身のインスタンス</returns>
+    public CmdCx workdir(DirectoryInfo dir)
+    {
+        this.workDir = dir.FullName;
+        return this;
+    }
+
+    /// <summary>呼び出しプロセスの作業ディレクトリを構成する</summary>
+    /// <param name="dir">作業ディレクトリ</param>
+    /// <returns>自身のインスタンス</returns>
+    public CmdCx workdir(string dir)
+    {
+        this.workDir = dir;
+        return this;
+    }
+
     /// <summary>呼び出しプロセスの入出力エンコーディングを構成を行う</summary>
     /// <param name="encoding">プロセス入出力エンコーディング</param>
     /// <returns>自身のインスタンス</returns>
@@ -136,6 +154,17 @@ public class CmdCx
     public CmdCx killby(CancellationToken token)
     {
         this.cancelToken = token;
+        this.generalCancel = false;
+        return this;
+    }
+
+    /// <summary>呼び出しプロセスの中止トークンと中止時のキャンセル例外変換を構成する</summary>
+    /// <param name="token">中止トークン</param>
+    /// <returns>自身のインスタンス</returns>
+    public CmdCx cancelby(CancellationToken token)
+    {
+        this.cancelToken = token;
+        this.generalCancel = true;
         return this;
     }
     #endregion
@@ -161,6 +190,9 @@ public class CmdCx
     /// <summary>コマンド引数</summary>
     private Action<ProcessStartInfo>? argumenter;
 
+    /// <summary>作業ディレクトリ</summary>
+    private string? workDir;
+
     /// <summary>入力リダイレクト元リーダ</summary>
     private TextReader? inReader;
 
@@ -175,6 +207,9 @@ public class CmdCx
 
     /// <summary>中止トークン</summary>
     private CancellationToken cancelToken;
+
+    /// <summary>中止例外を一般的なキャンセル例外に変換するか否か</summary>
+    private bool generalCancel;
     #endregion
 
     // 非公開型
@@ -220,9 +255,10 @@ public class CmdCx
         using var redirect = createRedirectWriter(out var sniffer);
 
         // 準備した情報でプロセス実行する
-        var exit = await CmdProc.execAsync(
+        var execTask = CmdProc.execAsync(
             this.command,
             this.argumenter,
+            workDir: this.workDir,
             environments: this.envVars,
             stdIn: this.inReader,
             inEncoding: this.ioEnc,
@@ -230,7 +266,16 @@ public class CmdCx
             stdErr: redirect.stderr,
             outEncoding: this.ioEnc,
             cancelToken: this.cancelToken
-        ).ConfigureAwait(false);
+        );
+
+        // キャンセル例外変換が構成されている場合、例外変換
+        if (this.generalCancel)
+        {
+            execTask = converCancel(execTask);
+        }
+
+        // プロセス実行の終了を待機
+        var exit = await execTask.ConfigureAwait(false);
 
         // リダイレクトされた出力を文字列化
         var outputText = sniffer.ToString();
@@ -240,7 +285,7 @@ public class CmdCx
 
     /// <summary>リダイレクト先ライターを生成する</summary>
     /// <param name="sniffer">リダイレクトを横取りするための文字列ライター</param>
-    /// <returns></returns>
+    /// <returns>リダイレクト先ライター</returns>
     private RedirectWriter createRedirectWriter(out StringWriter sniffer)
     {
         // 出力を拾うための文字列ライタを生成
@@ -268,6 +313,21 @@ public class CmdCx
         }
 
         return new(stdout, stderr);
+    }
+
+    /// <summary>プロセス中止時キャンセル例外を変換するラッパー</summary>
+    /// <param name="execTask">プロセス実行タスク</param>
+    /// <returns>プロセス終了コード情報</returns>
+    private async Task<CmdExit> converCancel(Task<CmdExit> execTask)
+    {
+        try
+        {
+            return await execTask.ConfigureAwait(false);
+        }
+        catch (CmdProcCancelException ex)
+        {
+            throw new OperationCanceledException(ex.Message, ex, this.cancelToken);
+        }
     }
     #endregion
 }

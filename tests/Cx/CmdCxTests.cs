@@ -20,13 +20,15 @@ public class CmdCxTests
         await "cmd".args("/c", "exit 0");                       // args()
 
         // インスタンスの作成後は準備メソッドを任意に連結し、最後に result() または await で実行を行う。
-        await "cmd".args("/c", "exit 0").silent();                          // silent()
-        await "cmd".args("/c", "exit 0").redirect(TextWriter.Null);         // redirect()
-        await "cmd".args("/c", "exit 0").interactive();                     // interactive()
-        await "cmd".args("/c", "exit 0").input(TextReader.Null);            // input()
-        await "cmd".args("/c", "exit 0").encoding(Encoding.UTF8);           // encoding()
-        await "cmd".args("/c", "exit 0").env("VAR", "value");               // env()
-        await "cmd".args("/c", "exit 0").killby(CancellationToken.None);    // killby()
+        await "cmd".args("/c", "exit 0").silent();                                  // silent()
+        await "cmd".args("/c", "exit 0").redirect(TextWriter.Null);                 // redirect()
+        await "cmd".args("/c", "exit 0").interactive();                             // interactive()
+        await "cmd".args("/c", "exit 0").input(TextReader.Null);                    // input()
+        await "cmd".args("/c", "exit 0").encoding(Encoding.UTF8);                   // encoding()
+        await "cmd".args("/c", "exit 0").workdir(ThisSource.File().DirectoryName!); // workdir()
+        await "cmd".args("/c", "exit 0").env("VAR", "value");                       // env()
+        await "cmd".args("/c", "exit 0").killby(CancellationToken.None);            // killby()
+        await "cmd".args("/c", "exit 0").cancelby(CancellationToken.None);          // cancelby()
     }
 
 
@@ -117,6 +119,14 @@ public class CmdCxTests
     }
 
     [TestMethod()]
+    public async Task workdir()
+    {
+        var workdir = SpecialFolder.Temporary();
+        var output = await new CmdCx("cmd /C echo %CD%").workdir(workdir);
+        output.Output.Should().Contain(workdir.FullName.TrimEnd('\\', '/'));
+    }
+
+    [TestMethod()]
     public async Task env()
     {
         var output = await new CmdCx("cmd /C echo %TESTENV%").env("TESTENV", "ENV-VAL");
@@ -131,6 +141,16 @@ public class CmdCxTests
 
         await FluentActions.Awaiting(async () => await new CmdCx("ping -t localhost").killby(canceller.Token))
             .Should().ThrowAsync<CmdProcCancelException>();
+    }
+
+    [TestMethod()]
+    public async Task cancelby()
+    {
+        using var canceller = new CancellationTokenSource();
+        canceller.CancelAfter(3000);
+
+        await FluentActions.Awaiting(async () => await new CmdCx("ping -t localhost").cancelby(canceller.Token))
+            .Should().ThrowAsync<OperationCanceledException>();
     }
 
     [TestMethod()]
