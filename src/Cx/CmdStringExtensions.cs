@@ -40,40 +40,54 @@ public static class CmdStringExtensions
     public static CmdCx args(this string command, params string[] arguments)
         => new CmdCx(command, arguments);
 
-    /// <summary>文字列をコマンドラインとみなしてコンソール出力なしでのプロセス実行準備を行う</summary>
+    /// <summary>文字列をコマンドラインとみなし、コンソール出力なしのプロセス実行準備を行う</summary>
     /// <param name="commandline">コマンドライン文字列。最初の空白より後ろを引数とみなす。</param>
     /// <returns>コマンド実行準備インスタンス</returns>
     public static CmdCx silent(this string commandline)
         => new CmdCx(commandline).silent();
 
-    /// <summary>文字列をコマンドラインとみなして指定したリダイレクト先とするプロセス実行準備を行う</summary>
+    /// <summary>文字列をコマンドラインとみなし、出力を指定のリダイレクト先とするプロセス実行準備を行う</summary>
     /// <param name="commandline">コマンドライン文字列。最初の空白より後ろを引数とみなす。</param>
     /// <param name="writer">出力リダイレクト先ライター</param>
     /// <returns>コマンド実行準備インスタンス</returns>
     public static CmdCx redirect(this string commandline, TextWriter writer)
         => new CmdCx(commandline).redirect(writer);
 
-    /// <summary>文字列をコマンドラインとみなしてコンソール入力をアタッチするプロセス実行準備を行う</summary>
+    /// <summary>文字列をコマンドラインとみなし、コンソール入力をアタッチするプロセス実行準備を行う</summary>
     /// <param name="commandline">コマンドライン文字列。最初の空白より後ろを引数とみなす。</param>
     /// <returns>コマンド実行準備インスタンス</returns>
     public static CmdCx interactive(this string commandline)
         => new CmdCx(commandline).interactive();
 
-    /// <summary>文字列をコマンドラインとみなして指定のリーダを入力とするプロセス実行準備を行う</summary>
+    /// <summary>文字列をコマンドラインとみなし、指定のリーダを入力とするプロセス実行準備を行う</summary>
     /// <param name="commandline">コマンドライン文字列。最初の空白より後ろを引数とみなす。</param>
     /// <param name="reader">入力リダイレクト元リーダー</param>
     /// <returns>コマンド実行準備インスタンス</returns>
     public static CmdCx input(this string commandline, TextReader reader)
         => new CmdCx(commandline).input(reader);
 
-    /// <summary>文字列をコマンドラインとみなして入出力エンコーディングを指定するプロセス実行準備を行う</summary>
+    /// <summary>文字列をコマンドラインとみなし、指定の入出力エンコーディングとするプロセス実行準備を行う</summary>
     /// <param name="commandline">コマンドライン文字列。最初の空白より後ろを引数とみなす。</param>
     /// <param name="encoding">プロセス入出力エンコーディング</param>
     /// <returns>コマンド実行準備インスタンス</returns>
     public static CmdCx encoding(this string commandline, Encoding encoding)
         => new CmdCx(commandline).encoding(encoding);
 
-    /// <summary>文字列をコマンドラインとみなして指定の環境変数を追加するプロセス実行準備を行う</summary>
+    /// <summary>文字列をコマンドラインとみなし、指定の作業ディレクトリとするプロセス実行準備を行う</summary>
+    /// <param name="commandline">コマンドライン文字列。最初の空白より後ろを引数とみなす。</param>
+    /// <param name="dir">作業ディレクトリ</param>
+    /// <returns>コマンド実行準備インスタンス</returns>
+    public static CmdCx workdir(this string commandline, string dir)
+        => new CmdCx(commandline).workdir(dir);
+
+    /// <summary>文字列をコマンドラインとみなし、指定の作業ディレクトリとするプロセス実行準備を行う</summary>
+    /// <param name="commandline">コマンドライン文字列。最初の空白より後ろを引数とみなす。</param>
+    /// <param name="dir">作業ディレクトリ</param>
+    /// <returns>コマンド実行準備インスタンス</returns>
+    public static CmdCx workdir(this string commandline, DirectoryInfo dir)
+        => new CmdCx(commandline).workdir(dir);
+
+    /// <summary>文字列をコマンドラインとみなし、指定の環境変数を追加するプロセス実行準備を行う</summary>
     /// <param name="commandline">コマンドライン文字列。最初の空白より後ろを引数とみなす。</param>
     /// <param name="key">環境変数名</param>
     /// <param name="value">環境変数値</param>
@@ -81,11 +95,18 @@ public static class CmdStringExtensions
     public static CmdCx env(this string commandline, string key, string? value)
         => new CmdCx(commandline).env(key, value);
 
-    /// <summary>文字列をコマンドラインとみなして指定したトークンを実行中止に紐づけるプロセス実行準備を行う</summary>
+    /// <summary>文字列をコマンドラインとみなし、指定のトークンでプロセス中止するプロセス実行準備を行う</summary>
     /// <param name="commandline">コマンドライン文字列。最初の空白より後ろを引数とみなす。</param>
     /// <param name="token">プロセス実行中止トークン</param>
     /// <returns>コマンド実行準備インスタンス</returns>
     public static CmdCx killby(this string commandline, CancellationToken token)
         => new CmdCx(commandline).killby(token);
+
+    /// <summary>文字列をコマンドラインとみなし、指定のトークンでのプロセス中止と中止時キャンセル例外変換のプロセス実行準備を行う</summary>
+    /// <param name="commandline">コマンドライン文字列。最初の空白より後ろを引数とみなす。</param>
+    /// <param name="token">プロセス実行中止トークン</param>
+    /// <returns>コマンド実行準備インスタンス</returns>
+    public static CmdCx cancelby(this string commandline, CancellationToken token)
+        => new CmdCx(commandline).cancelby(token);
 }
 

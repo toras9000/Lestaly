@@ -12,19 +12,21 @@ public class CmdExtensionsTests
         // 可能な操作を列挙するためだけのメソッド
 
         // 直接実行系
-        await "cmd /c exit 0";                                  // GetAwaiter()
-        await "cmd /c exit 0".result();                         // result()
-        await "cmd /c exit 0".success();                        // success()
+        await "cmd /c exit 0";                                              // GetAwaiter()
+        await "cmd /c exit 0".result();                                     // result()
+        await "cmd /c exit 0".success();                                    // success()
 
         // 実行準備系
-        await "cmd".args("/c", "exit 0");                       // args()
-        await "cmd /c exit 0".silent();                         // silent()
-        await "cmd /c exit 0".redirect(TextWriter.Null);        // redirect()
-        await "cmd /c exit 0".interactive();                    // interactive()
-        await "cmd /c exit 0".input(TextReader.Null);           // input()
-        await "cmd /c exit 0".encoding(Encoding.UTF8);          // encoding()
-        await "cmd /c exit 0".env("VAR", "value");              // env()
-        await "cmd /c exit 0".killby(CancellationToken.None);   // killby()
+        await "cmd".args("/c", "exit 0");                                   // args()
+        await "cmd /c exit 0".silent();                                     // silent()
+        await "cmd /c exit 0".redirect(TextWriter.Null);                    // redirect()
+        await "cmd /c exit 0".interactive();                                // interactive()
+        await "cmd /c exit 0".input(TextReader.Null);                       // input()
+        await "cmd /c exit 0".encoding(Encoding.UTF8);                      // encoding()
+        await "cmd /c exit 0".workdir(ThisSource.File().DirectoryName!);    // workdir()
+        await "cmd /c exit 0".env("VAR", "value");                          // env()
+        await "cmd /c exit 0".killby(CancellationToken.None);               // killby()
+        await "cmd /c exit 0".cancelby(CancellationToken.None);             // cancelby()
     }
 
 
@@ -139,6 +141,14 @@ public class CmdExtensionsTests
     }
 
     [TestMethod()]
+    public async Task workdir()
+    {
+        var workdir = SpecialFolder.Temporary();
+        var output = await "cmd /C echo %CD%".workdir(workdir);
+        output.Output.Should().Contain(workdir.FullName.TrimEnd('\\', '/'));
+    }
+
+    [TestMethod()]
     public async Task env()
     {
         var output = await "cmd /C echo %TESTENV%".env("TESTENV", "ENV-VAL");
@@ -155,4 +165,13 @@ public class CmdExtensionsTests
             .Should().ThrowAsync<CmdProcCancelException>();
     }
 
+    [TestMethod()]
+    public async Task cancelby()
+    {
+        using var canceller = new CancellationTokenSource();
+        canceller.CancelAfter(3000);
+
+        await FluentActions.Awaiting(async () => await "ping -t localhost".cancelby(canceller.Token))
+            .Should().ThrowAsync<OperationCanceledException>();
+    }
 }
