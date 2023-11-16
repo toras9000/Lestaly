@@ -39,7 +39,14 @@ public static class FileSystemInfoExtensions
     /// <param name="self">対象ファイルシステムアイテムのFileSystemInfo</param>
     /// <returns>パス構成セグメントのリスト</returns>
     public static IList<string> GetPathSegments(this FileSystemInfo self)
-        => CometFlavor.Extensions.IO.FileSystemInfoExtensions.GetPathSegments(self);
+    {
+        return self switch
+        {
+            FileInfo file => file.GetPathSegments(),
+            DirectoryInfo dir => dir.GetPathSegments(),
+            _ => throw new InvalidCastException(),
+        };
+    }
 
     /// <summary>ファイルが指定のディレクトリの子孫であるかを判定する。</summary>
     /// <remarks></remarks>
@@ -48,7 +55,14 @@ public static class FileSystemInfoExtensions
     /// <param name="sameIs">同一階層を真とするか否か</param>
     /// <returns>指定ディレクトリの子孫であるか否か</returns>
     public static bool IsDescendantOf(this FileSystemInfo self, DirectoryInfo other, bool sameIs = true)
-        => CometFlavor.Extensions.IO.FileSystemInfoExtensions.IsDescendantOf(self, other, sameIs);
+    {
+        return self switch
+        {
+            FileInfo file => file.IsDescendantOf(other),
+            DirectoryInfo dir => dir.IsDescendantOf(other, sameIs),
+            _ => throw new InvalidCastException(),
+        };
+    }
 
     /// <summary>指定のディレクトリを起点としたファイルの相対パスを取得する。</summary>
     /// <remarks>
@@ -59,7 +73,14 @@ public static class FileSystemInfoExtensions
     /// <param name="ignoreCase">大文字と小文字を同一視するか否か</param>
     /// <returns>相対パス</returns>
     public static string RelativePathFrom(this FileSystemInfo self, DirectoryInfo baseDir, bool ignoreCase)
-        => CometFlavor.Extensions.IO.FileSystemInfoExtensions.RelativePathFrom(self, baseDir, ignoreCase);
+    {
+        return self switch
+        {
+            FileInfo file => file.RelativePathFrom(baseDir, ignoreCase),
+            DirectoryInfo dir => dir.RelativePathFrom(baseDir, ignoreCase),
+            _ => throw new InvalidCastException(),
+        };
+    }
     #endregion
 
     #region Check

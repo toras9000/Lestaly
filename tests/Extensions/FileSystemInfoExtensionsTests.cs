@@ -6,6 +6,7 @@ namespace LestalyTest.Extensions;
 [TestClass()]
 public class FileSystemInfoExtensionsTests
 {
+    #region FileSystem
     [TestMethod()]
     public void GetReadOnly_File()
     {
@@ -53,7 +54,9 @@ public class FileSystemInfoExtensionsTests
         dir.SetReadOnly(false);
         dir.GetReadOnly().Should().Be(false);
     }
+    #endregion
 
+    #region Check
     [TestMethod()]
     public void OmitExists()
     {
@@ -89,7 +92,9 @@ public class FileSystemInfoExtensionsTests
         existDir.OmitNotExists().Should().NotBeNull();
         notExistDir.OmitNotExists().Should().BeNull();
     }
+    #endregion
 
+    #region Throw
     [TestMethod()]
     public void ThrowIfExists()
     {
@@ -169,6 +174,6 @@ public class FileSystemInfoExtensionsTests
         new Action(() => notExistDir.CanceIfNotExists(i => "CD")).Should().Throw<OperationCanceledException>().WithMessage("CD");
         new Action(() => existDir.CanceIfNotExists()).Should().NotThrow();
     }
-
+    #endregion
 
 }
