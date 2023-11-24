@@ -1,6 +1,7 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Buffers;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
-using Cysharp.Text;
+using System.Text;
 
 namespace Lestaly;
 
@@ -29,18 +30,23 @@ public class RoughScrambler
     {
         // 暗号化のための情報を収集
         // 同じ環境であれば同じ情報になるようなものを集めている。
-        using var builder = ZString.CreateUtf8StringBuilder();
-        builder.Append(purpose ?? "");
-        builder.Append(context ?? "");
-        builder.Append(Environment.MachineName ?? "");
-        builder.Append(Environment.UserName ?? "");
-        if (builder.Length < 32) builder.Append('x', 32 - builder.Length);
+        var writer = new ArrayBufferWriter<byte>(256);
+        Encoding.UTF8.GetBytes(purpose ?? "", writer);
+        Encoding.UTF8.GetBytes(context ?? "", writer);
+        Encoding.UTF8.GetBytes(Environment.MachineName ?? "", writer);
+        Encoding.UTF8.GetBytes(Environment.UserName ?? "", writer);
+        if (writer.WrittenCount < 32)
+        {
+            var padding = (stackalloc byte[32 - writer.WrittenCount]);
+            padding.Fill((byte)'x');
+            writer.Write(padding);
+        }
 
         // 暗号化のキー・初期ベクタをハッシュ化を用いて生成する
         var key = (stackalloc byte[32]);
         var iv = (stackalloc byte[32]);
         using var hasher = SHA256.Create();
-        if (!hasher.TryComputeHash(builder.AsSpan(), key, out var writtenKey)) throw new InvalidOperationException();
+        if (!hasher.TryComputeHash(writer.WrittenSpan, key, out var writtenKey)) throw new InvalidOperationException();
         if (!hasher.TryComputeHash(key, iv, out var writtenIv)) throw new InvalidOperationException();
 
         // キー・初期ベクタを保持

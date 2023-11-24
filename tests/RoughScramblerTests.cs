@@ -41,6 +41,33 @@ public class RoughScramblerTests
     }
 
     [TestMethod()]
+    public void Scramble_ShortContext()
+    {
+        var data = new byte[] { 0x12, 0x34, 0x56, };
+        var scrambler = new RoughScrambler("", "");
+        var enc = scrambler.Scramble(data);
+        var dec = scrambler.Descramble(enc);
+
+        dec.Should().Equal(data);
+    }
+
+    [TestMethod()]
+    public void Scramble_LongContext()
+    {
+        const string Elements = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+        var purpose = new string(Random.Shared.GetItems(Elements.AsSpan(), 8192));
+        var context = new string(Random.Shared.GetItems(Elements.AsSpan(), 8192));
+
+        var data = new byte[] { 0x12, 0x34, 0x56, };
+        var scrambler = new RoughScrambler(purpose, context);
+        var enc = scrambler.Scramble(data);
+        var dec = scrambler.Descramble(enc);
+
+        dec.Should().Equal(data);
+    }
+
+    [TestMethod()]
     public void Scramble_Empty()
     {
         var enc1 = new RoughScrambler().Scramble(Array.Empty<byte>());
