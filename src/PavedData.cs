@@ -34,21 +34,72 @@ public class PavedOptions<T>
     public PavedOptions<T> NoPause()
     {
         this.PauseOnError = false;
-        this.PauseOnExit = false;
         this.PauseOnCancel = false;
+        this.PauseOnExit = false;
         return this;
     }
 
+    /// <summary>エラーによる一時停止ありに設定する。</summary>
+    public PavedOptions<T> ErrorPause(int timeout = Timeout.Infinite)
+    {
+        this.PauseOnError = true;
+        this.PauseOnCancel = false;
+        this.PauseOnExit = false;
+        this.PauseTime = timeout;
+        return this;
+    }
+
+    /// <summary>エラーとキャンセルによる一時停止ありに設定する。</summary>
+    public PavedOptions<T> CancelPause(int timeout = Timeout.Infinite)
+    {
+        this.PauseOnError = true;
+        this.PauseOnCancel = true;
+        this.PauseOnExit = false;
+        this.PauseTime = timeout;
+        return this;
+    }
     /// <summary>いずれかの要因による一時停止ありに設定する。</summary>
     public PavedOptions<T> AnyPause(int timeout = Timeout.Infinite)
     {
         this.PauseOnError = true;
-        this.PauseOnExit = true;
         this.PauseOnCancel = true;
+        this.PauseOnExit = true;
         this.PauseTime = timeout;
         return this;
     }
+
+    /// <summary>一時停止モードを設定する。</summary>
+    public PavedOptions<T> PauseOn(PavedPause mode, int timeout = Timeout.Infinite)
+    {
+        switch (mode)
+        {
+        case PavedPause.None:
+            return this.NoPause();
+        case PavedPause.Any:
+            return this.AnyPause(timeout);
+        case PavedPause.Cancel:
+            return this.CancelPause(timeout);
+        case PavedPause.Error:
+        default:
+            return this.ErrorPause(timeout);
+        }
+    }
     #endregion
+}
+
+/// <summary>
+/// 一時停止モード識別子
+/// </summary>
+public enum PavedPause
+{
+    /// <summary>なし</summary>
+    None,
+    /// <summary>エラー時に一時停止</summary>
+    Error,
+    /// <summary>エラーとキャンセル時に一時停止</summary>
+    Cancel,
+    /// <summary>常に一時停止</summary>
+    Any,
 }
 
 /// <summary>
