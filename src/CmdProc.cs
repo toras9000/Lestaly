@@ -220,7 +220,7 @@ public static class CmdProc
         var proc = Process.Start(target) ?? throw new CmdProcException("Cannot execute command.");
 
         // 出力ストリームのリダイレクトタスクを生成するローカル関数
-        async Task redirectProcStream(TextReader reader, TextWriter writer, CancellationToken breaker)
+        async Task redirectProcStream(TextReader reader, TextWriter writer, CancellationToken breaker, bool terminate = false)
         {
             await Task.Yield();
             try
@@ -244,7 +244,11 @@ public static class CmdProc
                     await redirectTask.ConfigureAwait(false);
 
                     // 読み取りデータが無い場合はここで終える
-                    if (length <= 0) break;
+                    if (length <= 0)
+                    {
+                        if (terminate) writer.Close();
+                        break;
+                    }
 
                     // 読み取ったデータをリダイレクト先に書き込み
                     redirectTask = writer.WriteAsync(buff.AsMemory(0, length), breaker);
@@ -260,7 +264,7 @@ public static class CmdProc
         // 出力はすべて読み取れるようにキャンセルなし。入力はプロセス終了したらもう無意味なので中断させる。
         var stdoutRedirector = stdOut == null ? Task.CompletedTask : redirectProcStream(proc.StandardOutput, stdOut, CancellationToken.None);
         var stderrRedirector = stdErr == null ? Task.CompletedTask : redirectProcStream(proc.StandardError, stdErr, CancellationToken.None);
-        var stdinRedirector = stdIn == null ? Task.CompletedTask : redirectProcStream(stdIn, proc.StandardInput, completeCanceller.Token);
+        var stdinRedirector = stdIn == null ? Task.CompletedTask : redirectProcStream(stdIn, proc.StandardInput, completeCanceller.Token, terminate: true);
 
         // コマンドの終了を待機
         var killed = false;
