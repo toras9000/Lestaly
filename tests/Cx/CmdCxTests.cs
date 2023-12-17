@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Runtime.InteropServices;
+using System.Text;
 using Lestaly.Cx;
 
 namespace LestalyTest.Cx;
@@ -99,15 +100,39 @@ public class CmdCxTests
     }
 
     [TestMethod()]
-    public async Task input()
+    public async Task input_reader()
     {
         using var canceller = new CancellationTokenSource();
         canceller.CancelAfter(3000);
 
-        using var stdInReader = new StringReader(" ");
+        var cmd = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "findstr" : "grep";
 
-        await FluentActions.Awaiting(async () => await new CmdCx("cmd /C pause").input(stdInReader))
-            .Should().NotThrowAsync();
+        using var redirectIn = new StringReader("""
+        Input redirection test to text search process.
+        Give the adequately input text.
+        """);
+
+        var result = await FluentActions.Awaiting(async () => await cmd.args("test to").input(redirectIn).result())
+             .Should().NotThrowAsync();
+        result.Subject.Output.Should().Contain("test to");
+    }
+
+    [TestMethod()]
+    public async Task input_Text()
+    {
+        using var canceller = new CancellationTokenSource();
+        canceller.CancelAfter(3000);
+
+        var cmd = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "findstr" : "grep";
+
+        var redirectIn = """
+        Input redirection test to text search process.
+        Give the adequately input text.
+        """;
+
+        var result = await FluentActions.Awaiting(async () => await cmd.args("test to").input(redirectIn).result())
+             .Should().NotThrowAsync();
+        result.Subject.Output.Should().Contain("test to");
     }
 
     [TestMethod()]

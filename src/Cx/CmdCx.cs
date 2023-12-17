@@ -74,10 +74,7 @@ public class CmdCx
     /// </remarks>
     /// <returns>自身のインスタンス</returns>
     public CmdCx interactive()
-    {
-        this.inReader = ConsoleWig.InReader;
-        return this;
-    }
+        => this.input(ConsoleWig.InReader);
 
     /// <summary>指定したリーダーから呼び出しプロセスの標準入力へリダイレクトする構成を行う</summary>
     /// <remarks>
@@ -92,14 +89,20 @@ public class CmdCx
         return this;
     }
 
+    /// <summary>指定したテキストを呼び出しプロセスの標準入力へリダイレクトする構成を行う</summary>
+    /// <remarks>
+    /// このメソッドは <see cref="interactive"/> の構成を上書きする。
+    /// </remarks>
+    /// <param name="text">入力テキストー</param>
+    /// <returns>自身のインスタンス</returns>
+    public CmdCx input(string text)
+        => this.input(new StringReader(text));
+
     /// <summary>呼び出しプロセスの作業ディレクトリを構成する</summary>
     /// <param name="dir">作業ディレクトリ</param>
     /// <returns>自身のインスタンス</returns>
     public CmdCx workdir(DirectoryInfo dir)
-    {
-        this.workDir = dir.FullName;
-        return this;
-    }
+        => this.workdir(dir.FullName);
 
     /// <summary>呼び出しプロセスの作業ディレクトリを構成する</summary>
     /// <param name="dir">作業ディレクトリ</param>
