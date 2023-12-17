@@ -62,6 +62,13 @@ public sealed class ConsoleWig : IConsoleWig
     public static string ReadLine()
         => Facade.ReadLine();
 
+    /// <summary>行を読み取る</summary>
+    /// <remarks>このメソッドは入力がリダイレクトされている場合には例外を発する。</remarks>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>入力されたテキストを得るタスク</returns>
+    public static ValueTask<string?> ReadLineAsync(CancellationToken cancelToken)
+        => Facade.ReadLineAsync(cancelToken);
+
     /// <summary>入力エコー無しで1行分のキー入力を読み取る</summary>
     /// <returns>読み取った行テキスト</returns>
     public static string ReadLineIntercepted()
@@ -74,6 +81,13 @@ public sealed class ConsoleWig : IConsoleWig
     /// <returns>入力された文字列</returns>
     public static string ReadKeysLineReaction(string keyword, StringComparison comparison = StringComparison.Ordinal, bool breakOnReturn = true)
         => Facade.ReadKeysLineReaction(keyword, comparison, breakOnReturn);
+
+    /// <summary>入力を行末または指定のキーワードが入力されるまで読み取る。(OrdinalIgnoreCase)</summary>
+    /// <param name="keyword">入力を終了するキーワード</param>
+    /// <param name="breakOnReturn">入力終了後に改行を出力するか否か</param>
+    /// <returns>入力された文字列</returns>
+    public static string ReadKeysLineReactionIgnoreCase(string keyword, bool breakOnReturn = true)
+        => Facade.ReadKeysLineReactionIgnoreCase(keyword, breakOnReturn);
 
     /// <summary>入力を行末または指定の条件に適合した入力が行われるまで読み取る。</summary>
     /// <param name="completer">入力アイドル時に完了判定する処理</param>
@@ -90,8 +104,14 @@ public sealed class ConsoleWig : IConsoleWig
     /// <param name="breakOnReturn">入力終了後に改行を出力するか否か</param>
     /// <param name="cancelToken">キャンセルトークン</param>
     /// <returns>入力された文字列を得るタスク</returns>
-    public Task<string> ReadKeysLineMatchAsync(Regex pattern, int timeout = 100, bool breakOnReturn = true, CancellationToken cancelToken = default)
+    public static Task<string> ReadKeysLineMatchAsync(Regex pattern, int timeout = 100, bool breakOnReturn = true, CancellationToken cancelToken = default)
         => Facade.ReadKeysLineMatchAsync(pattern, timeout, breakOnReturn, cancelToken);
+
+    /// <summary>キー入力を読み取る</summary>
+    /// <param name="intercept">キー入力をインターセプトする(出力に出さない)かどうか。</param>
+    /// <returns>押下されたキー情報</returns>
+    public static ConsoleKeyInfo ReadKey(bool intercept)
+        => Facade.ReadKey(intercept);
 
     /// <summary>キー入力を読み取る</summary>
     /// <param name="intercept">キー入力をインターセプトする(出力に出さない)かどうか。</param>
@@ -255,10 +275,20 @@ public interface IConsoleWig
     }
 
     /// <summary>行を読み取る</summary>
+    /// <remarks>このメソッドは入力がリダイレクトされている場合には例外を発する。</remarks>
     /// <returns>入力されたテキスト</returns>
     public string ReadLine()
     {
         return Console.ReadLine() ?? "";
+    }
+
+    /// <summary>行を読み取る</summary>
+    /// <remarks>このメソッドは入力がリダイレクトされている場合には例外を発する。</remarks>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>入力されたテキストを得るタスク</returns>
+    public ValueTask<string?> ReadLineAsync(CancellationToken cancelToken)
+    {
+        return ConsoleWig.InReader.ReadLineAsync(cancelToken);
     }
 
     /// <summary>入力エコー無しで1行分のキー入力を読み取る</summary>
@@ -327,6 +357,13 @@ public interface IConsoleWig
         return buff.ToString();
     }
 
+    /// <summary>入力を行末または指定のキーワードが入力されるまで読み取る。(OrdinalIgnoreCase)</summary>
+    /// <param name="keyword">入力を終了するキーワード</param>
+    /// <param name="breakOnReturn">入力終了後に改行を出力するか否か</param>
+    /// <returns>入力された文字列</returns>
+    public string ReadKeysLineReactionIgnoreCase(string keyword, bool breakOnReturn = true)
+        => ConsoleWig.ReadKeysLineReaction(keyword, StringComparison.OrdinalIgnoreCase, breakOnReturn);
+
     /// <summary>入力を行末または指定の条件に適合した入力が行われるまで読み取る。</summary>
     /// <param name="completer">入力アイドル時に完了判定する処理</param>
     /// <param name="timeout">入力アイドル時間 [ms]</param>
@@ -385,6 +422,12 @@ public interface IConsoleWig
     /// <returns>入力された文字列を得るタスク</returns>
     public Task<string> ReadKeysLineMatchAsync(Regex pattern, int timeout = 100, bool breakOnReturn = true, CancellationToken cancelToken = default)
         => ReadKeysLineIfAsync(pattern.IsMatch, timeout, breakOnReturn, cancelToken);
+
+    /// <summary>キー入力を読み取る</summary>
+    /// <param name="intercept">キー入力をインターセプトする(出力に出さない)かどうか。</param>
+    /// <returns>押下されたキー情報</returns>
+    public ConsoleKeyInfo ReadKey(bool intercept)
+        => Console.ReadKey(intercept);
 
     /// <summary>キー入力を読み取る</summary>
     /// <param name="intercept">キー入力をインターセプトする(出力に出さない)かどうか。</param>
