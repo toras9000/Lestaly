@@ -48,6 +48,38 @@ public class FileExtensionsTests
 
         new Action(() => default(FileInfo)!.GetAnotherExtension("other")).Should().Throw<ArgumentNullException>();
     }
+
+    [TestMethod]
+    public void HasAnyExtension_enum()
+    {
+        new FileInfo("testfile.ext").HasAnyExtension(new[] { ".extension", ".ex" }, ignoreCase: true).Should().BeFalse();
+        new FileInfo("testfile.ext").HasAnyExtension(new[] { "extension", "ex" }, ignoreCase: true).Should().BeFalse();
+
+        new FileInfo("testfile.ext").HasAnyExtension(new[] { ".extension", ".ex" }, ignoreCase: false).Should().BeFalse();
+        new FileInfo("testfile.ext").HasAnyExtension(new[] { "extension", "ex" }, ignoreCase: false).Should().BeFalse();
+
+        new FileInfo("testfile.ext").HasAnyExtension(new[] { ".extension", ".ex", ".ext" }, ignoreCase: true).Should().BeTrue();
+        new FileInfo("testfile.ext").HasAnyExtension(new[] { "extension", ".ex", "ext" }, ignoreCase: true).Should().BeTrue();
+        new FileInfo("testfile.ext").HasAnyExtension(new[] { ".extension", ".ex", ".EXT" }, ignoreCase: true).Should().BeTrue();
+        new FileInfo("testfile.ext").HasAnyExtension(new[] { "extension", ".ex", "EXT" }, ignoreCase: true).Should().BeTrue();
+
+        new FileInfo("testfile.ext").HasAnyExtension(new[] { ".extension", ".ex", ".ext" }, ignoreCase: false).Should().BeTrue();
+        new FileInfo("testfile.ext").HasAnyExtension(new[] { "extension", ".ex", "ext" }, ignoreCase: false).Should().BeTrue();
+        new FileInfo("testfile.ext").HasAnyExtension(new[] { ".extension", ".ex", ".EXT" }, ignoreCase: false).Should().BeFalse();
+        new FileInfo("testfile.ext").HasAnyExtension(new[] { "extension", ".ex", "EXT" }, ignoreCase: false).Should().BeFalse();
+    }
+
+    [TestMethod]
+    public void HasAnyExtension_params()
+    {
+        new FileInfo("testfile.ext").HasAnyExtension(".extension", ".ex").Should().BeFalse();
+        new FileInfo("testfile.ext").HasAnyExtension("extension", "ex").Should().BeFalse();
+
+        new FileInfo("testfile.ext").HasAnyExtension(".extension", ".ex", ".ext").Should().BeTrue();
+        new FileInfo("testfile.ext").HasAnyExtension("extension", ".ex", "ext").Should().BeTrue();
+        new FileInfo("testfile.ext").HasAnyExtension(".extension", ".ex", ".EXT").Should().BeTrue();
+        new FileInfo("testfile.ext").HasAnyExtension("extension", ".ex", "EXT").Should().BeTrue();
+    }
     #endregion
 
     #region FileSystemInfo

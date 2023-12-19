@@ -25,7 +25,7 @@ public static class FileInfoExtensions
     public static string Extension(this FileInfo self)
     {
         if (self == null) throw new ArgumentNullException(nameof(self));
-        return Path.GetExtension(self.Name);
+        return self.Extension;
     }
 
     /// <summary>指定した拡張子ファイルを示すFileInfoを取得する。</summary>
@@ -38,6 +38,40 @@ public static class FileInfoExtensions
         var path = Path.ChangeExtension(self.FullName, extension);
         return new FileInfo(path);
     }
+
+    /// <summary>ファイルが指定したいずれかの拡張子であるか否かを判定する。)</summary>
+    /// <param name="self">対象ファイルのFileInfo</param>
+    /// <param name="extensions">拡張子のリスト</param>
+    /// <param name="ignoreCase">大文字/小文字の違いを無視するか否か</param>
+    /// <returns>いずれかの拡張子であるか否か</returns>
+    public static bool HasAnyExtension(this FileInfo self, IEnumerable<string> extensions, bool ignoreCase = true)
+    {
+        ArgumentNullException.ThrowIfNull(self);
+        ArgumentNullException.ThrowIfNull(extensions);
+
+        var extension = self.Extension;
+        if (string.IsNullOrEmpty(extension)) return false;
+
+        var targetExt = extension[0] == '.' ? extension.AsSpan(1) : extension.AsSpan();
+        var caseCompare = ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+
+        foreach (var checkExtension in extensions)
+        {
+            if (string.IsNullOrEmpty(checkExtension)) continue;
+            var checkExt = checkExtension[0] == '.' ? checkExtension.AsSpan(1) : checkExtension.AsSpan();
+            var extMatch = targetExt.Equals(checkExt, caseCompare);
+            if (extMatch) return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>ファイルが指定したいずれかの拡張子であるか否かを判定する。(大文字/小文字を区別しない)</summary>
+    /// <param name="self">対象ファイルのFileInfo</param>
+    /// <param name="extensions">拡張子のリスト</param>
+    /// <returns>いずれかの拡張子であるか否か</returns>
+    public static bool HasAnyExtension(this FileInfo self, params string[] extensions)
+        => self.HasAnyExtension(extensions, ignoreCase: true);
     #endregion
 
     #region FileSystemInfo
