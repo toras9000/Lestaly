@@ -142,6 +142,20 @@ public static class StringExtensions
         return false;
     }
 
+    /// <summary>文字列が指定のテキストのいずれかで始まるかを判定する。(大文字/小文字区別なし)</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="values">始まるかを判定する文字列。nullや空の要素は無視される。</param>
+    /// <returns>いずれかで始まっているか否か</returns>
+    public static bool StartsWithAnyIgnoreCase(this string self, IEnumerable<string> values)
+        => self == null ? false : self.AsSpan().StartsWithAny(values, StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>文字列が指定のテキストのいずれかで始まるかを判定する。(大文字/小文字区別なし)</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="values">始まるかを判定する文字列。nullや空の要素は無視される。</param>
+    /// <returns>いずれかで始まっているか否か</returns>
+    public static bool StartsWithAnyIgnoreCase(this ReadOnlySpan<char> self, IEnumerable<string> values)
+        => self.StartsWithAny(values, StringComparison.OrdinalIgnoreCase);
+
     /// <summary>文字列が指定のテキストのいずれかで終わるかを判定する。</summary>
     /// <param name="self">対象文字列</param>
     /// <param name="values">終わるかを判定する文字列。nullや空の要素は無視される。</param>
@@ -181,6 +195,63 @@ public static class StringExtensions
         }
         return false;
     }
+
+    /// <summary>文字列が指定のテキストのいずれかで終わるかを判定する。(大文字/小文字区別なし)</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="values">終わるかを判定する文字列。nullや空の要素は無視される。</param>
+    /// <returns>いずれかで終わっているか否か</returns>
+    public static bool EndsWithAnyIgnoreCase(this string self, IEnumerable<string> values)
+        => self == null ? false : self.AsSpan().EndsWithAny(values, StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>文字列が指定のテキストのいずれかで終わるかを判定する。(大文字/小文字区別なし)</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="values">終わるかを判定する文字列。nullや空の要素は無視される。</param>
+    /// <returns>いずれかで終わっているか否か</returns>
+    public static bool EndsWithAnyIgnoreCase(this ReadOnlySpan<char> self, IEnumerable<string> values)
+        => self.EndsWithAny(values, StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>文字列が指定のシーケンスのいずれかと一致するかを判定する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="values">比較する文字列のシーケンス。</param>
+    /// <param name="comparison">文字列比較方法</param>
+    /// <returns>いずれかと一致するか否か</returns>
+    public static bool EqualsAny(this string? self, IEnumerable<string?> values, StringComparison comparison = StringComparison.Ordinal)
+    {
+        foreach (var value in values)
+        {
+            if (string.Equals(self, value, comparison)) return true;
+        }
+        return false;
+    }
+
+    /// <summary>文字列が指定のシーケンスのいずれかと一致するかを判定する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="values">比較する文字列のシーケンス。nullは無視される。</param>
+    /// <param name="comparison">文字列比較方法</param>
+    /// <returns>いずれかと一致するか否か</returns>
+    public static bool EqualsAny(this ReadOnlySpan<char> self, IEnumerable<string> values, StringComparison comparison = StringComparison.Ordinal)
+    {
+        foreach (var value in values)
+        {
+            if (value == null) continue;
+            if (self.Equals(value, comparison)) return true;
+        }
+        return false;
+    }
+
+    /// <summary>文字列が指定のシーケンスのいずれかと一致するかを判定する。(大文字/小文字区別なし)</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="values">比較する文字列のシーケンス。</param>
+    /// <returns>いずれかと一致するか否か</returns>
+    public static bool EqualsAnyIgnoreCase(this string? self, IEnumerable<string?> values)
+        => self.EqualsAny(values, StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>文字列が指定のシーケンスのいずれかと一致するかを判定する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="values">比較する文字列のシーケンス。nullは無視される。</param>
+    /// <returns>いずれかと一致するか否か</returns>
+    public static bool EqualsAnyIgnoreCase(this ReadOnlySpan<char> self, IEnumerable<string> values)
+        => self.EqualsAny(values, StringComparison.OrdinalIgnoreCase);
 
     /// <summary>文字列が指定の文字列で始まるよう必要であれば付与する。</summary>
     /// <param name="self">対象文字列</param>

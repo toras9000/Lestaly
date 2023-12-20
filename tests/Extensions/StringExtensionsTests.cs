@@ -165,7 +165,29 @@ public class StringExtensionsTests
     }
 
     [TestMethod()]
-    public void EndsWithAny_StringAndFlag()
+    public void StartsWithAnyIgnoreCase()
+    {
+        {// string
+            "abcd".StartsWithAnyIgnoreCase(["aa", "ab", "ac"]).Should().BeTrue();
+            "abcd".StartsWithAnyIgnoreCase(["AA", "AB", "AC"]).Should().BeTrue();
+
+            "abcd".StartsWithAnyIgnoreCase(["aa", "cd"]).Should().BeFalse();
+            "abcd".StartsWithAnyIgnoreCase([""]).Should().BeFalse();
+            "abcd".StartsWithAnyIgnoreCase([]).Should().BeFalse();
+        }
+        {// Span
+            "abcd".AsSpan().StartsWithAnyIgnoreCase(["aa", "ab", "ac"]).Should().BeTrue();
+            "abcd".AsSpan().StartsWithAnyIgnoreCase(["AA", "AB", "AC"]).Should().BeTrue();
+
+            "abcd".AsSpan().StartsWithAnyIgnoreCase(["aa", "cd"]).Should().BeFalse();
+            "abcd".AsSpan().StartsWithAnyIgnoreCase([""]).Should().BeFalse();
+            "abcd".AsSpan().StartsWithAnyIgnoreCase([]).Should().BeFalse();
+        }
+
+    }
+
+    [TestMethod()]
+    public void EndsWithAny()
     {
         {// string
             "abcd".EndsWithAny(new[] { "cc", "cd", "ce" }, ignoreCase: false).Should().Be(true);
@@ -194,6 +216,55 @@ public class StringExtensionsTests
             "abcd".AsSpan().EndsWithAny(new[] { "ab", "ce" }, ignoreCase: true).Should().BeFalse();
             "abcd".AsSpan().EndsWithAny(new[] { "", }, ignoreCase: true).Should().BeFalse();
             "abcd".AsSpan().EndsWithAny(new[] { default(string)!, }, ignoreCase: true).Should().BeFalse();
+        }
+    }
+
+    [TestMethod()]
+    public void EndsWithAnyIgnoreCase()
+    {
+        {// string
+            "abcd".EndsWithAnyIgnoreCase(["cc", "cd", "ce"]).Should().BeTrue();
+            "abcd".EndsWithAnyIgnoreCase(["CC", "CD", "CE"]).Should().BeTrue();
+
+            "abcd".EndsWithAnyIgnoreCase(["ab", "ce"]).Should().BeFalse();
+            "abcd".EndsWithAnyIgnoreCase([""]).Should().BeFalse();
+            "abcd".EndsWithAnyIgnoreCase([]).Should().BeFalse();
+        }
+        {// Span
+            "abcd".AsSpan().EndsWithAnyIgnoreCase(["cc", "cd", "ce"]).Should().BeTrue();
+            "abcd".AsSpan().EndsWithAnyIgnoreCase(["CC", "CD", "CE"]).Should().BeTrue();
+
+            "abcd".AsSpan().EndsWithAnyIgnoreCase(["ab", "ce"]).Should().BeFalse();
+            "abcd".AsSpan().EndsWithAnyIgnoreCase([""]).Should().BeFalse();
+            "abcd".AsSpan().EndsWithAnyIgnoreCase([]).Should().BeFalse();
+        }
+    }
+
+    [TestMethod()]
+    public void EqualsAny()
+    {
+        {// string
+            "abcd".EqualsAny(["ABC", "ABCD", "BCD"], StringComparison.Ordinal).Should().BeFalse();
+            "abcd".EqualsAny(["ABC", "ABCD", "BCD"], StringComparison.OrdinalIgnoreCase).Should().BeTrue();
+        }
+        {// Span
+            "abcd".AsSpan().EqualsAny(["ABC", "ABCD", "BCD"], StringComparison.Ordinal).Should().BeFalse();
+            "abcd".AsSpan().EqualsAny(["ABC", "ABCD", "BCD"], StringComparison.OrdinalIgnoreCase).Should().BeTrue();
+        }
+    }
+
+    [TestMethod()]
+    public void EqualsAnyIgnoreCase()
+    {
+        {// string
+            "abcd".EqualsAnyIgnoreCase(["abc", "abcd", "bcd"]).Should().BeTrue();
+            "abcd".EqualsAnyIgnoreCase(["ABC", "ABCD", "BCD"]).Should().BeTrue();
+            "abcd".EqualsAnyIgnoreCase(["ABC", "BCD"]).Should().BeFalse();
+        }
+        {// Span
+            "abcd".AsSpan().EqualsAnyIgnoreCase(["ABC", "ABCD", "BCD"]).Should().BeTrue();
+            "abcd".AsSpan().EqualsAnyIgnoreCase(["ABC", "ABCD", "BCD"]).Should().BeTrue();
+            "abcd".AsSpan().EqualsAnyIgnoreCase(["ABC", "BCD"]).Should().BeFalse();
         }
     }
 
