@@ -134,32 +134,32 @@ public class StringExtensionsTests
     public void StartsWithAny()
     {
         {// string
-            "abcd".StartsWithAny(new[] { "aa", "ab", "ac" }, ignoreCase: false).Should().Be(true);
-            "abcd".StartsWithAny(new[] { "aa", "ab", "ac" }, ignoreCase: true).Should().BeTrue();
+            "abcd".StartsWithAny(["aa", "ab", "ac"], ignoreCase: false).Should().Be(true);
+            "abcd".StartsWithAny(["aa", "ab", "ac"], ignoreCase: true).Should().BeTrue();
 
-            "abcd".StartsWithAny(new[] { "AA", "AB", "AC" }, ignoreCase: false).Should().BeFalse();
-            "abcd".StartsWithAny(new[] { "AA", "AB", "AC" }, ignoreCase: true).Should().BeTrue();
+            "abcd".StartsWithAny(["AA", "AB", "AC"], ignoreCase: false).Should().BeFalse();
+            "abcd".StartsWithAny(["AA", "AB", "AC"], ignoreCase: true).Should().BeTrue();
 
-            "abcd".StartsWithAny(new[] { "AA", "AB", "AC" }, StringComparison.Ordinal).Should().BeFalse();
-            "abcd".StartsWithAny(new[] { "AA", "AB", "AC" }, StringComparison.OrdinalIgnoreCase).Should().BeTrue();
+            "abcd".StartsWithAny(["AA", "AB", "AC"], StringComparison.Ordinal).Should().BeFalse();
+            "abcd".StartsWithAny(["AA", "AB", "AC"], StringComparison.OrdinalIgnoreCase).Should().BeTrue();
 
-            "abcd".StartsWithAny(new[] { "aa", "cd" }, ignoreCase: true).Should().BeFalse();
-            "abcd".StartsWithAny(new[] { "", }, ignoreCase: true).Should().BeFalse();
-            "abcd".StartsWithAny(new[] { default(string)!, }, ignoreCase: true).Should().BeFalse();
+            "abcd".StartsWithAny(["aa", "cd"], ignoreCase: true).Should().BeFalse();
+            "abcd".StartsWithAny(["",], ignoreCase: true).Should().BeFalse();
+            "abcd".StartsWithAny([default(string)!,], ignoreCase: true).Should().BeFalse();
         }
         {// Span
-            "abcd".AsSpan().StartsWithAny(new[] { "aa", "ab", "ac" }, ignoreCase: false).Should().Be(true);
-            "abcd".AsSpan().StartsWithAny(new[] { "aa", "ab", "ac" }, ignoreCase: true).Should().BeTrue();
+            "abcd".AsSpan().StartsWithAny(["aa", "ab", "ac"], ignoreCase: false).Should().Be(true);
+            "abcd".AsSpan().StartsWithAny(["aa", "ab", "ac"], ignoreCase: true).Should().BeTrue();
 
-            "abcd".AsSpan().StartsWithAny(new[] { "AA", "AB", "AC" }, ignoreCase: false).Should().BeFalse();
-            "abcd".AsSpan().StartsWithAny(new[] { "AA", "AB", "AC" }, ignoreCase: true).Should().BeTrue();
+            "abcd".AsSpan().StartsWithAny(["AA", "AB", "AC"], ignoreCase: false).Should().BeFalse();
+            "abcd".AsSpan().StartsWithAny(["AA", "AB", "AC"], ignoreCase: true).Should().BeTrue();
 
-            "abcd".AsSpan().StartsWithAny(new[] { "AA", "AB", "AC" }, StringComparison.Ordinal).Should().BeFalse();
-            "abcd".AsSpan().StartsWithAny(new[] { "AA", "AB", "AC" }, StringComparison.OrdinalIgnoreCase).Should().BeTrue();
+            "abcd".AsSpan().StartsWithAny(["AA", "AB", "AC"], StringComparison.Ordinal).Should().BeFalse();
+            "abcd".AsSpan().StartsWithAny(["AA", "AB", "AC"], StringComparison.OrdinalIgnoreCase).Should().BeTrue();
 
-            "abcd".AsSpan().StartsWithAny(new[] { "aa", "cd" }, ignoreCase: true).Should().BeFalse();
-            "abcd".AsSpan().StartsWithAny(new[] { "", }, ignoreCase: true).Should().BeFalse();
-            "abcd".AsSpan().StartsWithAny(new[] { default(string)!, }, ignoreCase: true).Should().BeFalse();
+            "abcd".AsSpan().StartsWithAny(["aa", "cd"], ignoreCase: true).Should().BeFalse();
+            "abcd".AsSpan().StartsWithAny(["",], ignoreCase: true).Should().BeFalse();
+            "abcd".AsSpan().StartsWithAny([default(string)!,], ignoreCase: true).Should().BeFalse();
         }
 
     }
@@ -190,32 +190,32 @@ public class StringExtensionsTests
     public void EndsWithAny()
     {
         {// string
-            "abcd".EndsWithAny(new[] { "cc", "cd", "ce" }, ignoreCase: false).Should().Be(true);
-            "abcd".EndsWithAny(new[] { "cc", "cd", "ce" }, ignoreCase: true).Should().BeTrue();
+            "abcd".EndsWithAny(["cc", "cd", "ce"], ignoreCase: false).Should().Be(true);
+            "abcd".EndsWithAny(["cc", "cd", "ce"], ignoreCase: true).Should().BeTrue();
 
-            "abcd".EndsWithAny(new[] { "CC", "CD", "CE" }, ignoreCase: false).Should().BeFalse();
-            "abcd".EndsWithAny(new[] { "CC", "CD", "CE" }, ignoreCase: true).Should().BeTrue();
+            "abcd".EndsWithAny(["CC", "CD", "CE"], ignoreCase: false).Should().BeFalse();
+            "abcd".EndsWithAny(["CC", "CD", "CE"], ignoreCase: true).Should().BeTrue();
 
-            "abcd".EndsWithAny(new[] { "CC", "CD", "CE" }, StringComparison.Ordinal).Should().BeFalse();
-            "abcd".EndsWithAny(new[] { "CC", "CD", "CE" }, StringComparison.OrdinalIgnoreCase).Should().BeTrue();
+            "abcd".EndsWithAny(["CC", "CD", "CE"], StringComparison.Ordinal).Should().BeFalse();
+            "abcd".EndsWithAny(["CC", "CD", "CE"], StringComparison.OrdinalIgnoreCase).Should().BeTrue();
 
-            "abcd".EndsWithAny(new[] { "ab", "ce" }, ignoreCase: true).Should().BeFalse();
-            "abcd".EndsWithAny(new[] { "", }, ignoreCase: true).Should().BeFalse();
-            "abcd".EndsWithAny(new[] { default(string)!, }, ignoreCase: true).Should().BeFalse();
+            "abcd".EndsWithAny(["ab", "ce"], ignoreCase: true).Should().BeFalse();
+            "abcd".EndsWithAny(["",], ignoreCase: true).Should().BeFalse();
+            "abcd".EndsWithAny([default(string)!,], ignoreCase: true).Should().BeFalse();
         }
         {// Span
-            "abcd".AsSpan().EndsWithAny(new[] { "cc", "cd", "ce" }, ignoreCase: false).Should().Be(true);
-            "abcd".AsSpan().EndsWithAny(new[] { "cc", "cd", "ce" }, ignoreCase: true).Should().BeTrue();
+            "abcd".AsSpan().EndsWithAny(["cc", "cd", "ce"], ignoreCase: false).Should().Be(true);
+            "abcd".AsSpan().EndsWithAny(["cc", "cd", "ce"], ignoreCase: true).Should().BeTrue();
 
-            "abcd".AsSpan().EndsWithAny(new[] { "CC", "CD", "CE" }, ignoreCase: false).Should().BeFalse();
-            "abcd".AsSpan().EndsWithAny(new[] { "CC", "CD", "CE" }, ignoreCase: true).Should().BeTrue();
+            "abcd".AsSpan().EndsWithAny(["CC", "CD", "CE"], ignoreCase: false).Should().BeFalse();
+            "abcd".AsSpan().EndsWithAny(["CC", "CD", "CE"], ignoreCase: true).Should().BeTrue();
 
-            "abcd".AsSpan().EndsWithAny(new[] { "CC", "CD", "CE" }, StringComparison.Ordinal).Should().BeFalse();
-            "abcd".AsSpan().EndsWithAny(new[] { "CC", "CD", "CE" }, StringComparison.OrdinalIgnoreCase).Should().BeTrue();
+            "abcd".AsSpan().EndsWithAny(["CC", "CD", "CE"], StringComparison.Ordinal).Should().BeFalse();
+            "abcd".AsSpan().EndsWithAny(["CC", "CD", "CE"], StringComparison.OrdinalIgnoreCase).Should().BeTrue();
 
-            "abcd".AsSpan().EndsWithAny(new[] { "ab", "ce" }, ignoreCase: true).Should().BeFalse();
-            "abcd".AsSpan().EndsWithAny(new[] { "", }, ignoreCase: true).Should().BeFalse();
-            "abcd".AsSpan().EndsWithAny(new[] { default(string)!, }, ignoreCase: true).Should().BeFalse();
+            "abcd".AsSpan().EndsWithAny(["ab", "ce"], ignoreCase: true).Should().BeFalse();
+            "abcd".AsSpan().EndsWithAny(["",], ignoreCase: true).Should().BeFalse();
+            "abcd".AsSpan().EndsWithAny([default(string)!,], ignoreCase: true).Should().BeFalse();
         }
     }
 
@@ -496,14 +496,14 @@ public class StringExtensionsTests
     public void DropEmpty()
     {
         new[] { "", "abc", null, null, "  ", "", "def", null, }
-            .DropEmpty().Should().Equal(new[] { "abc", "  ", "def", });
+            .DropEmpty().Should().Equal(["abc", "  ", "def",]);
     }
 
     [TestMethod()]
     public void DropWhite()
     {
         new[] { "", "abc", null, null, "  ", "", "def", null, }
-            .DropWhite().Should().Equal(new[] { "abc", "def", });
+            .DropWhite().Should().Equal(["abc", "def",]);
     }
 
     [TestMethod()]
@@ -614,12 +614,12 @@ public class StringExtensionsTests
         "\"abc\"".Unquote().Should().Be("abc");
         "\"a\"\"bc\"".Unquote().Should().Be("a\"bc");
 
-        "'abc'".Unquote(quotes: new[] { '\'' }).Should().Be("abc");
-        "'ab''c'".Unquote(quotes: new[] { '\'' }).Should().Be("ab'c");
-        "'ab\"c'".Unquote(quotes: new[] { '\'' }).Should().Be("ab\"c");
+        "'abc'".Unquote(quotes: ['\'']).Should().Be("abc");
+        "'ab''c'".Unquote(quotes: ['\'']).Should().Be("ab'c");
+        "'ab\"c'".Unquote(quotes: ['\'']).Should().Be("ab\"c");
 
-        "'abc'".Unquote(quotes: new[] { '\'' }, escape: '/').Should().Be("abc");
-        "'ab/'c'".Unquote(quotes: new[] { '\'' }, escape: '/').Should().Be("ab'c");
+        "'abc'".Unquote(quotes: ['\''], escape: '/').Should().Be("abc");
+        "'ab/'c'".Unquote(quotes: ['\''], escape: '/').Should().Be("ab'c");
     }
 
     [TestMethod]
