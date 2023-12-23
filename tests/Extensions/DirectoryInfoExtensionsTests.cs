@@ -1367,4 +1367,36 @@ public class DirectoryInfoExtensionsTests
 
 
     #endregion
+
+    #region Utility
+    [TestMethod]
+    public async Task DeleteRecurse()
+    {
+        var testFiles = new[]
+        {
+            @"abc/aaa.txt",
+            @"def/ghi/bbb.txt",
+            @"ccc.txt",
+            @"abc/ddd.txt",
+            @"eee.txt",
+            @"abc/fff.txt",
+            @"asd/qwe/ggg.txt",
+            @"hhh.txt",
+        };
+
+        using var testDir = new TempDir();
+        foreach (var path in testFiles)
+        {
+            await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
+        }
+
+        // 作成したファイル・ディレクトリに読み取り専用属性を付与
+        testDir.Info.DoFiles(w => w.Item.SetReadOnly(true), new() { DirectoryHandling = true, });
+
+        // 削除する
+        testDir.Info.DeleteRecurse();
+        testDir.Info.Refresh();
+        testDir.Info.Exists.Should().BeFalse();
+    }
+    #endregion
 }

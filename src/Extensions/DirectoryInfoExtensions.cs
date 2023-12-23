@@ -788,4 +788,23 @@ public static class DirectoryInfoExtensions
         #endregion
     }
     #endregion
+
+    #region Utility
+    /// <summary>ディレクトリを再帰的に削除する</summary>
+    /// <remarks></remarks>
+    /// <param name="self">削除対象ディレクトリ</param>
+    public static void DeleteRecurse(this DirectoryInfo self)
+    {
+        // 存在しないならばすることはない
+        if (self == null || !self.Exists) return;
+
+        // 配下のファイル/ディレクトリに読み取り専用属性が付いていれば削除する。
+        // ただ、これだけが削除を阻害する要因ではないので気休め程度ではある。
+        var options = new SelectFilesOptions(Recurse: true, DirectoryHandling: true, Sort: false, Buffered: false);
+        self.DoFiles(w => w.Item.SetReadOnly(false), options);
+
+        // 再帰的に削除する
+        self.Delete(recursive: true);
+    }
+    #endregion
 }
