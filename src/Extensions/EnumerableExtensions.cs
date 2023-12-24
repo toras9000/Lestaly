@@ -82,6 +82,16 @@ public static class EnumerableExtensions
         return mustEnumerator();
     }
 
+    /// <summary>前後空白や大文字/小文字の区別なく文字列が含まれているかを判定する。</summary>
+    /// <param name="self">文字列のシーケンス</param>
+    /// <param name="text">判定する文字列</param>
+    /// <returns>含まれているか否か</returns>
+    public static bool RoughContains(this IEnumerable<string> self, string text)
+    {
+        var core = text.AsMemory().Trim();
+        return self.Any(e => core.Span.Equals(e.AsSpan().Trim(), StringComparison.OrdinalIgnoreCase));
+    }
+
     /// <summary>シーケンスの先頭から要素を分解する</summary>
     /// <typeparam name="TSource">要素の型</typeparam>
     /// <param name="self">対象シーケンス</param>

@@ -251,6 +251,38 @@ public static class StringExtensions
     public static bool EqualsAnyIgnoreCase(this ReadOnlySpan<char> self, IEnumerable<string> values)
         => self.EqualsAny(values, StringComparison.OrdinalIgnoreCase);
 
+    /// <summary>文字列が指定のシーケンスのいずれかと一致するかを判定する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="values">比較する文字列のシーケンス。nullは無視される。</param>
+    /// <returns>いずれかと一致するか否か</returns>
+    public static bool RoughAny(this string? self, IEnumerable<string> values)
+    {
+        if (self == null) return values.Contains(null);
+
+        var core = self.AsSpan().Trim();
+        foreach (var value in values)
+        {
+            if (value == null) continue;
+            if (core.Equals(value.AsSpan().Trim(), StringComparison.OrdinalIgnoreCase)) return true;
+        }
+        return false;
+    }
+
+    /// <summary>文字列が指定のシーケンスのいずれかと一致するかを判定する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="values">比較する文字列のシーケンス。nullは無視される。</param>
+    /// <returns>いずれかと一致するか否か</returns>
+    public static bool RoughAny(this ReadOnlySpan<char> self, IEnumerable<string> values)
+    {
+        var core = self.Trim();
+        foreach (var value in values)
+        {
+            if (value == null) continue;
+            if (core.Equals(value.AsSpan().Trim(), StringComparison.OrdinalIgnoreCase)) return true;
+        }
+        return false;
+    }
+
     /// <summary>文字列が指定の文字列で始まるよう必要であれば付与する。</summary>
     /// <param name="self">対象文字列</param>
     /// <param name="value">必要であれば付与する文字列。</param>

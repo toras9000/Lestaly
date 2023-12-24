@@ -45,6 +45,17 @@ public class EnumerableExtensionsTests
     }
 
     [TestMethod()]
+    public void RoughContains()
+    {
+        IEnumerable<string> texts = ["abc", "def", "ghi"];
+        texts.RoughContains("abc").Should().Be(true);
+        texts.RoughContains("ABC").Should().Be(true);
+        texts.RoughContains(" \t\r\nABC\t\r\n  ").Should().Be(true);
+        texts.RoughContains("abb").Should().Be(false);
+        texts.RoughContains("ab c").Should().Be(false);
+    }
+
+    [TestMethod()]
     public void Deconstruct2()
     {
         (var ve1, var ve2) = Enumerable.Range(100, 100);

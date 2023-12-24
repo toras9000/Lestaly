@@ -269,6 +269,25 @@ public class StringExtensionsTests
     }
 
     [TestMethod()]
+    public void RoughAny()
+    {
+        {// string
+            "abcd".AsSpan().RoughAny(["ABC", "ABCD", "BCD"]).Should().Be(true);
+            "ABCD".AsSpan().RoughAny(["ABC", "ABCD", "BCD"]).Should().Be(true);
+            "abcd".AsSpan().RoughAny([" ABC ", " ABCD ", " BCD "]).Should().Be(true);
+            "abcd".AsSpan().RoughAny([" ABC ", " ABCD ", " BCD "]).Should().Be(true);
+            "ABCD".AsSpan().RoughAny(["ABC", "AB CD", "BCD"]).Should().Be(false);
+        }
+        {// Span
+            "abcd".RoughAny(["ABC", "ABCD", "BCD"]).Should().Be(true);
+            "ABCD".RoughAny(["ABC", "ABCD", "BCD"]).Should().Be(true);
+            "abcd".RoughAny([" ABC ", " ABCD ", " BCD "]).Should().Be(true);
+            "abcd".RoughAny([" ABC ", " ABCD ", " BCD "]).Should().Be(true);
+            "ABCD".RoughAny(["ABC", "AB CD", "BCD"]).Should().Be(false);
+        }
+    }
+
+    [TestMethod()]
     public void EnsureStarts()
     {
         "abcd".EnsureStarts("a", ignoreCase: false).Should().Be("abcd");
