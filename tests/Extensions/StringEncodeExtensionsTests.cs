@@ -72,13 +72,37 @@ public class StringEncodeExtensionsTests
     }
 
     [TestMethod()]
-    public void DecodeUtf8Base64()
+    public void DecodeUtf8Base64_String()
     {
         var text = "abcdef";
 
         var encoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(text));
-
         encoded.DecodeUtf8Base64().Should().Be(text);
+
+        ("*" + encoded).DecodeUtf8Base64().Should().BeNull();
+    }
+
+    [TestMethod()]
+    public void DecodeUtf8Base64_Chars()
+    {
+        var text = "abcdef";
+
+        var encoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(text));
+        encoded.AsSpan().DecodeUtf8Base64().Should().Be(text);
+
+        ("*" + encoded).DecodeUtf8Base64().Should().BeNull();
+    }
+
+    [TestMethod()]
+    public void DecodeUtf8Base64_Utf8Bytes()
+    {
+        var text = "abcdef";
+
+        var encodedBytes = Encoding.UTF8.GetBytes(Convert.ToBase64String(Encoding.UTF8.GetBytes(text)));
+        var illegalBytes = new byte[encodedBytes.Length + 1];
+        illegalBytes[0] = (byte)'*';
+        encodedBytes.CopyTo(illegalBytes.AsSpan(1));
+        illegalBytes.AsSpan().DecodeUtf8Base64().Should().BeNull();
     }
 
     [TestMethod()]

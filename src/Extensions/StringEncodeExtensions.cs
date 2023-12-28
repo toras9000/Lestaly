@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using System.Buffers.Text;
 using System.Text;
 
 namespace Lestaly;
@@ -124,10 +125,43 @@ public static class StringEncodeExtensions
     /// <summary>Base64文字列をUTF8として文字列にデコードする。</summary>
     /// <param name="self">Base64文字列</param>
     /// <returns>デコードした文字列</returns>
-    public static string DecodeUtf8Base64(this string self)
+    public static string? DecodeUtf8Base64(this string self)
     {
-        var bin = Convert.FromBase64String(self);
-        return Encoding.UTF8.GetString(bin);
+        if (self == null) return null;
+        return self.AsSpan().DecodeUtf8Base64();
+    }
+
+    /// <summary>Base64文字列をUTF8として文字列にデコードする。</summary>
+    /// <param name="self">Base64文字列</param>
+    /// <returns>デコードした文字列</returns>
+    public static string? DecodeUtf8Base64(this ReadOnlySpan<char> self)
+    {
+        using var buffer = new RentalArray<byte>(1 + (int)(self.Length / 1.3));  // 必要サイズより大きければいいので大体。
+        if (Convert.TryFromBase64Chars(self, buffer.Instance, out var written))
+        {
+            return Encoding.UTF8.GetString(buffer.Instance.AsSpan(0, written));
+        }
+        return null;
+    }
+
+    /// <summary>バイト列をUTF8として文字列にデコードする。</summary>
+    /// <param name="self">Base64テキストのUTF8互換バイト列</param>
+    /// <returns>デコードした文字列</returns>
+    public static string? DecodeUtf8Base64(this Span<byte> self) => DecodeUtf8Base64((ReadOnlySpan<byte>)self);
+
+    /// <summary>バイト列をUTF8として文字列にデコードする。</summary>
+    /// <param name="self">Base64テキストのUTF8互換バイト列</param>
+    /// <returns>デコードした文字列</returns>
+    public static string? DecodeUtf8Base64(this ReadOnlySpan<byte> self)
+    {
+        var length = Base64.GetMaxDecodedFromUtf8Length(self.Length);
+        using var buffer = new RentalArray<byte>(length);
+        var status = Base64.DecodeFromUtf8(self, buffer.Instance, out var consumed, out var written);
+        if (status == OperationStatus.Done && self.Length == consumed)
+        {
+            return Encoding.UTF8.GetString(buffer.Instance.AsSpan(0, written));
+        }
+        return null;
     }
 
 
