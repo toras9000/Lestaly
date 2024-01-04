@@ -13,44 +13,36 @@ public static class StringEncodeExtensions
     /// <param name="self">読み取り元バッファ</param>
     /// <returns>読み取った文字列</returns>
     public static string ReadUtf8(this ReadOnlySpan<byte> self)
-    {
-        return Encoding.UTF8.GetString(self);
-    }
+        => Encoding.UTF8.GetString(self);
 
     /// <summary>文字列をUTF8エンコードしてバッファに書き込む</summary>
     /// <param name="self">書き込み先バッファ</param>
     /// <param name="text">書き込み文字列</param>
     /// <returns>書き込んだバイト数</returns>
     public static int WriteUtf8(this Span<byte> self, ReadOnlySpan<char> text)
-    {
-        return Encoding.UTF8.GetBytes(text, self);
-    }
+        => Encoding.UTF8.GetBytes(text, self);
+
 
     /// <summary>文字列をUTF8バイト列にエンコードする。</summary>
-    /// <param name="self">バイト列</param>
+    /// <param name="self">文字列。nullは空文字列と同じ扱い。</param>
     /// <returns>エンコードしたバイト列</returns>
-    public static byte[] EncodeUtf8(this string self)
-    {
-        ArgumentNullException.ThrowIfNull(self);
-        return EncodeUtf8(self.AsSpan());
-    }
+    public static byte[] EncodeUtf8(this string? self)
+        => EncodeUtf8(self.AsSpan());
 
     /// <summary>文字列をUTF8バイト列にエンコードする。</summary>
-    /// <param name="self">バイト列</param>
+    /// <param name="self">文字列。nullは空文字列と同じ扱い。</param>
     /// <returns>エンコードしたバイト列</returns>
-    public static byte[] EncodeUtf8(this char[] self)
-    {
-        ArgumentNullException.ThrowIfNull(self);
-        return EncodeUtf8(self.AsSpan());
-    }
+    public static byte[] EncodeUtf8(this char[]? self)
+        => EncodeUtf8(self.AsSpan());
 
     /// <summary>文字列をUTF8バイト列にエンコードする。</summary>
-    /// <param name="self">バイト列</param>
+    /// <param name="self">文字列</param>
     /// <returns>エンコードしたバイト列</returns>
-    public static byte[] EncodeUtf8(this Span<char> self) => EncodeUtf8((ReadOnlySpan<char>)self);
+    public static byte[] EncodeUtf8(this Span<char> self)
+        => EncodeUtf8(self.AsReadOnly());
 
     /// <summary>文字列をUTF8バイト列にエンコードする。</summary>
-    /// <param name="self">バイト列</param>
+    /// <param name="self">文字列</param>
     /// <returns>エンコードしたバイト列</returns>
     public static byte[] EncodeUtf8(this ReadOnlySpan<char> self)
     {
@@ -61,55 +53,46 @@ public static class StringEncodeExtensions
 
 
     /// <summary>バイト列をUTF8として文字列にデコードする。</summary>
-    /// <param name="self">バイト列</param>
+    /// <param name="self">バイト列。nullは空シーケンスと同じ扱い。</param>
     /// <returns>デコードした文字列</returns>
-    public static string DecodeUtf8(this byte[] self)
-    {
-        ArgumentNullException.ThrowIfNull(self);
-        return DecodeUtf8(self.AsSpan());
-    }
+    public static string DecodeUtf8(this byte[]? self)
+        => DecodeUtf8(self.AsSpan());
 
     /// <summary>バイト列をUTF8として文字列にデコードする。</summary>
     /// <param name="self">バイト列</param>
     /// <returns>デコードした文字列</returns>
-    public static string DecodeUtf8(this Span<byte> self) => DecodeUtf8((ReadOnlySpan<byte>)self);
+    public static string DecodeUtf8(this Span<byte> self)
+        => DecodeUtf8(self.AsReadOnly());
 
     /// <summary>バイト列をUTF8として文字列にデコードする。</summary>
     /// <param name="self">バイト列</param>
     /// <returns>デコードした文字列</returns>
     public static string DecodeUtf8(this ReadOnlySpan<byte> self)
-    {
-        return Encoding.UTF8.GetString(self);
-    }
+        => Encoding.UTF8.GetString(self);
 
 
-    /// <summary>文字列のUTF8バイト列をBase64文字列にエンコードする。</summary>
+    /// <summary>文字列のUTF8バイト列をBase64表現にエンコードする。</summary>
+    /// <param name="self">文字列。nullは空文字列と同じ扱い。</param>
+    /// <param name="wrap">エンコードテキストに一定の幅で改行を含めるかどうか</param>
+    /// <returns>エンコードしたBase64文字列</returns>
+    public static string EncodeUtf8Base64(this string? self, bool wrap = false)
+        => EncodeUtf8Base64(self.AsSpan(), wrap);
+
+    /// <summary>文字列のUTF8バイト列をBase64表現にエンコードする。</summary>
+    /// <param name="self">文字列。nullは空文字列と同じ扱い。</param>
+    /// <param name="wrap">エンコードテキストに一定の幅で改行を含めるかどうか</param>
+    /// <returns>エンコードしたBase64文字列</returns>
+    public static string EncodeUtf8Base64(this char[]? self, bool wrap = false)
+        => EncodeUtf8Base64(self.AsSpan(), wrap);
+
+    /// <summary>文字列のUTF8バイト列をBase64表現にエンコードする。</summary>
     /// <param name="self">文字列</param>
     /// <param name="wrap">エンコードテキストに一定の幅で改行を含めるかどうか</param>
     /// <returns>エンコードしたBase64文字列</returns>
-    public static string EncodeUtf8Base64(this string self, bool wrap = false)
-    {
-        ArgumentNullException.ThrowIfNull(self);
-        return EncodeUtf8Base64(self.AsSpan(), wrap);
-    }
+    public static string EncodeUtf8Base64(this Span<char> self, bool wrap = false)
+        => EncodeUtf8Base64(self.AsReadOnly(), wrap);
 
-    /// <summary>文字列のUTF8バイト列をBase64文字列にエンコードする。</summary>
-    /// <param name="self">文字列</param>
-    /// <param name="wrap">エンコードテキストに一定の幅で改行を含めるかどうか</param>
-    /// <returns>エンコードしたBase64文字列</returns>
-    public static string EncodeUtf8Base64(this char[] self, bool wrap = false)
-    {
-        ArgumentNullException.ThrowIfNull(self);
-        return EncodeUtf8Base64(self.AsSpan(), wrap);
-    }
-
-    /// <summary>文字列のUTF8バイト列をBase64文字列にエンコードする。</summary>
-    /// <param name="self">文字列</param>
-    /// <param name="wrap">エンコードテキストに一定の幅で改行を含めるかどうか</param>
-    /// <returns>エンコードしたBase64文字列</returns>
-    public static string EncodeUtf8Base64(this Span<char> self, bool wrap = false) => EncodeUtf8Base64((ReadOnlySpan<char>)self, wrap);
-
-    /// <summary>文字列のUTF8バイト列をBase64文字列にエンコードする。</summary>
+    /// <summary>文字列のUTF8バイト列をBase64表現にエンコードする。</summary>
     /// <param name="self">文字列</param>
     /// <param name="wrap">エンコードテキストに一定の幅で改行を含めるかどうか</param>
     /// <returns>エンコードしたBase64文字列</returns>
@@ -122,16 +105,13 @@ public static class StringEncodeExtensions
     }
 
 
-    /// <summary>Base64文字列をUTF8として文字列にデコードする。</summary>
-    /// <param name="self">Base64文字列</param>
+    /// <summary>Base64表現の文字列をデコードしUTF8で文字列解釈する。</summary>
+    /// <param name="self">Base64文字列。nullは空文字列と同じ扱い。</param>
     /// <returns>デコードした文字列</returns>
-    public static string? DecodeUtf8Base64(this string self)
-    {
-        if (self == null) return null;
-        return self.AsSpan().DecodeUtf8Base64();
-    }
+    public static string? DecodeUtf8Base64(this string? self)
+        => DecodeUtf8Base64(self.AsSpan());
 
-    /// <summary>Base64文字列をUTF8として文字列にデコードする。</summary>
+    /// <summary>Base64表現の文字列をデコードしUTF8で文字列解釈する。</summary>
     /// <param name="self">Base64文字列</param>
     /// <returns>デコードした文字列</returns>
     public static string? DecodeUtf8Base64(this ReadOnlySpan<char> self)
@@ -144,13 +124,14 @@ public static class StringEncodeExtensions
         return null;
     }
 
-    /// <summary>バイト列をUTF8として文字列にデコードする。</summary>
-    /// <param name="self">Base64テキストのUTF8互換バイト列</param>
+    /// <summary>UTF8エンコードのBase64文字バイト列をデコードしUTF8で文字列解釈する。</summary>
+    /// <param name="self">UTF8互換エンコードによるBase64文字バイト列</param>
     /// <returns>デコードした文字列</returns>
-    public static string? DecodeUtf8Base64(this Span<byte> self) => DecodeUtf8Base64((ReadOnlySpan<byte>)self);
+    public static string? DecodeUtf8Base64(this Span<byte> self)
+        => DecodeUtf8Base64(self.AsReadOnly());
 
-    /// <summary>バイト列をUTF8として文字列にデコードする。</summary>
-    /// <param name="self">Base64テキストのUTF8互換バイト列</param>
+    /// <summary>UTF8エンコードのBase64文字バイト列をデコードしUTF8で文字列解釈する。</summary>
+    /// <param name="self">UTF8互換エンコードによるBase64文字バイト列</param>
     /// <returns>デコードした文字列</returns>
     public static string? DecodeUtf8Base64(this ReadOnlySpan<byte> self)
     {
@@ -166,27 +147,22 @@ public static class StringEncodeExtensions
 
 
     /// <summary>文字列のUTF8バイト列をHEX文字列にエンコードする。</summary>
-    /// <param name="self">文字列</param>
+    /// <param name="self">文字列。nullは空文字列と同じ扱い。</param>
     /// <returns>エンコードしたBase64文字列</returns>
-    public static string EncodeUtf8Hex(this string self)
-    {
-        ArgumentNullException.ThrowIfNull(self);
-        return EncodeUtf8Hex(self.AsSpan());
-    }
+    public static string EncodeUtf8Hex(this string? self)
+        => EncodeUtf8Hex(self.AsSpan());
+
+    /// <summary>文字列のUTF8バイト列をHEX文字列にエンコードする。</summary>
+    /// <param name="self">文字列。nullは空文字列と同じ扱い。</param>
+    /// <returns>エンコードしたBase64文字列</returns>
+    public static string EncodeUtf8Hex(this char[]? self)
+        => EncodeUtf8Hex(self.AsSpan());
 
     /// <summary>文字列のUTF8バイト列をHEX文字列にエンコードする。</summary>
     /// <param name="self">文字列</param>
     /// <returns>エンコードしたBase64文字列</returns>
-    public static string EncodeUtf8Hex(this char[] self)
-    {
-        ArgumentNullException.ThrowIfNull(self);
-        return EncodeUtf8Hex(self.AsSpan());
-    }
-
-    /// <summary>文字列のUTF8バイト列をHEX文字列にエンコードする。</summary>
-    /// <param name="self">文字列</param>
-    /// <returns>エンコードしたBase64文字列</returns>
-    public static string EncodeUtf8Hex(this Span<char> self) => EncodeUtf8Hex((ReadOnlySpan<char>)self);
+    public static string EncodeUtf8Hex(this Span<char> self)
+        => EncodeUtf8Hex(self.AsReadOnly());
 
     /// <summary>文字列のUTF8バイト列をHEX文字列にエンコードする。</summary>
     /// <param name="self">文字列</param>
@@ -200,36 +176,28 @@ public static class StringEncodeExtensions
 
 
     /// <summary>HEX文字列をUTF8として文字列にデコードする。</summary>
-    /// <param name="self">Base64文字列</param>
+    /// <param name="self">Base64文字列。nullは空文字列と同じ扱い。</param>
     /// <returns>デコードした文字列</returns>
-    public static string DecodeUtf8Hex(this string self)
-    {
-        ArgumentNullException.ThrowIfNull(self);
-        return DecodeUtf8Hex(self.AsSpan());
-    }
+    public static string DecodeUtf8Hex(this string? self)
+        => DecodeUtf8Hex(self.AsSpan());
 
     /// <summary>HEX文字列をUTF8として文字列にデコードする。</summary>
-    /// <param name="self">Base64文字列</param>
+    /// <param name="self">Base64文字列。nullは空シーケンスと同じ扱い。</param>
     /// <returns>デコードした文字列</returns>
     public static string DecodeUtf8Hex(this char[] self)
-    {
-        ArgumentNullException.ThrowIfNull(self);
-        return DecodeUtf8Hex(self.AsSpan());
-    }
+        => DecodeUtf8Hex(self.AsSpan());
 
     /// <summary>HEX文字列をUTF8として文字列にデコードする。</summary>
     /// <param name="self">Base64文字列</param>
     /// <returns>デコードした文字列</returns>
-    public static string DecodeUtf8Hex(this Span<char> self) => DecodeUtf8Hex((ReadOnlySpan<char>)self);
+    public static string DecodeUtf8Hex(this Span<char> self)
+        => DecodeUtf8Hex(self.AsReadOnly());
 
     /// <summary>HEX文字列をUTF8として文字列にデコードする。</summary>
     /// <param name="self">Base64文字列</param>
     /// <returns>デコードした文字列</returns>
     public static string DecodeUtf8Hex(this ReadOnlySpan<char> self)
-    {
-        var bin = Convert.FromHexString(self);
-        return Encoding.UTF8.GetString(bin);
-    }
+        => Encoding.UTF8.GetString(Convert.FromHexString(self));
 
 
     /// <summary>バイト列をBase64でエンコードする。</summary>
@@ -298,21 +266,25 @@ public static class StringEncodeExtensions
     /// <summary>文字列のURIデータ文字列のルールでエスケープする。</summary>
     /// <param name="self">文字列</param>
     /// <returns>エスケープした文字列</returns>
-    public static string EscapeUriData(this string self) => Uri.EscapeDataString(self);
+    public static string EscapeUriData(this string self)
+        => Uri.EscapeDataString(self);
 
     /// <summary>URIデータ文字列のルールでエスケープされた文字列をアンエスケープする。</summary>
     /// <param name="self">文字列</param>
     /// <returns>アンエスケープした文字列</returns>
-    public static string UnescapeUriData(this string self) => Uri.UnescapeDataString(self);
+    public static string UnescapeUriData(this string self)
+        => Uri.UnescapeDataString(self);
 
 
     /// <summary>文字列をファイル名に利用するためにエスケープする。</summary>
     /// <param name="self">文字列</param>
     /// <returns>必要に応じてエスケープされたファイル名用文字列</returns>
-    public static string ToFileName(this string self) => PathUtility.EscapeFileName(self);
+    public static string ToFileName(this string self)
+        => PathUtility.EscapeFileName(self);
 
     /// <summary>文字列を相対パスに利用するためにエスケープする。</summary>
     /// <param name="self">文字列</param>
     /// <returns>必要に応じてエスケープされたファイル名用文字列</returns>
-    public static string ToRelativePath(this string self) => PathUtility.EscapeRelativePath(self);
+    public static string ToRelativePath(this string self)
+        => PathUtility.EscapeRelativePath(self);
 }
