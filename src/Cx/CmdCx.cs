@@ -54,7 +54,7 @@ public class CmdCx
         return this;
     }
 
-    /// <summary>呼び出しプロセスの標準出力/標準エラーを指定したライターにリダイレクトする構成を行う</summary>
+    /// <summary>呼び出しプロセス標準出力/標準エラーから指定したライターへのリダイレクトを構成する</summary>
     /// <remarks>
     /// このメソッドは <see cref="silent"/> の構成を上書きする。
     /// 指定したライターはプロセスの実行が終わってもクローズ/破棄されることはない。
@@ -67,7 +67,7 @@ public class CmdCx
         return this;
     }
 
-    /// <summary>コンソール入力を呼び出しプロセスの標準入力にリダイレクトする構成を行う</summary>
+    /// <summary>コンソール入力から呼び出しプロセス標準入力へのリダイレクトを構成する</summary>
     /// <remarks>
     /// このメソッドは <see cref="input(TextReader)"/> の構成を上書きする。
     /// 指定したライターはプロセスの実行が終わってもクローズ/破棄されることはない。
@@ -76,7 +76,7 @@ public class CmdCx
     public CmdCx interactive()
         => this.input(ConsoleWig.InReader);
 
-    /// <summary>指定したリーダーから呼び出しプロセスの標準入力へリダイレクトする構成を行う</summary>
+    /// <summary>指定したリーダーから呼び出しプロセス標準入力へのリダイレクトを構成する</summary>
     /// <remarks>
     /// このメソッドは <see cref="interactive"/> の構成を上書きする。
     /// 指定したリーダーはプロセスの実行が終わってもクローズ/破棄されることはない。
@@ -89,7 +89,7 @@ public class CmdCx
         return this;
     }
 
-    /// <summary>指定したテキストを呼び出しプロセスの標準入力へリダイレクトする構成を行う</summary>
+    /// <summary>指定したテキストから呼び出しプロセス標準入力へのリダイレクトを構成する</summary>
     /// <remarks>
     /// このメソッドは <see cref="interactive"/> の構成を上書きする。
     /// </remarks>
@@ -113,7 +113,7 @@ public class CmdCx
         return this;
     }
 
-    /// <summary>呼び出しプロセスの入出力エンコーディングを構成を行う</summary>
+    /// <summary>呼び出しプロセスの入出力エンコーディングを構成する</summary>
     /// <param name="encoding">プロセス入出力エンコーディング</param>
     /// <returns>自身のインスタンス</returns>
     public CmdCx encoding(Encoding encoding)
@@ -121,6 +121,11 @@ public class CmdCx
         this.ioEnc = encoding;
         return this;
     }
+
+    /// <summary>呼び出しプロセスの入出力エンコーディングをUTF8に構成する</summary>
+    /// <returns>自身のインスタンス</returns>
+    public CmdCx encoding_utf8()
+        => encoding(Encoding.UTF8);
 
     /// <summary>呼び出しプロセスの環境変数キー/値を構成する</summary>
     /// <remarks>
