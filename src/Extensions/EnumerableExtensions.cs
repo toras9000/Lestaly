@@ -82,6 +82,29 @@ public static class EnumerableExtensions
         return mustEnumerator();
     }
 
+    /// <summary>配列内容を繰り返した新しいシーケンスを生成する</summary>
+    /// <typeparam name="TSource">要素型</typeparam>
+    /// <param name="self">元にするシーケンス</param>
+    /// <param name="count">繰り返し回数</param>
+    /// <returns>元の配列内容が繰り返された配列</returns>
+    public static IEnumerable<TSource> Repetition<TSource>(this IEnumerable<TSource> self, int count)
+    {
+        if (count < 0) throw new ArgumentException($"Invalid {nameof(count)}");
+
+        static IEnumerable<T> repeated<T>(IEnumerable<T> source, int repeat)
+        {
+            for (var i = 0; i < repeat; i++)
+            {
+                foreach (var item in source)
+                {
+                    yield return item;
+                }
+            }
+        }
+
+        return repeated(self, count);
+    }
+
     /// <summary>前後空白や大文字/小文字の区別なく文字列が含まれているかを判定する。</summary>
     /// <param name="self">文字列のシーケンス</param>
     /// <param name="text">判定する文字列</param>

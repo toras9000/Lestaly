@@ -44,6 +44,16 @@ public class EnumerableExtensionsTests
             .Should().Throw<ApplicationException>().Where(ex => ex.Message == "test-ex");
     }
 
+    [TestMethod]
+    public void Repetition()
+    {
+        var source = new[] { 1, 2, 3, }.AsEnumerable();
+        source.Repetition(3).Should().Equal([1, 2, 3, 1, 2, 3, 1, 2, 3,]);
+        source.Repetition(0).Should().BeEmpty();
+
+        new Action(() => source.Repetition(-1)).Should().Throw<Exception>();
+    }
+
     [TestMethod()]
     public void RoughContains()
     {
