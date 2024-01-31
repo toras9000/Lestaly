@@ -254,7 +254,7 @@ public static class FileInfoExtensions
     public static void WriteAllBytes(this FileInfo self, ReadOnlySpan<byte> bytes, FileStreamOptions? options = null)
     {
         if (self == null) throw new ArgumentNullException(nameof(self));
-        using var stream = new FileStream(self.FullName, createStreamWriteOptions(options));
+        using var stream = self.CreateWrite(options);
         stream.Write(bytes);
         self.Refresh();
     }
@@ -333,7 +333,7 @@ public static class FileInfoExtensions
     public static async ValueTask WriteAllBytesAsync(this FileInfo self, ReadOnlyMemory<byte> bytes, FileStreamOptions? options = null, CancellationToken cancelToken = default)
     {
         if (self == null) throw new ArgumentNullException(nameof(self));
-        using var stream = new FileStream(self.FullName, createStreamWriteOptions(options));
+        using var stream = self.CreateWrite(options);
         await stream.WriteAsync(bytes, cancelToken);
         self.Refresh();
     }
