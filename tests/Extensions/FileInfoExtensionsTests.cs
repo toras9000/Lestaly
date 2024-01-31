@@ -646,6 +646,28 @@ public class FileExtensionsTests
     }
 
     [TestMethod]
+    public void WriteAllBytes_span_Truncate()
+    {
+        // テスト用に一時ディレクトリ
+        using var tempDir = new TempDir();
+
+        // テストデータ
+        var data = Enumerable.Range(30, 256).Select(n => (byte)n).ToArray();
+
+        // テストファイル
+        var target = tempDir.Info.RelativeFile("test.txt");
+
+        // テストデータより大きな適当なサイズのデータを書いておく
+        File.WriteAllBytes(target.FullName, new byte[data.Length * 2]);
+
+        // テスト対象実行
+        target.WriteAllBytes(data.AsSpan(), options: new() { Mode = FileMode.Create, BufferSize = 1, });
+
+        // 検証
+        File.ReadAllBytes(target.FullName).Should().Equal(data);
+    }
+
+    [TestMethod]
     public void WriteAllText()
     {
         // テスト用に一時ディレクトリ
@@ -995,6 +1017,28 @@ public class FileExtensionsTests
         using var tempDir = new TempDir();
 
         var file = tempDir.Info.RelativeFile("asd.txt");
+        var data = new
+        {
+            Text = "test",
+            Number = 123,
+        };
+        await file.WriteJsonAsync(data);
+
+        var json = await file.ReadAllTextAsync();
+        var actual = decodeJsonByTemplate(json, data);
+        actual.Should().Be(data);
+    }
+
+    [TestMethod()]
+    public async Task WriteJsonAsync_Truncate()
+    {
+        using var tempDir = new TempDir();
+
+        var file = tempDir.Info.RelativeFile("asd.txt");
+
+        // テストデータより大きな適当なサイズのデータを書いておく
+        File.WriteAllBytes(file.FullName, new byte[8192]);
+
         var data = new
         {
             Text = "test",

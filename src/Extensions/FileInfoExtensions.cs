@@ -398,6 +398,15 @@ public static class FileInfoExtensions
         self.Refresh();
     }
 
+    /// <summary>新しいファイルの作成モードで書き込み用のストリームを開く</summary>
+    /// <param name="self">対象ファイルのFileInfo</param>
+    /// <param name="options">ファイルストリームを開くオプション。Access プロパティは無視する。</param>
+    /// <returns>書き込み用のストリーム</returns>
+    public static FileStream CreateWrite(this FileInfo self, FileStreamOptions? options = null)
+    {
+        return new FileStream(self.FullName, createStreamWriteOptions(options));
+    }
+
     /// <summary>ファイル内容をテキストで読み取るリーダーを生成する。</summary>
     /// <param name="self">対象ファイルのFileInfo</param>
     /// <param name="encoding">ファイル内容をデコードするテキストエンコーディング</param>
@@ -490,7 +499,7 @@ public static class FileInfoExtensions
     /// <param name="cancelToken">キャンセルトークン</param>
     public static async ValueTask WriteJsonAsync<TObject>(this FileInfo self, TObject value, JsonSerializerOptions? options = null, CancellationToken cancelToken = default)
     {
-        using var stream = self.OpenWrite();
+        using var stream = self.CreateWrite();
         await JsonSerializer.SerializeAsync(stream, value, options, cancelToken).ConfigureAwait(false);
     }
     #endregion

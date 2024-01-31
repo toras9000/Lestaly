@@ -41,7 +41,7 @@ public static class HttpClientExtensions
         using var stream = await self.GetStreamAsync(resource, cancelToken).ConfigureAwait(false);
 
         // 保存先ファイル作成
-        using var writer = file.WithDirectoryCreate().OpenWrite();
+        using var writer = file.WithDirectoryCreate().CreateWrite();
 
         // ダウンロード内容をファイルに書き込み
         await stream.CopyToAsync(writer, cancelToken).ConfigureAwait(false);

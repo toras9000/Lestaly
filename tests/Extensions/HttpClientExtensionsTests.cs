@@ -62,6 +62,15 @@ public class HttpClientExtensionsTests
             var file = await client.GetFileAsync(uri, tempDir.Info);
             file.ReadAllBytes().Should().Equal(new byte[] { 0x78, 0x9A, 0xBC, });
         }
+        {
+            var encoded = Convert.ToBase64String(new byte[] { 0x78, 0x9A, 0xBC, });
+            var uri = new Uri($"http://localhost:{TestPort}/base64/{encoded}");
+            var name = "truncate-test";
+            var file = tempDir.Info.RelativeFile(name);
+            File.WriteAllBytes(file.FullName, new byte[8192]);
+            var getfile = await client.GetFileAsync(uri, tempDir.Info, name);
+            getfile.ReadAllBytes().Should().Equal(new byte[] { 0x78, 0x9A, 0xBC, });
+        }
     }
 
     [TestMethod()]
