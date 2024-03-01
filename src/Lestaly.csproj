@@ -38,7 +38,6 @@
     <PackageOutputPath>$(MSBuildThisFileDirectory)/../packages/$(Configuration)</PackageOutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <SourceRoot Include="$(MSBuildThisFileDirectory)" />
     <None Include="../readme.md" Pack="true" PackagePath="\" Visible="false" />
   </ItemGroup>
   <ItemGroup>
