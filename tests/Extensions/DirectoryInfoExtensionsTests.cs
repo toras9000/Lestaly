@@ -471,6 +471,322 @@ public class DirectoryInfoExtensionsTests
     }
 
     [TestMethod]
+    public async Task VisitFiles_Handling_OnlyFile()
+    {
+        var testFiles = new[]
+        {
+            @"aaa.txt",
+            @"bbb.txt",
+            @"ccc.txt",
+            @"abc/ddd.txt",
+            @"abc/eee.txt",
+            @"abc/fff.txt",
+            @"abc/def/ggg.txt",
+            @"abc/def/hhh.txt",
+            @"ghi/iii.txt",
+            @"ghi/jjj.txt",
+        };
+
+        using var testDir = new TempDir();
+        foreach (var path in testFiles)
+        {
+            await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
+        }
+
+        var testOpt = new SelectFilesOptions
+        {
+            Recurse = false,
+            Handling = new(File: true, Directory: false),
+            Buffered = false,
+            Sort = false,
+        };
+
+        var converter = new SelectFilesWalker<string>(context =>
+        {
+            if (context.File == null)
+            {
+                context.SetResult("Unexpected");
+            }
+            else
+            {
+                var relPath = context.Item.RelativePathFrom(testDir.Info, ignoreCase: true).Replace('\\', '/');
+                context.SetResult(relPath);
+            }
+        });
+
+        testDir.Info.VisitFiles(converter, options: testOpt).Should().BeEquivalentTo(new[]
+        {
+            @"aaa.txt",
+            @"bbb.txt",
+            @"ccc.txt",
+        });
+    }
+
+    [TestMethod]
+    public async Task VisitFiles_Handling_OnlyDirectory()
+    {
+        var testFiles = new[]
+        {
+            @"aaa.txt",
+            @"bbb.txt",
+            @"ccc.txt",
+            @"abc/ddd.txt",
+            @"abc/eee.txt",
+            @"abc/fff.txt",
+            @"abc/def/ggg.txt",
+            @"abc/def/hhh.txt",
+            @"ghi/iii.txt",
+            @"ghi/jjj.txt",
+        };
+
+        using var testDir = new TempDir();
+        foreach (var path in testFiles)
+        {
+            await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
+        }
+
+        var testOpt = new SelectFilesOptions
+        {
+            Recurse = false,
+            Handling = new(File: false, Directory: true),
+            Buffered = false,
+            Sort = false,
+        };
+
+        var converter = new SelectFilesWalker<string>(context =>
+        {
+            if (context.File == null)
+            {
+                var relPath = context.Item.RelativePathFrom(testDir.Info, ignoreCase: true).Replace('\\', '/');
+                context.SetResult(relPath);
+            }
+            else
+            {
+                context.SetResult("Unexpected");
+            }
+        });
+
+        testDir.Info.VisitFiles(converter, options: testOpt).Should().BeEquivalentTo(new[]
+        {
+            @"abc",
+            @"ghi",
+        });
+    }
+
+    [TestMethod]
+    public async Task VisitFiles_Handling_FileAndDirectory()
+    {
+        var testFiles = new[]
+        {
+            @"aaa.txt",
+            @"bbb.txt",
+            @"ccc.txt",
+            @"abc/ddd.txt",
+            @"abc/eee.txt",
+            @"abc/fff.txt",
+            @"abc/def/ggg.txt",
+            @"abc/def/hhh.txt",
+            @"ghi/iii.txt",
+            @"ghi/jjj.txt",
+        };
+
+        using var testDir = new TempDir();
+        foreach (var path in testFiles)
+        {
+            await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
+        }
+
+        var testOpt = new SelectFilesOptions
+        {
+            Recurse = false,
+            Handling = new(File: true, Directory: true),
+            Buffered = false,
+            Sort = false,
+        };
+
+        var converter = new SelectFilesWalker<string>(context =>
+        {
+            var relPath = context.Item.RelativePathFrom(testDir.Info, ignoreCase: true).Replace('\\', '/');
+            context.SetResult(relPath);
+        });
+
+        testDir.Info.VisitFiles(converter, options: testOpt).Should().BeEquivalentTo(new[]
+        {
+            @"aaa.txt",
+            @"bbb.txt",
+            @"ccc.txt",
+            @"abc",
+            @"ghi",
+        });
+    }
+
+    [TestMethod]
+    public async Task VisitFiles_Handling_Recurse_OnlyFile()
+    {
+        var testFiles = new[]
+        {
+            @"aaa.txt",
+            @"bbb.txt",
+            @"ccc.txt",
+            @"abc/ddd.txt",
+            @"abc/eee.txt",
+            @"abc/fff.txt",
+            @"abc/def/ggg.txt",
+            @"abc/def/hhh.txt",
+            @"ghi/iii.txt",
+            @"ghi/jjj.txt",
+        };
+
+        using var testDir = new TempDir();
+        foreach (var path in testFiles)
+        {
+            await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
+        }
+
+        var testOpt = new SelectFilesOptions
+        {
+            Recurse = true,
+            Handling = new(File: true, Directory: false),
+            Buffered = false,
+            Sort = false,
+        };
+
+        var converter = new SelectFilesWalker<string>(context =>
+        {
+            if (context.File == null)
+            {
+                context.SetResult("Unexpected");
+            }
+            else
+            {
+                var relPath = context.Item.RelativePathFrom(testDir.Info, ignoreCase: true).Replace('\\', '/');
+                context.SetResult(relPath);
+            }
+        });
+
+        testDir.Info.VisitFiles(converter, options: testOpt).Should().BeEquivalentTo(new[]
+        {
+            @"aaa.txt",
+            @"bbb.txt",
+            @"ccc.txt",
+            @"abc/ddd.txt",
+            @"abc/eee.txt",
+            @"abc/fff.txt",
+            @"abc/def/ggg.txt",
+            @"abc/def/hhh.txt",
+            @"ghi/iii.txt",
+            @"ghi/jjj.txt",
+        });
+    }
+
+    [TestMethod]
+    public async Task VisitFiles_Handling_Recurse_OnlyDirectory()
+    {
+        var testFiles = new[]
+        {
+            @"aaa.txt",
+            @"bbb.txt",
+            @"ccc.txt",
+            @"abc/ddd.txt",
+            @"abc/eee.txt",
+            @"abc/fff.txt",
+            @"abc/def/ggg.txt",
+            @"abc/def/hhh.txt",
+            @"ghi/iii.txt",
+            @"ghi/jjj.txt",
+        };
+
+        using var testDir = new TempDir();
+        foreach (var path in testFiles)
+        {
+            await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
+        }
+
+        var testOpt = new SelectFilesOptions
+        {
+            Recurse = true,
+            Handling = new(File: false, Directory: true),
+            Buffered = false,
+            Sort = false,
+        };
+
+        var converter = new SelectFilesWalker<string>(context =>
+        {
+            if (context.File == null)
+            {
+                var relPath = context.Item.RelativePathFrom(testDir.Info, ignoreCase: true).Replace('\\', '/');
+                context.SetResult(relPath);
+            }
+            else
+            {
+                context.SetResult("Unexpected");
+            }
+        });
+
+        testDir.Info.VisitFiles(converter, options: testOpt).Should().BeEquivalentTo(new[]
+        {
+            @"abc",
+            @"abc/def",
+            @"ghi",
+        });
+    }
+
+    [TestMethod]
+    public async Task VisitFiles_Handling_Recurse_FileAndDirectory()
+    {
+        var testFiles = new[]
+        {
+            @"aaa.txt",
+            @"bbb.txt",
+            @"ccc.txt",
+            @"abc/ddd.txt",
+            @"abc/eee.txt",
+            @"abc/fff.txt",
+            @"abc/def/ggg.txt",
+            @"abc/def/hhh.txt",
+            @"ghi/iii.txt",
+            @"ghi/jjj.txt",
+        };
+
+        using var testDir = new TempDir();
+        foreach (var path in testFiles)
+        {
+            await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
+        }
+
+        var testOpt = new SelectFilesOptions
+        {
+            Recurse = true,
+            Handling = new(File: true, Directory: true),
+            Buffered = false,
+            Sort = false,
+        };
+
+        var converter = new SelectFilesWalker<string>(context =>
+        {
+            var relPath = context.Item.RelativePathFrom(testDir.Info, ignoreCase: true).Replace('\\', '/');
+            context.SetResult(relPath);
+        });
+
+        testDir.Info.VisitFiles(converter, options: testOpt).Should().BeEquivalentTo(new[]
+        {
+            @"aaa.txt",
+            @"bbb.txt",
+            @"ccc.txt",
+            @"abc",
+            @"abc/ddd.txt",
+            @"abc/eee.txt",
+            @"abc/fff.txt",
+            @"abc/def",
+            @"abc/def/ggg.txt",
+            @"abc/def/hhh.txt",
+            @"ghi",
+            @"ghi/iii.txt",
+            @"ghi/jjj.txt",
+        });
+    }
+
+    [TestMethod]
     public async Task VisitFiles_Filter()
     {
         // Walkerデリゲートで条件付けされた変換結果の設定
@@ -536,7 +852,7 @@ public class DirectoryInfoExtensionsTests
         var testOpt = new SelectFilesOptions
         {
             Recurse = true,
-            DirectoryHandling = true,
+            Handling = SelectFilesHandling.All,
             Buffered = false,
             Sort = false,
         };
@@ -887,6 +1203,328 @@ public class DirectoryInfoExtensionsTests
     }
 
     [TestMethod]
+    public async Task VisitFilesAsync_Handling_OnlyFile()
+    {
+        var testFiles = new[]
+        {
+            @"aaa.txt",
+            @"bbb.txt",
+            @"ccc.txt",
+            @"abc/ddd.txt",
+            @"abc/eee.txt",
+            @"abc/fff.txt",
+            @"abc/def/ggg.txt",
+            @"abc/def/hhh.txt",
+            @"ghi/iii.txt",
+            @"ghi/jjj.txt",
+        };
+
+        using var testDir = new TempDir();
+        foreach (var path in testFiles)
+        {
+            await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
+        }
+
+        var testOpt = new SelectFilesOptions
+        {
+            Recurse = false,
+            Handling = new(File: true, Directory: false),
+            Buffered = false,
+            Sort = false,
+        };
+
+        var converter = new AsyncSelectFilesWalker<string>(async context =>
+        {
+            await Task.CompletedTask;
+            if (context.File == null)
+            {
+                context.SetResult("Unexpected");
+            }
+            else
+            {
+                var relPath = context.Item.RelativePathFrom(testDir.Info, ignoreCase: true).Replace('\\', '/');
+                context.SetResult(relPath);
+            }
+        });
+
+        (await testDir.Info.VisitFilesAsync(converter, options: testOpt).ToArrayAsync()).Should().BeEquivalentTo(new[]
+        {
+            @"aaa.txt",
+            @"bbb.txt",
+            @"ccc.txt",
+        });
+    }
+
+    [TestMethod]
+    public async Task VisitFilesAsync_Handling_OnlyDirectory()
+    {
+        var testFiles = new[]
+        {
+            @"aaa.txt",
+            @"bbb.txt",
+            @"ccc.txt",
+            @"abc/ddd.txt",
+            @"abc/eee.txt",
+            @"abc/fff.txt",
+            @"abc/def/ggg.txt",
+            @"abc/def/hhh.txt",
+            @"ghi/iii.txt",
+            @"ghi/jjj.txt",
+        };
+
+        using var testDir = new TempDir();
+        foreach (var path in testFiles)
+        {
+            await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
+        }
+
+        var testOpt = new SelectFilesOptions
+        {
+            Recurse = false,
+            Handling = new(File: false, Directory: true),
+            Buffered = false,
+            Sort = false,
+        };
+
+        var converter = new AsyncSelectFilesWalker<string>(async context =>
+        {
+            await Task.CompletedTask;
+            if (context.File == null)
+            {
+                var relPath = context.Item.RelativePathFrom(testDir.Info, ignoreCase: true).Replace('\\', '/');
+                context.SetResult(relPath);
+            }
+            else
+            {
+                context.SetResult("Unexpected");
+            }
+        });
+
+        (await testDir.Info.VisitFilesAsync(converter, options: testOpt).ToArrayAsync()).Should().BeEquivalentTo(new[]
+        {
+            @"abc",
+            @"ghi",
+        });
+    }
+
+    [TestMethod]
+    public async Task VisitFilesAsync_Handling_FileAndDirectory()
+    {
+        var testFiles = new[]
+        {
+            @"aaa.txt",
+            @"bbb.txt",
+            @"ccc.txt",
+            @"abc/ddd.txt",
+            @"abc/eee.txt",
+            @"abc/fff.txt",
+            @"abc/def/ggg.txt",
+            @"abc/def/hhh.txt",
+            @"ghi/iii.txt",
+            @"ghi/jjj.txt",
+        };
+
+        using var testDir = new TempDir();
+        foreach (var path in testFiles)
+        {
+            await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
+        }
+
+        var testOpt = new SelectFilesOptions
+        {
+            Recurse = false,
+            Handling = new(File: true, Directory: true),
+            Buffered = false,
+            Sort = false,
+        };
+
+        var converter = new AsyncSelectFilesWalker<string>(async context =>
+        {
+            await Task.CompletedTask;
+            var relPath = context.Item.RelativePathFrom(testDir.Info, ignoreCase: true).Replace('\\', '/');
+            context.SetResult(relPath);
+        });
+
+        (await testDir.Info.VisitFilesAsync(converter, options: testOpt).ToArrayAsync()).Should().BeEquivalentTo(new[]
+        {
+            @"aaa.txt",
+            @"bbb.txt",
+            @"ccc.txt",
+            @"abc",
+            @"ghi",
+        });
+    }
+
+    [TestMethod]
+    public async Task VisitFilesAsync_Handling_Recurse_OnlyFile()
+    {
+        var testFiles = new[]
+        {
+            @"aaa.txt",
+            @"bbb.txt",
+            @"ccc.txt",
+            @"abc/ddd.txt",
+            @"abc/eee.txt",
+            @"abc/fff.txt",
+            @"abc/def/ggg.txt",
+            @"abc/def/hhh.txt",
+            @"ghi/iii.txt",
+            @"ghi/jjj.txt",
+        };
+
+        using var testDir = new TempDir();
+        foreach (var path in testFiles)
+        {
+            await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
+        }
+
+        var testOpt = new SelectFilesOptions
+        {
+            Recurse = true,
+            Handling = new(File: true, Directory: false),
+            Buffered = false,
+            Sort = false,
+        };
+
+        var converter = new AsyncSelectFilesWalker<string>(async context =>
+        {
+            await Task.CompletedTask;
+            if (context.File == null)
+            {
+                context.SetResult("Unexpected");
+            }
+            else
+            {
+                var relPath = context.Item.RelativePathFrom(testDir.Info, ignoreCase: true).Replace('\\', '/');
+                context.SetResult(relPath);
+            }
+        });
+
+        (await testDir.Info.VisitFilesAsync(converter, options: testOpt).ToArrayAsync()).Should().BeEquivalentTo(new[]
+        {
+            @"aaa.txt",
+            @"bbb.txt",
+            @"ccc.txt",
+            @"abc/ddd.txt",
+            @"abc/eee.txt",
+            @"abc/fff.txt",
+            @"abc/def/ggg.txt",
+            @"abc/def/hhh.txt",
+            @"ghi/iii.txt",
+            @"ghi/jjj.txt",
+        });
+    }
+
+    [TestMethod]
+    public async Task VisitFilesAsync_Handling_Recurse_OnlyDirectory()
+    {
+        var testFiles = new[]
+        {
+            @"aaa.txt",
+            @"bbb.txt",
+            @"ccc.txt",
+            @"abc/ddd.txt",
+            @"abc/eee.txt",
+            @"abc/fff.txt",
+            @"abc/def/ggg.txt",
+            @"abc/def/hhh.txt",
+            @"ghi/iii.txt",
+            @"ghi/jjj.txt",
+        };
+
+        using var testDir = new TempDir();
+        foreach (var path in testFiles)
+        {
+            await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
+        }
+
+        var testOpt = new SelectFilesOptions
+        {
+            Recurse = true,
+            Handling = new(File: false, Directory: true),
+            Buffered = false,
+            Sort = false,
+        };
+
+        var converter = new AsyncSelectFilesWalker<string>(async context =>
+        {
+            await Task.CompletedTask;
+            if (context.File == null)
+            {
+                var relPath = context.Item.RelativePathFrom(testDir.Info, ignoreCase: true).Replace('\\', '/');
+                context.SetResult(relPath);
+            }
+            else
+            {
+                context.SetResult("Unexpected");
+            }
+        });
+
+        (await testDir.Info.VisitFilesAsync(converter, options: testOpt).ToArrayAsync()).Should().BeEquivalentTo(new[]
+        {
+            @"abc",
+            @"abc/def",
+            @"ghi",
+        });
+    }
+
+    [TestMethod]
+    public async Task VisitFilesAsync_Handling_Recurse_FileAndDirectory()
+    {
+        var testFiles = new[]
+        {
+            @"aaa.txt",
+            @"bbb.txt",
+            @"ccc.txt",
+            @"abc/ddd.txt",
+            @"abc/eee.txt",
+            @"abc/fff.txt",
+            @"abc/def/ggg.txt",
+            @"abc/def/hhh.txt",
+            @"ghi/iii.txt",
+            @"ghi/jjj.txt",
+        };
+
+        using var testDir = new TempDir();
+        foreach (var path in testFiles)
+        {
+            await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
+        }
+
+        var testOpt = new SelectFilesOptions
+        {
+            Recurse = true,
+            Handling = new(File: true, Directory: true),
+            Buffered = false,
+            Sort = false,
+        };
+
+        var converter = new AsyncSelectFilesWalker<string>(async context =>
+        {
+            await Task.CompletedTask;
+            var relPath = context.Item.RelativePathFrom(testDir.Info, ignoreCase: true).Replace('\\', '/');
+            context.SetResult(relPath);
+        });
+
+        (await testDir.Info.VisitFilesAsync(converter, options: testOpt).ToArrayAsync()).Should().BeEquivalentTo(new[]
+        {
+            @"aaa.txt",
+            @"bbb.txt",
+            @"ccc.txt",
+            @"abc",
+            @"abc/ddd.txt",
+            @"abc/eee.txt",
+            @"abc/fff.txt",
+            @"abc/def",
+            @"abc/def/ggg.txt",
+            @"abc/def/hhh.txt",
+            @"ghi",
+            @"ghi/iii.txt",
+            @"ghi/jjj.txt",
+        });
+    }
+
+    [TestMethod]
     public async Task VisitFilesAsync_Filter()
     {
         // Walkerデリゲートで条件付けされた変換結果の設定
@@ -955,7 +1593,7 @@ public class DirectoryInfoExtensionsTests
         var testOpt = new SelectFilesOptions
         {
             Recurse = true,
-            DirectoryHandling = true,
+            Handling = SelectFilesHandling.All,
             Buffered = false,
             Sort = false,
         };
@@ -1363,9 +2001,6 @@ public class DirectoryInfoExtensionsTests
             @"asd/qwe/ggg.txt",
         });
     }
-
-
-
     #endregion
 
     #region Utility
@@ -1391,7 +2026,7 @@ public class DirectoryInfoExtensionsTests
         }
 
         // 作成したファイル・ディレクトリに読み取り専用属性を付与
-        testDir.Info.DoFiles(w => w.Item.SetReadOnly(true), new() { DirectoryHandling = true, });
+        testDir.Info.DoFiles(w => w.Item.SetReadOnly(true), new() { Handling = SelectFilesHandling.All, });
 
         // 削除する
         testDir.Info.DeleteRecurse();

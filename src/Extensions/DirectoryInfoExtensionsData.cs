@@ -2,10 +2,28 @@
 
 /// <summary>ファイル処理オプション</summary>
 /// <param name="Recurse">再帰検索を行うか否か</param>
-/// <param name="DirectoryHandling">ディレクトリに対する処理呼び出しを行うか否か</param>
+/// <param name="Handling">処理対象設定</param>
 /// <param name="Sort">ファイル名/ディレクトリ名でソートするか否か。</param>
 /// <param name="Buffered">検索結果をバッファリングしてから列挙するか否か</param>
-public record SelectFilesOptions(bool Recurse = true, bool DirectoryHandling = false, bool Sort = true, bool Buffered = true);
+public record SelectFilesOptions(bool Recurse = true, SelectFilesHandling? Handling = null, bool Sort = true, bool Buffered = true);
+
+/// <summary>ファイル検索時の処理対象設定</summary>
+/// <param name="File">ファイルを処理対象にするか否か</param>
+/// <param name="Directory">ディレクトリを処理対象にするか否か</param>
+public record SelectFilesHandling(bool File = true, bool Directory = false)
+{
+    /// <summary>デフォルトの処理対象設定</summary>
+    public static readonly SelectFilesHandling Default = new();
+
+    /// <summary>ファイルとディレクトリを処理対象とする設定</summary>
+    public static readonly SelectFilesHandling All = new(File: true, Directory: true);
+
+    /// <summary>ファイルのみを処理対象とする設定</summary>
+    public static readonly SelectFilesHandling OnlyFile = new(File: true, Directory: false);
+
+    /// <summary>ディレクトリのみを処理対象とする設定</summary>
+    public static readonly SelectFilesHandling OnlyDirectory = new(File: false, Directory: true);
+}
 
 /// <summary>
 /// 列挙処理でのファイル/ディレクトリに対する処理情報
