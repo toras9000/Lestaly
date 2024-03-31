@@ -538,6 +538,58 @@ public static class StringExtensions
         return defaultEmpty ? "" : self;
     }
 
+    /// <summary>文字列の最初のトークン部分を取得する</summary>
+    /// <remarks>連続する区切り文字は1まとまりとみなす。先頭に区切り文字がある場合はスキップする。空のトークンという概念はない。</remarks>
+    /// <param name="self">対象文字列</param>
+    /// <param name="delimiter">区切り文字</param>
+    /// <returns>トークン文字列</returns>
+    public static ReadOnlySpan<char> TakeToken(this ReadOnlySpan<char> self, char delimiter = ' ')
+    {
+        var token = self.TrimStart(delimiter);
+        var idx = token.IndexOf(delimiter);
+        if (idx <= 0) return token;
+        return token[0..idx];
+    }
+
+    /// <summary>文字列の最初のトークン部分を取得する</summary>
+    /// <remarks>連続する区切り文字は1まとまりとみなす。先頭に区切り文字がある場合はスキップする。空のトークンという概念はない。</remarks>
+    /// <param name="self">対象文字列</param>
+    /// <param name="delimiters">区切り文字のセット</param>
+    /// <returns>トークン文字列</returns>
+    public static ReadOnlySpan<char> TakeTokenAny(this ReadOnlySpan<char> self, ReadOnlySpan<char> delimiters)
+    {
+        var token = self.TrimStart(delimiters);
+        var idx = token.IndexOfAny(delimiters);
+        if (idx <= 0) return token;
+        return token[0..idx];
+    }
+
+    /// <summary>文字列の最初のトークン部分をスキップした部分を取得する</summary>
+    /// <remarks>連続する区切り文字は1まとまりとみなす。先頭に区切り文字がある場合はスキップする。空のトークンという概念はない。</remarks>
+    /// <param name="self">対象文字列</param>
+    /// <param name="delimiter">区切り文字。</param>
+    /// <returns>トークンをスキップした文字列</returns>
+    public static ReadOnlySpan<char> SkipToken(this ReadOnlySpan<char> self, char delimiter = ' ')
+    {
+        var token = self.TrimStart(delimiter);
+        var idx = token.IndexOf(delimiter);
+        if (idx <= 0) return ReadOnlySpan<char>.Empty;
+        return token[idx..].TrimStart(delimiter);
+    }
+
+    /// <summary>文字列の最初のトークン部分をスキップした部分を取得する</summary>
+    /// <remarks>連続する区切り文字は1まとまりとみなす。先頭に区切り文字がある場合はスキップする。空のトークンという概念はない。</remarks>
+    /// <param name="self">対象文字列</param>
+    /// <param name="delimiters">区切り文字のセット</param>
+    /// <returns>トークンをスキップした文字列</returns>
+    public static ReadOnlySpan<char> SkipTokenAny(this ReadOnlySpan<char> self, ReadOnlySpan<char> delimiters)
+    {
+        var token = self.TrimStart(delimiters);
+        var idx = token.IndexOfAny(delimiters);
+        if (idx <= 0) return ReadOnlySpan<char>.Empty;
+        return token[idx..].TrimStart(delimiters);
+    }
+
     /// <summary>文字列のシーケンスからnull/空を取り除く。</summary>
     /// <param name="self">文字列のシーケンス</param>
     /// <returns>null/空以外のシーケンス</returns>
@@ -704,7 +756,18 @@ public static class StringExtensions
     /// <returns>クォートされたキャラクタ</returns>
     public static string Quote(this string? text, char quote = '"', char? escape = null)
     {
-        if (string.IsNullOrEmpty(text)) return new string(quote, 2);
+        if (text == null) return new string(quote, 2);
+        return text.AsSpan().Quote(quote, escape);
+    }
+
+    /// <summary>文字列をクォートする。</summary>
+    /// <param name="text">対象文字列。nullの場合は空文字列と同じ扱いとする。</param>
+    /// <param name="quote">クォートキャラクタ</param>
+    /// <param name="escape">対象文字列中のクォートキャラクタをエスケープするキャラクタ</param>
+    /// <returns>クォートされたキャラクタ</returns>
+    public static string Quote(this ReadOnlySpan<char> text, char quote = '"', char? escape = null)
+    {
+        if (text.IsEmpty) return new string(quote, 2);
         var esc = escape ?? quote;
         var buffer = new StringBuilder(text.Length + 10);
         buffer.Append(quote);
