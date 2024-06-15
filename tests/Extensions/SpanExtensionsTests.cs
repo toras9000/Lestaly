@@ -1,7 +1,4 @@
-﻿using System.Buffers.Binary;
-using FluentAssertions;
-
-namespace LestalyTest.Extensions;
+﻿namespace LestalyTest.Extensions;
 
 [TestClass()]
 public class SpanExtensionsTests
@@ -155,5 +152,29 @@ public class SpanExtensionsTests
 
         buffer.AsSpan().WriteByEndian<ushort>(little: true, 0x1234).WriteByEndian<ushort>(little: false, 0x5678);
         buffer.AsSpan(0, 4).ToArray().Should().Equal(0x34, 0x12, 0x56, 0x78);
+    }
+
+    [TestMethod()]
+    public void CopyFrom()
+    {
+        var buffer = new int[8];
+        buffer.FillBy(0xC5);
+
+        var span = buffer.AsSpan();
+        span.CopyFrom([0x12, 0x34, 0x56]);
+
+        buffer.Should().Equal([0x12, 0x34, 0x56, 0xC5, 0xC5, 0xC5, 0xC5, 0xC5]);
+    }
+
+    [TestMethod()]
+    public void CopyAdvanceFrom()
+    {
+        var buffer = new int[8];
+        buffer.FillBy(0xC5);
+
+        var span = buffer.AsSpan();
+        span.CopyAdvanceFrom([0x12, 0x34, 0x56]).CopyAdvanceFrom([0x23, 0x45]);
+
+        buffer.Should().Equal([0x12, 0x34, 0x56, 0x23, 0x45, 0xC5, 0xC5, 0xC5]);
     }
 }

@@ -196,6 +196,25 @@ public static class SpanExtensions
         var length = value.ToEndian(little, self);
         return self[length..];
     }
-#endif 
+#endif
     #endregion
+
+    #region Copy
+    /// <summary>指定のソースからスパンに値を格納する</summary>
+    /// <typeparam name="T">要素型</typeparam>
+    /// <param name="self">格納先スパン</param>
+    /// <param name="source">コピー元ソース</param>
+    public static void CopyFrom<T>(this Span<T> self, ReadOnlySpan<T> source) => source.CopyTo(self);
+
+    /// <summary>指定のソースからスパンに値を格納し、その後ろのスパンを返却する</summary>
+    /// <typeparam name="T">要素型</typeparam>
+    /// <param name="self">格納先スパン</param>
+    /// <param name="source">コピー元ソース</param>
+    /// <returns>コピー範囲の後ろのスパン</returns>
+    public static Span<T> CopyAdvanceFrom<T>(this Span<T> self, ReadOnlySpan<T> source)
+    {
+        source.CopyTo(self);
+        return self[source.Length..];
+    }
+    #endregion 
 }
