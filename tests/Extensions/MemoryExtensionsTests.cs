@@ -1,8 +1,20 @@
 ﻿namespace LestalyTest.Extensions;
 
 [TestClass()]
-public class SpanExtensionsTests
+public class MemoryExtensionsTests
 {
+    [TestMethod()]
+    public void AsReadOnly()
+    {
+        var array = Array.Empty<byte>();
+
+        array.AsSpan().OverloadTest().Should().Be("Span");
+        array.AsSpan().AsReadOnly().OverloadTest().Should().Be("ReadOnlySpan");
+
+        array.AsMemory().OverloadTest().Should().Be("Memory");
+        array.AsMemory().AsReadOnly().OverloadTest().Should().Be("ReadOnlyMemory");
+    }
+
     [TestMethod()]
     public void AsReadOnlySpan()
     {
@@ -15,6 +27,22 @@ public class SpanExtensionsTests
         data.AsReadOnlySpan(0, 3).ToArray().Should().Equal(data.Take(3));
         data.AsReadOnlySpan(1, 3).ToArray().Should().Equal(data.Skip(1).Take(3));
         data.AsReadOnlySpan(7, 1).ToArray().Should().Equal(data.Skip(7).Take(1));
+        data.AsReadOnlySpan(2..4).ToArray().Should().Equal(data.Skip(2).Take(2));
+    }
+
+    [TestMethod()]
+    public void AsReadOnlyMemory()
+    {
+        var data = new byte[] { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0, };
+
+        data.AsReadOnlyMemory().ToArray().Should().Equal(data);
+        data.AsReadOnlyMemory(0).ToArray().Should().Equal(data);
+        data.AsReadOnlyMemory(1).ToArray().Should().Equal(data.Skip(1));
+        data.AsReadOnlyMemory(data.Length).ToArray().Should().BeEmpty();
+        data.AsReadOnlyMemory(0, 3).ToArray().Should().Equal(data.Take(3));
+        data.AsReadOnlyMemory(1, 3).ToArray().Should().Equal(data.Skip(1).Take(3));
+        data.AsReadOnlyMemory(7, 1).ToArray().Should().Equal(data.Skip(7).Take(1));
+        data.AsReadOnlyMemory(2..4).ToArray().Should().Equal(data.Skip(2).Take(2));
     }
 
     [TestMethod()]

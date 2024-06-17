@@ -4,9 +4,9 @@ using System.Numerics;
 namespace Lestaly;
 
 /// <summary>
-/// Span に対する拡張メソッド
+/// Span/Memory に対する拡張メソッド
 /// </summary>
-public static class SpanExtensions
+public static class MemoryExtensions
 {
     /// <summary>Span{T} を ReadOnlySpan{T} に変換する。</summary>
     /// <remarks>暗黙の型変換が評価されない場面用。たとえば拡張メソッドのオーバーロード解決など。</remarks>
@@ -14,29 +14,75 @@ public static class SpanExtensions
     /// <returns>ReadOnlySpan{T}</returns>
     public static ReadOnlySpan<T> AsReadOnly<T>(this Span<T> self) => self;
 
-    /// <summary>配列の読み取り専用スパンを作成する。</summary>
+    /// <summary>配列のReadOnlySpanを作成する。</summary>
     /// <remarks>暗黙の型変換が評価されない場面用。たとえば拡張メソッドのオーバーロード解決など。</remarks>
     /// <typeparam name="T">要素の型</typeparam>
     /// <param name="self">対象配列</param>
-    /// <returns>読み取り専用スパン</returns>
+    /// <returns>配列を指すReadOnlySpan</returns>
     public static ReadOnlySpan<T> AsReadOnlySpan<T>(this T[] self) => self;
 
-    /// <summary>配列の読み取り専用スパンを作成する。</summary>
+    /// <summary>配列のReadOnlySpanを作成する。</summary>
     /// <remarks>暗黙の型変換が評価されない場面用。たとえば拡張メソッドのオーバーロード解決など。</remarks>
     /// <typeparam name="T">要素の型</typeparam>
     /// <param name="self">対象配列</param>
     /// <param name="start">スライス開始位置</param>
-    /// <returns>読み取り専用スパン</returns>
+    /// <returns>配列を指すReadOnlySpan</returns>
     public static ReadOnlySpan<T> AsReadOnlySpan<T>(this T[] self, int start) => self.AsSpan(start);
 
-    /// <summary>配列の読み取り専用スパンを作成する。</summary>
+    /// <summary>配列のReadOnlySpanを作成する。</summary>
     /// <remarks>暗黙の型変換が評価されない場面用。たとえば拡張メソッドのオーバーロード解決など。</remarks>
     /// <typeparam name="T">要素の型</typeparam>
     /// <param name="self">対象配列</param>
     /// <param name="start">スライス開始位置</param>
     /// <param name="length">スライス長</param>
-    /// <returns>読み取り専用スパン</returns>
+    /// <returns>配列を指すReadOnlySpan</returns>
     public static ReadOnlySpan<T> AsReadOnlySpan<T>(this T[] self, int start, int length) => self.AsSpan(start, length);
+
+    /// <summary>配列のReadOnlySpanを作成する。</summary>
+    /// <remarks>暗黙の型変換が評価されない場面用。たとえば拡張メソッドのオーバーロード解決など。</remarks>
+    /// <typeparam name="T">要素の型</typeparam>
+    /// <param name="self">対象配列</param>
+    /// <param name="range">スライス範囲</param>
+    /// <returns>配列を指すReadOnlySpan</returns>
+    public static ReadOnlySpan<T> AsReadOnlySpan<T>(this T[] self, Range range) => self.AsSpan(range);
+
+    /// <summary>Memory{T} を ReadOnlyMemory{T} に変換する。</summary>
+    /// <remarks>暗黙の型変換が評価されない場面用。たとえば拡張メソッドのオーバーロード解決など。</remarks>
+    /// <param name="self">Memory{T}</param>
+    /// <returns>ReadOnlyMemory{T}</returns>
+    public static ReadOnlyMemory<T> AsReadOnly<T>(this Memory<T> self) => self;
+
+    /// <summary>配列を指すReadOnlyMemoryを作成する。</summary>
+    /// <remarks>暗黙の型変換が評価されない場面用。たとえば拡張メソッドのオーバーロード解決など。</remarks>
+    /// <typeparam name="T">要素の型</typeparam>
+    /// <param name="self">対象配列</param>
+    /// <returns>配列を指すReadOnlyMemory</returns>
+    public static ReadOnlyMemory<T> AsReadOnlyMemory<T>(this T[] self) => self;
+
+    /// <summary>配列を指すReadOnlyMemoryを作成する。</summary>
+    /// <remarks>暗黙の型変換が評価されない場面用。たとえば拡張メソッドのオーバーロード解決など。</remarks>
+    /// <typeparam name="T">要素の型</typeparam>
+    /// <param name="self">対象配列</param>
+    /// <param name="start">スライス開始位置</param>
+    /// <returns>配列を指すReadOnlyMemory</returns>
+    public static ReadOnlyMemory<T> AsReadOnlyMemory<T>(this T[] self, int start) => self.AsMemory(start);
+
+    /// <summary>配列を指すReadOnlyMemoryを作成する。</summary>
+    /// <remarks>暗黙の型変換が評価されない場面用。たとえば拡張メソッドのオーバーロード解決など。</remarks>
+    /// <typeparam name="T">要素の型</typeparam>
+    /// <param name="self">対象配列</param>
+    /// <param name="start">スライス開始位置</param>
+    /// <param name="length">スライス長</param>
+    /// <returns>配列を指すReadOnlyMemory</returns>
+    public static ReadOnlyMemory<T> AsReadOnlyMemory<T>(this T[] self, int start, int length) => self.AsMemory(start, length);
+
+    /// <summary>配列を指すReadOnlyMemoryを作成する。</summary>
+    /// <remarks>暗黙の型変換が評価されない場面用。たとえば拡張メソッドのオーバーロード解決など。</remarks>
+    /// <typeparam name="T">要素の型</typeparam>
+    /// <param name="self">対象配列</param>
+    /// <param name="range">スライス範囲</param>
+    /// <returns>配列を指すReadOnlyMemory</returns>
+    public static ReadOnlyMemory<T> AsReadOnlyMemory<T>(this T[] self, Range range) => self.AsMemory(range);
 
     #region Endian
 #if NET7_0_OR_GREATER
