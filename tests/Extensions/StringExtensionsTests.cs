@@ -532,6 +532,9 @@ public class StringExtensionsTests
         "abcdef".AsSpan().TakeToken(',').ToString().Should().Be("abcdef");
         ",,abcdef".AsSpan().TakeToken(',').ToString().Should().Be("abcdef");
         "  abcdef".AsSpan().TakeToken(',').ToString().Should().Be("  abcdef");
+
+        "ab cd ef".TakeToken().ToString().Should().Be("ab");
+        "  ab cd,ef".TakeToken(',').ToString().Should().Be("  ab cd");
     }
 
     [TestMethod]
@@ -556,6 +559,9 @@ public class StringExtensionsTests
 
         "ab cd,ef".AsSpan().TakeTokenAny([' ', ',']).ToString().Should().Be("ab");
         "ab,cd ef".AsSpan().TakeTokenAny([' ', ',']).ToString().Should().Be("ab");
+
+        "ab cd ef".TakeTokenAny([' ']).ToString().Should().Be("ab");
+        "ab,cd ef".TakeTokenAny([' ', ',']).ToString().Should().Be("ab");
     }
 
     [TestMethod]
@@ -578,6 +584,9 @@ public class StringExtensionsTests
         "abcdef".AsSpan().SkipToken(',').ToString().Should().Be("");
         ",,abcdef".AsSpan().SkipToken(',').ToString().Should().Be("");
         "  abcdef".AsSpan().SkipToken(',').ToString().Should().Be("");
+
+        "ab cd ef".SkipToken().ToString().Should().Be("cd ef");
+        "  ab cd,ef,gh ij".SkipToken(',').ToString().Should().Be("ef,gh ij");
     }
 
     [TestMethod]
@@ -604,10 +613,88 @@ public class StringExtensionsTests
 
         "ab cd,ef".AsSpan().SkipTokenAny([' ', ',']).ToString().Should().Be("cd,ef");
         "ab,cd ef".AsSpan().SkipTokenAny([' ', ',']).ToString().Should().Be("cd ef");
+
+        "ab cd ef".SkipTokenAny([' ']).ToString().Should().Be("cd ef");
+        "ab,cd ef".SkipTokenAny([' ', ',']).ToString().Should().Be("cd ef");
     }
 
     [TestMethod]
     public void TakeSkipToken()
+    {
+        {
+            var token = "ab  cd  ef".AsSpan().TakeSkipToken(out var next);
+            token.ToString().Should().Be("ab");
+            next.ToString().Should().Be("cd  ef");
+        }
+        {
+            var token = "  ab  cd  ef".AsSpan().TakeSkipToken(out var next);
+            token.ToString().Should().Be("ab");
+            next.ToString().Should().Be("cd  ef");
+        }
+        {
+            var token = "  abcdef".AsSpan().TakeSkipToken(out var next);
+            token.ToString().Should().Be("abcdef");
+            next.ToString().Should().Be("");
+        }
+        {
+            var token = ",,ab cd,,ef,gh ij".AsSpan().TakeSkipToken(out var next, ',');
+            token.ToString().Should().Be("ab cd");
+            next.ToString().Should().Be("ef,gh ij");
+        }
+        {
+            var token = "ab  cd  ef".TakeSkipToken(out var next);
+            token.ToString().Should().Be("ab");
+            next.ToString().Should().Be("cd  ef");
+        }
+        {
+            var token = ",,ab cd,,ef,gh ij".TakeSkipToken(out var next, ',');
+            token.ToString().Should().Be("ab cd");
+            next.ToString().Should().Be("ef,gh ij");
+        }
+    }
+
+    [TestMethod]
+    public void TakeSkipTokenAny()
+    {
+        {
+            var token = "ab  cd  ef".AsSpan().TakeSkipTokenAny(out var next, [' ']);
+            token.ToString().Should().Be("ab");
+            next.ToString().Should().Be("cd  ef");
+        }
+        {
+            var token = "  ab  cd  ef".AsSpan().TakeSkipTokenAny(out var next, [' ']);
+            token.ToString().Should().Be("ab");
+            next.ToString().Should().Be("cd  ef");
+        }
+        {
+            var token = "  abcdef".AsSpan().TakeSkipTokenAny(out var next, [' ']);
+            token.ToString().Should().Be("abcdef");
+            next.ToString().Should().Be("");
+        }
+        {
+            var token = ",,ab cd,,ef,gh ij".AsSpan().TakeSkipTokenAny(out var next, [',']);
+            token.ToString().Should().Be("ab cd");
+            next.ToString().Should().Be("ef,gh ij");
+        }
+        {
+            var token = ",,ab cd,,ef,gh ij".AsSpan().TakeSkipTokenAny(out var next, [' ', ',']);
+            token.ToString().Should().Be("ab");
+            next.ToString().Should().Be("cd,,ef,gh ij");
+        }
+        {
+            var token = "ab  cd  ef".TakeSkipTokenAny(out var next, [' ']);
+            token.ToString().Should().Be("ab");
+            next.ToString().Should().Be("cd  ef");
+        }
+        {
+            var token = ",,ab cd,,ef,gh ij".TakeSkipTokenAny(out var next, [' ', ',']);
+            token.ToString().Should().Be("ab");
+            next.ToString().Should().Be("cd,,ef,gh ij");
+        }
+    }
+
+    [TestMethod]
+    public void TakeTokenAndSkipTake_Scenario()
     {
         var text = "  abc def   ghi  ";
 
@@ -621,6 +708,23 @@ public class StringExtensionsTests
         token1.ToString().Should().Be("abc");
         token2.ToString().Should().Be("def");
         token3.ToString().Should().Be("ghi");
+    }
+
+    [TestMethod]
+    public void TakeSkipToken_Scenario()
+    {
+        var text = "  abc def   ghi   jkl   mno";
+
+        var scan = text.AsSpan();
+        var token1 = scan.TakeSkipToken(out scan);
+        var token2 = scan.TakeSkipToken(out scan);
+        var token3 = scan.TakeSkipToken(out scan);
+
+        token1.ToString().Should().Be("abc");
+        token2.ToString().Should().Be("def");
+        token3.ToString().Should().Be("ghi");
+
+        scan.ToString().Should().Be("jkl   mno");
     }
 
     [TestMethod()]
