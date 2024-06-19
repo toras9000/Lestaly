@@ -84,8 +84,16 @@ public record ExcelStyle(object Value, string? BackColor = null, string? ForeCol
 /// <param name="Bold">フォントをボールドにするか否か</param>
 /// <param name="Italic">フォントをイタリックにするか否か</param>
 /// <param name="Strike">テキストに打消し線を装飾するか否か</param>
+/// <param name="HorzAlign">内容の水平配置</param>
+/// <param name="VertAlign">内容の垂直配置</param>
+/// <param name="Format">セル書式</param>
 /// <param name="Comment">コメント(メモ)</param>
-public record ExcelStyleExtra(string? Font = null, double FontSize = double.NaN, bool Bold = false, bool Italic = false, bool Strike = false, string? Comment = null);
+public record ExcelStyleExtra(
+    string? Font = null, double FontSize = double.NaN,
+    bool Bold = false, bool Italic = false, bool Strike = false,
+    string? HorzAlign = default, string? VertAlign = default,
+    string? Format = null, string? Comment = null
+);
 
 /// <summary>複数列に展開するデータ型</summary>
 /// <param name="Values">

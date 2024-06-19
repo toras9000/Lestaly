@@ -2,8 +2,6 @@
 using System.Drawing;
 using System.Globalization;
 using ClosedXML.Excel;
-using FluentAssertions;
-using Lestaly;
 using Lestaly.Extensions;
 
 namespace LestalyTest.Extensions;
@@ -184,15 +182,14 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         // テストファイル
         var target = tempDir.Info.RelativeFile("test.xlsx");
 
-        // フィールドデータ
-        var style1 = new ExcelStyle("aaa", BackColor: "red", ForeColor: "#00ff00");
-        var style2 = new ExcelStyle("bbb", Extra: new(FontSize: 12, Bold: true));
-        var style3 = new ExcelStyle("ccc", Extra: new(Italic: true, Strike: true, Comment: "コメント"));
-
         // 保存データ
         var data = new[]
         {
-            new { Style1 = style1, Style2 = style2, Style3 = style3, },
+            new { Caption = "Color", Style = new ExcelStyle("aaa", BackColor: "red", ForeColor: "#00ff00"), },
+            new { Caption = "Font",  Style = new ExcelStyle("bbb", Extra: new(FontSize: 12, Bold: true)), },
+            new { Caption = "Font",  Style = new ExcelStyle("ccc", Extra: new(Italic: true, Strike: true, Comment: "コメント")), },
+            new { Caption = "Align", Style = new ExcelStyle("D", Extra: new(HorzAlign: "Center", VertAlign: "Justify")), },
+            new { Caption = "Format", Style = new ExcelStyle(123, Extra: new(Format: "000000")), },
         };
 
         // テスト対象実行
@@ -201,35 +198,56 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         // 検証
         using var book = new XLWorkbook(target.FullName);
         var sheet = book.Worksheets.First();
+        var look = sheet.Row(1).Cell(2);
 
-        var cell1 = sheet.Row(2).Cell(1);
-        cell1.ToObjectValue().Should().Be("aaa");
-        cell1.Style.Fill.BackgroundColor.Color.ToArgb().Should().Be(Color.FromArgb(0xFF, 0x00, 0x00).ToArgb());
-        cell1.Style.Font.FontColor.Color.ToArgb().Should().Be(Color.FromArgb(0x00, 0xFF, 0x00).ToArgb());
-        cell1.Style.Font.Bold.Should().BeFalse();
-        cell1.Style.Font.Italic.Should().BeFalse();
-        cell1.Style.Font.Strikethrough.Should().BeFalse();
-        cell1.HasComment.Should().BeFalse();
+        look = look.CellBelow(1);
+        {
+            look.ToObjectValue().Should().Be("aaa");
+            look.Style.Fill.BackgroundColor.Color.ToArgb().Should().Be(Color.FromArgb(0xFF, 0x00, 0x00).ToArgb());
+            look.Style.Font.FontColor.Color.ToArgb().Should().Be(Color.FromArgb(0x00, 0xFF, 0x00).ToArgb());
+            look.Style.Font.Bold.Should().BeFalse();
+            look.Style.Font.Italic.Should().BeFalse();
+            look.Style.Font.Strikethrough.Should().BeFalse();
+            look.HasComment.Should().BeFalse();
+        }
 
-        var cell2 = sheet.Row(2).Cell(2);
-        cell2.ToObjectValue().Should().Be("bbb");
-        cell2.Style.Fill.BackgroundColor.Color.ToArgb().Should().Be(Color.FromArgb(0x00, 0xFF, 0xFF, 0xFF).ToArgb());
-        cell2.Style.Font.FontSize.Should().Be(12);
-        cell2.Style.Font.FontColor.Color.ToArgb().Should().Be(Color.FromArgb(0x00, 0x00, 0x00).ToArgb());
-        cell2.Style.Font.Bold.Should().BeTrue();
-        cell2.Style.Font.Italic.Should().BeFalse();
-        cell2.Style.Font.Strikethrough.Should().BeFalse();
-        cell2.HasComment.Should().BeFalse();
+        look = look.CellBelow(1);
+        {
+            look.ToObjectValue().Should().Be("bbb");
+            look.Style.Fill.BackgroundColor.Color.ToArgb().Should().Be(Color.FromArgb(0x00, 0xFF, 0xFF, 0xFF).ToArgb());
+            look.Style.Font.FontSize.Should().Be(12);
+            look.Style.Font.FontColor.Color.ToArgb().Should().Be(Color.FromArgb(0x00, 0x00, 0x00).ToArgb());
+            look.Style.Font.Bold.Should().BeTrue();
+            look.Style.Font.Italic.Should().BeFalse();
+            look.Style.Font.Strikethrough.Should().BeFalse();
+            look.HasComment.Should().BeFalse();
+        }
 
-        var cell3 = sheet.Row(2).Cell(3);
-        cell3.ToObjectValue().Should().Be("ccc");
-        cell3.Style.Fill.BackgroundColor.Color.ToArgb().Should().Be(Color.FromArgb(0x00, 0xFF, 0xFF, 0xFF).ToArgb());
-        cell3.Style.Font.FontColor.Color.ToArgb().Should().Be(Color.FromArgb(0x00, 0x00, 0x00).ToArgb());
-        cell3.Style.Font.Bold.Should().BeFalse();
-        cell3.Style.Font.Italic.Should().BeTrue();
-        cell3.Style.Font.Strikethrough.Should().BeTrue();
-        cell3.HasComment.Should().BeTrue();
-        cell3.GetComment().Text.Should().Be("コメント");
+        look = look.CellBelow(1);
+        {
+            look.ToObjectValue().Should().Be("ccc");
+            look.Style.Fill.BackgroundColor.Color.ToArgb().Should().Be(Color.FromArgb(0x00, 0xFF, 0xFF, 0xFF).ToArgb());
+            look.Style.Font.FontColor.Color.ToArgb().Should().Be(Color.FromArgb(0x00, 0x00, 0x00).ToArgb());
+            look.Style.Font.Bold.Should().BeFalse();
+            look.Style.Font.Italic.Should().BeTrue();
+            look.Style.Font.Strikethrough.Should().BeTrue();
+            look.HasComment.Should().BeTrue();
+            look.GetComment().Text.Should().Be("コメント");
+        }
+
+        look = look.CellBelow(1);
+        {
+            look.ToObjectValue().Should().Be("D");
+            look.Style.Alignment.Horizontal.Should().Be(XLAlignmentHorizontalValues.Center);
+            look.Style.Alignment.Vertical.Should().Be(XLAlignmentVerticalValues.Justify);
+        }
+
+        look = look.CellBelow(1);
+        {
+            look.GetFormattedString().Should().Be("000123");
+        }
+
+
     }
 
     [TestMethod]
@@ -1257,7 +1275,6 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         var sheet = book.Worksheets.First();
         sheet.GetUsedData().Should().BeEquivalentTo(expect);
     }
-
 
     [TestMethod]
     public void SaveToExcelOptions_DataTypes()

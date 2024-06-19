@@ -322,6 +322,9 @@ public static partial class EnumerableDataExtensions
                     if (extra.Strike) cell.Style.Font.Strikethrough = true;
                     if (extra.Font != null) cell.Style.Font.FontName = extra.Font;
                     if (double.IsFinite(extra.FontSize)) cell.Style.Font.FontSize = extra.FontSize;
+                    if (Enum.TryParse<XLAlignmentHorizontalValues>(extra.HorzAlign, ignoreCase: true, out var halign)) cell.Style.Alignment.Horizontal = halign;
+                    if (Enum.TryParse<XLAlignmentVerticalValues>(extra.VertAlign, ignoreCase: true, out var valign)) cell.Style.Alignment.Vertical = valign;
+                    if (extra.Format != null) cell.Style.NumberFormat.Format = extra.Format;
                     if (extra.Comment != null) cell.CreateComment().AddText(extra.Comment);
                 }
                 if (style.Value != null)
