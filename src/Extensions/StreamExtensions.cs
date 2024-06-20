@@ -1,4 +1,6 @@
 ﻿using System.Buffers;
+using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace Lestaly;
 
@@ -83,4 +85,73 @@ public static class StreamExtensions
         }
         return total;
     }
+
+#if NET7_0_OR_GREATER
+    /// <summary>ストリームからテキストとして全行読み取りを行う</summary>
+    /// <param name="self">読み取り元ストリーム</param>
+    /// <param name="encoding">テキスト読み取りエンコーディング</param>
+    /// <param name="respectBOM">BOMを尊重するか否か</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>読み取り結果を得るタスク</returns>
+    public static async IAsyncEnumerable<string> EnumerateLinesAsync(this Stream self, Encoding? encoding = null, bool? respectBOM = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
+    {
+        // BOM検出が自動の場合、シーク可能で先頭位置の場合のみ検出を有効とする
+        var detectBOM = respectBOM ?? (self.CanSeek && self.Position == 0);
+
+        // テキストリーダを生成
+        using var reader = new StreamReader(self, encoding: encoding, detectEncodingFromByteOrderMarks: detectBOM, leaveOpen: true);
+
+        // 全行読み取り
+        while (true)
+        {
+            var line = await reader.ReadLineAsync(cancelToken).ConfigureAwait(false);
+            if (line == null) break;
+            yield return line;
+        }
+    }
+
+    /// <summary>ストリームからテキストとして全行読み取りを行う</summary>
+    /// <param name="self">読み取り元ストリーム</param>
+    /// <param name="encoding">テキスト読み取りエンコーディング</param>
+    /// <param name="respectBOM">BOMを尊重するか否か</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>読み取り結果を得るタスク</returns>
+    public static async ValueTask<List<string>> ReadAllLinesAsync(this Stream self, Encoding? encoding = null, bool? respectBOM = null, CancellationToken cancelToken = default)
+    {
+        // BOM検出が自動の場合、シーク可能で先頭位置の場合のみ検出を有効とする
+        var detectBOM = respectBOM ?? (self.CanSeek && self.Position == 0);
+
+        // テキストリーダを生成
+        using var reader = new StreamReader(self, encoding: encoding, detectEncodingFromByteOrderMarks: detectBOM, leaveOpen: true);
+
+        // 全行読み取り
+        var lines = new List<string>();
+        while (true)
+        {
+            var line = await reader.ReadLineAsync(cancelToken).ConfigureAwait(false);
+            if (line == null) break;
+            lines.Add(line);
+        }
+        return lines;
+    }
+
+    /// <summary>ストリームから全てのテキスト行を書き込む</summary>
+    /// <param name="self">書き込み先ストリーム</param>
+    /// <param name="lines">書き込む行ストリーム</param>
+    /// <param name="encoding">テキスト書き込みエンコーディング</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>書き込みタスク</returns>
+    public static async ValueTask WriteAllLinesAsync(this Stream self, IEnumerable<string?> lines, Encoding? encoding = null, CancellationToken cancelToken = default)
+    {
+        // テキストライターを生成
+        using var writer = new StreamWriter(self, encoding: encoding, leaveOpen: true);
+
+        // 全行書き込み
+        foreach (var line in lines)
+        {
+            await writer.WriteLineAsync(line.AsMemory(), cancelToken);
+        }
+    }
+#endif
+
 }

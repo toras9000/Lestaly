@@ -132,4 +132,40 @@ public class StreamExtensionsTests
         writer.WrittenMemory.ToArray().Should().Equal(expect);
     }
 
+    [TestMethod]
+    public async Task EnumerateLinesAsync()
+    {
+        using var tempDir = new TempDir();
+        var file = tempDir.Info.RelativeFile("test.txt");
+        await file.WriteAllLinesAsync(["abc", "def", "ghi"]);
+
+        using var stream = file.OpenRead();
+        var lines = await stream.EnumerateLinesAsync().ToArrayAsync();
+        lines.Should().Equal(["abc", "def", "ghi"]);
+    }
+
+    [TestMethod]
+    public async Task ReadAllLinesAsync()
+    {
+        using var tempDir = new TempDir();
+        var file = tempDir.Info.RelativeFile("test.txt");
+        await file.WriteAllLinesAsync(["abc", "def", "ghi"]);
+
+        using var stream = file.OpenRead();
+        var lines = await stream.ReadAllLinesAsync();
+        lines.Should().Equal(["abc", "def", "ghi"]);
+    }
+
+    [TestMethod]
+    public async Task WriteAllLinesAsync()
+    {
+        using var tempDir = new TempDir();
+        var file = tempDir.Info.RelativeFile("test.txt");
+        using (var stream = file.OpenWrite())
+        {
+            await stream.WriteAllLinesAsync(["abc", "def", "ghi"]);
+        }
+        var lines = file.ReadAllLines();
+        lines.Should().Equal(["abc", "def", "ghi"]);
+    }
 }
