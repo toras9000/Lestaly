@@ -74,16 +74,9 @@ public class ConsoleInReader : TextReader
     public override Task<string?> ReadLineAsync()
         => readLineAsync(CancellationToken.None).AsTask();
 
-#if NET7_0_OR_GREATER
     /// <inheritdoc />
     public override ValueTask<string?> ReadLineAsync(CancellationToken cancellationToken)
         => readLineAsync(cancellationToken);
-#else
-    /// <inheritdoc cref="ReadLineAsync()"/>
-    /// <param name="cancellationToken">キャンセルトークン</param>
-    public ValueTask<string?> ReadLineAsync(CancellationToken cancellationToken)
-        => readLineAsync(cancellationToken);
-#endif
 
     /// <inheritdoc />
     public override Task<int> ReadBlockAsync(char[] buffer, int index, int count)
@@ -97,17 +90,9 @@ public class ConsoleInReader : TextReader
     public override Task<string> ReadToEndAsync()
         => readToEndAsync(CancellationToken.None);
 
-#if NET7_0_OR_GREATER
     /// <inheritdoc />
     public override Task<string> ReadToEndAsync(CancellationToken cancellationToken)
         => readToEndAsync(cancellationToken);
-#else
-    /// <inheritdoc cref="ReadToEndAsync()"/>
-    /// <param name="cancellationToken">キャンセルトークン</param>
-    public Task<string> ReadToEndAsync(CancellationToken cancellationToken)
-        => readToEndAsync(cancellationToken);
-#endif
-
     #endregion
 
     #region 破棄

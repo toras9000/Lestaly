@@ -86,7 +86,6 @@ public static class StreamExtensions
         return total;
     }
 
-#if NET7_0_OR_GREATER
     /// <summary>ストリームからテキストとして全行読み取りを行う</summary>
     /// <param name="self">読み取り元ストリーム</param>
     /// <param name="encoding">テキスト読み取りエンコーディング</param>
@@ -152,6 +151,5 @@ public static class StreamExtensions
             await writer.WriteLineAsync(line.AsMemory(), cancelToken);
         }
     }
-#endif
 
 }

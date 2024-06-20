@@ -617,9 +617,7 @@ public static class FileInfoExtensions
             writeOpt.Options = options.Options;
             writeOpt.PreallocationSize = options.PreallocationSize;
             writeOpt.BufferSize = options.BufferSize;
-#if NET7_0_OR_GREATER
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) writeOpt.UnixCreateMode = options.UnixCreateMode;
-#endif
         }
 
         return writeOpt;

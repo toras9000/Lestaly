@@ -85,7 +85,6 @@ public static class MemoryExtensions
     public static ReadOnlyMemory<T> AsReadOnlyMemory<T>(this T[] self, Range range) => self.AsMemory(range);
 
     #region Endian
-#if NET7_0_OR_GREATER
     /// <summary>バイト列からリトルエンディアンで整数を読み取る</summary>
     /// <typeparam name="TResult">読み取り結果とする型</typeparam>
     /// <param name="self">読み取り元スパン</param>
@@ -242,7 +241,6 @@ public static class MemoryExtensions
         var length = value.ToEndian(little, self);
         return self[length..];
     }
-#endif
     #endregion
 
     #region Copy

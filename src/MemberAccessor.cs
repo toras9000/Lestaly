@@ -78,7 +78,6 @@ public class MemberAccessor
         return (Func<T?, object?>)getter;
     }
 
-#if NETCOREAPP2_1_OR_GREATER
     /// <summary>プロパティのアクセスデリゲートを作成する</summary>
     /// <remarks>
     /// このメソッドによるデリゲート生成自体はかなり重い処理となる。
@@ -146,7 +145,6 @@ public class MemberAccessor
 
         return (Func<T?, object?>)dynMethod.CreateDelegate(getterType);
     }
-#endif
 
     /// <summary>プロパティのアクセスデリゲートを作成する</summary>
     /// <remarks>

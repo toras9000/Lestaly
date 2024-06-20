@@ -43,7 +43,6 @@ public static class NumberExtensions
     public static string ToHumanize(this ulong self, bool si = false, NumberFormatInfo? numInfo = null)
         => NumberUtils.ToHumanize(self, si, numInfo);
 
-#if NET7_0_OR_GREATER
     /// <summary>数値を2進数表現で文字列化する。</summary>
     /// <typeparam name="TValue">値の型</typeparam>
     /// <param name="self">文字列化する値</param>
@@ -243,5 +242,4 @@ public static class NumberExtensions
     /// <returns>書き込んだバイト数</returns>
     public static int ToEndian(this Double self, bool little, Span<byte> destination)
         => little ? self.ToLittleEndian(destination) : self.ToBigEndian(destination);
-#endif
 }

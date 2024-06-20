@@ -1,7 +1,5 @@
 ﻿using System.Globalization;
-#if NET7_0_OR_GREATER
 using System.Numerics;
-#endif
 
 namespace Lestaly;
 
@@ -328,7 +326,6 @@ public static class StringParseExtensions
     public static DateTime ParseDateTimeExact(this ReadOnlySpan<char> self, string format, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = default)
         => DateTime.ParseExact(self, format, provider ?? CultureInfo.InvariantCulture, style);
 
-#if NET7_0_OR_GREATER
     /// <summary>文字列をパースする。</summary>
     /// <param name="self">対象文字列</param>
     /// <param name="provider">カルチャ固有の書式情報プロバイダ</param>
@@ -353,7 +350,6 @@ public static class StringParseExtensions
     public static TResult ParseNumber<TResult>(this ReadOnlySpan<char> self, NumberStyles? style = default, IFormatProvider? provider = default) where TResult : struct, INumber<TResult>
         => style.HasValue ? TResult.Parse(self, style.Value, provider ?? CultureInfo.InvariantCulture)
                           : TResult.Parse(self, provider ?? CultureInfo.InvariantCulture);
-#endif
     #endregion
 
     #region TryParse
@@ -674,7 +670,6 @@ public static class StringParseExtensions
     public static DateTime? TryParseDateTimeExact(this ReadOnlySpan<char> self, string format, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = default)
         => DateTime.TryParseExact(self, format, provider ?? CultureInfo.InvariantCulture, style, out var result) ? result : null;
 
-#if NET7_0_OR_GREATER
     /// <summary>文字列のパースを試みる。</summary>
     /// <param name="self">対象文字列</param>
     /// <param name="style">パース書式</param>
@@ -699,7 +694,6 @@ public static class StringParseExtensions
     public static TResult? TryParseNumber<TResult>(this ReadOnlySpan<char> self, NumberStyles? style = default, IFormatProvider? provider = default) where TResult : struct, INumber<TResult>
         => style.HasValue ? TResult.TryParse(self, style.Value, provider ?? CultureInfo.InvariantCulture, out var result1) ? result1 : null
                           : TResult.TryParse(self, provider ?? CultureInfo.InvariantCulture, out var result2) ? result2 : null;
-#endif
     #endregion
 
     #region TryParseHex
@@ -787,7 +781,6 @@ public static class StringParseExtensions
     public static UInt64? TryParseHexNumber64(this ReadOnlySpan<char> self, IFormatProvider? provider = default)
         => UInt64.TryParse(self, NumberStyles.HexNumber, provider ?? CultureInfo.InvariantCulture, out var result) ? result : null;
 
-#if NET7_0_OR_GREATER
     /// <summary>16進数として文字列のパースを試みる。</summary>
     /// <param name="self">対象文字列</param>
     /// <param name="provider">カルチャ固有の書式情報プロバイダ</param>
@@ -847,7 +840,6 @@ public static class StringParseExtensions
 
         return self.TryParseHexNumber<TResult>(provider);
     }
-#endif
     #endregion
 
     #region TryParseBin
@@ -994,7 +986,6 @@ public static class StringParseExtensions
         return value;
     }
 
-#if NET7_0_OR_GREATER
     /// <summary>2進数として文字列のパースを試みる。</summary>
     /// <param name="self">対象文字列</param>
     /// <param name="trim">前後空白をトリムするか否か</param>
@@ -1104,7 +1095,6 @@ public static class StringParseExtensions
 
         return self.TryParseBinNumber<TResult>(trim, snake);
     }
-#endif
     #endregion
 
     #region TryParseWithPrefix
@@ -1260,7 +1250,6 @@ public static class StringParseExtensions
         return self.TryParseUInt64(provider: provider);
     }
 
-#if NET7_0_OR_GREATER
     /// <summary>プレフィックス解釈を伴う文字列のパースを試みる。</summary>
     /// <param name="self">対象文字列</param>
     /// <param name="provider">カルチャ固有の書式情報プロバイダ</param>
@@ -1298,6 +1287,5 @@ public static class StringParseExtensions
 
         return self.TryParseNumber<TResult>(provider: provider);
     }
-#endif 
     #endregion
 }
