@@ -262,6 +262,35 @@ public static class StringEncodeExtensions
         return null;
     }
 
+    /// <summary>バイト列をHEX文字列化する</summary>
+    /// <param name="self">バイト列</param>
+    /// <param name="delimiter">区切り文字列</param>
+    /// <returns>HEX文字列</returns>
+    public static string ToHexString(this byte[] self, string? delimiter = default)
+        => self.AsReadOnlySpan().ToHexString(delimiter);
+
+    /// <summary>バイト列をHEX文字列化する</summary>
+    /// <param name="self">バイト列</param>
+    /// <param name="delimiter">区切り文字列</param>
+    /// <returns>HEX文字列</returns>
+    public static string ToHexString(this ReadOnlyMemory<byte> self, string? delimiter = default)
+        => self.Span.ToHexString(delimiter);
+
+    /// <summary>バイト列をHEX文字列化する</summary>
+    /// <param name="self">バイト列</param>
+    /// <param name="delimiter">区切り文字列</param>
+    /// <returns>HEX文字列</returns>
+    public static string ToHexString(this ReadOnlySpan<byte> self, string? delimiter = default)
+    {
+        var builder = new StringBuilder();
+        for (var i = 0; i < self.Length; i++)
+        {
+            if (delimiter != null && i != 0) builder.Append(delimiter);
+            builder.Append($"{self[i]:X2}");
+        }
+        return builder.ToString();
+    }
+
 
     /// <summary>文字列のURIデータ文字列のルールでエスケープする。</summary>
     /// <param name="self">文字列</param>

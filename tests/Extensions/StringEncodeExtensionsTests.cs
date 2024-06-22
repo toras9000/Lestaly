@@ -131,6 +131,15 @@ public class StringEncodeExtensionsTests
     }
 
     [TestMethod()]
+    public void ToHexString()
+    {
+        var binary = new byte[] { 0x12, 0x34, 0xAB, 0xEF };
+
+        binary.ToHexString().Should().Be("1234ABEF");
+        binary.ToHexString("-").Should().Be("12-34-AB-EF");
+    }
+
+    [TestMethod()]
     public void EncodeUtf8Hex()
     {
         var text = "abcdef";

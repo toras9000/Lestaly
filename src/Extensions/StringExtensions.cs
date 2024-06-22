@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
 
@@ -317,225 +318,164 @@ public static class StringExtensions
 
     /// <summary>文字列の最初の行を取得する。</summary>
     /// <param name="self">対象文字列</param>
+    /// <param name="trim">先頭の空行をトリムするか否か</param>
     /// <returns>最初の行文字列</returns>
-    [return: NotNullIfNotNull(nameof(self))]
-    public static string? FirstLine(this string? self)
-    {
-        if (string.IsNullOrEmpty(self)) return self;
+    public static ReadOnlySpan<char> TakeLine(this string? self, bool trim = true)
+        => self.AsSpan().TakeLine(trim);
 
-        // 改行位置を検索
-        var breakIdx = self.IndexOfAny(LineBreakChars);
-        if (breakIdx < 0)
+    /// <summary>文字列の最初の行を取得する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="trim">先頭の空行をトリムするか否か</param>
+    /// <returns>最初の行文字列</returns>
+    public static ReadOnlySpan<char> TakeLine(this ReadOnlySpan<char> self, bool trim = true)
+    {
+        var body = self;
+
+        // 先頭空行トリムが指定されていれば空行スキップ
+        if (trim) body = self.TrimStart(LineBreakChars);
+
+        // 空でない場合のみ取り出しを行う
+        if (!body.IsEmpty)
         {
-            // 改行がない場合はそのままを返却
-            return self;
+            // 最初の改行位置を検索
+            var breakIdx = body.IndexOfAny(LineBreakChars);
+            if (0 <= breakIdx)
+            {
+                // 改行前までの Span を取得
+                body = body[..breakIdx];
+            }
         }
 
-        // 改行前までを切り出し
-        return self.Substring(0, breakIdx);
+        return body;
     }
 
     /// <summary>文字列の最後の行を取得する。</summary>
     /// <param name="self">対象文字列</param>
+    /// <param name="trim">末尾の空行をトリムするか否か</param>
     /// <returns>最後の行文字列</returns>
-    [return: NotNullIfNotNull(nameof(self))]
-    public static string? LastLine(this string? self)
-    {
-        if (string.IsNullOrEmpty(self)) return self;
+    public static ReadOnlySpan<char> TakeLastLine(this string? self, bool trim = true)
+        => self.AsSpan().TakeLastLine(trim);
 
-        // 最終改行位置を検索
-        var breakIdx = self.LastIndexOfAny(LineBreakChars);
-        if (breakIdx < 0)
-        {
-            // 改行がない場合はそのままを返却
-            return self;
-        }
-
-        // 最終改行の後ろを返却
-        return self.Substring(breakIdx + 1);
-    }
-
-    /// <summary>文字列の行を列挙する。</summary>
+    /// <summary>文字列の最後の行を取得する。</summary>
     /// <param name="self">対象文字列</param>
-    /// <returns>テキスト行シーケンス</returns>
-    public static IEnumerable<string> AsTextLines(this string self)
+    /// <param name="trim">末尾の空行をトリムするか否か</param>
+    /// <returns>最後の行文字列</returns>
+    public static ReadOnlySpan<char> TakeLastLine(this ReadOnlySpan<char> self, bool trim = true)
     {
-        // パラメータチェック
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        var body = self;
 
-        // テキスト行を列挙
-        var idx = 0;
-        while (idx < self.Length)
+        // 先頭空行トリムが指定されていれば空行スキップ
+        if (trim) body = body.TrimEnd(LineBreakChars);
+
+        // 空でない場合のみ取り出しを行う
+        if (!body.IsEmpty)
         {
-            // 改行を検索
-            var pos = self.IndexOfAny(LineBreakChars, idx);
-            if (pos < 0) break;
-
-            // 行を列挙
-            yield return self.Substring(idx, pos - idx);
-
-            // 次の位置へ。CRLFの場合は1つの改行として扱う
-            idx = pos + 1;
-            if (idx < self.Length && self[idx - 1] == '\r' && self[idx] == '\n')
+            // 最終改行位置を検索
+            var breakIdx = body.LastIndexOfAny(LineBreakChars);
+            if (-0 <= breakIdx)
             {
-                idx++;
+                // 改行後の Span を取得
+                body = body[(breakIdx + 1)..];
             }
         }
 
-        // 最期の部分を列挙
-        yield return self.Substring(idx);
+        return body;
     }
 
-    /// <summary>特定文字の前部分文字列を取得する</summary>
+    /// <summary>>文字列の最初の行をスキップしてその後方を取得する。</summary>
     /// <param name="self">対象文字列</param>
-    /// <param name="marker">検索文字</param>
-    /// <param name="defaultEmpty">検索文字が見つからない場合に空を返すか否か</param>
-    /// <returns>
-    /// 検索文字が存在する場合はそれより前の文字列。
-    /// 見つからない場合はパラメータ指定により文字列全体または空文字列。
-    /// </returns>
-    [return: NotNullIfNotNull(nameof(self))]
-    public static string? BeforeAt(this string? self, char marker, bool defaultEmpty = false)
+    /// <param name="trim">空行をトリムするか否か</param>
+    /// <returns>最初の行をスキップ後の文字列</returns>
+    public static ReadOnlySpan<char> SkipLine(this string? self, bool trim = true)
+        => self.AsSpan().SkipLine(trim);
+
+    /// <summary>>文字列の最初の行をスキップしてその後方を取得する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="trim">空行をトリムするか否か</param>
+    /// <returns>最初の行をスキップ後の文字列</returns>
+    public static ReadOnlySpan<char> SkipLine(this ReadOnlySpan<char> self, bool trim = true)
     {
-        if (self != null)
+        var body = self;
+
+        // 先頭空行トリムが指定されていれば空行スキップ
+        if (trim) body = self.TrimStart(LineBreakChars);
+
+        // 空でない場合のみ取り出しを行う
+        if (!body.IsEmpty)
         {
-            var idx = self.IndexOf(marker);
-            if (0 <= idx) return self.Substring(0, idx);
+            // 最初の改行位置を検索
+            var breakIdx = body.IndexOfAny(LineBreakChars);
+            if (breakIdx < 0)
+            {
+                body = body[body.Length..];
+            }
+            else
+            {
+                // 改行キャラクタ長の判別
+                var breakLen = body[breakIdx..] is ['\r', '\n', ..] ? 2 : 1;
+
+                // 改行の後ろの Span を取得
+                body = body[(breakIdx + breakLen)..];
+
+                // 先頭空行トリムをここにも適用。
+                if (trim) body = body.TrimStart(LineBreakChars);
+            }
         }
-        return defaultEmpty ? "" : self;
+
+        return body;
     }
 
-    /// <summary>特定文字列の前部分文字列を取得する</summary>
+    /// <summary>>文字列の最初の行とその後方を取得する。</summary>
     /// <param name="self">対象文字列</param>
-    /// <param name="marker">検索文字列</param>
-    /// <param name="defaultEmpty">検索文字列が見つからない場合に空を返すか否か</param>
-    /// <returns>
-    /// 検索文字列が存在する場合はそれより前の文字列。
-    /// 見つからない場合はパラメータ指定により文字列全体または空文字列。
-    /// </returns>
-    [return: NotNullIfNotNull(nameof(self))]
-    public static string? BeforeAt(this string? self, string marker, bool defaultEmpty = false)
-    {
-        if (self != null)
-        {
-            var idx = self.IndexOf(marker);
-            if (0 <= idx) return self.Substring(0, idx);
-        }
-        return defaultEmpty ? "" : self;
-    }
+    /// <param name="trim">空行をトリムするか否か</param>
+    /// <param name="next">最初の行の後ろの文字列</param>
+    /// <returns>最初の行文字列</returns>
+    public static ReadOnlySpan<char> TakeSkipLine(this string? self, out ReadOnlySpan<char> next, bool trim = true)
+        => self.AsSpan().TakeSkipLine(out next, trim);
 
-    /// <summary>特定文字の後部分文字列を取得する</summary>
+    /// <summary>>文字列の最初の行とその後方を取得する。</summary>
     /// <param name="self">対象文字列</param>
-    /// <param name="marker">検索文字</param>
-    /// <param name="defaultEmpty">検索文字が見つからない場合に空を返すか否か</param>
-    /// <returns>
-    /// 検索文字が存在する場合はそれより後の文字列。
-    /// 見つからない場合はパラメータ指定により文字列全体または空文字列。
-    /// </returns>
-    [return: NotNullIfNotNull(nameof(self))]
-    public static string? AfterAt(this string? self, char marker, bool defaultEmpty = false)
+    /// <param name="trim">空行をトリムするか否か</param>
+    /// <param name="next">最初の行の後ろの文字列</param>
+    /// <returns>最初の行文字列</returns>
+    public static ReadOnlySpan<char> TakeSkipLine(this ReadOnlySpan<char> self, out ReadOnlySpan<char> next, bool trim = true)
     {
-        if (self != null)
-        {
-            var idx = self.IndexOf(marker);
-            if (0 <= idx) return self.Substring(idx + 1);
-        }
-        return defaultEmpty ? "" : self;
-    }
+        var body = self;
 
-    /// <summary>特定文字列の後部分文字列を取得する</summary>
-    /// <param name="self">対象文字列</param>
-    /// <param name="marker">検索文字列</param>
-    /// <param name="defaultEmpty">検索文字列が見つからない場合に空を返すか否か</param>
-    /// <returns>
-    /// 検索文字列が存在する場合はそれより後の文字列。
-    /// 見つからない場合はパラメータ指定により文字列全体または空文字列。
-    /// </returns>
-    [return: NotNullIfNotNull(nameof(self))]
-    public static string? AfterAt(this string? self, string marker, bool defaultEmpty = false)
-    {
-        if (self != null)
-        {
-            var idx = self.IndexOf(marker);
-            if (0 <= idx) return self.Substring(idx + marker.Length);
-        }
-        return defaultEmpty ? "" : self;
-    }
+        // 先頭空行トリムが指定されていれば空行スキップ
+        if (trim) body = self.TrimStart(LineBreakChars);
 
-    /// <summary>特定文字まで部分文字列を取得する</summary>
-    /// <param name="self">対象文字列</param>
-    /// <param name="marker">検索文字</param>
-    /// <param name="defaultEmpty">検索文字が見つからない場合に空を返すか否か</param>
-    /// <returns>
-    /// 検索文字が存在する場合は検索文字までの文字列。
-    /// 見つからない場合はパラメータ指定により文字列全体または空文字列。
-    /// </returns>
-    [return: NotNullIfNotNull(nameof(self))]
-    public static string? TakeTo(this string? self, char marker, bool defaultEmpty = false)
-    {
-        if (self != null)
+        // 空であるか
+        if (body.IsEmpty)
         {
-            var idx = self.IndexOf(marker);
-            if (0 <= idx) return self.Substring(0, idx + 1);
+            // 後方文字列も同じにしておく
+            next = body;
         }
-        return defaultEmpty ? "" : self;
-    }
+        else
+        {
+            // 最初の改行位置を検索
+            var breakIdx = body.IndexOfAny(LineBreakChars);
+            if (breakIdx < 0)
+            {
+                next = body[body.Length..];
+            }
+            else
+            {
+                // 改行キャラクタ長の判別
+                var breakLen = body[breakIdx..] is ['\r', '\n', ..] ? 2 : 1;
 
-    /// <summary>特定文字列までの部分文字列を取得する</summary>
-    /// <param name="self">対象文字列</param>
-    /// <param name="marker">検索文字列</param>
-    /// <param name="defaultEmpty">検索文字列が見つからない場合に空を返すか否か</param>
-    /// <returns>
-    /// 検索文字列が存在する場合は検索文字列までの文字列。
-    /// 見つからない場合はパラメータ指定により文字列全体または空文字列。
-    /// </returns>
-    [return: NotNullIfNotNull(nameof(self))]
-    public static string? TakeTo(this string? self, string marker, bool defaultEmpty = false)
-    {
-        if (self != null)
-        {
-            var idx = self.IndexOf(marker);
-            if (0 <= idx) return self.Substring(0, idx + marker.Length);
-        }
-        return defaultEmpty ? "" : self;
-    }
+                // 改行の後ろの Span を取得
+                next = body[(breakIdx + breakLen)..];
 
-    /// <summary>特定文字からの部分文字列を取得する</summary>
-    /// <param name="self">対象文字列</param>
-    /// <param name="marker">検索文字</param>
-    /// <param name="defaultEmpty">検索文字が見つからない場合に空を返すか否か</param>
-    /// <returns>
-    /// 検索文字が存在する場合は検索文字からの文字列。
-    /// 見つからない場合はパラメータ指定により文字列全体または空文字列。
-    /// </returns>
-    [return: NotNullIfNotNull(nameof(self))]
-    public static string? TakeFrom(this string? self, char marker, bool defaultEmpty = false)
-    {
-        if (self != null)
-        {
-            var idx = self.IndexOf(marker);
-            if (0 <= idx) return self.Substring(idx);
-        }
-        return defaultEmpty ? "" : self;
-    }
+                // 先頭空行トリムをここにも適用。
+                if (trim) next = next.TrimStart(LineBreakChars);
 
-    /// <summary>特定文字列からの部分文字列を取得する</summary>
-    /// <param name="self">対象文字列</param>
-    /// <param name="marker">検索文字列</param>
-    /// <param name="defaultEmpty">検索文字列が見つからない場合に空を返すか否か</param>
-    /// <returns>
-    /// 検索文字列が存在する場合は検索文字列からの文字列。
-    /// 見つからない場合はパラメータ指定により文字列全体または空文字列。
-    /// </returns>
-    [return: NotNullIfNotNull(nameof(self))]
-    public static string? TakeFrom(this string? self, string marker, bool defaultEmpty = false)
-    {
-        if (self != null)
-        {
-            var idx = self.IndexOf(marker);
-            if (0 <= idx) return self.Substring(idx);
+                // 改行前までの Span を取得
+                body = body[..breakIdx];
+            }
         }
-        return defaultEmpty ? "" : self;
+
+        return body;
     }
 
     /// <summary>文字列の最初のトークン部分を取得する</summary>
@@ -668,6 +608,115 @@ public static class StringExtensions
         var token = (idx <= 0) ? origin : origin[0..idx];
         next = origin[token.Length..].TrimStart(delimiters);
         return token;
+    }
+
+    /// <summary>文字列を特定文字で分割する</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="marker">分割文字</param>
+    /// <param name="next">分割文字の後ろの文字列</param>
+    /// <returns>分割文字の前の文字列</returns>
+    public static ReadOnlySpan<char> SplitAt(this string? self, char marker, out ReadOnlySpan<char> next)
+        => self.AsSpan().SplitAt(marker, out next);
+
+    /// <summary>文字列を特定文字で分割する</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="marker">分割文字</param>
+    /// <param name="next">分割文字の後ろの文字列</param>
+    /// <returns>分割文字の前の文字列</returns>
+    public static ReadOnlySpan<char> SplitAt(this ReadOnlySpan<char> self, char marker, out ReadOnlySpan<char> next)
+    {
+        var idx = self.IndexOf(marker);
+        if (idx < 0)
+        {
+            next = self[^0..];
+            return self;
+        }
+
+        next = self[(idx + 1)..];
+        return self[..idx];
+    }
+
+    /// <summary>文字列を特定文字列で分割する</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="delimiter">分割文字列</param>
+    /// <param name="next">分割文字列の後ろの文字列</param>
+    /// <returns>分割文字列の前の文字列</returns>
+    public static ReadOnlySpan<char> SplitAt(this string? self, ReadOnlySpan<char> delimiter, out ReadOnlySpan<char> next)
+    => self.AsSpan().SplitAt(delimiter, out next);
+
+    /// <summary>文字列を特定文字列で分割する</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="delimiter">分割文字列</param>
+    /// <param name="next">分割文字列の後ろの文字列</param>
+    /// <returns>分割文字列の前の文字列</returns>
+    public static ReadOnlySpan<char> SplitAt(this ReadOnlySpan<char> self, ReadOnlySpan<char> delimiter, out ReadOnlySpan<char> next)
+    {
+        var idx = self.IndexOf(delimiter);
+        if (idx < 0)
+        {
+            next = self[^0..];
+            return self;
+        }
+
+        next = self[(idx + delimiter.Length)..];
+        return self[..idx];
+    }
+
+    /// <summary>文字列を特定文字列で分割する</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="delimiters">分割文字のセット</param>
+    /// <param name="next">分割文字列の後ろの文字列</param>
+    /// <returns>分割文字列の前の文字列</returns>
+    public static ReadOnlySpan<char> SplitAtAny(this string? self, ReadOnlySpan<char> delimiters, out ReadOnlySpan<char> next)
+    => self.AsSpan().SplitAtAny(delimiters, out next);
+
+    /// <summary>文字列を特定文字列で分割する</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="delimiters">分割文字のセット</param>
+    /// <param name="next">分割文字列の後ろの文字列</param>
+    /// <returns>分割文字列の前の文字列</returns>
+    public static ReadOnlySpan<char> SplitAtAny(this ReadOnlySpan<char> self, ReadOnlySpan<char> delimiters, out ReadOnlySpan<char> next)
+    {
+        var idx = self.IndexOfAny(delimiters);
+        if (idx < 0)
+        {
+            next = self[^0..];
+            return self;
+        }
+
+        next = self[(idx + 1)..];
+        return self[..idx];
+    }
+
+    /// <summary>文字列の行を列挙する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <returns>テキスト行シーケンス</returns>
+    public static IEnumerable<string> AsTextLines(this string self)
+    {
+        // パラメータチェック
+        if (self == null) throw new ArgumentNullException(nameof(self));
+
+        // テキスト行を列挙
+        var idx = 0;
+        while (idx < self.Length)
+        {
+            // 改行を検索
+            var pos = self.IndexOfAny(LineBreakChars, idx);
+            if (pos < 0) break;
+
+            // 行を列挙
+            yield return self.Substring(idx, pos - idx);
+
+            // 次の位置へ。CRLFの場合は1つの改行として扱う
+            idx = pos + 1;
+            if (idx < self.Length && self[idx - 1] == '\r' && self[idx] == '\n')
+            {
+                idx++;
+            }
+        }
+
+        // 最期の部分を列挙
+        yield return self.Substring(idx);
     }
 
     /// <summary>文字列のシーケンスからnull/空を取り除く。</summary>
@@ -934,72 +983,101 @@ public static class StringExtensions
     /// <param name="self">対象文字列</param>
     /// <returns>テキスト要素数</returns>
     public static int TextElementCount(this string self)
+        => self.AsSpan().TextElementCount();
+
+    /// <summary>文字列のテキスト要素数を取得する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <returns>テキスト要素数</returns>
+    public static int TextElementCount(this ReadOnlySpan<char> self)
     {
         // パラメータチェック
         if (self == null) throw new ArgumentNullException(nameof(self));
 
-        return StringInfo.ParseCombiningCharacters(self).Length;
+        var count = 0;
+        var scan = self;
+        while (!scan.IsEmpty)
+        {
+            scan = scan[StringInfo.GetNextTextElementLength(scan)..];
+            count++;
+        }
+
+        return count;
     }
 
     /// <summary>文字列の先頭から指定された長さの文字要素を切り出す。</summary>
-    /// <param name="self">元になる文字列。nullまたは空の場合は元のインスタンスをそのまま返却する。</param>
+    /// <param name="self">元になる文字列</param>
     /// <param name="count">切り出す文字要素の長さ。</param>
     /// <returns>切り出された文字列</returns>
-    [return: NotNullIfNotNull(nameof(self))]
-    public static string? CutLeftElements(this string? self, int count)
+    public static ReadOnlySpan<char> CutLeftElements(this string? self, int count)
+        => self.AsSpan().CutLeftElements(count);
+
+    /// <summary>文字列の先頭から指定された長さの文字要素を切り出す。</summary>
+    /// <param name="self">元になる文字列</param>
+    /// <param name="count">切り出す文字要素の長さ。</param>
+    /// <returns>切り出された文字列</returns>
+    public static ReadOnlySpan<char> CutLeftElements(this ReadOnlySpan<char> self, int count)
     {
-        // パラメータチェック
-        if (count < 0) throw new ArgumentException(nameof(count));
-        if (string.IsNullOrEmpty(self)) return self;
-        if (count == 0) return string.Empty;
+        ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(count));
 
-        // 切り出し文字列の構築用
-        var builder = new StringBuilder(capacity: count);
-
-        // 文字要素を列挙しながら指定要素数まで蓄積
+        // 文字要素を列挙しながら指定要素数までカウント
         var taked = 0;
-        var elementer = StringInfo.GetTextElementEnumerator(self);
-        while (taked < count && elementer.MoveNext())
+        var length = 0;
+        var scan = self;
+        while (taked < count && !scan.IsEmpty)
         {
-            builder.Append(elementer.Current);
+            // 要素長を取得
+            var elemLen = StringInfo.GetNextTextElementLength(scan);
+
+            // 要素数分の長さをカウント
+            length += elemLen;
             taked++;
+
+            // 次の要素へ
+            scan = scan[elemLen..];
         }
 
-        // 切り出した先頭文字列を返却
-        return builder.ToString();
+        // 切り出した文字列を返却
+        return self[..length];
     }
 
     /// <summary>文字列の末尾にある指定された長さの文字要素を切り出す。</summary>
-    /// <param name="self">元になる文字列。nullまたは空の場合は元のインスタンスをそのまま返却する。</param>
+    /// <param name="self">元になる文字列</param>
     /// <param name="count">切り出す文字要素の長さ。</param>
     /// <returns>切り出された文字列</returns>
-    [return: NotNullIfNotNull(nameof(self))]
-    public static string? CutRightElements(this string? self, int count)
+    public static ReadOnlySpan<char> CutRightElements(this string? self, int count)
+        => self.AsSpan().CutRightElements(count);
+
+    /// <summary>文字列の末尾にある指定された長さの文字要素を切り出す。</summary>
+    /// <param name="self">元になる文字列</param>
+    /// <param name="count">切り出す文字要素の長さ。</param>
+    /// <returns>切り出された文字列</returns>
+    public static ReadOnlySpan<char> CutRightElements(this ReadOnlySpan<char> self, int count)
     {
-        // パラメータチェック
-        if (count < 0) throw new ArgumentException(nameof(count));
-        if (string.IsNullOrEmpty(self)) return self;
-        if (count == 0) return string.Empty;
+        ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(count));
+
+        // 対象文字列が空の場合は結果も空
+        if (count == 0) return self[^0..];
 
         // 最後の文字を蓄積するバッファ
-        var buffer = new Queue<object>(capacity: count);
+        var lengths = new Queue<int>(capacity: count);
 
-        // 文字要素を列挙しながら指定数までの最後の要素を蓄積
-        var elementer = StringInfo.GetTextElementEnumerator(self);
-        while (elementer.MoveNext())
+        var scan = self;
+        while (!scan.IsEmpty)
         {
-            // 既に切り出し要素数蓄積済みならば1つ除去
-            if (count <= buffer.Count)
-            {
-                buffer.Dequeue();
-            }
+            // 要素長を取得
+            var elemLen = StringInfo.GetNextTextElementLength(scan);
 
-            // 後方の要素を蓄積
-            buffer.Enqueue(elementer.Current);
+            // 取得要素数分の最終長さを管理
+            if (count <= lengths.Count) lengths.Dequeue();
+            lengths.Enqueue(elemLen);
+
+            // 次の要素へ
+            scan = scan[elemLen..];
         }
 
-        // 蓄積された末尾文字列を返却
-        return string.Concat(buffer);
+        // 切り出すべき末尾の長さ算出
+        var rightLen = lengths.Sum();
+        return self[^rightLen..];
     }
 
     /// <summary>

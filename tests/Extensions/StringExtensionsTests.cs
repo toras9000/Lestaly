@@ -328,187 +328,134 @@ public class StringExtensionsTests
     }
 
     [TestMethod]
-    public void FirstLine()
+    public void TakeLine()
     {
-        "abc\ndef".FirstLine().Should().Be("abc");
-        "aaa\rbbb".FirstLine().Should().Be("aaa");
-        "xyz\r\nabc".FirstLine().Should().Be("xyz");
-        "abc\n".FirstLine().Should().Be("abc");
-        "\nabc".FirstLine().Should().BeEmpty();
-        "\n".FirstLine().Should().BeEmpty();
-        "".FirstLine().Should().BeEmpty();
-        default(string).FirstLine().Should().BeNull();
+        "abc\ndef".TakeLine(trim: true).ToString().Should().Be("abc");
+        "abc\ndef".TakeLine(trim: false).ToString().Should().Be("abc");
+        "aaa\rbbb".TakeLine(trim: true).ToString().Should().Be("aaa");
+        "aaa\rbbb".TakeLine(trim: false).ToString().Should().Be("aaa");
+        "xyz\r\nabc".TakeLine(trim: true).ToString().Should().Be("xyz");
+        "xyz\r\nabc".TakeLine(trim: false).ToString().Should().Be("xyz");
+        "".TakeLine(trim: true).ToString().Should().BeEmpty();
+        "".TakeLine(trim: false).ToString().Should().BeEmpty();
+        default(string).TakeLine(trim: true).ToString().Should().BeEmpty();
+        default(string).TakeLine(trim: false).ToString().Should().BeEmpty();
+
+        "\n".TakeLine(trim: true).ToString().Should().BeEmpty();
+        "\n".TakeLine(trim: false).ToString().Should().BeEmpty();
+        "abc\n".TakeLine(trim: true).ToString().Should().Be("abc");
+        "abc\n".TakeLine(trim: false).ToString().Should().Be("abc");
+        "abc\r".TakeLine(trim: true).ToString().Should().Be("abc");
+        "abc\r".TakeLine(trim: false).ToString().Should().Be("abc");
+        "abc\r\n".TakeLine(trim: true).ToString().Should().Be("abc");
+        "abc\r\n".TakeLine(trim: false).ToString().Should().Be("abc");
+        "\nabc".TakeLine(trim: true).ToString().Should().Be("abc");
+        "\nabc".TakeLine(trim: false).ToString().Should().BeEmpty();
+        "\rabc".TakeLine(trim: true).ToString().Should().Be("abc");
+        "\rabc".TakeLine(trim: false).ToString().Should().BeEmpty();
+        "\r\nabc".TakeLine(trim: true).ToString().Should().Be("abc");
+        "\r\nabc".TakeLine(trim: false).ToString().Should().BeEmpty();
     }
 
     [TestMethod]
-    public void LastLine()
+    public void TakeLastLine()
     {
-        "abc\ndef".LastLine().Should().Be("def");
-        "aaa\rbbb".LastLine().Should().Be("bbb");
-        "xyz\r\nabc".LastLine().Should().Be("abc");
-        "abc\n".LastLine().Should().BeEmpty();
-        "\nabc".LastLine().Should().Be("abc");
-        "\n".LastLine().Should().BeEmpty();
-        "".LastLine().Should().BeEmpty();
-        default(string).LastLine().Should().BeNull();
+        "abc\ndef".TakeLastLine(trim: true).ToString().Should().Be("def");
+        "abc\ndef".TakeLastLine(trim: false).ToString().Should().Be("def");
+        "aaa\rbbb".TakeLastLine(trim: true).ToString().Should().Be("bbb");
+        "aaa\rbbb".TakeLastLine(trim: false).ToString().Should().Be("bbb");
+        "xyz\r\nabc".TakeLastLine(trim: true).ToString().Should().Be("abc");
+        "xyz\r\nabc".TakeLastLine(trim: false).ToString().Should().Be("abc");
+        "".TakeLastLine(trim: true).ToString().Should().BeEmpty();
+        "".TakeLastLine(trim: false).ToString().Should().BeEmpty();
+        default(string).TakeLastLine(trim: true).ToString().Should().BeEmpty();
+        default(string).TakeLastLine(trim: false).ToString().Should().BeEmpty();
+
+        "\n".TakeLastLine(trim: true).ToString().Should().BeEmpty();
+        "\n".TakeLastLine(trim: false).ToString().Should().BeEmpty();
+        "abc\n".TakeLastLine(trim: true).ToString().Should().Be("abc");
+        "abc\n".TakeLastLine(trim: false).ToString().Should().BeEmpty();
+        "abc\r".TakeLastLine(trim: true).ToString().Should().Be("abc");
+        "abc\r".TakeLastLine(trim: false).ToString().Should().BeEmpty();
+        "abc\r\n".TakeLastLine(trim: true).ToString().Should().Be("abc");
+        "abc\r\n".TakeLastLine(trim: false).ToString().Should().BeEmpty();
+        "\nabc".TakeLastLine(trim: true).ToString().Should().Be("abc");
+        "\nabc".TakeLastLine(trim: false).ToString().Should().Be("abc");
+        "\rabc".TakeLastLine(trim: true).ToString().Should().Be("abc");
+        "\rabc".TakeLastLine(trim: false).ToString().Should().Be("abc");
+        "\r\nabc".TakeLastLine(trim: true).ToString().Should().Be("abc");
+        "\r\nabc".TakeLastLine(trim: false).ToString().Should().Be("abc");
     }
 
     [TestMethod]
-    public void AsTextLines()
+    public void SkipLine()
     {
-        "".AsTextLines().Should().Equal("");
-        "a".AsTextLines().Should().Equal("a");
-        "a\rb\nc".AsTextLines().Should().Equal("a", "b", "c");
-        "a\r\nb\n\rc".AsTextLines().Should().Equal("a", "b", "", "c");
-        "\ra\n".AsTextLines().Should().Equal("", "a", "");
-        "\r".AsTextLines().Should().Equal("", "");
-        "\n".AsTextLines().Should().Equal("", "");
-        "\r\n".AsTextLines().Should().Equal("", "");
-        "\n\r".AsTextLines().Should().Equal("", "", "");
+        "abc\ndef".SkipLine(trim: true).ToString().Should().Be("def");
+        "abc\ndef".SkipLine(trim: false).ToString().Should().Be("def");
+        "aaa\rbbb".SkipLine(trim: true).ToString().Should().Be("bbb");
+        "aaa\rbbb".SkipLine(trim: false).ToString().Should().Be("bbb");
+        "xyz\r\nabc".SkipLine(trim: true).ToString().Should().Be("abc");
+        "xyz\r\nabc".SkipLine(trim: false).ToString().Should().Be("abc");
+        "".SkipLine(trim: true).ToString().Should().BeEmpty();
+        "".SkipLine(trim: false).ToString().Should().BeEmpty();
+        default(string).SkipLine(trim: true).ToString().Should().BeEmpty();
+        default(string).SkipLine(trim: false).ToString().Should().BeEmpty();
+
+        "\n".SkipLine(trim: true).ToString().Should().BeEmpty();
+        "\n".SkipLine(trim: false).ToString().Should().BeEmpty();
+        "abc\n".SkipLine(trim: true).ToString().Should().BeEmpty();
+        "abc\n".SkipLine(trim: false).ToString().Should().BeEmpty();
+        "abc\n\n".SkipLine(trim: true).ToString().Should().BeEmpty();
+        "abc\n\n".SkipLine(trim: false).ToString().Should().Be("\n");
+        "abc\r".SkipLine(trim: true).ToString().Should().BeEmpty();
+        "abc\r".SkipLine(trim: false).ToString().Should().BeEmpty();
+        "abc\r\r".SkipLine(trim: true).ToString().Should().BeEmpty();
+        "abc\r\r".SkipLine(trim: false).ToString().Should().Be("\r");
+        "abc\r\n".SkipLine(trim: true).ToString().Should().BeEmpty();
+        "abc\r\n".SkipLine(trim: false).ToString().Should().BeEmpty();
+        "abc\r\n\r\n".SkipLine(trim: true).ToString().Should().BeEmpty();
+        "abc\r\n\r\n".SkipLine(trim: false).ToString().Should().Be("\r\n");
+        "\nabc".SkipLine(trim: true).ToString().Should().BeEmpty();
+        "\nabc".SkipLine(trim: false).ToString().Should().Be("abc");
+        "\rabc".SkipLine(trim: true).ToString().Should().BeEmpty();
+        "\rabc".SkipLine(trim: false).ToString().Should().Be("abc");
+        "\r\nabc".SkipLine(trim: true).ToString().Should().BeEmpty();
+        "\r\nabc".SkipLine(trim: false).ToString().Should().Be("abc");
     }
 
     [TestMethod]
-    public void BeforeAt_Char()
+    public void TakeSkipLine()
     {
-        "abcdef".BeforeAt('a', defaultEmpty: false).Should().Be("");
-        "abcdef".BeforeAt('c', defaultEmpty: false).Should().Be("ab");
-        "abcdef".BeforeAt('f', defaultEmpty: false).Should().Be("abcde");
-        "abcdef".BeforeAt('g', defaultEmpty: false).Should().Be("abcdef");
-        "".BeforeAt('a', defaultEmpty: false).Should().BeEmpty();
-        default(string).BeforeAt('a', defaultEmpty: false).Should().BeNull();
-
-        "abcdef".BeforeAt('a', defaultEmpty: true).Should().Be("");
-        "abcdef".BeforeAt('c', defaultEmpty: true).Should().Be("ab");
-        "abcdef".BeforeAt('f', defaultEmpty: true).Should().Be("abcde");
-        "abcdef".BeforeAt('g', defaultEmpty: true).Should().BeEmpty();
-        "".BeforeAt('a', defaultEmpty: true).Should().BeEmpty();
-        default(string).BeforeAt('a', defaultEmpty: true).Should().BeEmpty();
-    }
-
-    [TestMethod]
-    public void BeforeAt_Str()
-    {
-        "abcdef".BeforeAt("ab", defaultEmpty: false).Should().Be("");
-        "abcdef".BeforeAt("cd", defaultEmpty: false).Should().Be("ab");
-        "abcdef".BeforeAt("ef", defaultEmpty: false).Should().Be("abcd");
-        "abcdef".BeforeAt("ac", defaultEmpty: false).Should().Be("abcdef");
-        "".BeforeAt("ab", defaultEmpty: false).Should().BeEmpty();
-        default(string).BeforeAt("ab", defaultEmpty: false).Should().BeNull();
-
-        "abcdef".BeforeAt("ab", defaultEmpty: true).Should().Be("");
-        "abcdef".BeforeAt("cd", defaultEmpty: true).Should().Be("ab");
-        "abcdef".BeforeAt("ef", defaultEmpty: true).Should().Be("abcd");
-        "abcdef".BeforeAt("ac", defaultEmpty: true).Should().BeEmpty();
-        "".BeforeAt("ab", defaultEmpty: true).Should().BeEmpty();
-        default(string).BeforeAt("ab", defaultEmpty: true).Should().BeEmpty();
-    }
-
-    [TestMethod]
-    public void AfterAt_Char()
-    {
-        "abcdef".AfterAt('a', defaultEmpty: false).Should().Be("bcdef");
-        "abcdef".AfterAt('c', defaultEmpty: false).Should().Be("def");
-        "abcdef".AfterAt('f', defaultEmpty: false).Should().Be("");
-        "abcdef".AfterAt('g', defaultEmpty: false).Should().Be("abcdef");
-        "".AfterAt('a', defaultEmpty: false).Should().BeEmpty();
-        default(string).AfterAt('a', defaultEmpty: false).Should().BeNull();
-
-        "abcdef".AfterAt('a', defaultEmpty: true).Should().Be("bcdef");
-        "abcdef".AfterAt('c', defaultEmpty: true).Should().Be("def");
-        "abcdef".AfterAt('f', defaultEmpty: true).Should().Be("");
-        "abcdef".AfterAt('g', defaultEmpty: true).Should().BeEmpty();
-        "".AfterAt('a', defaultEmpty: true).Should().BeEmpty();
-        default(string).AfterAt('a', defaultEmpty: true).Should().BeEmpty();
-    }
-
-    [TestMethod]
-    public void AfterAt_Str()
-    {
-        "abcdef".AfterAt("ab", defaultEmpty: false).Should().Be("cdef");
-        "abcdef".AfterAt("cd", defaultEmpty: false).Should().Be("ef");
-        "abcdef".AfterAt("ef", defaultEmpty: false).Should().Be("");
-        "abcdef".AfterAt("ac", defaultEmpty: false).Should().Be("abcdef");
-        "".AfterAt("ab", defaultEmpty: false).Should().BeEmpty();
-        default(string).AfterAt("ab", defaultEmpty: false).Should().BeNull();
-
-        "abcdef".AfterAt("ab", defaultEmpty: true).Should().Be("cdef");
-        "abcdef".AfterAt("cd", defaultEmpty: true).Should().Be("ef");
-        "abcdef".AfterAt("ef", defaultEmpty: true).Should().Be("");
-        "abcdef".AfterAt("ac", defaultEmpty: true).Should().BeEmpty();
-        "".AfterAt("ab", defaultEmpty: true).Should().BeEmpty();
-        default(string).AfterAt("ab", defaultEmpty: true).Should().BeEmpty();
-    }
-
-    [TestMethod]
-    public void TakeTo_Char()
-    {
-        "abcdef".TakeTo('a', defaultEmpty: false).Should().Be("a");
-        "abcdef".TakeTo('c', defaultEmpty: false).Should().Be("abc");
-        "abcdef".TakeTo('f', defaultEmpty: false).Should().Be("abcdef");
-        "abcdef".TakeTo('g', defaultEmpty: false).Should().Be("abcdef");
-        "".TakeTo('a', defaultEmpty: false).Should().BeEmpty();
-        default(string).TakeTo('a', defaultEmpty: false).Should().BeNull();
-
-        "abcdef".TakeTo('a', defaultEmpty: true).Should().Be("a");
-        "abcdef".TakeTo('c', defaultEmpty: true).Should().Be("abc");
-        "abcdef".TakeTo('f', defaultEmpty: true).Should().Be("abcdef");
-        "abcdef".TakeTo('g', defaultEmpty: true).Should().BeEmpty();
-        "".TakeTo('a', defaultEmpty: true).Should().BeEmpty();
-        default(string).TakeTo('a', defaultEmpty: true).Should().BeEmpty();
-    }
-
-    [TestMethod]
-    public void TakeTo_Str()
-    {
-        "abcdef".TakeTo("ab", defaultEmpty: false).Should().Be("ab");
-        "abcdef".TakeTo("cd", defaultEmpty: false).Should().Be("abcd");
-        "abcdef".TakeTo("ef", defaultEmpty: false).Should().Be("abcdef");
-        "abcdef".TakeTo("ac", defaultEmpty: false).Should().Be("abcdef");
-        "".TakeTo("ab", defaultEmpty: false).Should().BeEmpty();
-        default(string).TakeTo("ab", defaultEmpty: false).Should().BeNull();
-
-        "abcdef".TakeTo("ab", defaultEmpty: true).Should().Be("ab");
-        "abcdef".TakeTo("cd", defaultEmpty: true).Should().Be("abcd");
-        "abcdef".TakeTo("ef", defaultEmpty: true).Should().Be("abcdef");
-        "abcdef".TakeTo("ac", defaultEmpty: true).Should().BeEmpty();
-        "".TakeTo("ab", defaultEmpty: true).Should().BeEmpty();
-        default(string).TakeTo("ab", defaultEmpty: true).Should().BeEmpty();
-    }
-
-    [TestMethod]
-    public void TakeFrom_Char()
-    {
-        "abcdef".TakeFrom('a', defaultEmpty: false).Should().Be("abcdef");
-        "abcdef".TakeFrom('c', defaultEmpty: false).Should().Be("cdef");
-        "abcdef".TakeFrom('f', defaultEmpty: false).Should().Be("f");
-        "abcdef".TakeFrom('g', defaultEmpty: false).Should().Be("abcdef");
-        "".TakeFrom('a', defaultEmpty: false).Should().BeEmpty();
-        default(string).TakeFrom('a', defaultEmpty: false).Should().BeNull();
-
-        "abcdef".TakeFrom('a', defaultEmpty: true).Should().Be("abcdef");
-        "abcdef".TakeFrom('c', defaultEmpty: true).Should().Be("cdef");
-        "abcdef".TakeFrom('f', defaultEmpty: true).Should().Be("f");
-        "abcdef".TakeFrom('g', defaultEmpty: true).Should().BeEmpty();
-        "".TakeFrom('a', defaultEmpty: true).Should().BeEmpty();
-        default(string).TakeFrom('a', defaultEmpty: true).Should().BeEmpty();
-    }
-
-    [TestMethod]
-    public void TakeFrom_Str()
-    {
-        "abcdef".TakeFrom("ab", defaultEmpty: false).Should().Be("abcdef");
-        "abcdef".TakeFrom("cd", defaultEmpty: false).Should().Be("cdef");
-        "abcdef".TakeFrom("ef", defaultEmpty: false).Should().Be("ef");
-        "abcdef".TakeFrom("ac", defaultEmpty: false).Should().Be("abcdef");
-        "".TakeFrom("ab", defaultEmpty: false).Should().BeEmpty();
-        default(string).TakeFrom("ab", defaultEmpty: false).Should().BeNull();
-
-        "abcdef".TakeFrom("ab", defaultEmpty: true).Should().Be("abcdef");
-        "abcdef".TakeFrom("cd", defaultEmpty: true).Should().Be("cdef");
-        "abcdef".TakeFrom("ef", defaultEmpty: true).Should().Be("ef");
-        "abcdef".TakeFrom("ac", defaultEmpty: true).Should().BeEmpty();
-        "".TakeFrom("ab", defaultEmpty: true).Should().BeEmpty();
-        default(string).TakeFrom("ab", defaultEmpty: true).Should().BeEmpty();
+        {
+            var line = "\nabc\n\ndef\n\nghi".TakeSkipLine(out var next, trim: true);
+            line.ToString().Should().Be("abc");
+            next.ToString().Should().Be("def\n\nghi");
+        }
+        {
+            var line = "\nabc\n\ndef\n\nghi".TakeSkipLine(out var next, trim: false);
+            line.ToString().Should().Be("");
+            next.ToString().Should().Be("abc\n\ndef\n\nghi");
+        }
+        {
+            var line = "\r\nabc\r\n\n\rdef\r\nghi".TakeSkipLine(out var next, trim: true);
+            line.ToString().Should().Be("abc");
+            next.ToString().Should().Be("def\r\nghi");
+        }
+        {
+            var line = "\r\n\r\n".TakeSkipLine(out var next, trim: true);
+            line.ToString().Should().Be("");
+            next.ToString().Should().Be("");
+        }
+        {
+            var line = "\r\n\r\n".TakeSkipLine(out var next, trim: false);
+            line.ToString().Should().Be("");
+            next.ToString().Should().Be("\r\n");
+        }
+        {
+            var line = "".TakeSkipLine(out var next, trim: true);
+            line.ToString().Should().Be("");
+            next.ToString().Should().Be("");
+        }
     }
 
     [TestMethod]
@@ -621,66 +568,46 @@ public class StringExtensionsTests
     [TestMethod]
     public void TakeSkipToken()
     {
+        static void assert_def(string source, Func<(string token, string next)> expectation)
         {
-            var token = "ab  cd  ef".AsSpan().TakeSkipToken(out var next);
-            token.ToString().Should().Be("ab");
-            next.ToString().Should().Be("cd  ef");
+            var token = source.TakeSkipToken(out var next);
+            var expect = expectation();
+            token.ToString().Should().Be(expect.token);
+            next.ToString().Should().Be(expect.next);
         }
+        static void assert_delim(string source, char delimiter, Func<(string token, string next)> expectation)
         {
-            var token = "  ab  cd  ef".AsSpan().TakeSkipToken(out var next);
-            token.ToString().Should().Be("ab");
-            next.ToString().Should().Be("cd  ef");
+            var token = source.TakeSkipToken(out var next, delimiter);
+            var expect = expectation();
+            token.ToString().Should().Be(expect.token);
+            next.ToString().Should().Be(expect.next);
         }
-        {
-            var token = "  abcdef".AsSpan().TakeSkipToken(out var next);
-            token.ToString().Should().Be("abcdef");
-            next.ToString().Should().Be("");
-        }
-        {
-            var token = ",,ab cd,,ef,gh ij".AsSpan().TakeSkipToken(out var next, ',');
-            token.ToString().Should().Be("ab cd");
-            next.ToString().Should().Be("ef,gh ij");
-        }
-        {
-            var token = "ab  cd  ef".TakeSkipToken(out var next);
-            token.ToString().Should().Be("ab");
-            next.ToString().Should().Be("cd  ef");
-        }
-        {
-            var token = ",,ab cd,,ef,gh ij".TakeSkipToken(out var next, ',');
-            token.ToString().Should().Be("ab cd");
-            next.ToString().Should().Be("ef,gh ij");
-        }
+
+        assert_def("ab  cd  ef", () => ("ab", "cd  ef"));
+        assert_def("  ab  cd  ef", () => ("ab", "cd  ef"));
+        assert_def("  abcdef", () => ("abcdef", ""));
+
+        assert_delim("ab cd,,ef,gh ij", ',', () => ("ab cd", "ef,gh ij"));
+        assert_delim(",,ab cd,,ef,gh ij", ',', () => ("ab cd", "ef,gh ij"));
     }
 
     [TestMethod]
     public void TakeSkipTokenAny()
     {
+        static void assert(string source, ReadOnlySpan<char> delimiters, Func<(string token, string next)> expectation)
         {
-            var token = "ab  cd  ef".AsSpan().TakeSkipTokenAny(out var next, [' ']);
-            token.ToString().Should().Be("ab");
-            next.ToString().Should().Be("cd  ef");
+            var token = source.TakeSkipTokenAny(out var next, delimiters);
+            var expect = expectation();
+            token.ToString().Should().Be(expect.token);
+            next.ToString().Should().Be(expect.next);
         }
-        {
-            var token = "  ab  cd  ef".AsSpan().TakeSkipTokenAny(out var next, [' ']);
-            token.ToString().Should().Be("ab");
-            next.ToString().Should().Be("cd  ef");
-        }
-        {
-            var token = "  abcdef".AsSpan().TakeSkipTokenAny(out var next, [' ']);
-            token.ToString().Should().Be("abcdef");
-            next.ToString().Should().Be("");
-        }
-        {
-            var token = ",,ab cd,,ef,gh ij".AsSpan().TakeSkipTokenAny(out var next, [',']);
-            token.ToString().Should().Be("ab cd");
-            next.ToString().Should().Be("ef,gh ij");
-        }
-        {
-            var token = ",,ab cd,,ef,gh ij".AsSpan().TakeSkipTokenAny(out var next, [' ', ',']);
-            token.ToString().Should().Be("ab");
-            next.ToString().Should().Be("cd,,ef,gh ij");
-        }
+
+        assert("ab  cd  ef", [' '], () => ("ab", "cd  ef"));
+        assert("  ab  cd  ef", [' '], () => ("ab", "cd  ef"));
+        assert("  abcdef", [' '], () => ("abcdef", ""));
+        assert(",,ab cd,,ef,gh ij", [','], () => ("ab cd", "ef,gh ij"));
+        assert(",,ab cd,,ef,gh ij", [' ', ','], () => ("ab", "cd,,ef,gh ij"));
+
         {
             var token = "ab  cd  ef".TakeSkipTokenAny(out var next, [' ']);
             token.ToString().Should().Be("ab");
@@ -725,6 +652,92 @@ public class StringExtensionsTests
         token3.ToString().Should().Be("ghi");
 
         scan.ToString().Should().Be("jkl   mno");
+    }
+
+    [TestMethod]
+    public void SplitAt_Char()
+    {
+        static void assert(string source, char delimiter, Func<(string token, string next)> expectation)
+        {
+            var token = source.SplitAt(delimiter, out var next);
+            var expect = expectation();
+            token.ToString().Should().Be(expect.token);
+            next.ToString().Should().Be(expect.next);
+        }
+
+        assert("abc@def@ghi", '@', () => ("abc", "def@ghi"));
+        assert("abc@@def@@ghi", '@', () => ("abc", "@def@@ghi"));
+        assert("@abc@def@ghi", '@', () => ("", "abc@def@ghi"));
+        assert("@", '@', () => ("", ""));
+        assert("", '@', () => ("", ""));
+        assert("abcdef", '@', () => ("abcdef", ""));
+    }
+
+    [TestMethod]
+    public void SplitAt_String()
+    {
+        static void assert(string source, string delimiter, Func<(string token, string next)> expectation)
+        {
+            var token = source.SplitAt(delimiter, out var next);
+            var expect = expectation();
+            token.ToString().Should().Be(expect.token);
+            next.ToString().Should().Be(expect.next);
+        }
+
+        assert("abc@def@@ghi", "@", () => ("abc", "def@@ghi"));
+        assert("abc@def@@ghi", "@@", () => ("abc@def", "ghi"));
+
+        assert("@@abc@@def@@ghi", "@@", () => ("", "abc@@def@@ghi"));
+        assert("@@", "@@", () => ("", ""));
+        assert("", "@@", () => ("", ""));
+        assert("abcdef", "@@", () => ("abcdef", ""));
+    }
+
+    [TestMethod]
+    public void SplitAtAny_Chars()
+    {
+        static void assert(string source, ReadOnlySpan<char> delimiters, Func<(string token, string next)> expectation)
+        {
+            var token = source.SplitAtAny(delimiters, out var next);
+            var expect = expectation();
+            token.ToString().Should().Be(expect.token);
+            next.ToString().Should().Be(expect.next);
+        }
+
+        assert("abc@def:ghi", ['@', ':'], () => ("abc", "def:ghi"));
+        assert("abc:def@ghi", ['@', ':'], () => ("abc", "def@ghi"));
+
+        assert("abc@@def::ghi", ['@', ':'], () => ("abc", "@def::ghi"));
+        assert("abc::def@@ghi", ['@', ':'], () => ("abc", ":def@@ghi"));
+
+        assert("@abc@def:ghi", ['@', ':'], () => ("", "abc@def:ghi"));
+        assert(":abc@def:ghi", ['@', ':'], () => ("", "abc@def:ghi"));
+
+        assert(":@", ['@', ':'], () => ("", "@"));
+        assert("@:", ['@', ':'], () => ("", ":"));
+
+        assert(":", ['@', ':'], () => ("", ""));
+        assert("@", ['@', ':'], () => ("", ""));
+
+        assert("", ['@', ':'], () => ("", ""));
+        assert("", ['@', ':'], () => ("", ""));
+
+        assert("abcde", ['@', ':'], () => ("abcde", ""));
+    }
+
+
+    [TestMethod]
+    public void AsTextLines()
+    {
+        "".AsTextLines().Should().Equal("");
+        "a".AsTextLines().Should().Equal("a");
+        "a\rb\nc".AsTextLines().Should().Equal("a", "b", "c");
+        "a\r\nb\n\rc".AsTextLines().Should().Equal("a", "b", "", "c");
+        "\ra\n".AsTextLines().Should().Equal("", "a", "");
+        "\r".AsTextLines().Should().Equal("", "");
+        "\n".AsTextLines().Should().Equal("", "");
+        "\r\n".AsTextLines().Should().Equal("", "");
+        "\n\r".AsTextLines().Should().Equal("", "", "");
     }
 
     [TestMethod()]
@@ -920,95 +933,95 @@ public class StringExtensionsTests
     public void CutLeftElements()
     {
         // Empty
-        "".CutLeftElements(0).Should().BeEmpty();
-        default(string).CutLeftElements(0).Should().BeNull();
-        "abcdef".CutLeftElements(0).Should().BeEmpty();
+        "".CutLeftElements(0).ToString().Should().BeEmpty();
+        default(string).CutLeftElements(0).ToString().Should().BeEmpty();
+        "abcdef".CutLeftElements(0).ToString().Should().BeEmpty();
 
-        "abcdef".CutLeftElements(0).Should().BeEmpty();
-        "abcdef".CutLeftElements(1).Should().Be("a");
-        "abcdef".CutLeftElements(2).Should().Be("ab");
-        "abcdef".CutLeftElements(6).Should().Be("abcdef");
-        "abcdef".CutLeftElements(7).Should().Be("abcdef");
-        "abcdef".CutLeftElements(999).Should().Be("abcdef");
+        "abcdef".CutLeftElements(0).ToString().Should().BeEmpty();
+        "abcdef".CutLeftElements(1).ToString().Should().Be("a");
+        "abcdef".CutLeftElements(2).ToString().Should().Be("ab");
+        "abcdef".CutLeftElements(6).ToString().Should().Be("abcdef");
+        "abcdef".CutLeftElements(7).ToString().Should().Be("abcdef");
+        "abcdef".CutLeftElements(999).ToString().Should().Be("abcdef");
 
-        "あいうえお".CutLeftElements(0).Should().BeEmpty();
-        "あいうえお".CutLeftElements(1).Should().Be("あ");
-        "あいうえお".CutLeftElements(5).Should().Be("あいうえお");
-        "あいうえお".CutLeftElements(6).Should().Be("あいうえお");
-        "あいうえお".CutLeftElements(999).Should().Be("あいうえお");
+        "あいうえお".CutLeftElements(0).ToString().Should().BeEmpty();
+        "あいうえお".CutLeftElements(1).ToString().Should().Be("あ");
+        "あいうえお".CutLeftElements(5).ToString().Should().Be("あいうえお");
+        "あいうえお".CutLeftElements(6).ToString().Should().Be("あいうえお");
+        "あいうえお".CutLeftElements(999).ToString().Should().Be("あいうえお");
 
-        "1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣".CutLeftElements(0).Should().BeEmpty();
-        "1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣".CutLeftElements(1).Should().Be("1️⃣");
-        "1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣".CutLeftElements(2).Should().Be("1️⃣2️⃣");
-        "1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣".CutLeftElements(9).Should().Be("1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣");
-        "1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣".CutLeftElements(10).Should().Be("1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣");
+        "1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣".CutLeftElements(0).ToString().Should().BeEmpty();
+        "1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣".CutLeftElements(1).ToString().Should().Be("1️⃣");
+        "1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣".CutLeftElements(2).ToString().Should().Be("1️⃣2️⃣");
+        "1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣".CutLeftElements(9).ToString().Should().Be("1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣");
+        "1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣".CutLeftElements(10).ToString().Should().Be("1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣");
 
-        "👏🏻👏🏼👏🏽👏🏾👏🏿".CutLeftElements(0).Should().BeEmpty();
-        "👏🏻👏🏼👏🏽👏🏾👏🏿".CutLeftElements(1).Should().Be("👏🏻");
-        "👏🏻👏🏼👏🏽👏🏾👏🏿".CutLeftElements(2).Should().Be("👏🏻👏🏼");
-        "👏🏻👏🏼👏🏽👏🏾👏🏿".CutLeftElements(5).Should().Be("👏🏻👏🏼👏🏽👏🏾👏🏿");
-        "👏🏻👏🏼👏🏽👏🏾👏🏿".CutLeftElements(6).Should().Be("👏🏻👏🏼👏🏽👏🏾👏🏿");
+        "👏🏻👏🏼👏🏽👏🏾👏🏿".CutLeftElements(0).ToString().Should().BeEmpty();
+        "👏🏻👏🏼👏🏽👏🏾👏🏿".CutLeftElements(1).ToString().Should().Be("👏🏻");
+        "👏🏻👏🏼👏🏽👏🏾👏🏿".CutLeftElements(2).ToString().Should().Be("👏🏻👏🏼");
+        "👏🏻👏🏼👏🏽👏🏾👏🏿".CutLeftElements(5).ToString().Should().Be("👏🏻👏🏼👏🏽👏🏾👏🏿");
+        "👏🏻👏🏼👏🏽👏🏾👏🏿".CutLeftElements(6).ToString().Should().Be("👏🏻👏🏼👏🏽👏🏾👏🏿");
 
-        "🇯🇵🇬🇧🇺🇸".CutLeftElements(0).Should().BeEmpty();
-        "🇯🇵🇬🇧🇺🇸".CutLeftElements(1).Should().Be("🇯🇵");
-        "🇯🇵🇬🇧🇺🇸".CutLeftElements(2).Should().Be("🇯🇵🇬🇧");
-        "🇯🇵🇬🇧🇺🇸".CutLeftElements(3).Should().Be("🇯🇵🇬🇧🇺🇸");
-        "🇯🇵🇬🇧🇺🇸".CutLeftElements(4).Should().Be("🇯🇵🇬🇧🇺🇸");
+        "🇯🇵🇬🇧🇺🇸".CutLeftElements(0).ToString().Should().BeEmpty();
+        "🇯🇵🇬🇧🇺🇸".CutLeftElements(1).ToString().Should().Be("🇯🇵");
+        "🇯🇵🇬🇧🇺🇸".CutLeftElements(2).ToString().Should().Be("🇯🇵🇬🇧");
+        "🇯🇵🇬🇧🇺🇸".CutLeftElements(3).ToString().Should().Be("🇯🇵🇬🇧🇺🇸");
+        "🇯🇵🇬🇧🇺🇸".CutLeftElements(4).ToString().Should().Be("🇯🇵🇬🇧🇺🇸");
 
         // 👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾
-        "👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾".CutLeftElements(1).Should().Be("👩🏻‍👦🏼");
-        "👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾".CutLeftElements(2).Should().Be("👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿");
-        "👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾".CutLeftElements(3).Should().Be("👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽");
-        "👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾".CutLeftElements(4).Should().Be("👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾");
-        "👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾".CutLeftElements(5).Should().Be("👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾");
-        "👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾".CutLeftElements(999).Should().Be("👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾");
+        "👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾".CutLeftElements(1).ToString().Should().Be("👩🏻‍👦🏼");
+        "👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾".CutLeftElements(2).ToString().Should().Be("👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿");
+        "👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾".CutLeftElements(3).ToString().Should().Be("👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽");
+        "👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾".CutLeftElements(4).ToString().Should().Be("👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾");
+        "👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾".CutLeftElements(5).ToString().Should().Be("👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾");
+        "👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾".CutLeftElements(999).ToString().Should().Be("👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾");
     }
 
     [TestMethod]
     public void CutRightElements()
     {
         // Empty
-        "".CutRightElements(0).Should().BeEmpty();
-        default(string).CutRightElements(0).Should().BeNull();
-        "abcdef".CutRightElements(0).Should().BeEmpty();
+        "".CutRightElements(0).ToString().Should().BeEmpty();
+        default(string).CutRightElements(0).ToString().Should().BeEmpty();
+        "abcdef".CutRightElements(0).ToString().Should().BeEmpty();
 
-        "abcdef".CutRightElements(0).Should().Be("");
-        "abcdef".CutRightElements(1).Should().Be("f");
-        "abcdef".CutRightElements(2).Should().Be("ef");
-        "abcdef".CutRightElements(6).Should().Be("abcdef");
-        "abcdef".CutRightElements(7).Should().Be("abcdef");
-        "abcdef".CutRightElements(999).Should().Be("abcdef");
+        "abcdef".CutRightElements(0).ToString().Should().Be("");
+        "abcdef".CutRightElements(1).ToString().Should().Be("f");
+        "abcdef".CutRightElements(2).ToString().Should().Be("ef");
+        "abcdef".CutRightElements(6).ToString().Should().Be("abcdef");
+        "abcdef".CutRightElements(7).ToString().Should().Be("abcdef");
+        "abcdef".CutRightElements(999).ToString().Should().Be("abcdef");
 
-        "あいうえお".CutRightElements(1).Should().Be("お");
-        "あいうえお".CutRightElements(5).Should().Be("あいうえお");
-        "あいうえお".CutRightElements(6).Should().Be("あいうえお");
-        "あいうえお".CutRightElements(999).Should().Be("あいうえお");
+        "あいうえお".CutRightElements(1).ToString().Should().Be("お");
+        "あいうえお".CutRightElements(5).ToString().Should().Be("あいうえお");
+        "あいうえお".CutRightElements(6).ToString().Should().Be("あいうえお");
+        "あいうえお".CutRightElements(999).ToString().Should().Be("あいうえお");
 
-        "1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣".CutRightElements(0).Should().BeEmpty();
-        "1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣".CutRightElements(1).Should().Be("9️⃣");
-        "1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣".CutRightElements(2).Should().Be("8️⃣9️⃣");
-        "1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣".CutRightElements(9).Should().Be("1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣");
-        "1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣".CutRightElements(10).Should().Be("1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣");
+        "1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣".CutRightElements(0).ToString().Should().BeEmpty();
+        "1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣".CutRightElements(1).ToString().Should().Be("9️⃣");
+        "1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣".CutRightElements(2).ToString().Should().Be("8️⃣9️⃣");
+        "1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣".CutRightElements(9).ToString().Should().Be("1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣");
+        "1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣".CutRightElements(10).ToString().Should().Be("1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣");
 
-        "👏🏻👏🏼👏🏽👏🏾👏🏿".CutRightElements(0).Should().BeEmpty();
-        "👏🏻👏🏼👏🏽👏🏾👏🏿".CutRightElements(1).Should().Be("👏🏿");
-        "👏🏻👏🏼👏🏽👏🏾👏🏿".CutRightElements(2).Should().Be("👏🏾👏🏿");
-        "👏🏻👏🏼👏🏽👏🏾👏🏿".CutRightElements(5).Should().Be("👏🏻👏🏼👏🏽👏🏾👏🏿");
-        "👏🏻👏🏼👏🏽👏🏾👏🏿".CutRightElements(6).Should().Be("👏🏻👏🏼👏🏽👏🏾👏🏿");
+        "👏🏻👏🏼👏🏽👏🏾👏🏿".CutRightElements(0).ToString().Should().BeEmpty();
+        "👏🏻👏🏼👏🏽👏🏾👏🏿".CutRightElements(1).ToString().Should().Be("👏🏿");
+        "👏🏻👏🏼👏🏽👏🏾👏🏿".CutRightElements(2).ToString().Should().Be("👏🏾👏🏿");
+        "👏🏻👏🏼👏🏽👏🏾👏🏿".CutRightElements(5).ToString().Should().Be("👏🏻👏🏼👏🏽👏🏾👏🏿");
+        "👏🏻👏🏼👏🏽👏🏾👏🏿".CutRightElements(6).ToString().Should().Be("👏🏻👏🏼👏🏽👏🏾👏🏿");
 
-        "🇯🇵🇬🇧🇺🇸".CutRightElements(0).Should().BeEmpty();
-        "🇯🇵🇬🇧🇺🇸".CutRightElements(1).Should().Be("🇺🇸");
-        "🇯🇵🇬🇧🇺🇸".CutRightElements(2).Should().Be("🇬🇧🇺🇸");
-        "🇯🇵🇬🇧🇺🇸".CutRightElements(3).Should().Be("🇯🇵🇬🇧🇺🇸");
-        "🇯🇵🇬🇧🇺🇸".CutRightElements(4).Should().Be("🇯🇵🇬🇧🇺🇸");
+        "🇯🇵🇬🇧🇺🇸".CutRightElements(0).ToString().Should().BeEmpty();
+        "🇯🇵🇬🇧🇺🇸".CutRightElements(1).ToString().Should().Be("🇺🇸");
+        "🇯🇵🇬🇧🇺🇸".CutRightElements(2).ToString().Should().Be("🇬🇧🇺🇸");
+        "🇯🇵🇬🇧🇺🇸".CutRightElements(3).ToString().Should().Be("🇯🇵🇬🇧🇺🇸");
+        "🇯🇵🇬🇧🇺🇸".CutRightElements(4).ToString().Should().Be("🇯🇵🇬🇧🇺🇸");
 
         // 👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾
-        "👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾".CutRightElements(1).Should().Be("👩🏻‍👩🏿‍👧🏼‍👧🏾");
-        "👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾".CutRightElements(2).Should().Be("👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾");
-        "👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾".CutRightElements(3).Should().Be("👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾");
-        "👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾".CutRightElements(4).Should().Be("👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾");
-        "👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾".CutRightElements(5).Should().Be("👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾");
-        "👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾".CutRightElements(999).Should().Be("👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾");
+        "👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾".CutRightElements(1).ToString().Should().Be("👩🏻‍👩🏿‍👧🏼‍👧🏾");
+        "👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾".CutRightElements(2).ToString().Should().Be("👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾");
+        "👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾".CutRightElements(3).ToString().Should().Be("👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾");
+        "👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾".CutRightElements(4).ToString().Should().Be("👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾");
+        "👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾".CutRightElements(5).ToString().Should().Be("👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾");
+        "👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾".CutRightElements(999).ToString().Should().Be("👩🏻‍👦🏼👨🏽‍👦🏾‍👦🏿👩🏼‍👨🏽‍👦🏼‍👧🏽👩🏻‍👩🏿‍👧🏼‍👧🏾");
     }
 
     [TestMethod]
