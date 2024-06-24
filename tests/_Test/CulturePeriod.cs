@@ -26,12 +26,12 @@ public class CulturePeriod : IDisposable
     /// <summary>設定するカルチャ情報を指定するコンストラクタ</summary>
     /// <param name="lcid">設定するカルチャのLCID</param>
     /// <param name="withUi">UIカルチャを指定するか否か</param>
-    public CulturePeriod(int lcid, bool withUi = false) : this(CultureInfo.GetCultureInfo(lcid)) { }
+    public CulturePeriod(int lcid, bool withUi = false) : this(CultureInfo.GetCultureInfo(lcid), withUi) { }
 
     /// <summary>設定するカルチャ情報を指定するコンストラクタ</summary>
     /// <param name="culture">設定するカルチャ名</param>
     /// <param name="withUi">UIカルチャを指定するか否か</param>
-    public CulturePeriod(string culture, bool withUi = false) : this(CultureInfo.GetCultureInfo(culture)) { }
+    public CulturePeriod(string culture, bool withUi = false) : this(CultureInfo.GetCultureInfo(culture), withUi) { }
     #endregion
 
     // 公開プロパティ

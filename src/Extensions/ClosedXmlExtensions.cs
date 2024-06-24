@@ -33,5 +33,5 @@ public static class ClosedXmlExtensions
     /// <param name="numeric">日時関係の値を整数値として取得するか否か。</param>
     /// <returns>取得した値</returns>
     public static object? ToObjectValue(this IXLCell self, bool numeric = false)
-        => self.Value.ToBox();
+        => self.Value.ToBox(numeric);
 }

@@ -14,7 +14,7 @@ public static class HttpClientExtensions
     /// <param name="cancelToken">キャンセルトークン</param>
     /// <returns>保存先ファイル情報</returns>
     public static Task<FileInfo> GetFileAsync(this HttpClient self, Uri resource, string path, CancellationToken cancelToken = default)
-        => self.GetFileAsync(resource, new FileInfo(path));
+        => self.GetFileAsync(resource, new FileInfo(path), cancelToken);
 
     /// <summary>GET要求の応答をファイルに保存する。</summary>
     /// <param name="self">クライアント</param>
@@ -26,7 +26,7 @@ public static class HttpClientExtensions
     public static Task<FileInfo> GetFileAsync(this HttpClient self, Uri resource, DirectoryInfo directory, string? name = default, CancellationToken cancelToken = default)
     {
         var fileName = name ?? resource.Segments.Last();
-        return self.GetFileAsync(resource, directory.RelativeFile(fileName));
+        return self.GetFileAsync(resource, directory.RelativeFile(fileName), cancelToken);
     }
 
     /// <summary>GET要求の応答をファイルに保存する。</summary>
@@ -62,7 +62,7 @@ public static class HttpClientExtensions
             using var response = await self.GetAsync(resource, cancelToken).ConfigureAwait(false);
             if (response.IsSuccessStatusCode)
             {
-                body = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                body = await response.Content.ReadAsStringAsync(cancelToken).ConfigureAwait(false);
             }
         }
         catch

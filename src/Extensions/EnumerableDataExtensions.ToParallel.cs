@@ -121,7 +121,7 @@ public static partial class EnumerableDataExtensions
             {
                 block.Complete();
             }
-        });
+        }, cancelToken);
 
         // データブロックの出力を取り出して列挙
         while (await block.OutputAvailableAsync(cancelToken).ConfigureAwait(false))
