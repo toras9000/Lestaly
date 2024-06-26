@@ -36,7 +36,7 @@ public static class Paved
             }
             else
             {
-                console.WriteLineColored(ConsoleColor.Yellow, "Operation cancelled.");
+                using (console.ForegroundColorPeriod(ConsoleColor.Yellow)) console.WriteLine("Operation cancelled.");
             }
         }
         catch (Exception ex)
@@ -49,26 +49,34 @@ public static class Paved
             {
                 result = options.ErrorHandler(ex);
             }
+            else if (ex is CmdProcExitCodeException cex)
+            {
+                using (console.ForegroundColorPeriod(ConsoleColor.Red))
+                {
+                    console.WriteLine(cex.Message);
+                    console.WriteLine($"Output: {cex.Output}");
+                }
+            }
             else if (ex is PavedMessageException pex)
             {
                 switch (pex.Kind)
                 {
                 case PavedMessageKind.Error:
-                    console.WriteLineColored(ConsoleColor.Red, pex.Message);
+                    using (console.ForegroundColorPeriod(ConsoleColor.Red)) console.WriteLine(pex.Message);
                     break;
                 case PavedMessageKind.Warning:
                 case PavedMessageKind.Cancelled:
-                    console.WriteLineColored(ConsoleColor.Yellow, pex.Message);
+                    using (console.ForegroundColorPeriod(ConsoleColor.Yellow)) console.WriteLine(pex.Message);
                     break;
                 case PavedMessageKind.Information:
                 default:
-                    Console.WriteLine(pex.Message);
+                    console.WriteLine(pex.Message);
                     break;
                 }
             }
             else
             {
-                console.WriteLineColored(ConsoleColor.Red, ex.ToString());
+                using (console.ForegroundColorPeriod(ConsoleColor.Red)) console.WriteLine(ex.ToString());
             }
         }
 
@@ -106,8 +114,17 @@ public static class Paved
             {
                 if (ex is OperationCanceledException)
                 {
-                    console.WriteLineColored(ConsoleColor.Yellow, "Operation cancelled.");
+                    using (console.ForegroundColorPeriod(ConsoleColor.Yellow)) console.WriteLine("Operation cancelled.");
                     return 254;
+                }
+                if (ex is CmdProcExitCodeException cex)
+                {
+                    using (console.ForegroundColorPeriod(ConsoleColor.Red))
+                    {
+                        console.WriteLine(cex.Message);
+                        console.WriteLine($"Output: {cex.Output}");
+                    }
+                    return cex.ExitCode;
                 }
                 if (ex is PavedMessageException pex)
                 {
@@ -115,18 +132,18 @@ public static class Paved
                     switch (pex.Kind)
                     {
                     case PavedMessageKind.Error:
-                        console.WriteLineColored(ConsoleColor.Red, pex.Message);
+                        using (console.ForegroundColorPeriod(ConsoleColor.Red)) console.WriteLine(pex.Message);
                         break;
                     case PavedMessageKind.Warning:
-                        console.WriteLineColored(ConsoleColor.Yellow, pex.Message);
+                        using (console.ForegroundColorPeriod(ConsoleColor.Yellow)) console.WriteLine(pex.Message);
                         break;
                     case PavedMessageKind.Cancelled:
                         exitCode = 254;
-                        console.WriteLineColored(ConsoleColor.Yellow, pex.Message);
+                        using (console.ForegroundColorPeriod(ConsoleColor.Yellow)) console.WriteLine(pex.Message);
                         break;
                     case PavedMessageKind.Information:
                     default:
-                        Console.WriteLine(pex.Message);
+                        console.WriteLine(pex.Message);
                         break;
                     }
                     if (pex is PavedExitException eex)
@@ -136,7 +153,7 @@ public static class Paved
                     return exitCode;
                 }
 
-                console.WriteLineColored(ConsoleColor.Red, ex.ToString());
+                using (console.ForegroundColorPeriod(ConsoleColor.Red)) console.WriteLine(ex.ToString());
                 return 255;
             };
             config?.Invoke(options);
