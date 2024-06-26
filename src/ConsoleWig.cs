@@ -35,20 +35,6 @@ public sealed class ConsoleWig : IConsoleWig
     public static IConsoleWig NewLine()
         => Facade.NewLine();
 
-    /// <summary>指定したカラーでテキストを出力する。</summary>
-    /// <param name="color">色</param>
-    /// <param name="text">テキスト</param>
-    /// <returns>呼び出し元インスタンス自身</returns>
-    public static IConsoleWig WriteColored(ConsoleColor color, string text)
-        => Facade.WriteColored(color, text);
-
-    /// <summary>指定したカラーでテキスト行を出力する。</summary>
-    /// <param name="color">色</param>
-    /// <param name="text">テキスト</param>
-    /// <returns>呼び出し元インスタンス自身</returns>
-    public static IConsoleWig WriteLineColored(ConsoleColor color, string text)
-        => Facade.WriteLineColored(color, text);
-
     /// <summary>指定したハイパーリンクを出力する</summary>
     /// <param name="uri">リンク先URI</param>
     /// <param name="text">リンクテキスト</param>
@@ -216,44 +202,6 @@ public interface IConsoleWig
     public IConsoleWig NewLine()
     {
         Console.WriteLine();
-        return this;
-    }
-
-    /// <summary>指定したカラーでテキストを出力する。</summary>
-    /// <param name="color">色</param>
-    /// <param name="text">テキスト</param>
-    /// <returns>呼び出し元インスタンス自身</returns>
-    public IConsoleWig WriteColored(ConsoleColor color, string text)
-    {
-        var original = Console.ForegroundColor;
-        try
-        {
-            Console.ForegroundColor = color;
-            Console.Write(text);
-        }
-        finally
-        {
-            Console.ForegroundColor = original;
-        }
-        return this;
-    }
-
-    /// <summary>指定したカラーでテキスト行を出力する。</summary>
-    /// <param name="color">色</param>
-    /// <param name="text">テキスト</param>
-    /// <returns>呼び出し元インスタンス自身</returns>
-    public IConsoleWig WriteLineColored(ConsoleColor color, string text)
-    {
-        var original = Console.ForegroundColor;
-        try
-        {
-            Console.ForegroundColor = color;
-            Console.WriteLine(text);
-        }
-        finally
-        {
-            Console.ForegroundColor = original;
-        }
         return this;
     }
 
