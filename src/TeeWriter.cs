@@ -165,7 +165,7 @@ public class TeeWriter : TextWriter, ITeeWriter, IDisposable
     /// <returns>自身のインスタンス</returns>
     public TeeWriter Bind(TextWriter writer)
     {
-        if (this.disposedFlag) throw new ObjectDisposedException(this.GetType().FullName);
+        ObjectDisposedException.ThrowIf(this.disposedFlag, this);
 
         if (!this.companions.Contains(writer)) this.companions.Add(writer);
         if (!this.resources.Contains(writer)) this.resources.Add(writer);
@@ -177,7 +177,7 @@ public class TeeWriter : TextWriter, ITeeWriter, IDisposable
     /// <returns>自身のインスタンス</returns>
     public TeeWriter Bind(params TextWriter[] writers)
     {
-        if (this.disposedFlag) throw new ObjectDisposedException(this.GetType().FullName);
+        ObjectDisposedException.ThrowIf(this.disposedFlag, this);
 
         foreach (var writer in writers)
         {
@@ -192,7 +192,7 @@ public class TeeWriter : TextWriter, ITeeWriter, IDisposable
     /// <returns>自身のインスタンス</returns>
     public TeeWriter With(TextWriter writer)
     {
-        if (this.disposedFlag) throw new ObjectDisposedException(this.GetType().FullName);
+        ObjectDisposedException.ThrowIf(this.disposedFlag, this);
 
         if (!this.companions.Contains(writer)) this.companions.Add(writer);
         return this;
@@ -203,7 +203,7 @@ public class TeeWriter : TextWriter, ITeeWriter, IDisposable
     /// <returns>自身のインスタンス</returns>
     public TeeWriter With(params TextWriter[] writers)
     {
-        if (this.disposedFlag) throw new ObjectDisposedException(this.GetType().FullName);
+        ObjectDisposedException.ThrowIf(this.disposedFlag, this);
 
         foreach (var writer in writers)
         {
@@ -217,7 +217,7 @@ public class TeeWriter : TextWriter, ITeeWriter, IDisposable
     /// <returns>自身のインスタンス</returns>
     public TeeWriter Leave(TextWriter writer)
     {
-        if (this.disposedFlag) throw new ObjectDisposedException(this.GetType().FullName);
+        ObjectDisposedException.ThrowIf(this.disposedFlag, this);
 
         this.companions.Remove(writer);
         this.resources.Remove(writer);

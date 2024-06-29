@@ -16,5 +16,5 @@ public static class StringUnicodeExtensions
         => CometFlavor.Unicode.Extensions.Text.StringExtensions.EllipsisByWidth(self ?? "", width, SimpleEqwMeasure, marker);
 
     /// <summary>半角=1,全角=2に評価するシンプルな幅評価値</summary>
-    private static readonly EawMeasure SimpleEqwMeasure = new EawMeasure(1, 2, 1);
+    private static readonly EawMeasure SimpleEqwMeasure = new(1, 2, 1);
 }

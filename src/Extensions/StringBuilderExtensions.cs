@@ -22,7 +22,7 @@ public static class StringBuilderExtensions
     /// <returns>nullや空白文字ならば true</returns>
     public static bool IsWhite(this StringBuilder self)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
 
         foreach (var chunk in self.GetChunks())
         {
@@ -44,9 +44,8 @@ public static class StringBuilderExtensions
     public static bool StartsWith(this StringBuilder self, string value)
     {
         // パラメータの検証 
-        if (self == null) throw new ArgumentNullException(nameof(self));
-        if (value == null) throw new ArgumentNullException(nameof(value));
-        if (value.Length <= 0) throw new ArgumentException($"Invalid {nameof(value)}");
+        ArgumentNullException.ThrowIfNull(self);
+        ArgumentException.ThrowIfNullOrEmpty(value);
 
         // 一致判定対象。スパンでずらしていく。
         var target = value.AsSpan();
@@ -80,9 +79,8 @@ public static class StringBuilderExtensions
     public static bool StartsWith(this StringBuilder self, string value, StringComparison comparison)
     {
         // パラメータの検証 
-        if (self == null) throw new ArgumentNullException(nameof(self));
-        if (value == null) throw new ArgumentNullException(nameof(value));
-        if (value.Length <= 0) throw new ArgumentException($"Invalid {nameof(value)}");
+        ArgumentNullException.ThrowIfNull(self);
+        ArgumentException.ThrowIfNullOrEmpty(value);
 
         // 一致判定対象。スパンでずらしていく。
         var target = value.AsSpan();
@@ -115,9 +113,8 @@ public static class StringBuilderExtensions
     public static bool EndsWith(this StringBuilder self, string value)
     {
         // パラメータの検証 
-        if (self == null) throw new ArgumentNullException(nameof(self));
-        if (value == null) throw new ArgumentNullException(nameof(value));
-        if (value.Length <= 0) throw new ArgumentException($"Invalid {nameof(value)}");
+        ArgumentNullException.ThrowIfNull(self);
+        ArgumentException.ThrowIfNullOrEmpty(value);
 
         // 比較文字列より小さい場合は不一致に確定
         if (self.Length < value.Length) return false;
@@ -146,9 +143,8 @@ public static class StringBuilderExtensions
     public static bool EndsWith(this StringBuilder self, string value, StringComparison comparison)
     {
         // パラメータの検証 
-        if (self == null) throw new ArgumentNullException(nameof(self));
-        if (value == null) throw new ArgumentNullException(nameof(value));
-        if (value.Length <= 0) throw new ArgumentException($"Invalid {nameof(value)}");
+        ArgumentNullException.ThrowIfNull(self);
+        ArgumentException.ThrowIfNullOrEmpty(value);
 
         // 比較文字列より小さい場合は不一致に確定
         if (self.Length < value.Length) return false;

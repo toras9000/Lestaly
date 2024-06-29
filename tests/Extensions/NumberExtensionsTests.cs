@@ -1,5 +1,4 @@
 ﻿using System.Buffers.Binary;
-using FluentAssertions;
 
 namespace LestalyTest.Extensions;
 

@@ -1,7 +1,4 @@
-﻿using FluentAssertions;
-using Lestaly;
-
-namespace LestalyTest.Extensions;
+﻿namespace LestalyTest.Extensions;
 
 [TestClass()]
 public class FileSystemInfoExtensionsTests

@@ -6,6 +6,7 @@ namespace Lestaly.Cx;
 /// <summary>
 /// コマンドをシンプルに実行するための拡張メソッド
 /// </summary>
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:命名スタイル", Justification = "このクラスでは意図的に小文字メソッドを使っている")]
 public static class CmdStringExtensions
 {
     /// <summary>文字列をコマンドラインとみなしてプロセスを実行する</summary>
@@ -38,7 +39,7 @@ public static class CmdStringExtensions
     /// <param name="arguments">引数リスト</param>
     /// <returns>コマンド実行準備インスタンス</returns>
     public static CmdCx args(this string command, params string[] arguments)
-        => new CmdCx(command, arguments);
+        => new(command, arguments);
 
     /// <summary>文字列をコマンドラインとみなし、コンソール出力なしのプロセス実行準備を行う</summary>
     /// <param name="commandline">コマンドライン文字列。最初の空白より後ろを引数とみなす。</param>

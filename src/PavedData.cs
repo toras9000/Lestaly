@@ -69,21 +69,13 @@ public class PavedOptions<T>
     }
 
     /// <summary>一時停止モードを設定する。</summary>
-    public PavedOptions<T> PauseOn(PavedPause mode, int timeout = Timeout.Infinite)
+    public PavedOptions<T> PauseOn(PavedPause mode, int timeout = Timeout.Infinite) => mode switch
     {
-        switch (mode)
-        {
-        case PavedPause.None:
-            return this.NoPause();
-        case PavedPause.Any:
-            return this.AnyPause(timeout);
-        case PavedPause.Cancel:
-            return this.CancelPause(timeout);
-        case PavedPause.Error:
-        default:
-            return this.ErrorPause(timeout);
-        }
-    }
+        PavedPause.None => this.NoPause(),
+        PavedPause.Any => this.AnyPause(timeout),
+        PavedPause.Cancel => this.CancelPause(timeout),
+        _ => this.ErrorPause(timeout),
+    };
     #endregion
 }
 

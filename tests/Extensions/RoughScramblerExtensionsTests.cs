@@ -1,6 +1,4 @@
-﻿using FluentAssertions;
-
-namespace LestalyTest.Extensions;
+﻿namespace LestalyTest.Extensions;
 
 [TestClass()]
 public class RoughScramblerExtensionsTests

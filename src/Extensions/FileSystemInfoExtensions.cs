@@ -11,7 +11,7 @@ public static class FileSystemInfoExtensions
     /// <returns>ReadOnlyであるか否か</returns>
     public static bool GetReadOnly(this FileSystemInfo self)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
         return (self.Attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly;
     }
 
@@ -21,7 +21,7 @@ public static class FileSystemInfoExtensions
     /// <returns>対象ファイル/ディレクトリ情報</returns>
     public static T SetReadOnly<T>(this T self, bool readOnly) where T : FileSystemInfo
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
         if (readOnly)
         {
             self.Attributes |= FileAttributes.ReadOnly;
@@ -108,8 +108,8 @@ public static class FileSystemInfoExtensions
         {
             throw generator?.Invoke(self) ?? self switch
             {
-                FileInfo f => new FileNotFoundException($"`{self.FullName}` is not found.", self.FullName),
-                DirectoryInfo d => new DirectoryNotFoundException($"`{self.FullName}` is not found."),
+                FileInfo f => new FileNotFoundException($"`{f.FullName}` is not found.", f.FullName),
+                DirectoryInfo d => new DirectoryNotFoundException($"`{d.FullName}` is not found."),
                 _ => new InvalidDataException(),
             };
         }
@@ -126,8 +126,8 @@ public static class FileSystemInfoExtensions
         {
             throw generator?.Invoke(self) ?? self switch
             {
-                FileInfo f => new FileNotFoundException($"`{self.FullName}` is not found.", self.FullName),
-                DirectoryInfo d => new DirectoryNotFoundException($"`{self.FullName}` is not found."),
+                FileInfo f => new FileNotFoundException($"`{f.FullName}` is not found.", f.FullName),
+                DirectoryInfo d => new DirectoryNotFoundException($"`{d.FullName}` is not found."),
                 _ => new InvalidDataException(),
             };
         }

@@ -65,8 +65,8 @@ public static class EnumerableExtensions
     /// <returns>エラーの無い場合は元と同じシーケンス</returns>
     public static IEnumerable<TSource> Must<TSource>(this IEnumerable<TSource> self, Func<TSource, bool> predicator, Func<Exception>? errorGenerator = null)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
-        if (predicator == null) throw new ArgumentNullException(nameof(predicator));
+        ArgumentNullException.ThrowIfNull(self);
+        ArgumentNullException.ThrowIfNull(predicator);
 
         IEnumerable<TSource> mustEnumerator()
         {
@@ -122,7 +122,7 @@ public static class EnumerableExtensions
     /// <param name="value2">シーケンス要素2</param>
     public static void Deconstruct<TSource>(this IEnumerable<TSource>? self, out TSource? value1, out TSource? value2)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
 
         using var enumerator = self.GetEnumerator();
         value1 = enumerator.MoveNext() ? enumerator.Current : default;
@@ -137,7 +137,7 @@ public static class EnumerableExtensions
     /// <param name="value3">シーケンス要素3</param>
     public static void Deconstruct<TSource>(this IEnumerable<TSource>? self, out TSource? value1, out TSource? value2, out TSource? value3)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
 
         using var enumerator = self.GetEnumerator();
         value1 = enumerator.MoveNext() ? enumerator.Current : default;
@@ -154,7 +154,7 @@ public static class EnumerableExtensions
     /// <param name="value4">シーケンス要素4</param>
     public static void Deconstruct<TSource>(this IEnumerable<TSource>? self, out TSource? value1, out TSource? value2, out TSource? value3, out TSource? value4)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
 
         using var enumerator = self.GetEnumerator();
         value1 = enumerator.MoveNext() ? enumerator.Current : default;
@@ -173,7 +173,7 @@ public static class EnumerableExtensions
     /// <param name="value5">シーケンス要素5</param>
     public static void Deconstruct<TSource>(this IEnumerable<TSource>? self, out TSource? value1, out TSource? value2, out TSource? value3, out TSource? value4, out TSource? value5)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
 
         using var enumerator = self.GetEnumerator();
         value1 = enumerator.MoveNext() ? enumerator.Current : default;
@@ -190,7 +190,7 @@ public static class EnumerableExtensions
     /// <returns>非同期シーケンス</returns>
     public static IAsyncEnumerable<TSource> ToPseudoAsyncEnumerable<TSource>(this IEnumerable<TSource> self)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
 
         static async IAsyncEnumerable<T> enumerateAsync<T>(IEnumerable<T> source)
         {

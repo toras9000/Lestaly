@@ -99,11 +99,11 @@ public static class PathUtility
             else
             {
                 // エスケープ対象キャラクタをパーセントエンコード。
-                if (builder == null) builder = new();
-                builder.Append(name.Slice(0, idx));
+                builder ??= new();
+                builder.Append(name[..idx]);
                 builder.Append('%').Append($"{(ushort)name[idx]:X2}");
                 // 次のキャラクタに進む
-                name = name.Slice(idx + 1);
+                name = name[(idx + 1)..];
             }
         }
 

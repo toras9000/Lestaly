@@ -1,6 +1,5 @@
 ﻿namespace LestalyTest;
 
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060")]
 public static class MemoryTestExtensions
 {
     public static string OverloadTest<T>(this Span<T> self) => "Span";

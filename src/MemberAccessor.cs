@@ -17,7 +17,7 @@ public class MemberAccessor
     public static Func<T?, object?> CreatePropertyGetter<T>(string name, BindingFlags flags = BindingFlags.Instance | BindingFlags.Public)
     {
         // パラメータの検証
-        if (name == null) throw new ArgumentNullException(nameof(name));
+        ArgumentNullException.ThrowIfNull(name);
 
         // ターゲットとなるプロパティの情報を取得
         var propInfo = typeof(T).GetProperty(name, flags) ?? throw new ArgumentException("Cannot get property info");
@@ -34,7 +34,7 @@ public class MemberAccessor
     public static Func<T?, object?> CreatePropertyGetter<T>(PropertyInfo propInfo, bool nonPublic = false)
     {
         // パラメータの検証
-        if (propInfo == null) throw new ArgumentNullException(nameof(propInfo));
+        ArgumentNullException.ThrowIfNull(propInfo);
         if (propInfo.DeclaringType == null) throw new ArgumentException("Illegal receiver type");
         if (!propInfo.DeclaringType.IsAssignableFrom(typeof(T))) throw new InvalidOperationException("Receiver type mismatch");
 
@@ -92,7 +92,7 @@ public class MemberAccessor
     public static Func<T?, object?> GeneratePropertyGetter<T>(string name, BindingFlags flags = BindingFlags.Instance | BindingFlags.Public)
     {
         // パラメータの検証
-        if (name == null) throw new ArgumentNullException(nameof(name));
+        ArgumentNullException.ThrowIfNull(name);
 
         // ターゲットとなるプロパティの情報を取得
         var propInfo = typeof(T).GetProperty(name, flags) ?? throw new ArgumentException("Cannot get property info");
@@ -115,7 +115,7 @@ public class MemberAccessor
     public static Func<T?, object?> GeneratePropertyGetter<T>(PropertyInfo propInfo, bool nonPublic = false)
     {
         // パラメータの検証
-        if (propInfo == null) throw new ArgumentNullException(nameof(propInfo));
+        ArgumentNullException.ThrowIfNull(propInfo);
         if (!typeof(T).IsAssignableFrom(propInfo.DeclaringType)) throw new InvalidOperationException("Receiver type mismatch");
 
         // プロパティのゲッターメソッド情報取得
@@ -158,7 +158,7 @@ public class MemberAccessor
     public static Func<T?, object?> CompilePropertyGetter<T>(string name, BindingFlags flags = BindingFlags.Instance | BindingFlags.Public)
     {
         // パラメータの検証
-        if (name == null) throw new ArgumentNullException(nameof(name));
+        ArgumentNullException.ThrowIfNull(name);
 
         // ターゲットとなるプロパティの情報を取得
         var propInfo = typeof(T).GetProperty(name, flags) ?? throw new ArgumentException("Cannot get property info");
@@ -179,7 +179,7 @@ public class MemberAccessor
     public static Func<T?, object?> CompilePropertyGetter<T>(PropertyInfo propInfo, bool nonPublic = false)
     {
         // パラメータの検証
-        if (propInfo == null) throw new ArgumentNullException(nameof(propInfo));
+        ArgumentNullException.ThrowIfNull(propInfo);
         if (!typeof(T).IsAssignableFrom(propInfo.DeclaringType)) throw new InvalidOperationException("Receiver type mismatch");
 
         var getMethod = propInfo.GetGetMethod(nonPublic) ?? throw new ArgumentException("Cannot get getter");
@@ -206,7 +206,7 @@ public class MemberAccessor
     public static Func<T?, object?> CompileFieldGetter<T>(FieldInfo fieldInfo, bool nonPublic = false)
     {
         // パラメータの検証
-        if (fieldInfo == null) throw new ArgumentNullException(nameof(fieldInfo));
+        ArgumentNullException.ThrowIfNull(fieldInfo);
         if (!typeof(T).IsAssignableFrom(fieldInfo.DeclaringType)) throw new InvalidOperationException("Receiver type mismatch");
         if (!nonPublic && !fieldInfo.IsPublic) throw new ArgumentException("Not public");
 

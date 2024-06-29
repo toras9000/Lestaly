@@ -8,7 +8,7 @@ public static class SpecialFolder
     /// <summary>指定の種別の特殊ディレクトリ情報を取得する。</summary>
     /// <param name="kind">特殊フォルダ種別</param>
     /// <returns>ディレクトリ情報</returns>
-    public static DirectoryInfo Get(Environment.SpecialFolder kind) => new DirectoryInfo(Environment.GetFolderPath(kind));
+    public static DirectoryInfo Get(Environment.SpecialFolder kind) => new(Environment.GetFolderPath(kind));
 
     /// <summary>ユーザプロファイルディレクトリ情報を取得する。</summary>
     /// <returns>ディレクトリ情報</returns>
@@ -20,5 +20,6 @@ public static class SpecialFolder
 
     /// <summary>テンポラリディレクトリ情報を取得する。</summary>
     /// <returns>ディレクトリ情報</returns>
-    public static DirectoryInfo Temporary() => new DirectoryInfo(Path.GetTempPath());
+    public static DirectoryInfo Temporary() => new(Path.GetTempPath());
 }
+

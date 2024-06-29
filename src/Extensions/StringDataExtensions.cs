@@ -48,7 +48,7 @@ public static class StringDataExtensions
         const char Lf = '\x0A';
 
         // パラメータ検証
-        if (options == null) throw new ArgumentNullException(nameof(options));
+        ArgumentNullException.ThrowIfNull(options);
         if (options.Separator == Cr) throw new NotSupportedException("Invalid separator");
         if (options.Separator == Lf) throw new NotSupportedException("Invalid separator");
         if (options.Quote == Cr) throw new NotSupportedException("Invalid quotation");

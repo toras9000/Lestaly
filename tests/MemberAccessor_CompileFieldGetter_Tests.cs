@@ -39,10 +39,8 @@ public class MemberAccessor_CompileFieldGetter_Tests
         public static string StaticRefField = "";
         public static int StaticValField;
 
-#pragma warning disable 0414  // 使用されていないプライベート メンバーを削除する
         private string PrivateRefField = "asd";
         private int PrivateValField = 123;
-#pragma warning restore 0414  // 使用されていないプライベート メンバーを削除する
     }
 
     [TestMethod]

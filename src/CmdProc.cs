@@ -20,6 +20,7 @@ public record struct CmdResult(int ExitCode, string Output);
 /// <summary>
 /// コマンド実行クラス
 /// </summary>
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1068:CancellationToken パラメーターは最後に指定する必要があります", Justification = "パラメータ利用頻度的にここでは無視する")]
 public static class CmdProc
 {
     /// <summary>コマンドを実行して終了コードを取得する</summary>
@@ -186,10 +187,7 @@ public static class CmdProc
         // 実行するコマンドの情報を設定
         var target = new ProcessStartInfo();
         target.FileName = command;
-        if (argumenter != null)
-        {
-            argumenter(target);
-        }
+        argumenter?.Invoke(target);
         foreach (var env in environments.CoalesceEmpty())
         {
             target.Environment[env.Key] = env.Value;
@@ -220,7 +218,7 @@ public static class CmdProc
         var proc = Process.Start(target) ?? throw new CmdProcException("Cannot execute command.");
 
         // 出力ストリームのリダイレクトタスクを生成するローカル関数
-        async Task redirectProcStream(TextReader reader, TextWriter writer, CancellationToken breaker, bool terminate = false)
+        static async Task redirectProcStream(TextReader reader, TextWriter writer, CancellationToken breaker, bool terminate = false)
         {
             await Task.Yield();
             try

@@ -16,7 +16,7 @@ public static partial class EnumerableDataExtensions
     /// <returns>書き込み処理タスク</returns>
     public static void SaveToExcel<TSource>(this IEnumerable<TSource> self, FileInfo file)
     {
-        if (file == null) throw new ArgumentNullException(nameof(file));
+        ArgumentNullException.ThrowIfNull(file);
         self.SaveToExcel(file.FullName);
     }
 
@@ -28,7 +28,7 @@ public static partial class EnumerableDataExtensions
     /// <returns>書き込み処理タスク</returns>
     public static void SaveToExcel<TSource>(this IEnumerable<TSource> self, FileInfo file, SaveToExcelOptions options)
     {
-        if (file == null) throw new ArgumentNullException(nameof(file));
+        ArgumentNullException.ThrowIfNull(file);
         self.SaveToExcel(file.FullName, options);
     }
 
@@ -61,7 +61,7 @@ public static partial class EnumerableDataExtensions
     /// <returns>書き込み処理タスク</returns>
     public static Task SaveToExcelAsync<TSource>(this IAsyncEnumerable<TSource> self, FileInfo file, CancellationToken cancelToken = default)
     {
-        if (file == null) throw new ArgumentNullException(nameof(file));
+        ArgumentNullException.ThrowIfNull(file);
         return self.SaveToExcelAsync(file.FullName, cancelToken);
     }
 
@@ -74,7 +74,7 @@ public static partial class EnumerableDataExtensions
     /// <returns>書き込み処理タスク</returns>
     public static Task SaveToExcelAsync<TSource>(this IAsyncEnumerable<TSource> self, FileInfo file, SaveToExcelOptions options, CancellationToken cancelToken = default)
     {
-        if (file == null) throw new ArgumentNullException(nameof(file));
+        ArgumentNullException.ThrowIfNull(file);
         return self.SaveToExcelAsync(file.FullName, options, cancelToken);
     }
 
@@ -99,12 +99,11 @@ public static partial class EnumerableDataExtensions
     public static async Task SaveToExcelAsync<TSource>(this IAsyncEnumerable<TSource> self, string filePath, SaveToExcelOptions options, CancellationToken cancelToken = default)
     {
         // パラメータチェック
-        if (self == null) throw new ArgumentNullException(nameof(self));
-        if (filePath == null) throw new ArgumentNullException(nameof(filePath));
-        if (options == null) throw new ArgumentNullException(nameof(options));
-
-        if (options.RowOffset < 0) throw new ArgumentOutOfRangeException(nameof(options.RowOffset));
-        if (options.ColumnOffset < 0) throw new ArgumentOutOfRangeException(nameof(options.ColumnOffset));
+        ArgumentNullException.ThrowIfNull(self);
+        ArgumentNullException.ThrowIfNull(filePath);
+        ArgumentNullException.ThrowIfNull(options);
+        ArgumentOutOfRangeException.ThrowIfNegative(options.RowOffset, $"{nameof(options)}.{nameof(options.RowOffset)}");
+        ArgumentOutOfRangeException.ThrowIfNegative(options.ColumnOffset, $"{nameof(options)}.{nameof(options.ColumnOffset)}");
 
         // 出力対象カラムを収集
         var columns = collectTypeColumns<TSource>(options);
@@ -263,53 +262,51 @@ public static partial class EnumerableDataExtensions
             }
         }
 
-        switch (type)
+        return type switch
         {
-        case var t when t == typeof(bool): return (cell, value) => cell.Value = (bool)value;
-        case var t when t == typeof(sbyte): return (cell, value) => cell.Value = (sbyte?)value;
-        case var t when t == typeof(byte): return (cell, value) => cell.Value = (byte?)value;
-        case var t when t == typeof(short): return (cell, value) => cell.Value = (short?)value;
-        case var t when t == typeof(ushort): return (cell, value) => cell.Value = (ushort?)value;
-        case var t when t == typeof(int): return (cell, value) => cell.Value = (int?)value;
-        case var t when t == typeof(uint): return (cell, value) => cell.Value = (uint?)value;
-        case var t when t == typeof(long): return (cell, value) => cell.Value = (long?)value;
-        case var t when t == typeof(ulong): return (cell, value) => cell.Value = (ulong?)value;
-        case var t when t == typeof(float): return (cell, value) => cell.Value = (float?)value;
-        case var t when t == typeof(double): return (cell, value) => cell.Value = (double?)value;
-        case var t when t == typeof(decimal): return (cell, value) => cell.Value = (decimal?)value;
-        case var t when t == typeof(DateTime): return (cell, value) => cell.Value = (DateTime?)value;
-        case var t when t == typeof(TimeSpan): return (cell, value) => cell.Value = (TimeSpan?)value;
-        case var t when t == typeof(sbyte?): return (cell, value) => cell.Value = (sbyte?)value;
-        case var t when t == typeof(byte?): return (cell, value) => cell.Value = (byte?)value;
-        case var t when t == typeof(short?): return (cell, value) => cell.Value = (short?)value;
-        case var t when t == typeof(ushort?): return (cell, value) => cell.Value = (ushort?)value;
-        case var t when t == typeof(int?): return (cell, value) => cell.Value = (int?)value;
-        case var t when t == typeof(uint?): return (cell, value) => cell.Value = (uint?)value;
-        case var t when t == typeof(long?): return (cell, value) => cell.Value = (long?)value;
-        case var t when t == typeof(ulong?): return (cell, value) => cell.Value = (ulong?)value;
-        case var t when t == typeof(float?): return (cell, value) => cell.Value = (float?)value;
-        case var t when t == typeof(double?): return (cell, value) => cell.Value = (double?)value;
-        case var t when t == typeof(decimal?): return (cell, value) => cell.Value = (decimal?)value;
-        case var t when t == typeof(DateTime?): return (cell, value) => cell.Value = (DateTime?)value;
-        case var t when t == typeof(TimeSpan?): return (cell, value) => cell.Value = (TimeSpan?)value;
-        case var t when t == typeof(string): return (cell, value) => cell.Value = (string)value;
-
-        case var t when t.IsAssignableTo(typeof(ExcelHyperlink)):
-            return (cell, value) =>
+            var t when t == typeof(bool) => (cell, value) => cell.Value = (bool)value,
+            var t when t == typeof(sbyte) => (cell, value) => cell.Value = (sbyte?)value,
+            var t when t == typeof(byte) => (cell, value) => cell.Value = (byte?)value,
+            var t when t == typeof(short) => (cell, value) => cell.Value = (short?)value,
+            var t when t == typeof(ushort) => (cell, value) => cell.Value = (ushort?)value,
+            var t when t == typeof(int) => (cell, value) => cell.Value = (int?)value,
+            var t when t == typeof(uint) => (cell, value) => cell.Value = (uint?)value,
+            var t when t == typeof(long) => (cell, value) => cell.Value = (long?)value,
+            var t when t == typeof(ulong) => (cell, value) => cell.Value = (ulong?)value,
+            var t when t == typeof(float) => (cell, value) => cell.Value = (float?)value,
+            var t when t == typeof(double) => (cell, value) => cell.Value = (double?)value,
+            var t when t == typeof(decimal) => (cell, value) => cell.Value = (decimal?)value,
+            var t when t == typeof(DateTime) => (cell, value) => cell.Value = (DateTime?)value,
+            var t when t == typeof(TimeSpan) => (cell, value) => cell.Value = (TimeSpan?)value,
+            var t when t == typeof(sbyte?) => (cell, value) => cell.Value = (sbyte?)value,
+            var t when t == typeof(byte?) => (cell, value) => cell.Value = (byte?)value,
+            var t when t == typeof(short?) => (cell, value) => cell.Value = (short?)value,
+            var t when t == typeof(ushort?) => (cell, value) => cell.Value = (ushort?)value,
+            var t when t == typeof(int?) => (cell, value) => cell.Value = (int?)value,
+            var t when t == typeof(uint?) => (cell, value) => cell.Value = (uint?)value,
+            var t when t == typeof(long?) => (cell, value) => cell.Value = (long?)value,
+            var t when t == typeof(ulong?) => (cell, value) => cell.Value = (ulong?)value,
+            var t when t == typeof(float?) => (cell, value) => cell.Value = (float?)value,
+            var t when t == typeof(double?) => (cell, value) => cell.Value = (double?)value,
+            var t when t == typeof(decimal?) => (cell, value) => cell.Value = (decimal?)value,
+            var t when t == typeof(DateTime?) => (cell, value) => cell.Value = (DateTime?)value,
+            var t when t == typeof(TimeSpan?) => (cell, value) => cell.Value = (TimeSpan?)value,
+            var t when t == typeof(string) => (cell, value) => cell.Value = (string)value,
+            var t when t.IsAssignableTo(typeof(ExcelHyperlink)) => (cell, value) =>
             {
                 var link = (ExcelHyperlink)value;
                 cell.SetHyperlink(new XLHyperlink(link.Target, link.Tooltip));
                 cell.Value = link.Display ?? link.Target;
-            };
-        case var t when t.IsAssignableTo(typeof(ExcelFormula)):
-            return (cell, value) =>
+            }
+            ,
+            var t when t.IsAssignableTo(typeof(ExcelFormula)) => (cell, value) =>
             {
                 var fomula = (ExcelFormula)value;
                 if (fomula.IsR1C1) cell.FormulaR1C1 = fomula.Expression;
                 else cell.FormulaA1 = fomula.Expression;
-            };
-        case var t when t.IsAssignableTo(typeof(ExcelStyle)):
-            return (cell, value) =>
+            }
+            ,
+            var t when t.IsAssignableTo(typeof(ExcelStyle)) => (cell, value) =>
             {
                 static XLColor fromText(string text) => text.StartsWith('#') ? XLColor.FromHtml(text) : XLColor.FromName(text);
                 var style = (ExcelStyle)value;
@@ -339,10 +336,10 @@ public static partial class EnumerableDataExtensions
                         writeCellValue(cell, style.Value);
                     }
                 }
-            };
-        default:
-            return (cell, value) => writeCellValue(cell, value);
-        }
+            }
+            ,
+            _ => (cell, value) => writeCellValue(cell, value),
+        };
     }
 
     /// <summary>セルにプリミティブ値を設定する</summary>
@@ -350,24 +347,24 @@ public static partial class EnumerableDataExtensions
     /// <param name="value">設定する値。サポートされるプリミティブ値でない場合は文字列化して設定する。</param>
     private static void writeCellValue(IXLCell cell, object value)
     {
-        switch (value)
+        cell.Value = value switch
         {
-        case bool v: cell.Value = v; break;
-        case sbyte v: cell.Value = v; break;
-        case byte v: cell.Value = v; break;
-        case short v: cell.Value = v; break;
-        case ushort v: cell.Value = v; break;
-        case int v: cell.Value = v; break;
-        case uint v: cell.Value = v; break;
-        case long v: cell.Value = v; break;
-        case ulong v: cell.Value = v; break;
-        case float v: cell.Value = v; break;
-        case double v: cell.Value = v; break;
-        case decimal v: cell.Value = v; break;
-        case DateTime v: cell.Value = v; break;
-        case TimeSpan v: cell.Value = v; break;
-        default: cell.Value = value?.ToString(); break;
-        }
+            bool v => (XLCellValue)v,
+            sbyte v => (XLCellValue)v,
+            byte v => (XLCellValue)v,
+            short v => (XLCellValue)v,
+            ushort v => (XLCellValue)v,
+            int v => (XLCellValue)v,
+            uint v => (XLCellValue)v,
+            long v => (XLCellValue)v,
+            ulong v => (XLCellValue)v,
+            float v => (XLCellValue)v,
+            double v => (XLCellValue)v,
+            decimal v => (XLCellValue)v,
+            DateTime v => (XLCellValue)v,
+            TimeSpan v => (XLCellValue)v,
+            _ => (XLCellValue)(value?.ToString()),
+        };
     }
 
     /// <summary>型のメンバをカラムとして取り扱うための情報を収集する</summary>

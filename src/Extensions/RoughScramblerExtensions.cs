@@ -100,7 +100,7 @@ public static class RoughScramblerExtensions
     /// <param name="cancelToken">キャンセルトークン</param>
     public static async ValueTask ScrambleTextToFileAsync(this RoughScrambler self, FileInfo file, string text, FileStreamOptions? options = null, bool ignoreErr = false, CancellationToken cancelToken = default)
     {
-        if (file == null) throw new ArgumentNullException(nameof(file));
+        ArgumentNullException.ThrowIfNull(file);
         try
         {
             var bin = self.ScrambleText(text);
@@ -118,7 +118,7 @@ public static class RoughScramblerExtensions
     /// <param name="ignoreErr">保存エラーを無視するか否か</param>
     public static void ScrambleObjectToFile<T>(this RoughScrambler self, FileInfo file, T value, FileStreamOptions? options = null, bool ignoreErr = false)
     {
-        if (file == null) throw new ArgumentNullException(nameof(file));
+        ArgumentNullException.ThrowIfNull(file);
         try
         {
             var bin = self.ScrambleObject(value);
@@ -137,7 +137,7 @@ public static class RoughScramblerExtensions
     /// <param name="cancelToken">キャンセルトークン</param>
     public static async ValueTask ScrambleObjectToFileAsync<T>(this RoughScrambler self, FileInfo file, T value, FileStreamOptions? options = null, bool ignoreErr = false, CancellationToken cancelToken = default)
     {
-        if (file == null) throw new ArgumentNullException(nameof(file));
+        ArgumentNullException.ThrowIfNull(file);
         try
         {
             var bin = self.ScrambleObject(value);
@@ -154,7 +154,7 @@ public static class RoughScramblerExtensions
     /// <returns>スクランブル解除したテキスト。失敗時はnullを返却。</returns>
     public static string? DescrambleTextFromFile(this RoughScrambler self, FileInfo file)
     {
-        if (file == null) throw new ArgumentNullException(nameof(file));
+        ArgumentNullException.ThrowIfNull(file);
         try
         {
             var bin = file.ReadAllBytes();
@@ -174,7 +174,7 @@ public static class RoughScramblerExtensions
     /// <returns>スクランブル解除したテキスト。失敗時はnullを返却。</returns>
     public static async ValueTask<string?> DescrambleTextFromFileAsync(this RoughScrambler self, FileInfo file, CancellationToken cancelToken = default)
     {
-        if (file == null) throw new ArgumentNullException(nameof(file));
+        ArgumentNullException.ThrowIfNull(file);
         try
         {
             var bin = await file.ReadAllBytesAsync(cancelToken).ConfigureAwait(false);
@@ -194,7 +194,7 @@ public static class RoughScramblerExtensions
     /// <returns>スクランブル解除したオブジェクト。失敗時はnullを返却。</returns>
     public static T? DescrambleObjectFromFile<T>(this RoughScrambler self, FileInfo file)
     {
-        if (file == null) throw new ArgumentNullException(nameof(file));
+        ArgumentNullException.ThrowIfNull(file);
         try
         {
             var bin = file.ReadAllBytes();
@@ -215,7 +215,7 @@ public static class RoughScramblerExtensions
     /// <returns>スクランブル解除したオブジェクト。失敗時はnullを返却。</returns>
     public static async ValueTask<T?> DescrambleObjectFromFileAsync<T>(this RoughScrambler self, FileInfo file, CancellationToken cancelToken = default)
     {
-        if (file == null) throw new ArgumentNullException(nameof(file));
+        ArgumentNullException.ThrowIfNull(file);
         try
         {
             var bin = await file.ReadAllBytesAsync(cancelToken).ConfigureAwait(false);

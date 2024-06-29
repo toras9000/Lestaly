@@ -47,7 +47,7 @@ public static class StringEncodeExtensions
     public static byte[] EncodeUtf8(this ReadOnlySpan<char> self)
     {
         var writer = new ArrayBufferWriter<byte>(self.Length);
-        var length = Encoding.UTF8.GetBytes(self, writer);
+        Encoding.UTF8.GetBytes(self, writer);
         return writer.WrittenSpan.ToArray();
     }
 
@@ -99,7 +99,7 @@ public static class StringEncodeExtensions
     public static string EncodeUtf8Base64(this ReadOnlySpan<char> self, bool wrap = false)
     {
         var writer = new ArrayBufferWriter<byte>(self.Length / 4 + self.Length);
-        var length = Encoding.UTF8.GetBytes(self, writer);
+        Encoding.UTF8.GetBytes(self, writer);
         var option = wrap ? Base64FormattingOptions.InsertLineBreaks : Base64FormattingOptions.None;
         return Convert.ToBase64String(writer.WrittenSpan, option);
     }
@@ -170,7 +170,7 @@ public static class StringEncodeExtensions
     public static string EncodeUtf8Hex(this ReadOnlySpan<char> self)
     {
         var writer = new ArrayBufferWriter<byte>(self.Length / 4 + self.Length);
-        var length = Encoding.UTF8.GetBytes(self, writer);
+        Encoding.UTF8.GetBytes(self, writer);
         return Convert.ToHexString(writer.WrittenSpan);
     }
 

@@ -1,6 +1,5 @@
 ﻿namespace LestalyTest;
 
-
 [TestClass()]
 public class RentalArrayTests
 {

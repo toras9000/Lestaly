@@ -1,5 +1,4 @@
 ﻿using System.Globalization;
-using FluentAssertions;
 
 namespace LestalyTest;
 
@@ -160,7 +159,7 @@ public class NumberUtilsTests
         ni.NumberDecimalSeparator = "/";
         ni.NegativeSign = "!";
 
-        var formatter = (string num, char? sup) => $"<{num}>[{sup}]";
+        static string formatter(string num, char? sup) => $"<{num}>[{sup}]";
 
         NumberUtils.ToHumanize(0, si: false, ni, formatter).Should().Be("<0>[]");
         NumberUtils.ToHumanize(0, si: true, ni, formatter).Should().Be("<0>[]");
@@ -284,7 +283,7 @@ public class NumberUtilsTests
         ni.NumberDecimalSeparator = "/";
         ni.NegativeSign = "!";
 
-        var formatter = (string num, char? sup) => $"<{num}>[{sup}]";
+        static string formatter(string num, char? sup) => $"<{num}>[{sup}]";
 
         NumberUtils.ToHumanize(0u, si: false, ni, formatter).Should().Be("<0>[]");
         NumberUtils.ToHumanize(0u, si: true, ni, formatter).Should().Be("<0>[]");

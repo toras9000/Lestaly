@@ -419,7 +419,7 @@ public class DirectoryInfoExtensionsTests
             Sort = false,
         };
 
-        var selector = (FileInfo file) => file.ReadAllText();
+        static string selector(FileInfo file) => file.ReadAllText();
         var converter = new SelectFilesWalker<string>(context => context.SetResult(selector(context.File!)));
 
         var testExpects = testDir.Info.EnumerateFiles("*", SearchOption.TopDirectoryOnly).Select(selector);
@@ -457,7 +457,7 @@ public class DirectoryInfoExtensionsTests
             Sort = false,
         };
 
-        var selector = (FileInfo file) => file.ReadAllText();
+        static string selector(FileInfo file) => file.ReadAllText();
         var converter = new SelectFilesWalker<string>(context =>
         {
             if (context.File == null) context.Item.Should().BeOfType<DirectoryInfo>().And.Be(context.Directory);
@@ -816,8 +816,8 @@ public class DirectoryInfoExtensionsTests
             Sort = false,
         };
 
-        var selector = (FileInfo file) => file.ReadAllText();
-        var filter = (FileSystemInfo item) => item is DirectoryInfo || item.Name.Contains(".txt");
+        static string selector(FileInfo file) => file.ReadAllText();
+        static bool filter(FileSystemInfo item) => item is DirectoryInfo || item.Name.Contains(".txt");
         var converter = new SelectFilesWalker<string>(context => { if (filter(context.File!)) context.SetResult(selector(context.File!)); });
 
         var testExpects = testDir.Info.EnumerateFiles("*", SearchOption.AllDirectories)
@@ -990,7 +990,7 @@ public class DirectoryInfoExtensionsTests
             Sort = false,
         };
 
-        var selector = (FileInfo file) => file.ReadAllText();
+        static string selector(FileInfo file) => file.ReadAllText();
 
         var testExpects = testDir.Info.EnumerateFiles("*", SearchOption.AllDirectories)
             .Select(selector);
@@ -1026,8 +1026,8 @@ public class DirectoryInfoExtensionsTests
             Sort = false,
         };
 
-        var selector = (FileInfo file) => file.ReadAllText();
-        var filter = (FileSystemInfo item) => item is DirectoryInfo || item.Name.Contains(".txt");
+        static string selector(FileInfo file) => file.ReadAllText();
+        static bool filter(FileSystemInfo item) => item is DirectoryInfo || item.Name.Contains(".txt");
 
         var testExpects = testDir.Info.EnumerateFiles("*", SearchOption.AllDirectories)
             .Where(f => filter(f)).Select(selector);
@@ -1064,7 +1064,7 @@ public class DirectoryInfoExtensionsTests
         };
         var excludes = new[] { new Regex(@"[defg]+.txt"), };
 
-        var selector = (FileInfo file) => file.ReadAllText();
+        static string selector(FileInfo file) => file.ReadAllText();
 
         testDir.Info.SelectFiles(w => selector(w.File!), excludes, options: testOpt).Should().BeEquivalentTo(new[]
         {
@@ -1105,7 +1105,7 @@ public class DirectoryInfoExtensionsTests
         var excludes = new Regex[0];
         var includes = new[] { new Regex(@"[defg]+.txt"), };
 
-        var selector = (FileInfo file) => file.ReadAllText();
+        static string selector(FileInfo file) => file.ReadAllText();
 
         testDir.Info.SelectFiles(w => selector(w.File!), excludes, includes, options: testOpt).Should().BeEquivalentTo(new[]
         {
@@ -1186,7 +1186,6 @@ public class DirectoryInfoExtensionsTests
             Sort = false,
         };
 
-        var selector = (FileInfo file) => file.ReadAllText();
         var converter = new AsyncSelectFilesWalker<string>(async context =>
         {
             if (context.File == null) context.Item.Should().BeOfType<DirectoryInfo>().And.Be(context.Directory);
@@ -1554,7 +1553,7 @@ public class DirectoryInfoExtensionsTests
             Sort = false,
         };
 
-        var filter = (FileSystemInfo item) => item is DirectoryInfo || item.Name.Contains(".txt");
+        static bool filter(FileSystemInfo item) => item is DirectoryInfo || item.Name.Contains(".txt");
         var converter = new AsyncSelectFilesWalker<string>(async context =>
         {
             if (filter(context.File!)) context.SetResult(await context.File!.ReadAllTextAsync());
@@ -1766,7 +1765,7 @@ public class DirectoryInfoExtensionsTests
             Sort = false,
         };
 
-        var filter = (FileSystemInfo item) => item is DirectoryInfo || item.Name.Contains(".txt");
+        static bool filter(FileSystemInfo item) => item is DirectoryInfo || item.Name.Contains(".txt");
 
         var testExpects = testDir.Info.EnumerateFiles("*", SearchOption.AllDirectories)
             .Where(f => filter(f)).Select(f => f.ReadAllText());

@@ -264,12 +264,12 @@ public class CombinedDisposables<T> : IDisposable, ICollection<T> where T : IDis
             }
 
             // 破棄中にの例外発生状態をプロパティに反映
-            switch (errors.Count)
+            this.LatestException = errors.Count switch
             {
-            case 0: this.LatestException = null; break;
-            case 1: this.LatestException = errors[0]; break;
-            default: this.LatestException = new AggregateException(errors); break;
-            }
+                0 => null,
+                1 => errors[0],
+                _ => new AggregateException(errors),
+            };
         }
 
         // コレクションをクリア

@@ -15,7 +15,7 @@ public static partial class EnumerableDataExtensions
     /// <returns>書き込み処理タスク</returns>
     public static Task SaveToCsvAsync<TSource>(this IEnumerable<TSource> self, FileInfo file, CancellationToken cancelToken = default)
     {
-        if (file == null) throw new ArgumentNullException(nameof(file));
+        ArgumentNullException.ThrowIfNull(file);
         return self.SaveToCsvAsync(file.FullName, cancelToken);
     }
 
@@ -28,7 +28,7 @@ public static partial class EnumerableDataExtensions
     /// <returns>書き込み処理タスク</returns>
     public static Task SaveToCsvAsync<TSource>(this IEnumerable<TSource> self, FileInfo file, SaveToCsvOptions options, CancellationToken cancelToken = default)
     {
-        if (file == null) throw new ArgumentNullException(nameof(file));
+        ArgumentNullException.ThrowIfNull(file);
         return self.SaveToCsvAsync(file.FullName, options, cancelToken);
     }
 
@@ -42,7 +42,7 @@ public static partial class EnumerableDataExtensions
     /// <returns>書き込み処理タスク</returns>
     public static Task SaveToCsvAsync<TSource>(this IEnumerable<TSource> self, FileInfo file, SaveToCsvOptions options, Encoding encoding, CancellationToken cancelToken = default)
     {
-        if (file == null) throw new ArgumentNullException(nameof(file));
+        ArgumentNullException.ThrowIfNull(file);
         return self.SaveToCsvAsync(file.FullName, options, encoding, cancelToken);
     }
 
@@ -90,7 +90,7 @@ public static partial class EnumerableDataExtensions
     /// <returns>書き込み処理タスク</returns>
     public static Task SaveToCsvAsync<TSource>(this IAsyncEnumerable<TSource> self, FileInfo file, CancellationToken cancelToken = default)
     {
-        if (file == null) throw new ArgumentNullException(nameof(file));
+        ArgumentNullException.ThrowIfNull(file);
         return self.SaveToCsvAsync(file.FullName, cancelToken);
     }
 
@@ -103,7 +103,7 @@ public static partial class EnumerableDataExtensions
     /// <returns>書き込み処理タスク</returns>
     public static Task SaveToCsvAsync<TSource>(this IAsyncEnumerable<TSource> self, FileInfo file, SaveToCsvOptions options, CancellationToken cancelToken = default)
     {
-        if (file == null) throw new ArgumentNullException(nameof(file));
+        ArgumentNullException.ThrowIfNull(file);
         return self.SaveToCsvAsync(file.FullName, options, cancelToken);
     }
 
@@ -117,7 +117,7 @@ public static partial class EnumerableDataExtensions
     /// <returns>書き込み処理タスク</returns>
     public static Task SaveToCsvAsync<TSource>(this IAsyncEnumerable<TSource> self, FileInfo file, SaveToCsvOptions options, Encoding encoding, CancellationToken cancelToken = default)
     {
-        if (file == null) throw new ArgumentNullException(nameof(file));
+        ArgumentNullException.ThrowIfNull(file);
         return self.SaveToCsvAsync(file.FullName, options, encoding, cancelToken);
     }
 
@@ -155,10 +155,10 @@ public static partial class EnumerableDataExtensions
     public static async Task SaveToCsvAsync<TSource>(this IAsyncEnumerable<TSource> self, string filePath, SaveToCsvOptions options, Encoding encoding, CancellationToken cancelToken = default)
     {
         // パラメータチェック
-        if (self == null) throw new ArgumentNullException(nameof(self));
-        if (filePath == null) throw new ArgumentNullException(nameof(filePath));
-        if (options == null) throw new ArgumentNullException(nameof(options));
-        if (encoding == null) throw new ArgumentNullException(nameof(encoding));
+        ArgumentNullException.ThrowIfNull(self);
+        ArgumentNullException.ThrowIfNull(filePath);
+        ArgumentNullException.ThrowIfNull(options);
+        ArgumentNullException.ThrowIfNull(encoding);
         if (options.Separator == options.Quote) throw new NotSupportedException("Invalid quotation");
 
         // 出力対象カラムを収集

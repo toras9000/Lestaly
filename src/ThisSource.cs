@@ -11,7 +11,7 @@ public static class ThisSource
     /// <param name="path">この引数は省略する必要がある。</param>
     /// <returns>呼び出し元ソースファイル情報</returns>
     public static FileInfo File([CallerFilePath] string path = "")
-        => new FileInfo(path);
+        => new(path);
 
     /// <summary>呼び出し元ソースファイルからの相対パスで示されるファイル情報を取得する。</summary>
     /// <param name="relativePath">相対パス</param>
@@ -39,7 +39,7 @@ public static class ThisSource
     /// <param name="path">この引数は省略する必要がある。</param>
     /// <returns>対象ディレクトリパスの DirectoryInfo。相対パスが空や空白の場合は基準ディレクトリを返却。</returns>
     public static DirectoryInfo RelativeDirectory(string? relativePath, [CallerFilePath] string path = "")
-        => new DirectoryInfo(Path.Combine(Path.GetDirectoryName(path)!, relativePath ?? ""));
+        => new(Path.Combine(Path.GetDirectoryName(path)!, relativePath ?? ""));
 
     /// <summary>呼び出し元行番号を取得する</summary>
     /// <param name="lineNumber">この引数は省略する必要がある。</param>

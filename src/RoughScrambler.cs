@@ -45,13 +45,12 @@ public class RoughScrambler
         // 暗号化のキー・初期ベクタをハッシュ化を用いて生成する
         var key = (stackalloc byte[32]);
         var iv = (stackalloc byte[32]);
-        using var hasher = SHA256.Create();
-        if (!hasher.TryComputeHash(writer.WrittenSpan, key, out var writtenKey)) throw new InvalidOperationException();
-        if (!hasher.TryComputeHash(key, iv, out var writtenIv)) throw new InvalidOperationException();
+        if (!SHA256.TryHashData(writer.WrittenSpan, key, out var writtenKey)) throw new InvalidOperationException();
+        if (!SHA256.TryHashData(key, iv, out var writtenIv)) throw new InvalidOperationException();
 
         // キー・初期ベクタを保持
         this.key = key.ToArray();
-        this.iv = iv.Slice(0, 16).ToArray();
+        this.iv = iv[..16].ToArray();
     }
     #endregion
 

@@ -5,6 +5,7 @@ namespace Lestaly;
 /// <summary>
 /// シェルでのコマンド実行クラス
 /// </summary>
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1068:CancellationToken パラメーターは最後に指定する必要があります", Justification = "パラメータ利用頻度的にここでは無視する")]
 public static class CmdShell
 {
     /// <summary>コマンドを実行して終了コードを取得する</summary>

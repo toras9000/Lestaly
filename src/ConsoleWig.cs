@@ -164,7 +164,8 @@ public sealed class ConsoleWig : IConsoleWig
     }
 
     /// <summary>ConsoleInWrapper の遅延生成</summary>
-    private static Lazy<ConsoleInReader> inReader = new Lazy<ConsoleInReader>(() => new ConsoleInReader());
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:命名スタイル")]
+    private static readonly Lazy<ConsoleInReader> inReader = new(() => new ConsoleInReader());
 }
 
 /// <summary>キャンセルトークンを保持する区間</summary>
@@ -320,8 +321,8 @@ public interface IConsoleWig
     /// <returns>入力された文字列を得るタスク</returns>
     public async Task<string> ReadKeysLineIfAsync(Func<string, bool> completer, int timeout = 100, bool breakOnReturn = true, CancellationToken cancelToken = default)
     {
-        if (completer == null) throw new ArgumentNullException(nameof(completer));
-        if (timeout <= 0) throw new ArgumentOutOfRangeException(nameof(timeout));
+        ArgumentNullException.ThrowIfNull(completer);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(timeout);
 
         var buff = new StringBuilder();
         while (true)
@@ -421,7 +422,7 @@ public interface IConsoleWig
     /// <returns>呼び出し元インスタンス自身</returns>
     public IConsoleWig SkipInputChars(int maxCount = int.MaxValue)
     {
-        if (maxCount < 0) throw new ArgumentOutOfRangeException(nameof(maxCount));
+        ArgumentOutOfRangeException.ThrowIfNegative(maxCount);
         for (var i = 0; i < maxCount; i++)
         {
             if (!Console.KeyAvailable) break;
@@ -512,7 +513,7 @@ public interface IConsoleWig
         }
 
         /// <summary>キャンセルトークンソース</summary>
-        private CancellationTokenSource canceller;
+        private readonly CancellationTokenSource canceller;
 
         /// <summary>キャンセルキーイベントハンドラ</summary>
         private void cancelKeyHandler(object? sender, ConsoleCancelEventArgs e)

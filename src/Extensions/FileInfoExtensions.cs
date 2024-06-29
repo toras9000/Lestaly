@@ -15,7 +15,7 @@ public static class FileInfoExtensions
     /// <returns>拡張子を除いたファイル名</returns>
     public static string BaseName(this FileInfo self)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
         return Path.GetFileNameWithoutExtension(self.Name);
     }
 
@@ -24,7 +24,7 @@ public static class FileInfoExtensions
     /// <returns>拡張子</returns>
     public static string Extension(this FileInfo self)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
         return self.Extension;
     }
 
@@ -34,7 +34,7 @@ public static class FileInfoExtensions
     /// <returns> 指定した拡張子ファイルを示すFileInfo</returns>
     public static FileInfo GetAnotherExtension(this FileInfo self, string extension)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
         var path = Path.ChangeExtension(self.FullName, extension);
         return new FileInfo(path);
     }
@@ -110,7 +110,7 @@ public static class FileInfoExtensions
     /// <returns>ファイルから読みだしたバイト列</returns>
     public static byte[] ReadAllBytes(this FileInfo self)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
         return File.ReadAllBytes(self.FullName);
     }
 
@@ -119,7 +119,7 @@ public static class FileInfoExtensions
     /// <returns>ファイルから読みだした全テキスト</returns>
     public static string ReadAllText(this FileInfo self)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
         return File.ReadAllText(self.FullName);
     }
 
@@ -129,7 +129,7 @@ public static class FileInfoExtensions
     /// <returns>ファイルから読みだした全テキスト</returns>
     public static string ReadAllText(this FileInfo self, Encoding encoding)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
         return File.ReadAllText(self.FullName, encoding);
     }
 
@@ -138,7 +138,7 @@ public static class FileInfoExtensions
     /// <returns>ファイルから読みだした全テキスト行</returns>
     public static string[] ReadAllLines(this FileInfo self)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
         return File.ReadAllLines(self.FullName);
     }
 
@@ -148,7 +148,7 @@ public static class FileInfoExtensions
     /// <returns>ファイルから読みだした全テキスト行</returns>
     public static string[] ReadAllLines(this FileInfo self, Encoding encoding)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
         return File.ReadAllLines(self.FullName, encoding);
     }
 
@@ -157,7 +157,7 @@ public static class FileInfoExtensions
     /// <returns>ファイルから読みだしたテキスト行</returns>
     public static IEnumerable<string> ReadLines(this FileInfo self)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
         return File.ReadLines(self.FullName);
     }
 
@@ -167,7 +167,7 @@ public static class FileInfoExtensions
     /// <returns>ファイルから読みだしたテキスト行</returns>
     public static IEnumerable<string> ReadLines(this FileInfo self, Encoding encoding)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
         return File.ReadLines(self.FullName, encoding);
     }
 
@@ -177,7 +177,7 @@ public static class FileInfoExtensions
     /// <returns>ファイルから読みだしたバイト列</returns>
     public static Task<byte[]> ReadAllBytesAsync(this FileInfo self, CancellationToken cancelToken = default)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
         return File.ReadAllBytesAsync(self.FullName, cancelToken);
     }
 
@@ -187,7 +187,7 @@ public static class FileInfoExtensions
     /// <returns>ファイルから読みだした全テキスト</returns>
     public static Task<string> ReadAllTextAsync(this FileInfo self, CancellationToken cancelToken = default)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
         return File.ReadAllTextAsync(self.FullName, cancelToken);
     }
 
@@ -198,7 +198,7 @@ public static class FileInfoExtensions
     /// <returns>ファイルから読みだした全テキスト</returns>
     public static Task<string> ReadAllTextAsync(this FileInfo self, Encoding encoding, CancellationToken cancelToken = default)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
         return File.ReadAllTextAsync(self.FullName, encoding, cancelToken);
     }
 
@@ -208,7 +208,7 @@ public static class FileInfoExtensions
     /// <returns>ファイルから読みだした全テキスト行</returns>
     public static Task<string[]> ReadAllLinesAsync(this FileInfo self, CancellationToken cancelToken = default)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
         return File.ReadAllLinesAsync(self.FullName, cancelToken);
     }
 
@@ -219,7 +219,7 @@ public static class FileInfoExtensions
     /// <returns>ファイルから読みだした全テキスト行</returns>
     public static Task<string[]> ReadAllLinesAsync(this FileInfo self, Encoding encoding, CancellationToken cancelToken = default)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
         return File.ReadAllLinesAsync(self.FullName, encoding, cancelToken);
     }
 
@@ -242,7 +242,7 @@ public static class FileInfoExtensions
     /// <param name="bytes">書き込むバイト列</param>
     public static void WriteAllBytes(this FileInfo self, byte[] bytes)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
         File.WriteAllBytes(self.FullName, bytes);
         self.Refresh();
     }
@@ -253,7 +253,7 @@ public static class FileInfoExtensions
     /// <param name="options">ファイルストリームを開くオプション。Access プロパティは無視する。</param>
     public static void WriteAllBytes(this FileInfo self, ReadOnlySpan<byte> bytes, FileStreamOptions? options = null)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
         using var stream = self.CreateWrite(options);
         stream.Write(bytes);
         self.Refresh();
@@ -264,7 +264,7 @@ public static class FileInfoExtensions
     /// <param name="contents">書き込むテキスト</param>
     public static void WriteAllText(this FileInfo self, string contents)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
         File.WriteAllText(self.FullName, contents);
         self.Refresh();
     }
@@ -275,7 +275,7 @@ public static class FileInfoExtensions
     /// <param name="encoding">書き込むテキストをエンコードするテキストエンコーディング</param>
     public static void WriteAllText(this FileInfo self, string contents, Encoding encoding)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
         File.WriteAllText(self.FullName, contents, encoding);
         self.Refresh();
     }
@@ -287,7 +287,7 @@ public static class FileInfoExtensions
     /// <param name="encoding">書き込むテキストをエンコードするテキストエンコーディング</param>
     public static void WriteAllText(this FileInfo self, ReadOnlySpan<char> contents, FileStreamOptions? options = null, Encoding? encoding = null)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
         using var writer = self.CreateTextWriter(createStreamWriteOptions(options), encoding);
         writer.Write(contents);
         self.Refresh();
@@ -298,7 +298,7 @@ public static class FileInfoExtensions
     /// <param name="contents">書き込むテキスト行</param>
     public static void WriteAllLines(this FileInfo self, IEnumerable<string> contents)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
         File.WriteAllLines(self.FullName, contents);
         self.Refresh();
     }
@@ -309,7 +309,7 @@ public static class FileInfoExtensions
     /// <param name="encoding">書き込むテキストをエンコードするテキストエンコーディング</param>
     public static void WriteAllLines(this FileInfo self, IEnumerable<string> contents, Encoding encoding)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
         File.WriteAllLines(self.FullName, contents, encoding);
         self.Refresh();
     }
@@ -320,7 +320,7 @@ public static class FileInfoExtensions
     /// <param name="cancelToken">キャンセルトークン</param>
     public static async ValueTask WriteAllBytesAsync(this FileInfo self, byte[] bytes, CancellationToken cancelToken = default)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
         await File.WriteAllBytesAsync(self.FullName, bytes, cancelToken).ConfigureAwait(false);
         self.Refresh();
     }
@@ -332,7 +332,7 @@ public static class FileInfoExtensions
     /// <param name="cancelToken">キャンセルトークン</param>
     public static async ValueTask WriteAllBytesAsync(this FileInfo self, ReadOnlyMemory<byte> bytes, FileStreamOptions? options = null, CancellationToken cancelToken = default)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
         using var stream = self.CreateWrite(options);
         await stream.WriteAsync(bytes, cancelToken);
         self.Refresh();
@@ -344,7 +344,7 @@ public static class FileInfoExtensions
     /// <param name="cancelToken">キャンセルトークン</param>
     public static async ValueTask WriteAllTextAsync(this FileInfo self, string contents, CancellationToken cancelToken = default)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
         await File.WriteAllTextAsync(self.FullName, contents, cancelToken).ConfigureAwait(false);
         self.Refresh();
     }
@@ -356,7 +356,7 @@ public static class FileInfoExtensions
     /// <param name="cancelToken">キャンセルトークン</param>
     public static async ValueTask WriteAllTextAsync(this FileInfo self, string contents, Encoding encoding, CancellationToken cancelToken = default)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
         await File.WriteAllTextAsync(self.FullName, contents, encoding, cancelToken).ConfigureAwait(false);
         self.Refresh();
     }
@@ -369,7 +369,7 @@ public static class FileInfoExtensions
     /// <param name="cancelToken">キャンセルトークン</param>
     public static async ValueTask WriteAllTextAsync(this FileInfo self, ReadOnlyMemory<char> contents, FileStreamOptions? options = null, Encoding? encoding = null, CancellationToken cancelToken = default)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
         using var writer = self.CreateTextWriter(createStreamWriteOptions(options), encoding);
         await writer.WriteAsync(contents, cancelToken);
         self.Refresh();
@@ -381,7 +381,7 @@ public static class FileInfoExtensions
     /// <param name="cancelToken">キャンセルトークン</param>
     public static async ValueTask WriteAllLinesAsync(this FileInfo self, IEnumerable<string> contents, CancellationToken cancelToken = default)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
         await File.WriteAllLinesAsync(self.FullName, contents, cancelToken);
         self.Refresh();
     }
@@ -393,7 +393,7 @@ public static class FileInfoExtensions
     /// <param name="cancelToken">キャンセルトークン</param>
     public static async ValueTask WriteAllLinesAsync(this FileInfo self, IEnumerable<string> contents, Encoding encoding, CancellationToken cancelToken = default)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
         await File.WriteAllLinesAsync(self.FullName, contents, encoding, cancelToken).ConfigureAwait(false);
         self.Refresh();
     }
@@ -510,7 +510,7 @@ public static class FileInfoExtensions
     /// <returns>元のファイル情報</returns>
     public static FileInfo WithDirectoryCreate(this FileInfo self)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
         self.Directory?.WithCreate();
         return self;
     }
@@ -520,7 +520,7 @@ public static class FileInfoExtensions
     /// <returns>元のファイル情報</returns>
     public static FileInfo Touch(this FileInfo self)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
         self.Directory?.Create();
         using var stream = new FileStream(self.FullName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None, bufferSize: 0);
         self.LastWriteTimeUtc = DateTime.UtcNow;
@@ -534,7 +534,7 @@ public static class FileInfoExtensions
     /// <returns>パス構成セグメントのリスト</returns>
     public static IList<string> GetPathSegments(this FileInfo self)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
 
         // まずファイル名を処理
         var segments = new List<string>(10);
@@ -561,9 +561,9 @@ public static class FileInfoExtensions
     /// <returns>指定ディレクトリの子孫であるか否か</returns>
     public static bool IsDescendantOf(this FileInfo self, DirectoryInfo other)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
-        if (other == null) throw new ArgumentNullException(nameof(other));
-        if (self.Directory == null) throw new ArgumentException($"{nameof(self)}.{nameof(self.Directory)}");
+        ArgumentNullException.ThrowIfNull(self);
+        ArgumentNullException.ThrowIfNull(other);
+        ArgumentNullException.ThrowIfNull(self.Directory, $"{nameof(self)}.{nameof(self.Directory)}");
 
         // ファイル格納ディレクトリと比較対象のパス階層を取得
         var selfDirSegs = self.Directory.GetPathSegments();
@@ -592,8 +592,8 @@ public static class FileInfoExtensions
     public static string RelativePathFrom(this FileInfo self, DirectoryInfo baseDir, bool ignoreCase)
     {
         // パラメータチェック
-        if (self == null) throw new ArgumentNullException(nameof(self));
-        if (baseDir == null) throw new ArgumentNullException(nameof(baseDir));
+        ArgumentNullException.ThrowIfNull(self);
+        ArgumentNullException.ThrowIfNull(baseDir);
 
         return DirectoryInfoExtensions.SegmentsToReletivePath(self.GetPathSegments(), baseDir, ignoreCase);
     }

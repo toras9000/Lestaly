@@ -41,7 +41,7 @@ public static class NumberUtils
         while (dist <= quot && !supp.IsEmpty)
         {
             (quot, remain) = Math.DivRem(quot, dist);
-            supp = supp.Slice(1);
+            supp = supp[1..];
         }
 
         // 補助単位文字
@@ -95,7 +95,7 @@ public static class NumberUtils
         while (dist <= quot && !supp.IsEmpty)
         {
             (quot, remain) = Math.DivRem(quot, dist);
-            supp = supp.Slice(1);
+            supp = supp[1..];
         }
 
         // 補助単位が付く場合、累乗値の大きさによって小数部を追加する

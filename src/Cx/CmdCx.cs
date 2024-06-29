@@ -7,6 +7,7 @@ namespace Lestaly.Cx;
 /// <summary>
 /// プロセス実行準備クラス
 /// </summary>
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:命名スタイル", Justification = "このクラスでは意図的に小文字メソッドを使っている")]
 public class CmdCx
 {
     // 構築
@@ -193,10 +194,10 @@ public class CmdCx
     // 非公開フィールド
     #region 実行準備情報
     /// <summary>呼び出しコマンド</summary>
-    private string command;
+    private readonly string command;
 
     /// <summary>コマンド引数</summary>
-    private Action<ProcessStartInfo>? argumenter;
+    private readonly Action<ProcessStartInfo>? argumenter;
 
     /// <summary>作業ディレクトリ</summary>
     private string? workDir;

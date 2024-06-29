@@ -26,7 +26,7 @@ public ref struct RentalArray<T>
 
     /// <summary>貸し出された配列インスタンス</summary>
     /// <remarks>スコープ内(破棄されるまで)に限定して利用すること。</remarks> 
-    public T[] Instance => this.rental;
+    public readonly T[] Instance => this.rental;
 
     /// <summary>リソースを破棄する</summary>
     /// <remarks>貸し出しを受けた配列を返却する。</remarks>

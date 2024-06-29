@@ -123,7 +123,7 @@ public class ConsoleInReader : TextReader
     // 非公開フィールド
     #region 標準入力
     /// <summary>標準入力ストリーム</summary>
-    private Stream stdin;
+    private readonly Stream stdin;
 
     /// <summary>標準入力の読み取りエンコーディング</summary>
     private Encoding encoding;
@@ -134,7 +134,7 @@ public class ConsoleInReader : TextReader
 
     #region  排他
     /// <summary>排他用キーオブジェクト</summary>
-    private object callSync = new object();
+    private readonly object callSync = new();
     #endregion
 
     #region 読み取り処理
@@ -172,10 +172,7 @@ public class ConsoleInReader : TextReader
 
         lock (this.callSync)
         {
-            if (this.readTask == null)
-            {
-                this.readTask = this.reader.ReadAsync(buffer.Value, CancellationToken.None).AsTask();
-            }
+            this.readTask ??= this.reader.ReadAsync(buffer.Value, CancellationToken.None).AsTask();
         }
 
         var result = await this.readTask.WaitAsync(cancelToken).ConfigureAwait(false);
@@ -192,10 +189,7 @@ public class ConsoleInReader : TextReader
     {
         lock (this.callSync)
         {
-            if (this.readLineTask == null)
-            {
-                this.readLineTask = this.reader.ReadLineAsync();
-            }
+            this.readLineTask ??= this.reader.ReadLineAsync(CancellationToken.None).AsTask();
         }
 
         var result = await this.readLineTask.WaitAsync(cancelToken).ConfigureAwait(false);
@@ -214,10 +208,7 @@ public class ConsoleInReader : TextReader
 
         lock (this.callSync)
         {
-            if (this.readBlockTask == null)
-            {
-                this.readBlockTask = this.reader.ReadBlockAsync(buffer.Value, CancellationToken.None).AsTask();
-            }
+            this.readBlockTask ??= this.reader.ReadBlockAsync(buffer.Value, CancellationToken.None).AsTask();
         }
 
         var result = await this.readBlockTask.WaitAsync(cancelToken).ConfigureAwait(false);
@@ -234,10 +225,7 @@ public class ConsoleInReader : TextReader
     {
         lock (this.callSync)
         {
-            if (this.readToEndTask == null)
-            {
-                this.readToEndTask = this.reader.ReadToEndAsync();
-            }
+            this.readToEndTask ??= this.reader.ReadToEndAsync(CancellationToken.None);
         }
 
         var result = await this.readToEndTask.WaitAsync(cancelToken).ConfigureAwait(false);

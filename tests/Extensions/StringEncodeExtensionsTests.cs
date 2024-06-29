@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using FluentAssertions;
 
 namespace LestalyTest.Extensions;
 

@@ -96,9 +96,9 @@ public class FieldCollector
     // 非公開フィールド
     #region 蓄積用
     /// <summary>テキスト断片の蓄積バッファ</summary>
-    private StringBuilder buffer;
+    private readonly StringBuilder buffer;
 
     /// <summary>フィールドのリスト</summary>
-    private List<string> fields;
+    private readonly List<string> fields;
     #endregion
 }

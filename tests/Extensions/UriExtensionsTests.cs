@@ -1,7 +1,4 @@
-﻿using System.Buffers;
-using System.IO.Pipelines;
-
-namespace LestalyTest.Extensions;
+﻿namespace LestalyTest.Extensions;
 
 [TestClass]
 public class UriExtensionsTests

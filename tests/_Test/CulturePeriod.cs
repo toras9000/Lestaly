@@ -5,7 +5,7 @@ namespace LestalyTest;
 /// <summary>
 /// カルチャ設定区間定義
 /// </summary>
-public class CulturePeriod : IDisposable
+public sealed class CulturePeriod : IDisposable
 {
     // 構築
     #region コンストラクタ

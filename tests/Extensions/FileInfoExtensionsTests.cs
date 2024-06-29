@@ -1,7 +1,5 @@
 ﻿using System.Text;
 using System.Text.Json;
-using FluentAssertions;
-using Lestaly;
 
 namespace LestalyTest.Extensions;
 

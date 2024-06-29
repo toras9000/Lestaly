@@ -3,6 +3,7 @@
 /// <summary>
 /// コマンド実行タスクに対する拡張メソッド
 /// </summary>
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:命名スタイル", Justification = "このクラスでは意図的に小文字メソッドを使っている")]
 public static class CmdResultExtensions
 {
     /// <summary>コマンド実行結果に対し、指定の終了コードを正常とする検証を行う。</summary>

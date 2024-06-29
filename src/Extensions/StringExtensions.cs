@@ -109,7 +109,7 @@ public static class StringExtensions
     /// <param name="ignoreCase">大文字/小文字の違いを無視するか否か(序数ベース)</param>
     /// <returns>いずれかで始まっているか否か</returns>
     public static bool StartsWithAny(this string self, IEnumerable<string> values, bool ignoreCase)
-        => self == null ? false : self.AsSpan().StartsWithAny(values, ignoreCase);
+        => self != null && self.AsSpan().StartsWithAny(values, ignoreCase);
 
     /// <summary>文字列が指定のテキストのいずれかで始まるかを判定する。</summary>
     /// <param name="self">対象文字列</param>
@@ -117,7 +117,7 @@ public static class StringExtensions
     /// <param name="comparison">文字列比較方法</param>
     /// <returns>いずれかで始まっているか否か</returns>
     public static bool StartsWithAny(this string self, IEnumerable<string> values, StringComparison comparison = StringComparison.Ordinal)
-        => self == null ? false : self.AsSpan().StartsWithAny(values, comparison);
+        => self != null && self.AsSpan().StartsWithAny(values, comparison);
 
     /// <summary>文字列が指定のテキストのいずれかで始まるかを判定する。</summary>
     /// <param name="self">対象文字列</param>
@@ -147,7 +147,7 @@ public static class StringExtensions
     /// <param name="values">始まるかを判定する文字列。nullや空の要素は無視される。</param>
     /// <returns>いずれかで始まっているか否か</returns>
     public static bool StartsWithAnyIgnoreCase(this string self, IEnumerable<string> values)
-        => self == null ? false : self.AsSpan().StartsWithAny(values, StringComparison.OrdinalIgnoreCase);
+        => self != null && self.AsSpan().StartsWithAny(values, StringComparison.OrdinalIgnoreCase);
 
     /// <summary>文字列が指定のテキストのいずれかで始まるかを判定する。(大文字/小文字区別なし)</summary>
     /// <param name="self">対象文字列</param>
@@ -162,7 +162,7 @@ public static class StringExtensions
     /// <param name="ignoreCase">大文字/小文字の違いを無視するか否か(序数ベース)</param>
     /// <returns>いずれかで終わっているか否か</returns>
     public static bool EndsWithAny(this string self, IEnumerable<string> values, bool ignoreCase)
-        => self == null ? false : self.AsSpan().EndsWithAny(values, ignoreCase);
+        => self != null && self.AsSpan().EndsWithAny(values, ignoreCase);
 
     /// <summary>文字列が指定のテキストのいずれかで終わるかを判定する。</summary>
     /// <param name="self">対象文字列</param>
@@ -170,7 +170,7 @@ public static class StringExtensions
     /// <param name="comparison">文字列比較方法</param>
     /// <returns>いずれかで終わっているか否か</returns>
     public static bool EndsWithAny(this string self, IEnumerable<string> values, StringComparison comparison = StringComparison.Ordinal)
-        => self == null ? false : self.AsSpan().EndsWithAny(values, comparison);
+        => self != null && self.AsSpan().EndsWithAny(values, comparison);
 
     /// <summary>文字列が指定のテキストのいずれかで終わるかを判定する。</summary>
     /// <param name="self">対象文字列</param>
@@ -200,7 +200,7 @@ public static class StringExtensions
     /// <param name="values">終わるかを判定する文字列。nullや空の要素は無視される。</param>
     /// <returns>いずれかで終わっているか否か</returns>
     public static bool EndsWithAnyIgnoreCase(this string self, IEnumerable<string> values)
-        => self == null ? false : self.AsSpan().EndsWithAny(values, StringComparison.OrdinalIgnoreCase);
+        => self != null && self.AsSpan().EndsWithAny(values, StringComparison.OrdinalIgnoreCase);
 
     /// <summary>文字列が指定のテキストのいずれかで終わるかを判定する。(大文字/小文字区別なし)</summary>
     /// <param name="self">対象文字列</param>
@@ -694,7 +694,7 @@ public static class StringExtensions
     public static IEnumerable<string> AsTextLines(this string self)
     {
         // パラメータチェック
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
 
         // テキスト行を列挙
         var idx = 0;
@@ -705,7 +705,7 @@ public static class StringExtensions
             if (pos < 0) break;
 
             // 行を列挙
-            yield return self.Substring(idx, pos - idx);
+            yield return self[idx..pos];
 
             // 次の位置へ。CRLFの場合は1つの改行として扱う
             idx = pos + 1;
@@ -716,7 +716,7 @@ public static class StringExtensions
         }
 
         // 最期の部分を列挙
-        yield return self.Substring(idx);
+        yield return self[idx..];
     }
 
     /// <summary>文字列のシーケンスからnull/空を取り除く。</summary>
@@ -796,7 +796,7 @@ public static class StringExtensions
             return "";
         }
 
-        if (mixer == null) throw new ArgumentNullException(nameof(mixer));
+        ArgumentNullException.ThrowIfNull(mixer);
         return mixer(self, sequel);
     }
 
@@ -850,7 +850,7 @@ public static class StringExtensions
     {
         if (string.IsNullOrEmpty(self)) return sequel ?? "";
         if (string.IsNullOrEmpty(sequel)) return self;
-        if (mixer == null) throw new ArgumentNullException(nameof(mixer));
+        ArgumentNullException.ThrowIfNull(mixer);
         return mixer(self, sequel);
     }
 
@@ -969,7 +969,7 @@ public static class StringExtensions
     public static IEnumerable<string> AsTextElements(this string self)
     {
         // パラメータチェック
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
 
         // テキスト要素を列挙
         var elementer = StringInfo.GetTextElementEnumerator(self);
@@ -1091,13 +1091,13 @@ public static class StringExtensions
     public static string EllipsisByLength(this string self, int length, string? marker = null)
     {
         // パラメータチェック
-        if (self == null) throw new ArgumentNullException(nameof(self));
-        if (length < 0) throw new ArgumentException(nameof(length));
+        ArgumentNullException.ThrowIfNull(self);
+        ArgumentOutOfRangeException.ThrowIfNegative(length);
 
         // マーカーが指定の長さを超えている場合は矛盾するのでパラメータ指定が正しくない。
         // 省略されずマーカーが使用されない場合もあり得るが、パラメータ length と marker の関係性が正しくないのであれば揺れなく異常検出できようにしている。
         var markerLen = marker?.Length ?? 0;
-        if (length < markerLen) throw new ArgumentException();
+        if (length < markerLen) throw new ArgumentException($"{nameof(marker)} is grator than {nameof(length)}");
 
         // 元の文字列が指定の長さに収まる場合はそのまま返却
         if (self.Length <= length)
@@ -1142,13 +1142,13 @@ public static class StringExtensions
     public static string EllipsisByElements(this string self, int count, string? marker = null)
     {
         // パラメータチェック
-        if (self == null) throw new ArgumentNullException(nameof(self));
-        if (count < 0) throw new ArgumentException(nameof(count));
+        ArgumentNullException.ThrowIfNull(self);
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
 
         // マーカーが指定の長さを超えている場合は矛盾するのでパラメータ指定が正しくない。
         // 省略されずマーカーが使用されない場合もあり得るが、パラメータ width と marker の関係性が正しくないのであれば揺れなく異常検出できようにしている。
         var markerCount = marker?.TextElementCount() ?? 0;
-        if (count < markerCount) throw new ArgumentException(nameof(marker));
+        if (count < markerCount) throw new ArgumentException($"{nameof(marker)} is grator than {nameof(count)}");
 
         // 明かな状況を処理
         if (string.IsNullOrEmpty(self)) return self;

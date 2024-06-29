@@ -15,7 +15,7 @@ public static class DirectoryInfoExtensions
     /// <returns>対象ファイルパスの FileInfo。相対パスが空や空白の場合は null を返却。</returns>
     public static FileInfo? RelativeFileAt(this DirectoryInfo self, string? relativePath)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
         if (string.IsNullOrWhiteSpace(relativePath)) return default;
         return new FileInfo(Path.Combine(self.FullName, relativePath));
     }
@@ -26,7 +26,7 @@ public static class DirectoryInfoExtensions
     /// <returns>対象ファイルパスの FileInfo。</returns>
     public static FileInfo RelativeFile(this DirectoryInfo self, string relativePath)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
         if (string.IsNullOrWhiteSpace(relativePath)) throw new ArgumentException($"Invalid relative path.");
         return new FileInfo(Path.Combine(self.FullName, relativePath));
     }
@@ -37,7 +37,7 @@ public static class DirectoryInfoExtensions
     /// <returns>対象ディレクトリパスの DirectoryInfo。相対パスが空や空白の場合は null を返却。</returns>
     public static DirectoryInfo? RelativeDirectoryAt(this DirectoryInfo self, string? relativePath)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
         if (string.IsNullOrWhiteSpace(relativePath)) return default;
         return new DirectoryInfo(Path.Combine(self.FullName, relativePath));
     }
@@ -48,7 +48,7 @@ public static class DirectoryInfoExtensions
     /// <returns>対象ディレクトリパスの DirectoryInfo。相対パスが空や空白の場合は基準ディレクトリを返却。</returns>
     public static DirectoryInfo RelativeDirectory(this DirectoryInfo self, string? relativePath)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
         if (string.IsNullOrWhiteSpace(relativePath)) return self;
         return new DirectoryInfo(Path.Combine(self.FullName, relativePath));
     }
@@ -60,7 +60,7 @@ public static class DirectoryInfoExtensions
     /// <returns>元のディレクトリ情報</returns>
     public static DirectoryInfo WithCreate(this DirectoryInfo self)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
         self.Create();
         return self;
     }
@@ -72,7 +72,7 @@ public static class DirectoryInfoExtensions
     /// <returns>パス構成セグメントのリスト</returns>
     public static IList<string> GetPathSegments(this DirectoryInfo self)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
+        ArgumentNullException.ThrowIfNull(self);
 
         // 構成ディレクトリを取得
         var segments = new List<string>(10);
@@ -96,8 +96,8 @@ public static class DirectoryInfoExtensions
     /// <returns>指定ディレクトリの子孫であるか否か</returns>
     public static bool IsDescendantOf(this DirectoryInfo self, DirectoryInfo other, bool sameIs = true)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
-        if (other == null) throw new ArgumentNullException(nameof(other));
+        ArgumentNullException.ThrowIfNull(self);
+        ArgumentNullException.ThrowIfNull(other);
 
         // 対象ディレクトリと比較対象のパス階層を取得
         var selfSegs = self.GetPathSegments();
@@ -125,8 +125,8 @@ public static class DirectoryInfoExtensions
     /// <returns>指定ディレクトリの祖先であるか否か</returns>
     public static bool IsAncestorOf(this DirectoryInfo self, DirectoryInfo other, bool sameIs = true)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
-        if (other == null) throw new ArgumentNullException(nameof(other));
+        ArgumentNullException.ThrowIfNull(self);
+        ArgumentNullException.ThrowIfNull(other);
 
         return other.IsDescendantOf(self, sameIs);
     }
@@ -142,8 +142,8 @@ public static class DirectoryInfoExtensions
     public static string RelativePathFrom(this DirectoryInfo self, DirectoryInfo baseDir, bool ignoreCase)
     {
         // パラメータチェック
-        if (self == null) throw new ArgumentNullException(nameof(self));
-        if (baseDir == null) throw new ArgumentNullException(nameof(baseDir));
+        ArgumentNullException.ThrowIfNull(self);
+        ArgumentNullException.ThrowIfNull(baseDir);
 
         return SegmentsToReletivePath(self.GetPathSegments(), baseDir, ignoreCase);
     }
@@ -209,7 +209,7 @@ public static class DirectoryInfoExtensions
             {
                 // パスの最初のセグメントではルートを示す区切り文字が含まれる場合がある。
                 // その場合を除外するために、区切り文字が付いていない場合のみ付与する。
-                var lastChar = builder[builder.Length - 1];
+                var lastChar = builder[^1];
                 if (lastChar != Path.DirectorySeparatorChar && lastChar != Path.AltDirectorySeparatorChar)
                 {
                     builder.Append(Path.DirectorySeparatorChar);
@@ -235,8 +235,8 @@ public static class DirectoryInfoExtensions
     /// <returns>変換結果のシーケンス</returns>
     public static IEnumerable<TResult> VisitFiles<TResult>(this DirectoryInfo self, SelectFilesWalker<TResult> selector, SelectFilesOptions? options = null)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
-        if (selector == null) throw new ArgumentNullException(nameof(selector));
+        ArgumentNullException.ThrowIfNull(self);
+        ArgumentNullException.ThrowIfNull(selector);
 
         // ディレクトリ配下を検索するローカル関数
         static IEnumerable<TResult> enumerate(SelectFilesContext<TResult> context, DirectoryInfo directory, SelectFilesWalker<TResult> selector, SelectFilesOptions options, SelectFilesHandling handling)
@@ -347,8 +347,8 @@ public static class DirectoryInfoExtensions
     /// <returns>変換結果のシーケンス</returns>
     public static IEnumerable<TResult> VisitFiles<TResult>(this DirectoryInfo self, SelectFilesWalker<TResult> selector, IReadOnlyCollection<Regex> excludes, IReadOnlyCollection<Regex>? includes = null, SelectFilesOptions? options = null)
     {
-        if (selector == null) throw new ArgumentNullException(nameof(selector));
-        if (excludes == null) throw new ArgumentNullException(nameof(excludes));
+        ArgumentNullException.ThrowIfNull(selector);
+        ArgumentNullException.ThrowIfNull(excludes);
         return self.VisitFiles<TResult>(options: options, selector: c =>
         {
             var name = default(string?);
@@ -388,7 +388,7 @@ public static class DirectoryInfoExtensions
     /// <returns>変換結果のシーケンス</returns>
     public static IEnumerable<TResult> SelectFiles<TResult>(this DirectoryInfo self, Func<IFileWalker, TResult> selector, SelectFilesOptions? options = null)
     {
-        if (selector == null) throw new ArgumentNullException(nameof(selector));
+        ArgumentNullException.ThrowIfNull(selector);
         return self.VisitFiles<TResult>(c => c.SetResult(selector(c)), options);
     }
 
@@ -406,7 +406,7 @@ public static class DirectoryInfoExtensions
     /// <returns>変換結果のシーケンス</returns>
     public static IEnumerable<TResult> SelectFiles<TResult>(this DirectoryInfo self, Func<IFileWalker, bool> filter, Func<IFileWalker, TResult> selector, SelectFilesOptions? options = null)
     {
-        if (selector == null) throw new ArgumentNullException(nameof(selector));
+        ArgumentNullException.ThrowIfNull(selector);
         return self.VisitFiles<TResult>(c => { if (filter(c)) { c.SetResult(selector(c)); } else if (c.File == null) { c.Break = true; } }, options);
     }
 
@@ -425,7 +425,7 @@ public static class DirectoryInfoExtensions
     /// <returns>変換結果のシーケンス</returns>
     public static IEnumerable<TResult> SelectFiles<TResult>(this DirectoryInfo self, Func<IFileWalker, TResult> selector, IReadOnlyCollection<Regex> excludes, IReadOnlyCollection<Regex>? includes = null, SelectFilesOptions? options = null)
     {
-        if (selector == null) throw new ArgumentNullException(nameof(selector));
+        ArgumentNullException.ThrowIfNull(selector);
         return self.VisitFiles<TResult>(c => c.SetResult(selector(c)), excludes, includes, options);
     }
 
@@ -442,8 +442,8 @@ public static class DirectoryInfoExtensions
     /// <returns>変換結果の非同期シーケンス</returns>
     public static IAsyncEnumerable<TResult> VisitFilesAsync<TResult>(this DirectoryInfo self, AsyncSelectFilesWalker<TResult> selector, SelectFilesOptions? options = null)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
-        if (selector == null) throw new ArgumentNullException(nameof(selector));
+        ArgumentNullException.ThrowIfNull(self);
+        ArgumentNullException.ThrowIfNull(selector);
 
         // ディレクトリ配下を検索するローカル関数
         static async IAsyncEnumerable<TResult> enumerateAsync(SelectFilesContext<TResult> context, DirectoryInfo directory, AsyncSelectFilesWalker<TResult> selector, SelectFilesOptions options, SelectFilesHandling handling)
@@ -551,8 +551,8 @@ public static class DirectoryInfoExtensions
     /// <returns>変換結果のシーケンス</returns>
     public static IAsyncEnumerable<TResult> VisitFilesAsync<TResult>(this DirectoryInfo self, AsyncSelectFilesWalker<TResult> selector, IReadOnlyCollection<Regex> excludes, IReadOnlyCollection<Regex>? includes = null, SelectFilesOptions? options = null)
     {
-        if (selector == null) throw new ArgumentNullException(nameof(selector));
-        if (excludes == null) throw new ArgumentNullException(nameof(excludes));
+        ArgumentNullException.ThrowIfNull(selector);
+        ArgumentNullException.ThrowIfNull(excludes);
         return self.VisitFilesAsync<TResult>(options: options, selector: async c =>
         {
             var name = default(string?);
@@ -592,7 +592,7 @@ public static class DirectoryInfoExtensions
     /// <returns>変換結果のシーケンス</returns>
     public static IAsyncEnumerable<TResult> SelectFilesAsync<TResult>(this DirectoryInfo self, Func<IFileWalker, ValueTask<TResult>> selector, SelectFilesOptions? options = null)
     {
-        if (selector == null) throw new ArgumentNullException(nameof(selector));
+        ArgumentNullException.ThrowIfNull(selector);
         return self.VisitFilesAsync<TResult>(async c => c.SetResult(await selector(c).ConfigureAwait(false)), options);
     }
 
@@ -610,7 +610,7 @@ public static class DirectoryInfoExtensions
     /// <returns>変換結果のシーケンス</returns>
     public static IAsyncEnumerable<TResult> SelectFilesAsync<TResult>(this DirectoryInfo self, Func<IFileWalker, bool> filter, Func<IFileWalker, ValueTask<TResult>> selector, SelectFilesOptions? options = null)
     {
-        if (selector == null) throw new ArgumentNullException(nameof(selector));
+        ArgumentNullException.ThrowIfNull(selector);
         return self.VisitFilesAsync<TResult>(async c => { if (filter(c)) { c.SetResult(await selector(c).ConfigureAwait(false)); } else if (c.File == null) { c.Break = true; } }, options);
     }
 
@@ -629,7 +629,7 @@ public static class DirectoryInfoExtensions
     /// <returns>変換結果のシーケンス</returns>
     public static IAsyncEnumerable<TResult> SelectFilesAsync<TResult>(this DirectoryInfo self, Func<IFileWalker, ValueTask<TResult>> selector, IReadOnlyCollection<Regex> excludes, IReadOnlyCollection<Regex>? includes = null, SelectFilesOptions? options = null)
     {
-        if (selector == null) throw new ArgumentNullException(nameof(selector));
+        ArgumentNullException.ThrowIfNull(selector);
         return self.VisitFilesAsync<TResult>(async c => c.SetResult(await selector(c).ConfigureAwait(false)), excludes, includes, options);
     }
 
@@ -639,8 +639,8 @@ public static class DirectoryInfoExtensions
     /// <param name="options">検索オプション</param>
     public static void DoFiles(this DirectoryInfo self, DoFilesWalker processor, SelectFilesOptions? options = null)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
-        if (processor == null) throw new ArgumentNullException(nameof(processor));
+        ArgumentNullException.ThrowIfNull(self);
+        ArgumentNullException.ThrowIfNull(processor);
         foreach (var _ in self.VisitFiles<int>(c => processor(c), options)) ;
     }
 
@@ -652,8 +652,8 @@ public static class DirectoryInfoExtensions
     /// <param name="options">検索オプション</param>
     public static void DoFiles(this DirectoryInfo self, DoFilesWalker processor, IReadOnlyCollection<Regex> excludes, IReadOnlyCollection<Regex>? includes = null, SelectFilesOptions? options = null)
     {
-        if (processor == null) throw new ArgumentNullException(nameof(processor));
-        if (excludes == null) throw new ArgumentNullException(nameof(excludes));
+        ArgumentNullException.ThrowIfNull(processor);
+        ArgumentNullException.ThrowIfNull(excludes);
         self.DoFiles(options: options, processor: c =>
         {
             var name = default(string?);
@@ -687,8 +687,8 @@ public static class DirectoryInfoExtensions
     /// <returns>検索処理タスク</returns>
     public static async Task DoFilesAsync(this DirectoryInfo self, AsyncDoFilesWalker processor, SelectFilesOptions? options = null)
     {
-        if (self == null) throw new ArgumentNullException(nameof(self));
-        if (processor == null) throw new ArgumentNullException(nameof(processor));
+        ArgumentNullException.ThrowIfNull(self);
+        ArgumentNullException.ThrowIfNull(processor);
         await foreach (var _ in self.VisitFilesAsync<int>(c => processor(c), options).ConfigureAwait(false)) ;
     }
 
@@ -701,7 +701,7 @@ public static class DirectoryInfoExtensions
     /// <returns>検索処理タスク</returns>
     public static Task DoFilesAsync(this DirectoryInfo self, AsyncDoFilesWalker processor, IReadOnlyCollection<Regex> excludes, IReadOnlyCollection<Regex>? includes = null, SelectFilesOptions? options = null)
     {
-        if (processor == null) throw new ArgumentNullException(nameof(processor));
+        ArgumentNullException.ThrowIfNull(processor);
         return self.DoFilesAsync(options: options, processor: async c =>
         {
             var name = default(string?);

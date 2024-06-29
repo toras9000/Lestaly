@@ -1,6 +1,4 @@
-﻿using System.Net.Http.Headers;
-using FluentAssertions;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 

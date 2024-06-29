@@ -1,5 +1,4 @@
 ﻿using System.Reactive.Disposables;
-using FluentAssertions;
 
 namespace LestalyTest.Extensions;
 
