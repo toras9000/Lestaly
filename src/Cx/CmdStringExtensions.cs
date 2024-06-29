@@ -74,6 +74,13 @@ public static class CmdStringExtensions
     public static CmdCx encoding(this string commandline, Encoding encoding)
         => new CmdCx(commandline).encoding(encoding);
 
+    /// <summary>呼び出しコマンドラインのエコーを構成する</summary>
+    /// <param name="commandline">コマンドライン文字列。最初の空白より後ろを引数とみなす。</param>
+    /// <param name="prompt">呼び出しコマンドラインエコーの先頭に付与するプロンプト文字列。nullを指定するとエコーなしとみなす。</param>
+    /// <returns>コマンド実行準備インスタンス</returns>
+    public static CmdCx echo(this string commandline, string prompt = ">")
+        => new CmdCx(commandline).echo(prompt);
+
     /// <summary>文字列をコマンドラインとみなし、指定の作業ディレクトリとするプロセス実行準備を行う</summary>
     /// <param name="commandline">コマンドライン文字列。最初の空白より後ろを引数とみなす。</param>
     /// <param name="dir">作業ディレクトリ</param>

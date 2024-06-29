@@ -38,7 +38,13 @@ public class CmdCx
     public CmdCx(string command, params string[] arguments)
     {
         this.command = command;
-        this.argumenter = CmdProc.listArgumenter(arguments);
+        this.argumenter = target =>
+        {
+            foreach (var arg in arguments)
+            {
+                target.ArgumentList.Add(arg);
+            }
+        };
     }
     #endregion
 
@@ -98,6 +104,15 @@ public class CmdCx
     /// <returns>自身のインスタンス</returns>
     public CmdCx input(string text)
         => this.input(new StringReader(text));
+
+    /// <summary>呼び出しコマンドラインのエコーを構成する</summary>
+    /// <param name="prompt">呼び出しコマンドラインエコーの先頭に付与するプロンプト文字列。nullを指定するとエコーなしとみなす。</param>
+    /// <returns>自身のインスタンス</returns>
+    public CmdCx echo(string? prompt = ">")
+    {
+        this.echoPrompt = prompt;
+        return this;
+    }
 
     /// <summary>呼び出しプロセスの作業ディレクトリを構成する</summary>
     /// <param name="dir">作業ディレクトリ</param>
@@ -200,6 +215,9 @@ public class CmdCx
     private readonly Action<ProcessStartInfo>? argumenter;
 
     /// <summary>作業ディレクトリ</summary>
+    private string? echoPrompt;
+
+    /// <summary>作業ディレクトリ</summary>
     private string? workDir;
 
     /// <summary>入力リダイレクト元リーダ</summary>
@@ -264,17 +282,12 @@ public class CmdCx
         using var redirect = createRedirectWriter(out var sniffer);
 
         // 準備した情報でプロセス実行する
-        var execTask = CmdProc.execAsync(
-            this.command,
-            this.argumenter,
-            workDir: this.workDir,
-            environments: this.envVars,
-            stdIn: this.inReader,
-            inEncoding: this.ioEnc,
+        var execTask = execAsync(
             stdOut: redirect.stdout,
             stdErr: redirect.stderr,
             outEncoding: this.ioEnc,
-            cancelToken: this.cancelToken
+            stdIn: this.inReader,
+            inEncoding: this.ioEnc
         );
 
         // キャンセル例外変換が構成されている場合、例外変換
@@ -290,6 +303,130 @@ public class CmdCx
         var outputText = sniffer.ToString();
 
         return new(exit.Code, outputText);
+    }
+
+    /// <summary>コマンドを実行して終了コードを取得する</summary>
+    /// <param name="stdOut">標準出力のリダイレクト書き込み先ライター。nullの場合はリダイレクトなし。</param>
+    /// <param name="stdErr">標準エラーのリダイレクト書き込み先ライター。nullの場合はリダイレクトなし。</param>
+    /// <param name="stdIn">標準入力のリダイレクト読み込み元リーダー。nullの場合はリダイレクトなし。</param>
+    /// <param name="outEncoding">プロセスの出力テキスト読み取り時のエンコーディング</param>
+    /// <param name="inEncoding">プロセスの入力テキストを書き込む際のエンコーディング</param>
+    /// <returns>呼び出しプロセスの終了コード</returns>
+    private async Task<CmdExit> execAsync(TextWriter? stdOut, TextWriter? stdErr, Encoding? outEncoding, TextReader? stdIn, Encoding? inEncoding)
+    {
+        // 実行するコマンドの情報を設定
+        var target = new ProcessStartInfo();
+        target.FileName = this.command;
+        this.argumenter?.Invoke(target);
+        foreach (var env in this.envVars ?? [])
+        {
+            target.Environment[env.Key] = env.Value;
+        }
+        if (this.workDir != null)
+        {
+            target.WorkingDirectory = this.workDir;
+        }
+        target.CreateNoWindow = true;
+        target.UseShellExecute = false;
+        if (stdOut != null)
+        {
+            target.RedirectStandardOutput = true;
+            if (outEncoding != null) target.StandardOutputEncoding = outEncoding;
+        }
+        if (stdErr != null)
+        {
+            target.RedirectStandardError = true;
+            if (outEncoding != null) target.StandardErrorEncoding = outEncoding;
+        }
+        if (stdIn != null)
+        {
+            target.RedirectStandardInput = true;
+            if (inEncoding != null) target.StandardInputEncoding = inEncoding;
+        }
+
+        // エコーが有効に設定されていればコマンドラインを出力
+        if (this.echoPrompt != null && stdOut != null)
+        {
+            echoCommandline(stdOut, target);
+        }
+
+        // コマンドを実行
+        var proc = Process.Start(target) ?? throw new CmdProcException("Cannot execute command.");
+
+        // 出力ストリームのリダイレクトタスクを生成するローカル関数
+        static async Task redirectProcStream(TextReader reader, TextWriter writer, CancellationToken breaker, bool terminate = false)
+        {
+            await Task.Yield();
+            try
+            {
+                var buffers = new[] { new char[1024], new char[1024], };
+                var phase = 0;
+                var redirectTask = Task.CompletedTask;
+                while (true)
+                {
+                    // 利用するバッファを選択
+                    var buff = buffers[phase];
+
+                    // 次に利用するバッファを切替え
+                    phase++;
+                    phase %= buffers.Length;
+
+                    // プロセスの出力を読み取り
+                    var length = await reader.ReadAsync(buff.AsMemory(), breaker).ConfigureAwait(false);
+
+                    // 前回のリダイレクト書き込みが完了している事を確認
+                    await redirectTask.ConfigureAwait(false);
+
+                    // 読み取りデータが無い場合はここで終える
+                    if (length <= 0)
+                    {
+                        if (terminate) writer.Close();
+                        break;
+                    }
+
+                    // 読み取ったデータをリダイレクト先に書き込み
+                    redirectTask = writer.WriteAsync(buff.AsMemory(0, length), breaker);
+                }
+            }
+            catch (OperationCanceledException) { }
+        }
+
+        // プロセスの終了時にリダイレクトを中止するための
+        using var completeCanceller = new CancellationTokenSource();
+
+        // 指定に応じたリダイレクトタスクを生成
+        // 出力はすべて読み取れるようにキャンセルなし。入力はプロセス終了したらもう無意味なので中断させる。
+        var stdoutRedirector = stdOut == null ? Task.CompletedTask : redirectProcStream(proc.StandardOutput, stdOut, CancellationToken.None);
+        var stderrRedirector = stdErr == null ? Task.CompletedTask : redirectProcStream(proc.StandardError, stdErr, CancellationToken.None);
+        var stdinRedirector = stdIn == null ? Task.CompletedTask : redirectProcStream(stdIn, proc.StandardInput, completeCanceller.Token, terminate: true);
+
+        // コマンドの終了を待機
+        var killed = false;
+        try
+        {
+            await proc.WaitForExitAsync(this.cancelToken).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException ex) when (ex.CancellationToken == this.cancelToken)
+        {
+            // キャンセルされたらプロセスをキル
+            proc.Kill();
+            killed = true;
+        }
+        finally
+        {
+            completeCanceller.Cancel();
+        }
+
+        // 出力読み取りタスクの完了を待機
+        await Task.WhenAll(stdoutRedirector, stderrRedirector, stdinRedirector).ConfigureAwait(false);
+
+        // 実行を中止した場合はそれを示す例外を送出
+        if (killed)
+        {
+            throw new CmdProcCancelException(null, $"The process was killed by cancellation.");
+        }
+
+        return new(proc.ExitCode);
     }
 
     /// <summary>リダイレクト先ライターを生成する</summary>
@@ -337,6 +474,42 @@ public class CmdCx
         {
             throw new OperationCanceledException(ex.Message, ex, this.cancelToken);
         }
+    }
+
+    /// <summary>実行対象のコマンドラインをエコー出力する</summary>
+    /// <param name="stdOut">出力先ライター</param>
+    /// <param name="target">実行対象コマンド情報</param>
+    private void echoCommandline(TextWriter stdOut, ProcessStartInfo target)
+    {
+        var arguments = default(string);
+        try
+        {
+            // 非公開のコマンドライン文字列構築メソッドへのアクセサ
+            [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "BuildArguments")]
+            static extern string BuildArguments(ProcessStartInfo target);
+
+            // コマンドライン文字列構築
+            arguments = BuildArguments(target);
+        }
+        catch
+        {
+            // 内部メソッドで構築できなかった場合は簡易的に構築しておく。クォートなどは省略。
+            if (0 < target.ArgumentList?.Count)
+            {
+                arguments = target.ArgumentList.JoinString(" ");
+            }
+            else
+            {
+                arguments = target.Arguments;
+            }
+        }
+
+        // コマンドラインエコーを出力
+        stdOut.Write(this.echoPrompt);
+        stdOut.Write(target.FileName);
+        stdOut.Write(' ');
+        stdOut.Write(arguments);
+        stdOut.WriteLine();
     }
     #endregion
 }
