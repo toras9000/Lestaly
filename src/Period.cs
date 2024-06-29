@@ -18,7 +18,7 @@ public class Period : IDisposable
     // 公開プロパティ
     #region 状態情報
     /// <summary>有効区間内であるか否か</summary>
-    public bool Available => this.disposed;
+    public bool Available => !this.disposed;
     #endregion
 
     // 公開メソッド
