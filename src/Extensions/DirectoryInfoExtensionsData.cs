@@ -5,7 +5,8 @@
 /// <param name="Handling">処理対象設定</param>
 /// <param name="Sort">ファイル名/ディレクトリ名でソートするか否か。</param>
 /// <param name="Buffered">検索結果をバッファリングしてから列挙するか否か</param>
-public record SelectFilesOptions(bool Recurse = true, SelectFilesHandling? Handling = null, bool Sort = true, bool Buffered = true);
+/// <param name="SkipInaccessible">アクセスできないファイル/ディレクトリをスキップするか否か</param>
+public record SelectFilesOptions(bool Recurse = true, SelectFilesHandling? Handling = null, bool Sort = true, bool Buffered = true, bool SkipInaccessible = false);
 
 /// <summary>ファイル検索時の処理対象設定</summary>
 /// <param name="File">ファイルを処理対象にするか否か</param>

@@ -1117,6 +1117,36 @@ public class DirectoryInfoExtensionsTests
     }
 
     [TestMethod]
+    public async Task SelectFiles_SpecialDir()
+    {
+        {
+            var testOpt = new SelectFilesOptions
+            {
+                Recurse = true,
+                Buffered = true,
+                Sort = false,
+                SkipInaccessible = true,
+            };
+
+            await FluentActions.Awaiting(async () => await SpecialFolder.UserProfile().SelectFilesAsync(w => ValueTask.FromResult(w.Item.FullName), testOpt).ToArrayAsync())
+                .Should().NotThrowAsync();
+        }
+        {
+            var testOpt = new SelectFilesOptions
+            {
+                Recurse = true,
+                Buffered = false,
+                Sort = false,
+                SkipInaccessible = true,
+            };
+
+            await FluentActions.Awaiting(async () => await SpecialFolder.UserProfile().SelectFilesAsync(w => ValueTask.FromResult(w.Item.FullName), testOpt).ToArrayAsync())
+                .Should().NotThrowAsync();
+        }
+
+    }
+
+    [TestMethod]
     public async Task VisitFilesAsync_TopOnly()
     {
         var testFiles = new[]
