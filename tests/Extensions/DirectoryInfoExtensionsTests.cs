@@ -1119,30 +1119,16 @@ public class DirectoryInfoExtensionsTests
     [TestMethod]
     public async Task SelectFiles_SpecialDir()
     {
-        {
-            var testOpt = new SelectFilesOptions
-            {
-                Recurse = true,
-                Buffered = true,
-                Sort = false,
-                SkipInaccessible = true,
-            };
+        var docDir = SpecialFolder.Get(Environment.SpecialFolder.MyDocuments);
+        var options = new SelectFilesOptions { Recurse = true, Sort = false, SkipAttributes = FileAttributes.None, SkipInaccessible = true, };
 
-            await FluentActions.Awaiting(async () => await SpecialFolder.UserProfile().SelectFilesAsync(w => ValueTask.FromResult(w.Item.FullName), testOpt).ToArrayAsync())
-                .Should().NotThrowAsync();
-        }
-        {
-            var testOpt = new SelectFilesOptions
-            {
-                Recurse = true,
-                Buffered = false,
-                Sort = false,
-                SkipInaccessible = true,
-            };
+        await FluentActions
+            .Awaiting(async () => await docDir.SelectFilesAsync(w => ValueTask.FromResult(w.Item.FullName), options with { Buffered = false, }).ToArrayAsync())
+            .Should().NotThrowAsync();
 
-            await FluentActions.Awaiting(async () => await SpecialFolder.UserProfile().SelectFilesAsync(w => ValueTask.FromResult(w.Item.FullName), testOpt).ToArrayAsync())
-                .Should().NotThrowAsync();
-        }
+        await FluentActions
+            .Awaiting(async () => await docDir.SelectFilesAsync(w => ValueTask.FromResult(w.Item.FullName), options with { Buffered = true, }).ToArrayAsync())
+            .Should().NotThrowAsync();
 
     }
 

@@ -332,6 +332,7 @@ public static class DirectoryInfoExtensions
         enumeration.RecurseSubdirectories = false;  // 独自の再帰処理をするため、このオプションは無効で使う。
         enumeration.MatchType = MatchType.Simple;
         enumeration.IgnoreInaccessible = options.SkipInaccessible;
+        enumeration.AttributesToSkip = options.SkipAttributes;
 
         // 列挙
         var context = new SelectFilesContext<TResult>(new SelectFilesState<TResult>(self), selector, options, handling, enumeration);
@@ -547,6 +548,7 @@ public static class DirectoryInfoExtensions
         enumeration.RecurseSubdirectories = false;  // 独自の再帰処理をするため、このオプションは無効で使う。
         enumeration.MatchType = MatchType.Simple;
         enumeration.IgnoreInaccessible = options.SkipInaccessible;
+        enumeration.AttributesToSkip = options.SkipAttributes;
 
         // 列挙
         var context = new SelectFilesAsyncContext<TResult>(new SelectFilesState<TResult>(self), selector, options, handling, enumeration);
