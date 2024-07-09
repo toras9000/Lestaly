@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Runtime.CompilerServices;
+using System.Text;
 using System.Text.Json;
 
 namespace Lestaly;
@@ -227,5 +228,15 @@ public static class RoughScramblerExtensions
             return default;
         }
     }
+    #endregion
+
+    #region 紐づけ
+    /// <summary>ファイルと紐づけた雑スクランブル処理を生成する</summary>
+    /// <param name="self">読み書き対象ファイル</param>
+    /// <param name="purpose">任意の目的文字列</param>
+    /// <param name="context">コンテキスト文字列。指定しても良いが、通常は指定省略して呼び出し元のファイルパスを渡す形を想定している。</param>
+    /// <returns>ファイルと紐づけた雑スクランブル処理</returns>
+    public static FileRoughScrambler CreateScrambler(this FileInfo self, string purpose = "", [CallerFilePath] string context = "")
+        => new FileRoughScrambler(self, purpose, context);
     #endregion
 }

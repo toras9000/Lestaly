@@ -23,7 +23,7 @@ public class RoughScrambler
 {
     // 構築
     #region コンストラクタ
-    /// <summary></summary>
+    /// <summary>暗号化の情報を指定するコンストラクタ</summary>
     /// <param name="purpose">任意の目的文字列</param>
     /// <param name="context">コンテキスト文字列。指定しても良いが、通常は指定省略して呼び出し元のファイルパスを渡す形を想定している。</param>
     public RoughScrambler(string purpose = "", [CallerFilePath] string context = "")
