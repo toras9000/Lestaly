@@ -212,14 +212,7 @@ public interface IConsoleWig
     /// <returns>呼び出し元インスタンス自身</returns>
     public IConsoleWig WriteLink(string uri, string? text = null)
     {
-        // 以下ページで紹介されているエスケープシーケンスを出力する。
-        // ただしハイパーリンクとして機能するかどうかはターミナルソフトでの対応次第となる。
-        // https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda
-
-        const string ESC = "\x1b";
-        const string OSC = $"{ESC}]";
-        const string ST = $@"{ESC}\";
-        Write($@"{OSC}8;;{uri}{ST}{text ?? uri}{OSC}8;;{ST}");
+        Write(Poster.Link[uri, text ?? uri]);
         return this;
     }
 
