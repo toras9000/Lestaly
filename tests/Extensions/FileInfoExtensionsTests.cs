@@ -787,7 +787,7 @@ public class FileExtensionsTests
         var target = tempDir.Info.RelativeFile("test.txt");
 
         // テスト対象実行
-        target.WriteMultilineText(multiline, encoding, ['\r', '\n']);
+        target.WriteMultilineText(['\r', '\n'], encoding, multiline);
 
         // 検証
         File.ReadAllBytes(target.FullName).Should().Equal("abc\r\ndef\r\nghi\r\njkl"u8.ToArray());
@@ -958,7 +958,7 @@ public class FileExtensionsTests
         var target = tempDir.Info.RelativeFile("test.txt");
 
         // テスト対象実行
-        await target.WriteMultilineTextAsync(multiline.AsMemory(), encoding, "\r\n".AsMemory(), CancellationToken.None);
+        await target.WriteMultilineTextAsync("\r\n".AsMemory(), encoding, multiline.AsMemory());
 
         // 検証
         File.ReadAllBytes(target.FullName).Should().Equal("abc\r\ndef\r\nghi\r\njkl"u8.ToArray());

@@ -316,17 +316,17 @@ public static class FileInfoExtensions
 
     /// <summary>ファイルに行末文字を正規化した複数行テキストを書き込む。</summary>
     /// <param name="self">対象ファイルのFileInfo</param>
-    /// <param name="multiline">書き込む複数行テキスト</param>
     /// <param name="lineBreak">行末文字</param>
-    public static void WriteMultilineText(this FileInfo self, ReadOnlySpan<char> multiline, ReadOnlySpan<char> lineBreak)
+    /// <param name="multiline">書き込む複数行テキスト</param>
+    public static void WriteMultilineText(this FileInfo self, ReadOnlySpan<char> lineBreak, ReadOnlySpan<char> multiline)
         => self.WriteMultilineText(multiline, options: default, encoding: default, lineBreak);
 
     /// <summary>ファイルに行末文字を正規化した複数行テキストを書き込む。</summary>
     /// <param name="self">対象ファイルのFileInfo</param>
-    /// <param name="multiline">書き込む複数行テキスト</param>
     /// <param name="lineBreak">行末文字</param>
     /// <param name="encoding">書き込むテキストをエンコードするテキストエンコーディング</param>
-    public static void WriteMultilineText(this FileInfo self, ReadOnlySpan<char> multiline, Encoding encoding, ReadOnlySpan<char> lineBreak)
+    /// <param name="multiline">書き込む複数行テキスト</param>
+    public static void WriteMultilineText(this FileInfo self, ReadOnlySpan<char> lineBreak, Encoding encoding, ReadOnlySpan<char> multiline)
         => self.WriteMultilineText(multiline, options: default, encoding, lineBreak);
 
     /// <summary>ファイルに行末文字を正規化した複数行テキストを書き込む。</summary>
@@ -437,19 +437,19 @@ public static class FileInfoExtensions
 
     /// <summary>ファイルに行末文字を正規化した複数行テキストを書き込む。</summary>
     /// <param name="self">対象ファイルのFileInfo</param>
-    /// <param name="multiline">書き込む複数行テキスト</param>
     /// <param name="lineBreak">行末文字</param>
+    /// <param name="multiline">書き込む複数行テキスト</param>
     /// <param name="cancelToken">キャンセルトークン</param>
-    public static ValueTask WriteMultilineTextAsync(this FileInfo self, ReadOnlyMemory<char> multiline, ReadOnlyMemory<char> lineBreak = default, CancellationToken cancelToken = default)
+    public static ValueTask WriteMultilineTextAsync(this FileInfo self, ReadOnlyMemory<char> lineBreak, ReadOnlyMemory<char> multiline, CancellationToken cancelToken = default)
         => self.WriteMultilineTextAsync(multiline, options: default, encoding: default, lineBreak, cancelToken);
 
     /// <summary>ファイルに行末文字を正規化した複数行テキストを書き込む。</summary>
     /// <param name="self">対象ファイルのFileInfo</param>
-    /// <param name="multiline">書き込む複数行テキスト</param>
     /// <param name="lineBreak">行末文字</param>
     /// <param name="encoding">書き込むテキストをエンコードするテキストエンコーディング</param>
+    /// <param name="multiline">書き込む複数行テキスト</param>
     /// <param name="cancelToken">キャンセルトークン</param>
-    public static ValueTask WriteMultilineTextAsync(this FileInfo self, ReadOnlyMemory<char> multiline, Encoding? encoding = null, ReadOnlyMemory<char> lineBreak = default, CancellationToken cancelToken = default)
+    public static ValueTask WriteMultilineTextAsync(this FileInfo self, ReadOnlyMemory<char> lineBreak, Encoding? encoding, ReadOnlyMemory<char> multiline, CancellationToken cancelToken = default)
         => self.WriteMultilineTextAsync(multiline, options: default, encoding, lineBreak, cancelToken);
 
     /// <summary>ファイルに行末文字を正規化した複数行テキストを書き込む。</summary>
