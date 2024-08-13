@@ -314,6 +314,43 @@ public static class FileInfoExtensions
         self.Refresh();
     }
 
+    /// <summary>ファイルに行末文字を正規化した複数行テキストを書き込む。</summary>
+    /// <param name="self">対象ファイルのFileInfo</param>
+    /// <param name="multiline">書き込む複数行テキスト</param>
+    /// <param name="lineBreak">行末文字</param>
+    public static void WriteMultilineText(this FileInfo self, ReadOnlySpan<char> multiline, ReadOnlySpan<char> lineBreak)
+        => self.WriteMultilineText(multiline, options: default, encoding: default, lineBreak);
+
+    /// <summary>ファイルに行末文字を正規化した複数行テキストを書き込む。</summary>
+    /// <param name="self">対象ファイルのFileInfo</param>
+    /// <param name="multiline">書き込む複数行テキスト</param>
+    /// <param name="lineBreak">行末文字</param>
+    /// <param name="encoding">書き込むテキストをエンコードするテキストエンコーディング</param>
+    public static void WriteMultilineText(this FileInfo self, ReadOnlySpan<char> multiline, Encoding encoding, ReadOnlySpan<char> lineBreak)
+        => self.WriteMultilineText(multiline, options: default, encoding, lineBreak);
+
+    /// <summary>ファイルに行末文字を正規化した複数行テキストを書き込む。</summary>
+    /// <param name="self">対象ファイルのFileInfo</param>
+    /// <param name="multiline">書き込む複数行テキスト</param>
+    /// <param name="lineBreak">行末文字</param>
+    /// <param name="options">ファイルストリームを開くオプション。Access プロパティは無視する。</param>
+    /// <param name="encoding">書き込むテキストをエンコードするテキストエンコーディング</param>
+    public static void WriteMultilineText(this FileInfo self, ReadOnlySpan<char> multiline, FileStreamOptions? options = null, Encoding? encoding = null, ReadOnlySpan<char> lineBreak = default)
+    {
+        ArgumentNullException.ThrowIfNull(self);
+        var breaker = lineBreak;
+        if (breaker.IsEmpty) breaker = Environment.NewLine;
+        using var writer = self.CreateTextWriter(createStreamWriteOptions(options), encoding);
+        var first = true;
+        foreach (var line in multiline.EnumerateLines())
+        {
+            if (first) first = false;
+            else writer.Write(breaker);
+            writer.Write(line);
+        }
+        self.Refresh();
+    }
+
     /// <summary>ファイル内容が指定のバイト列となるように書き込む。</summary>
     /// <param name="self">対象ファイルのFileInfo</param>
     /// <param name="bytes">書き込むバイト列</param>
@@ -395,6 +432,67 @@ public static class FileInfoExtensions
     {
         ArgumentNullException.ThrowIfNull(self);
         await File.WriteAllLinesAsync(self.FullName, contents, encoding, cancelToken).ConfigureAwait(false);
+        self.Refresh();
+    }
+
+    /// <summary>ファイルに行末文字を正規化した複数行テキストを書き込む。</summary>
+    /// <param name="self">対象ファイルのFileInfo</param>
+    /// <param name="multiline">書き込む複数行テキスト</param>
+    /// <param name="lineBreak">行末文字</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    public static ValueTask WriteMultilineTextAsync(this FileInfo self, ReadOnlyMemory<char> multiline, ReadOnlyMemory<char> lineBreak = default, CancellationToken cancelToken = default)
+        => self.WriteMultilineTextAsync(multiline, options: default, encoding: default, lineBreak, cancelToken);
+
+    /// <summary>ファイルに行末文字を正規化した複数行テキストを書き込む。</summary>
+    /// <param name="self">対象ファイルのFileInfo</param>
+    /// <param name="multiline">書き込む複数行テキスト</param>
+    /// <param name="lineBreak">行末文字</param>
+    /// <param name="encoding">書き込むテキストをエンコードするテキストエンコーディング</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    public static ValueTask WriteMultilineTextAsync(this FileInfo self, ReadOnlyMemory<char> multiline, Encoding? encoding = null, ReadOnlyMemory<char> lineBreak = default, CancellationToken cancelToken = default)
+        => self.WriteMultilineTextAsync(multiline, options: default, encoding, lineBreak, cancelToken);
+
+    /// <summary>ファイルに行末文字を正規化した複数行テキストを書き込む。</summary>
+    /// <param name="self">対象ファイルのFileInfo</param>
+    /// <param name="multiline">書き込む複数行テキスト</param>
+    /// <param name="lineBreak">行末文字</param>
+    /// <param name="options">ファイルストリームを開くオプション。Access プロパティは無視する。</param>
+    /// <param name="encoding">書き込むテキストをエンコードするテキストエンコーディング</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    public static async ValueTask WriteMultilineTextAsync(this FileInfo self, ReadOnlyMemory<char> multiline, FileStreamOptions? options = null, Encoding? encoding = null, ReadOnlyMemory<char> lineBreak = default, CancellationToken cancelToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(self);
+
+        // 改行文字を決定
+        var breaker = lineBreak;
+        if (breaker.IsEmpty) breaker = Environment.NewLine.AsMemory();
+
+        using var writer = self.CreateTextWriter(createStreamWriteOptions(options), encoding);
+
+        var first = true;
+        var scan = multiline;
+        while (true)
+        {
+            // 改行書き出し。これは同期で。
+            if (first) first = false;
+            else writer.Write(breaker);
+
+            // 改行検索
+            var breakIdx = scan.Span.IndexOfAny('\r', '\n');
+            if (breakIdx < 0)
+            {
+                // 改行が見つからなければ最終パート
+                await writer.WriteAsync(scan, cancelToken).ConfigureAwait(false);
+                break;
+            }
+
+            // 行の書き出し。
+            await writer.WriteAsync(scan[..breakIdx], cancelToken).ConfigureAwait(false);
+
+            // 改行文字の後ろから
+            var breakLen = scan.Span[breakIdx..] is ['\r', '\n', ..] ? 2 : 1;
+            scan = scan[(breakIdx + breakLen)..];
+        }
         self.Refresh();
     }
 

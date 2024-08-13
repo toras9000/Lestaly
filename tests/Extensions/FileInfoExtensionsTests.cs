@@ -774,6 +774,26 @@ public class FileExtensionsTests
     }
 
     [TestMethod]
+    public void WriteMultilineText()
+    {
+        // テスト用に一時ディレクトリ
+        using var tempDir = new TempDir();
+
+        // テストデータ
+        var encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+        var multiline = "abc\rdef\nghi\r\njkl";
+
+        // テストファイル
+        var target = tempDir.Info.RelativeFile("test.txt");
+
+        // テスト対象実行
+        target.WriteMultilineText(multiline, encoding, ['\r', '\n']);
+
+        // 検証
+        File.ReadAllBytes(target.FullName).Should().Equal("abc\r\ndef\r\nghi\r\njkl"u8.ToArray());
+    }
+
+    [TestMethod]
     public async Task WriteAllBytesAsync()
     {
         // テスト用に一時ディレクトリ
@@ -922,6 +942,26 @@ public class FileExtensionsTests
 
         // 検証
         File.ReadAllLines(target.FullName, enc).Should().Equal(texts);
+    }
+
+    [TestMethod]
+    public async Task WriteMultilineTextAsync()
+    {
+        // テスト用に一時ディレクトリ
+        using var tempDir = new TempDir();
+
+        // テストデータ
+        var encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+        var multiline = "abc\rdef\nghi\r\njkl";
+
+        // テストファイル
+        var target = tempDir.Info.RelativeFile("test.txt");
+
+        // テスト対象実行
+        await target.WriteMultilineTextAsync(multiline.AsMemory(), encoding, "\r\n".AsMemory(), CancellationToken.None);
+
+        // 検証
+        File.ReadAllBytes(target.FullName).Should().Equal("abc\r\ndef\r\nghi\r\njkl"u8.ToArray());
     }
 
     [TestMethod]
