@@ -334,7 +334,7 @@ public static class FileInfoExtensions
     {
         ArgumentNullException.ThrowIfNull(self);
         using var stream = self.CreateWrite(options);
-        await stream.WriteAsync(bytes, cancelToken);
+        await stream.WriteAsync(bytes, cancelToken).ConfigureAwait(false);
         self.Refresh();
     }
 
@@ -371,7 +371,7 @@ public static class FileInfoExtensions
     {
         ArgumentNullException.ThrowIfNull(self);
         using var writer = self.CreateTextWriter(createStreamWriteOptions(options), encoding);
-        await writer.WriteAsync(contents, cancelToken);
+        await writer.WriteAsync(contents, cancelToken).ConfigureAwait(false);
         self.Refresh();
     }
 
@@ -382,7 +382,7 @@ public static class FileInfoExtensions
     public static async ValueTask WriteAllLinesAsync(this FileInfo self, IEnumerable<string> contents, CancellationToken cancelToken = default)
     {
         ArgumentNullException.ThrowIfNull(self);
-        await File.WriteAllLinesAsync(self.FullName, contents, cancelToken);
+        await File.WriteAllLinesAsync(self.FullName, contents, cancelToken).ConfigureAwait(false);
         self.Refresh();
     }
 
