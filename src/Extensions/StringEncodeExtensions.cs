@@ -51,7 +51,6 @@ public static class StringEncodeExtensions
         return writer.WrittenSpan.ToArray();
     }
 
-
     /// <summary>バイト列をUTF8として文字列にデコードする。</summary>
     /// <param name="self">バイト列。nullは空シーケンスと同じ扱い。</param>
     /// <returns>デコードした文字列</returns>
@@ -103,7 +102,6 @@ public static class StringEncodeExtensions
         var option = wrap ? Base64FormattingOptions.InsertLineBreaks : Base64FormattingOptions.None;
         return Convert.ToBase64String(writer.WrittenSpan, option);
     }
-
 
     /// <summary>Base64表現の文字列をデコードしUTF8で文字列解釈する。</summary>
     /// <param name="self">Base64文字列。nullは空文字列と同じ扱い。</param>
@@ -174,7 +172,6 @@ public static class StringEncodeExtensions
         return Convert.ToHexString(writer.WrittenSpan);
     }
 
-
     /// <summary>HEX文字列をUTF8として文字列にデコードする。</summary>
     /// <param name="self">Base64文字列。nullは空文字列と同じ扱い。</param>
     /// <returns>デコードした文字列</returns>
@@ -221,7 +218,6 @@ public static class StringEncodeExtensions
     public static string EncodeBase64(this ReadOnlySpan<byte> self, bool wrap = false)
         => Convert.ToBase64String(self, wrap ? Base64FormattingOptions.InsertLineBreaks : Base64FormattingOptions.None);
 
-
     /// <summary>Base64表現の文字列をデコードする。</summary>
     /// <param name="self">Base64文字列。nullは空文字列と同じ扱い。</param>
     /// <returns>デコードしたバイト列。でコード失敗時はnull</returns>
@@ -261,6 +257,28 @@ public static class StringEncodeExtensions
         }
         return null;
     }
+
+
+    /// <summary>バイト列をBase64urlでエンコードする。</summary>
+    /// <param name="self">バイト列</param>
+    /// <returns>エンコードした文字列</returns>
+    public static string EncodeBase64Url(this Span<byte> self)
+        => EncodeBase64Url(self.AsReadOnly());
+
+    /// <summary>バイト列をBase64urlでエンコードする。</summary>
+    /// <param name="self">バイト列</param>
+    /// <returns>エンコードした文字列</returns>
+    public static string EncodeBase64Url(this ReadOnlySpan<byte> self)
+    {
+        var maxLen = Base64.GetMaxEncodedToUtf8Length(self.Length);
+        var buff = new byte[maxLen];
+        Base64.EncodeToUtf8(self, buff, out _, out var written);
+        var encoded = buff.AsSpan(..written).TrimEnd((byte)'=');
+        encoded.Replace((byte)'+', (byte)'-');
+        encoded.Replace((byte)'/', (byte)'_');
+        return Encoding.UTF8.GetString(encoded);
+    }
+
 
     /// <summary>バイト列をHEX文字列化する</summary>
     /// <param name="self">バイト列</param>

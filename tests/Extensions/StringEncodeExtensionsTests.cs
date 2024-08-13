@@ -21,6 +21,7 @@ public class StringEncodeExtensionsTests
         buffer.AsSpan(0, len).ToArray().Should().Equal(Encoding.UTF8.GetBytes("defかきく"));
     }
 
+
     [TestMethod()]
     public void EncodeUtf8()
     {
@@ -56,6 +57,7 @@ public class StringEncodeExtensionsTests
         encoded.AsSpan().DecodeUtf8().Should().Be(text);
         ((ReadOnlySpan<byte>)encoded.AsSpan()).DecodeUtf8().Should().Be(text);
     }
+
 
     [TestMethod()]
     public void EncodeUtf8Base64()
@@ -104,39 +106,6 @@ public class StringEncodeExtensionsTests
         illegalBytes.AsSpan().DecodeUtf8Base64().Should().BeNull();
     }
 
-    [TestMethod()]
-    public void DecodeBase64_Chars()
-    {
-        var text = "abcdef";
-        var binary = Encoding.UTF8.GetBytes(text);
-
-        var encoded = Convert.ToBase64String(binary);
-        encoded.AsSpan().DecodeBase64().Should().Equal(binary);
-
-        ("*" + encoded).AsSpan().DecodeBase64().Should().BeNull();
-    }
-
-    [TestMethod()]
-    public void DecodeBase64_Utf8Bytes()
-    {
-        var text = "abcdef";
-        var binary = Encoding.UTF8.GetBytes(text);
-
-        var encoded = Encoding.UTF8.GetBytes(Convert.ToBase64String(binary));
-        encoded.AsSpan().AsReadOnly().DecodeBase64().Should().Equal(binary);
-
-        byte[] illegal = [(byte)'*', .. encoded];
-        illegal.AsSpan().AsReadOnly().DecodeBase64().Should().BeNull();
-    }
-
-    [TestMethod()]
-    public void ToHexString()
-    {
-        var binary = new byte[] { 0x12, 0x34, 0xAB, 0xEF };
-
-        binary.ToHexString().Should().Be("1234ABEF");
-        binary.ToHexString("-").Should().Be("12-34-AB-EF");
-    }
 
     [TestMethod()]
     public void EncodeUtf8Hex()
@@ -163,6 +132,60 @@ public class StringEncodeExtensionsTests
         encoded.ToArray().AsSpan().DecodeUtf8Hex().Should().Be(text);
         encoded.AsSpan().DecodeUtf8Hex().Should().Be(text);
     }
+
+
+    [TestMethod()]
+    public void EncodeBase64()
+    {
+        ReadOnlySpan<byte> bin = [0x56, 0x3f, 0xbc, 0x1b, 0xf2, 0xd0, 0x68,];
+
+        bin.EncodeBase64().Should().Be("Vj+8G/LQaA==");
+    }
+
+    [TestMethod()]
+    public void DecodeBase64_Chars()
+    {
+        var text = "abcdef";
+        var binary = Encoding.UTF8.GetBytes(text);
+
+        var encoded = Convert.ToBase64String(binary);
+        encoded.AsSpan().DecodeBase64().Should().Equal(binary);
+
+        ("*" + encoded).AsSpan().DecodeBase64().Should().BeNull();
+    }
+
+    [TestMethod()]
+    public void DecodeBase64_Utf8Bytes()
+    {
+        var text = "abcdef";
+        var binary = Encoding.UTF8.GetBytes(text);
+
+        var encoded = Encoding.UTF8.GetBytes(Convert.ToBase64String(binary));
+        encoded.AsSpan().AsReadOnly().DecodeBase64().Should().Equal(binary);
+
+        byte[] illegal = [(byte)'*', .. encoded];
+        illegal.AsSpan().AsReadOnly().DecodeBase64().Should().BeNull();
+    }
+
+
+    [TestMethod()]
+    public void EncodeBase64Url()
+    {
+        ReadOnlySpan<byte> bin = [0x56, 0x3f, 0xbc, 0x1b, 0xf2, 0xd0, 0x68,];
+
+        bin.EncodeBase64Url().Should().Be("Vj-8G_LQaA");
+    }
+
+
+    [TestMethod()]
+    public void ToHexString()
+    {
+        var binary = new byte[] { 0x12, 0x34, 0xAB, 0xEF };
+
+        binary.ToHexString().Should().Be("1234ABEF");
+        binary.ToHexString("-").Should().Be("12-34-AB-EF");
+    }
+
 
     [TestMethod()]
     public void EscapeUriData()
