@@ -16,12 +16,13 @@ public class FileRoughScrambler
     /// <param name="file">読み書き対象ファイル</param>
     /// <param name="purpose">任意の目的文字列</param>
     /// <param name="context">コンテキスト文字列。指定しても良いが、通常は指定省略して呼び出し元のファイルパスを渡す形を想定している。</param>
-    public FileRoughScrambler(FileInfo file, string purpose = "", [CallerFilePath] string context = "")
+    /// <param name="envtokens">暗号キーを作るために利用する環境固有文字列のリスト。省略するとマシン名(ホスト名)とユーザ名を利用する</param>
+    public FileRoughScrambler(FileInfo file, string purpose = "", [CallerFilePath] string context = "", string[]? envtokens = default)
     {
         ArgumentNullException.ThrowIfNull(file);
 
         this.File = file;
-        this.Scrambler = new RoughScrambler(purpose, context);
+        this.Scrambler = new RoughScrambler(purpose, context, envtokens);
     }
     #endregion
 

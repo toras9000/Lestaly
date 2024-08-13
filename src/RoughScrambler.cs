@@ -14,8 +14,7 @@ namespace Lestaly;
 /// <list type="bullet">
 /// <item>インスタンス生成で指定する任意の目的文字列</item>
 /// <item>インスタンス生成で指定するコンテキスト文字列(通常は指定を省略して呼び出し元ファイルパスを利用する)</item>
-/// <item>実行環境のマシン名</item>
-/// <item>実行環境のユーザ名</item>
+/// <item>実行固有情報(デフォルトではマシン名とユーザ名)</item>
 /// </list>
 /// 用途としてそれほど厳密に保護する必要のない情報を、すぐには読み取りできない形で保存しておくような場合を想定している。
 /// </remarks>
@@ -26,15 +25,26 @@ public class RoughScrambler
     /// <summary>暗号化の情報を指定するコンストラクタ</summary>
     /// <param name="purpose">任意の目的文字列</param>
     /// <param name="context">コンテキスト文字列。指定しても良いが、通常は指定省略して呼び出し元のファイルパスを渡す形を想定している。</param>
-    public RoughScrambler(string purpose = "", [CallerFilePath] string context = "")
+    /// <param name="envtokens">暗号キーを作るために利用する環境固有文字列のリスト。省略するとマシン名(ホスト名)とユーザ名を利用する</param>
+    public RoughScrambler(string purpose = "", [CallerFilePath] string context = "", string[]? envtokens = default)
     {
         // 暗号化のための情報を収集
         // 同じ環境であれば同じ情報になるようなものを集めている。
         var writer = new ArrayBufferWriter<byte>(256);
         Encoding.UTF8.GetBytes(purpose ?? "", writer);
         Encoding.UTF8.GetBytes(context ?? "", writer);
-        Encoding.UTF8.GetBytes(Environment.MachineName ?? "", writer);
-        Encoding.UTF8.GetBytes(Environment.UserName ?? "", writer);
+        if (envtokens == null || envtokens.Length <= 0)
+        {
+            Encoding.UTF8.GetBytes(Environment.MachineName ?? "", writer);
+            Encoding.UTF8.GetBytes(Environment.UserName ?? "", writer);
+        }
+        else
+        {
+            foreach (var env in envtokens)
+            {
+                Encoding.UTF8.GetBytes(env ?? "", writer);
+            }
+        }
         if (writer.WrittenCount < 32)
         {
             var padding = (stackalloc byte[32 - writer.WrittenCount]);

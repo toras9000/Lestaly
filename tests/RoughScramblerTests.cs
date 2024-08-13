@@ -42,9 +42,10 @@ public class RoughScramblerTests
     public void Scramble_ShortContext()
     {
         var data = new byte[] { 0x12, 0x34, 0x56, };
-        var scrambler = new RoughScrambler("", "");
-        var enc = scrambler.Scramble(data);
-        var dec = scrambler.Descramble(enc);
+        var encrypter = new RoughScrambler("", "");
+        var decrypter = new RoughScrambler("", "");
+        var enc = encrypter.Scramble(data);
+        var dec = decrypter.Descramble(enc);
 
         dec.Should().Equal(data);
     }
@@ -58,9 +59,22 @@ public class RoughScramblerTests
         var context = new string(Random.Shared.GetItems(Elements.AsSpan(), 8192));
 
         var data = new byte[] { 0x12, 0x34, 0x56, };
-        var scrambler = new RoughScrambler(purpose, context);
-        var enc = scrambler.Scramble(data);
-        var dec = scrambler.Descramble(enc);
+        var encrypter = new RoughScrambler(purpose, context);
+        var decrypter = new RoughScrambler(purpose, context);
+        var enc = encrypter.Scramble(data);
+        var dec = decrypter.Descramble(enc);
+
+        dec.Should().Equal(data);
+    }
+
+    [TestMethod()]
+    public void Scramble_EnvTokens()
+    {
+        var data = new byte[] { 0x12, 0x34, 0x56, };
+        var encrypter = new RoughScrambler("", "", ["aaa", "bbb"]);
+        var decrypter = new RoughScrambler("", "", ["aaa", "bbb"]);
+        var enc = encrypter.Scramble(data);
+        var dec = decrypter.Descramble(enc);
 
         dec.Should().Equal(data);
     }

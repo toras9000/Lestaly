@@ -236,7 +236,7 @@ public static class RoughScramblerExtensions
     /// <param name="purpose">任意の目的文字列</param>
     /// <param name="context">コンテキスト文字列。指定しても良いが、通常は指定省略して呼び出し元のファイルパスを渡す形を想定している。</param>
     /// <returns>ファイルと紐づけた雑スクランブル処理</returns>
-    public static FileRoughScrambler CreateScrambler(this FileInfo self, string purpose = "", [CallerFilePath] string context = "")
-        => new FileRoughScrambler(self, purpose, context);
+    public static FileRoughScrambler CreateScrambler(this FileInfo self, string purpose = "", [CallerFilePath] string context = "", string[]? envtokens = default)
+        => new FileRoughScrambler(self, purpose, context, envtokens);
     #endregion
 }
