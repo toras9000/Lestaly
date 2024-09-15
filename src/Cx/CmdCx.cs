@@ -114,6 +114,17 @@ public class CmdCx
         return this;
     }
 
+    /// <summary>ウィンドウを作成せずに実行する</summary>
+    /// <remarks>
+    /// この指定が効果を発する。
+    /// </remarks>
+    /// <returns>自身のインスタンス</returns>
+    public CmdCx nowindow()
+    {
+        this.noWindow = true;
+        return this;
+    }
+
     /// <summary>呼び出しプロセスの作業ディレクトリを構成する</summary>
     /// <param name="dir">作業ディレクトリ</param>
     /// <returns>自身のインスタンス</returns>
@@ -213,6 +224,9 @@ public class CmdCx
 
     /// <summary>コマンド引数</summary>
     private readonly Action<ProcessStartInfo>? argumenter;
+
+    /// <summary>ウィンドウを作らずに実行するか</summary>
+    private bool noWindow;
 
     /// <summary>作業ディレクトリ</summary>
     private string? echoPrompt;
@@ -316,6 +330,7 @@ public class CmdCx
     {
         // 実行するコマンドの情報を設定
         var target = new ProcessStartInfo();
+        target.UseShellExecute = false;
         target.FileName = this.command;
         this.argumenter?.Invoke(target);
         foreach (var env in this.envVars ?? [])
@@ -326,8 +341,10 @@ public class CmdCx
         {
             target.WorkingDirectory = this.workDir;
         }
-        target.CreateNoWindow = true;
-        target.UseShellExecute = false;
+        if (this.noWindow)
+        {
+            target.CreateNoWindow = true;
+        }
         if (stdOut != null)
         {
             target.RedirectStandardOutput = true;

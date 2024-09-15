@@ -81,6 +81,12 @@ public static class CmdStringExtensions
     public static CmdCx echo(this string commandline, string prompt = ">")
         => new CmdCx(commandline).echo(prompt);
 
+    /// <summary>文字列をコマンドラインとみなし、ウィンドウを作成なしとするプロセス実行準備を行う</summary>
+    /// <param name="commandline">コマンドライン文字列。最初の空白より後ろを引数とみなす。</param>
+    /// <returns>コマンド実行準備インスタンス</returns>
+    public static CmdCx nowindow(this string commandline)
+        => new CmdCx(commandline).nowindow();
+
     /// <summary>文字列をコマンドラインとみなし、指定の作業ディレクトリとするプロセス実行準備を行う</summary>
     /// <param name="commandline">コマンドライン文字列。最初の空白より後ろを引数とみなす。</param>
     /// <param name="dir">作業ディレクトリ</param>
