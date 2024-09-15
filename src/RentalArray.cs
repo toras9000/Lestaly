@@ -1,6 +1,5 @@
 ﻿using System.Buffers;
 using System.ComponentModel;
-using DocumentFormat.OpenXml.Math;
 
 namespace Lestaly;
 
