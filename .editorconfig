@@ -385,3 +385,5 @@ dotnet_naming_style.s_camelcase.required_suffix =
 dotnet_naming_style.s_camelcase.word_separator = 
 dotnet_naming_style.s_camelcase.capitalization = camel_case
 
+# IDE0079: •s—v‚È—}§‚ğíœ‚µ‚Ü‚·
+dotnet_diagnostic.IDE0079.severity = silent

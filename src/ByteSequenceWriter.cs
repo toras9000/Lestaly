@@ -24,10 +24,10 @@ public ref struct ByteSequenceWriter
     public Span<byte> Buffer { get; }
 
     /// <summary>書き込み済みバイト数</summary>
-    public int Written => this.Buffer.Length - this.probe.Length;
+    public readonly int Written => this.Buffer.Length - this.probe.Length;
 
     /// <summary>残り(空き)バイト数</summary>
-    public int Remaining => this.probe.Length;
+    public readonly int Remaining => this.probe.Length;
     #endregion
 
     // 公開メソッド

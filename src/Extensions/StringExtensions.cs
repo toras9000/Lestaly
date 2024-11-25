@@ -990,9 +990,6 @@ public static class StringExtensions
     /// <returns>テキスト要素数</returns>
     public static int TextElementCount(this ReadOnlySpan<char> self)
     {
-        // パラメータチェック
-        if (self == null) throw new ArgumentNullException(nameof(self));
-
         var count = 0;
         var scan = self;
         while (!scan.IsEmpty)

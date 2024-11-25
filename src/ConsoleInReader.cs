@@ -134,7 +134,11 @@ public class ConsoleInReader : TextReader
 
     #region  排他
     /// <summary>排他用キーオブジェクト</summary>
+#if NET9_0_OR_GREATER
+    private readonly Lock callSync = new();
+#else
     private readonly object callSync = new();
+#endif
     #endregion
 
     #region 読み取り処理
@@ -168,7 +172,7 @@ public class ConsoleInReader : TextReader
     #region 状態更新
     private async ValueTask<int> readAsync(Memory<char>? buffer, CancellationToken cancelToken)
     {
-        ArgumentNullException.ThrowIfNull(buffer);
+        if (!buffer.HasValue) throw new ArgumentNullException(nameof(buffer));
 
         lock (this.callSync)
         {
@@ -204,7 +208,7 @@ public class ConsoleInReader : TextReader
 
     private async ValueTask<int> readBlockAsync(Memory<char>? buffer, CancellationToken cancelToken)
     {
-        ArgumentNullException.ThrowIfNull(buffer);
+        if (!buffer.HasValue) throw new ArgumentNullException(nameof(buffer));
 
         lock (this.callSync)
         {

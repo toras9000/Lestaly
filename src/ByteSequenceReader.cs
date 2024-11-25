@@ -24,10 +24,10 @@ public ref struct ByteSequenceReader
     public ReadOnlySpan<byte> Source { get; }
 
     /// <summary>読み取り済みバイト数</summary>
-    public int Consumed => this.Source.Length - this.probe.Length;
+    public readonly int Consumed => this.Source.Length - this.probe.Length;
 
     /// <summary>残り(未読み取り)バイト数</summary>
-    public int Remaining => this.probe.Length;
+    public readonly int Remaining => this.probe.Length;
     #endregion
 
     // 公開メソッド
