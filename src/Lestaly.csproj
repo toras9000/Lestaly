@@ -41,9 +41,9 @@
     <None Include="../readme.md" Pack="true" PackagePath="\" Visible="false" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="ClosedXML" Version="0.102.3" />
+    <PackageReference Include="ClosedXML" Version="0.104.2" />
     <PackageReference Include="CometFlavor.Unicode" Version="0.6.0" />
-    <PackageReference Include="System.Threading.Tasks.Dataflow" Version="8.0.1" />
+    <PackageReference Include="System.Threading.Tasks.Dataflow" Version="9.0.0" />
   </ItemGroup>
 
 </Project>
