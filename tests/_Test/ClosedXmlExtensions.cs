@@ -25,6 +25,7 @@ public static class ClosedXmlExtensions
     public static object?[][] GetUsedData(this IXLWorksheet self)
     {
         var range = self.RangeUsed();
+        if (range == null) return [];
         return range.Rows()
             .Select(row => row.Cells().Select(c => c.ToObjectValue()).ToArray())
             .ToArray();

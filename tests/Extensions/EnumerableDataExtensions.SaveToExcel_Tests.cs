@@ -702,6 +702,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var book = new XLWorkbook(target.FullName);
         var sheet = book.Worksheets.First();
         var used = sheet.RangeUsed();
+        Assert.IsNotNull(used);
         used.FirstCell().WorksheetRow().RowNumber().Should().Be(1 + 4);
         used.FirstCell().WorksheetColumn().ColumnNumber().Should().Be(1 + 2);
         sheet.GetUsedData().Should().BeEquivalentTo(expect);
