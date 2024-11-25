@@ -79,7 +79,7 @@ dotnet_remove_unnecessary_suppression_exclusions = none
 #### Coding Conventions ####
 [*]
 
-dotnet_style_namespace_match_folder = true:suggestion
+dotnet_style_namespace_match_folder = true:silent
 dotnet_style_prefer_collection_expression = when_types_loosely_match:silent
 dotnet_style_allow_multiple_blank_lines_experimental = true:silent
 dotnet_style_allow_statement_immediately_after_block_experimental = true:silent
@@ -189,7 +189,7 @@ csharp_style_prefer_readonly_struct_member = true:suggestion
 csharp_style_prefer_readonly_struct = true:suggestion
 csharp_style_prefer_null_check_over_type_check = true:suggestion
 csharp_style_prefer_local_over_anonymous_function = true:suggestion
-csharp_style_implicit_object_creation_when_type_is_apparent = true:suggestion
+csharp_style_implicit_object_creation_when_type_is_apparent = true:silent
 csharp_style_prefer_tuple_swap = true:suggestion
 csharp_style_prefer_utf8_string_literals = true:suggestion
 csharp_style_allow_embedded_statements_on_same_line_experimental = true:silent
