@@ -288,6 +288,40 @@ public class StringExtensionsTests
     }
 
     [TestMethod()]
+    public void TrimStartString()
+    {
+        {// string
+            "abcd".TrimStartString("AB", ignoreCase: false).ToString().Should().Be("abcd");
+            "abcd".TrimStartString("ab", ignoreCase: false).ToString().Should().Be("cd");
+            "abcd".TrimStartString("AB", ignoreCase: true).ToString().Should().Be("cd");
+            "abcd".TrimStartString("ab", ignoreCase: true).ToString().Should().Be("cd");
+        }
+        {// Span
+            "abcd".AsSpan().TrimStartString("AB", ignoreCase: false).ToString().Should().Be("abcd");
+            "abcd".AsSpan().TrimStartString("ab", ignoreCase: false).ToString().Should().Be("cd");
+            "abcd".AsSpan().TrimStartString("AB", ignoreCase: true).ToString().Should().Be("cd");
+            "abcd".AsSpan().TrimStartString("ab", ignoreCase: true).ToString().Should().Be("cd");
+        }
+    }
+
+    [TestMethod()]
+    public void TrimEndString()
+    {
+        {// string
+            "abcd".TrimEndString("CD", ignoreCase: false).ToString().Should().Be("abcd");
+            "abcd".TrimEndString("cd", ignoreCase: false).ToString().Should().Be("ab");
+            "abcd".TrimEndString("CD", ignoreCase: true).ToString().Should().Be("ab");
+            "abcd".TrimEndString("cd", ignoreCase: true).ToString().Should().Be("ab");
+        }
+        {// Span
+            "abcd".AsSpan().TrimEndString("CD", ignoreCase: false).ToString().Should().Be("abcd");
+            "abcd".AsSpan().TrimEndString("cd", ignoreCase: false).ToString().Should().Be("ab");
+            "abcd".AsSpan().TrimEndString("CD", ignoreCase: true).ToString().Should().Be("ab");
+            "abcd".AsSpan().TrimEndString("cd", ignoreCase: true).ToString().Should().Be("ab");
+        }
+    }
+
+    [TestMethod()]
     public void EnsureStarts()
     {
         "abcd".EnsureStarts("a", ignoreCase: false).Should().Be("abcd");

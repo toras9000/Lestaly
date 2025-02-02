@@ -284,6 +284,70 @@ public static class StringExtensions
         return false;
     }
 
+    /// <summary>文字列が指定の文字列で始まっている場合に除去した文字列を取得する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="value">除去する文字列</param>
+    /// <param name="comparison">文字列比較方法</param>
+    /// <returns>指定した文字列で始まっていれば除去した文字列。そうでなければ元の文字列。</returns>
+    public static ReadOnlySpan<char> TrimStartString(this string? self, ReadOnlySpan<char> value, StringComparison comparison = StringComparison.Ordinal)
+        => self.AsSpan().StartsWith(value, comparison) == true ? self.AsSpan(value.Length..) : self;
+
+    /// <summary>文字列が指定の文字列で始まっている場合に除去した文字列を取得する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="value">除去する文字列</param>
+    /// <param name="ignoreCase">大文字/小文字の違いを無視するか否か(序数ベース)</param>
+    /// <returns>指定した文字列で始まっていれば除去した文字列。そうでなければ元の文字列。</returns>
+    public static ReadOnlySpan<char> TrimStartString(this string? self, ReadOnlySpan<char> value, bool ignoreCase)
+        => self.AsSpan().StartsWith(value, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal) == true ? self.AsSpan(value.Length..) : self;
+
+    /// <summary>文字列が指定の文字列で始まっている場合に除去した文字列を取得する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="value">除去する文字列</param>
+    /// <param name="comparison">文字列比較方法</param>
+    /// <returns>指定した文字列で始まっていれば除去した文字列。そうでなければ元の文字列。</returns>
+    public static ReadOnlySpan<char> TrimStartString(this ReadOnlySpan<char> self, ReadOnlySpan<char> value, StringComparison comparison = StringComparison.Ordinal)
+        => self.StartsWith(value, comparison) == true ? self[value.Length..] : self;
+
+    /// <summary>文字列が指定の文字列で始まっている場合に除去した文字列を取得する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="value">除去する文字列</param>
+    /// <param name="ignoreCase">大文字/小文字の違いを無視するか否か(序数ベース)</param>
+    /// <returns>指定した文字列で始まっていれば除去した文字列。そうでなければ元の文字列。</returns>
+    public static ReadOnlySpan<char> TrimStartString(this ReadOnlySpan<char> self, ReadOnlySpan<char> value, bool ignoreCase)
+        => self.StartsWith(value, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal) == true ? self[value.Length..] : self;
+
+    /// <summary>文字列が指定の文字列で終わっている場合に除去した文字列を取得する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="value">除去する文字列</param>
+    /// <param name="comparison">文字列比較方法</param>
+    /// <returns>指定した文字列で終わっていれば除去した文字列。そうでなければ元の文字列。</returns>
+    public static ReadOnlySpan<char> TrimEndString(this string? self, ReadOnlySpan<char> value, StringComparison comparison = StringComparison.Ordinal)
+        => self.AsSpan().EndsWith(value, comparison) == true ? self.AsSpan(0..^value.Length) : self;
+
+    /// <summary>文字列が指定の文字列で終わっている場合に除去した文字列を取得する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="value">除去する文字列</param>
+    /// <param name="ignoreCase">大文字/小文字の違いを無視するか否か(序数ベース)</param>
+    /// <returns>指定した文字列で終わっていれば除去した文字列。そうでなければ元の文字列。</returns>
+    public static ReadOnlySpan<char> TrimEndString(this string? self, string value, bool ignoreCase)
+        => self.AsSpan().EndsWith(value, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal) == true ? self.AsSpan(0..^value.Length) : self;
+
+    /// <summary>文字列が指定の文字列で終わっている場合に除去した文字列を取得する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="value">除去する文字列</param>
+    /// <param name="comparison">文字列比較方法</param>
+    /// <returns>指定した文字列で終わっていれば除去した文字列。そうでなければ元の文字列。</returns>
+    public static ReadOnlySpan<char> TrimEndString(this ReadOnlySpan<char> self, ReadOnlySpan<char> value, StringComparison comparison = StringComparison.Ordinal)
+        => self.EndsWith(value, comparison) == true ? self[0..^value.Length] : self;
+
+    /// <summary>文字列が指定の文字列で終わっている場合に除去した文字列を取得する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="value">除去する文字列</param>
+    /// <param name="ignoreCase">大文字/小文字の違いを無視するか否か(序数ベース)</param>
+    /// <returns>指定した文字列で終わっていれば除去した文字列。そうでなければ元の文字列。</returns>
+    public static ReadOnlySpan<char> TrimEndString(this ReadOnlySpan<char> self, string value, bool ignoreCase)
+        => self.EndsWith(value, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal) == true ? self[0..^value.Length] : self;
+
     /// <summary>文字列が指定の文字列で始まるよう必要であれば付与する。</summary>
     /// <param name="self">対象文字列</param>
     /// <param name="value">必要であれば付与する文字列。</param>
