@@ -3,7 +3,7 @@ using System.DirectoryServices.Protocols;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Lestaly.Extensions;
+namespace Lestaly;
 
 /// <summary>LDAP関連の拡張メソッド</summary>
 public static class LdapExtensions
