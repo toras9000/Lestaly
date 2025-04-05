@@ -69,6 +69,20 @@ public class LdapExtensionsTests
     }
 
     [TestMethod()]
+    public async Task SearchAsync()
+    {
+        if (TestServer == null) Assert.Inconclusive();
+
+        using var ldap = new LdapConnection(TestServer);
+        ldap.SessionOptions.ProtocolVersion = 3;
+        ldap.AuthType = AuthType.Anonymous;
+        ldap.Bind();
+
+        var searchRsp = await ldap.SearchAsync(TestUsersUnitDn, SearchScope.OneLevel);
+        searchRsp.Should().BeOfType<SearchResponse>().Which.Entries.Count.Should().NotBe(0); ;
+    }
+
+    [TestMethod()]
     public async Task GetEntryAsync()
     {
         if (TestServer == null) Assert.Inconclusive();

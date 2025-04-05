@@ -33,6 +33,35 @@ public static class LdapExtensions
         });
     }
 
+    /// <summary>エントリを検索する</summary>
+    /// <param name="self">LDAP接続</param>
+    /// <param name="request">リクエスト</param>
+    /// <param name="partialMode">部分取得モード</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>検索レスポンス</returns>
+    public static async Task<SearchResponse> SearchAsync(this LdapConnection self, SearchRequest request, PartialResultProcessing partialMode = PartialResultProcessing.NoPartialResultSupport, CancellationToken cancelToken = default)
+    {
+        var response = await self.SendRequestAsync(request, partialMode, cancelToken);
+        if (response.ResultCode != 0) throw new PavedMessageException($"failed to search: {response.ErrorMessage}");
+        var searchResult = response as SearchResponse ?? throw new PavedMessageException("unexpected result");
+        return searchResult;
+    }
+
+    /// <summary>エントリを検索する</summary>
+    /// <param name="self">LDAP接続</param>
+    /// <param name="baseDn">検索ベースDN</param>
+    /// <param name="scope">検索スコープ</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>検索レスポンス</returns>
+    public static Task<SearchResponse> SearchAsync(this LdapConnection self, string baseDn, SearchScope scope, CancellationToken cancelToken = default)
+    {
+        var searchReq = new SearchRequest();
+        searchReq.DistinguishedName = baseDn;
+        searchReq.Scope = scope;
+
+        return self.SearchAsync(searchReq, PartialResultProcessing.NoPartialResultSupport, cancelToken);
+    }
+
     /// <summary>識別名(DN)のエントリを検索取得する</summary>
     /// <param name="self">LDAP接続</param>
     /// <param name="dn">識別名(DN)</param>
