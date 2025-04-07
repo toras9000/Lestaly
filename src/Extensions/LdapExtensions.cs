@@ -1,6 +1,5 @@
 ﻿using System.Buffers;
 using System.DirectoryServices.Protocols;
-using System.Security.Cryptography;
 using System.Text;
 
 namespace Lestaly;
@@ -51,13 +50,15 @@ public static class LdapExtensions
     /// <param name="self">LDAP接続</param>
     /// <param name="baseDn">検索ベースDN</param>
     /// <param name="scope">検索スコープ</param>
+    /// <param name="filter">フィルタ</param>
     /// <param name="cancelToken">キャンセルトークン</param>
     /// <returns>検索レスポンス</returns>
-    public static Task<SearchResponse> SearchAsync(this LdapConnection self, string baseDn, SearchScope scope, CancellationToken cancelToken = default)
+    public static Task<SearchResponse> SearchAsync(this LdapConnection self, string baseDn, SearchScope scope, object? filter = null, CancellationToken cancelToken = default)
     {
         var searchReq = new SearchRequest();
         searchReq.DistinguishedName = baseDn;
         searchReq.Scope = scope;
+        if (searchReq.Filter != null) searchReq.Filter = filter;
 
         return self.SearchAsync(searchReq, PartialResultProcessing.NoPartialResultSupport, cancelToken);
     }
@@ -203,31 +204,114 @@ public static class LdapExtensions
         }
     }
 
-    /// <summary>パスワードハッシュ化文字列を作成する</summary>
-    /// <param name="password">パスワード文字列</param>
-    /// <param name="salt">salt値。</param>
-    /// <returns>ハッシュ化文字列</returns>
-    public static string MakePasswordHashSSHA256(string password, ReadOnlySpan<byte> salt = default)
-    {
-        // salt を決定。指定されたものがあればそれを、無ければ適当なランダム値を。
-        var randSalt = (stackalloc byte[8]);
-        if (salt.IsEmpty) Random.Shared.NextBytes(randSalt);
-        var useSalt = salt.IsEmpty ? randSalt : salt;
-        // パスワードをUTF8エンコード
-        var buffer = new ArrayBufferWriter<byte>();
-        Encoding.UTF8.GetBytes(password, buffer);
-        // salt を追加
-        buffer.Write(salt);
-        // ハッシュ算出
-        var hashed = SHA256.HashData(buffer.WrittenSpan);
-        // Base64文字列作成
-        buffer.ResetWrittenCount();
-        buffer.Write(hashed);
-        buffer.Write(salt);
-        var encoded = Convert.ToBase64String(buffer.WrittenSpan);
-        // ハッシュ化文字列作成
-        var value = $"{{SSHA256}}{encoded}";
+    /// <summary>バイト列に対するハッシュ算出メソッド</summary>
+    /// <param name="span">バイト列</param>
+    /// <returns>ハッシュ値</returns>
+    public delegate byte[] HashGenerator(ReadOnlySpan<byte> span);
 
-        return value;
+    /// <summary>パスワードハッシュ文字列の生成</summary>
+    public static class MakePasswordHash
+    {
+        /// <summary>ソルトを利用したパスワードハッシュ化文字列を作成する</summary>
+        /// <param name="marker">ハッシュアルゴリズムマーカ文字列</param>
+        /// <param name="hasher">ハッシュ算出デリゲート</param>
+        /// <param name="password">パスワード文字列</param>
+        /// <param name="salt">salt値。</param>
+        /// <returns>ハッシュ化文字列</returns>
+        public static string Salted(string marker, HashGenerator hasher, string password, ReadOnlySpan<byte> salt = default)
+        {
+            // salt を決定。指定されたものがあればそれを、無ければ適当なランダム値を。
+            var randSalt = (stackalloc byte[8]);
+            if (salt.IsEmpty) Random.Shared.NextBytes(randSalt);
+            var useSalt = salt.IsEmpty ? randSalt : salt;
+            // パスワードをUTF8エンコード
+            var buffer = new ArrayBufferWriter<byte>();
+            Encoding.UTF8.GetBytes(password, buffer);
+            // salt を追加
+            buffer.Write(salt);
+            // ハッシュ算出
+            var hashed = hasher(buffer.WrittenSpan);
+            // Base64文字列作成
+            buffer.ResetWrittenCount();
+            buffer.Write(hashed);
+            buffer.Write(salt);
+            var encoded = Convert.ToBase64String(buffer.WrittenSpan);
+            // ハッシュ化文字列作成
+            var value = $"{{{marker}}}{encoded}";
+
+            return value;
+        }
+
+        /// <summary>パスワードハッシュ化文字列を作成する</summary>
+        /// <param name="marker">ハッシュアルゴリズムマーカ文字列</param>
+        /// <param name="hasher">ハッシュ算出デリゲート</param>
+        /// <param name="password">パスワード文字列</param>
+        /// <returns>ハッシュ化文字列</returns>
+        public static string Dry(string marker, HashGenerator hasher, string password)
+        {
+            // パスワードをUTF8エンコード
+            var buffer = new ArrayBufferWriter<byte>();
+            Encoding.UTF8.GetBytes(password, buffer);
+            // ハッシュ算出
+            var hashed = hasher(buffer.WrittenSpan);
+            var encoded = Convert.ToBase64String(hashed);
+            // ハッシュ化文字列作成
+            var value = $"{{{marker}}}{encoded}";
+
+            return value;
+        }
+
+        /// <summary>SSHA パスワードハッシュ化文字列を作成する</summary>
+        /// <param name="password">パスワード文字列</param>
+        /// <param name="salt">salt値。</param>
+        /// <returns>ハッシュ化文字列</returns>
+        public static string SSHA(string password, ReadOnlySpan<byte> salt = default)
+            => Salted("SSHA", System.Security.Cryptography.SHA1.HashData, password, salt);
+
+        /// <summary>SSHA256 パスワードハッシュ化文字列を作成する</summary>
+        /// <param name="password">パスワード文字列</param>
+        /// <param name="salt">salt値。</param>
+        /// <returns>ハッシュ化文字列</returns>
+        public static string SSHA256(string password, ReadOnlySpan<byte> salt = default)
+            => Salted("SSHA256", System.Security.Cryptography.SHA256.HashData, password, salt);
+
+        /// <summary>SSHA384 パスワードハッシュ化文字列を作成する</summary>
+        /// <param name="password">パスワード文字列</param>
+        /// <param name="salt">salt値。</param>
+        /// <returns>ハッシュ化文字列</returns>
+        public static string SSHA384(string password, ReadOnlySpan<byte> salt = default)
+            => Salted("SSHA384", System.Security.Cryptography.SHA384.HashData, password, salt);
+
+        /// <summary>SSHA512 パスワードハッシュ化文字列を作成する</summary>
+        /// <param name="password">パスワード文字列</param>
+        /// <param name="salt">salt値。</param>
+        /// <returns>ハッシュ化文字列</returns>
+        public static string SSHA512(string password, ReadOnlySpan<byte> salt = default)
+            => Salted("SSHA512", System.Security.Cryptography.SHA512.HashData, password, salt);
+
+        /// <summary>SHA パスワードハッシュ化文字列を作成する</summary>
+        /// <param name="password">パスワード文字列</param>
+        /// <returns>ハッシュ化文字列</returns>
+        public static string SHA(string password)
+            => Dry("SHA", System.Security.Cryptography.SHA1.HashData, password);
+
+        /// <summary>SHA256 パスワードハッシュ化文字列を作成する</summary>
+        /// <param name="password">パスワード文字列</param>
+        /// <returns>ハッシュ化文字列</returns>
+        public static string SHA256(string password)
+            => Dry("SHA256", System.Security.Cryptography.SHA256.HashData, password);
+
+        /// <summary>SHA384 パスワードハッシュ化文字列を作成する</summary>
+        /// <param name="password">パスワード文字列</param>
+        /// <returns>ハッシュ化文字列</returns>
+        public static string SHA384(string password)
+            => Dry("SHA384", System.Security.Cryptography.SHA384.HashData, password);
+
+        /// <summary>SHA512 パスワードハッシュ化文字列を作成する</summary>
+        /// <param name="password">パスワード文字列</param>
+        /// <returns>ハッシュ化文字列</returns>
+        public static string SHA512(string password)
+            => Dry("SHA512", System.Security.Cryptography.SHA512.HashData, password);
     }
+
 }

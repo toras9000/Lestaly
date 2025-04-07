@@ -183,12 +183,78 @@ public class LdapExtensionsTests
     }
 
     [TestMethod()]
+    public void MakePasswordHashSSHA()
+    {
+        var salt = (stackalloc byte[] { 0x75, 0x48, 0xE1, 0x72, 0x74, 0xAB, 0x86, 0x60 });
+        var pass = "abc";
+        var expect = "{SSHA}59vYnJApzos31ftPdg5QI2el1+p1SOFydKuGYA==";
+        var actual = LdapExtensions.MakePasswordHash.SSHA(pass, salt);
+        actual.Should().Be(expect);
+    }
+
+    [TestMethod()]
     public void MakePasswordHashSSHA256()
     {
-        var salt = (stackalloc byte[] { 0xCD, 0x22, 0x1C, 0x92, 0xBE, 0x08, 0x52, 0xFE });
+        var salt = (stackalloc byte[] { 0xD4, 0xDD, 0x61, 0x23, 0x8E, 0xD9, 0x77, 0x59 });
         var pass = "abc";
-        var expect = "{SSHA256}Q/Qu/OcrWcBlpYYLBIZ0DhJnjt4K82fMJfhESavbRq3NIhySvghS/g==";
-        var actual = LdapExtensions.MakePasswordHashSSHA256(pass, salt);
+        var expect = "{SSHA256}QMyOKYH3mkeTr6nNgB2EpYFHy9TH8sKeavPbayNdob3U3WEjjtl3WQ==";
+        var actual = LdapExtensions.MakePasswordHash.SSHA256(pass, salt);
+        actual.Should().Be(expect);
+    }
+
+    [TestMethod()]
+    public void MakePasswordHashSSHA384()
+    {
+        var salt = (stackalloc byte[] { 0x44, 0x06, 0xDF, 0x71, 0x20, 0x84, 0xEE, 0x0F });
+        var pass = "abc";
+        var expect = "{SSHA384}Eb1Wuu95elyDfBwSHoEL7/VzOXpA9vTl3+rbPYbaecSp1EJAVzyNQ4d4qrHURn9VRAbfcSCE7g8=";
+        var actual = LdapExtensions.MakePasswordHash.SSHA384(pass, salt);
+        actual.Should().Be(expect);
+    }
+
+    [TestMethod()]
+    public void MakePasswordHashSSHA512()
+    {
+        var salt = (stackalloc byte[] { 0xDA, 0x7D, 0xC5, 0x7D, 0xB5, 0x86, 0x32, 0x26 });
+        var pass = "abc";
+        var expect = "{SSHA512}r/sMUIADwgCiD1DBlTnbkJrM+olA+mjG0oM2RmWleN6bc8+0xOygksDFVOgmTQW6ZUp4C5qAmE2+275eaTuKOtp9xX21hjIm";
+        var actual = LdapExtensions.MakePasswordHash.SSHA512(pass, salt);
+        actual.Should().Be(expect);
+    }
+
+    [TestMethod()]
+    public void MakePasswordHashSHA()
+    {
+        var pass = "abc";
+        var expect = "{SHA}qZk+NkcGgWq6PiVxeFDCbJzQ2J0=";
+        var actual = LdapExtensions.MakePasswordHash.SHA(pass);
+        actual.Should().Be(expect);
+    }
+
+    [TestMethod()]
+    public void MakePasswordHashSHA256()
+    {
+        var pass = "abc";
+        var expect = "{SHA256}ungWv48Bz+pBQUDeXa4iI7ADYaOWF3qctBD/YfIAFa0=";
+        var actual = LdapExtensions.MakePasswordHash.SHA256(pass);
+        actual.Should().Be(expect);
+    }
+
+    [TestMethod()]
+    public void MakePasswordHashSHA384()
+    {
+        var pass = "abc";
+        var expect = "{SHA384}ywB1P0WjXou1oD1pmsZQBycsMqsO3tFjGotgWkP/W+2AhgcroefMI1i67KE0yCWn";
+        var actual = LdapExtensions.MakePasswordHash.SHA384(pass);
+        actual.Should().Be(expect);
+    }
+
+    [TestMethod()]
+    public void MakePasswordHashSHA512()
+    {
+        var pass = "abc";
+        var expect = "{SHA512}3a81oZNherrMQXNJriBBMRLm+k6JqX6iCp7u5ktV05ohkpkqJ0/BqDa6PCOj/uu9RU1EI2Q86A4qmslPpUyknw==";
+        var actual = LdapExtensions.MakePasswordHash.SHA512(pass);
         actual.Should().Be(expect);
     }
 
