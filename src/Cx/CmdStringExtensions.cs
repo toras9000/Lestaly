@@ -38,7 +38,7 @@ public static class CmdStringExtensions
     /// <param name="command">コマンド文字列。全体を実行コマンドとみなす。</param>
     /// <param name="arguments">引数リスト</param>
     /// <returns>コマンド実行準備インスタンス</returns>
-    public static CmdCx args(this string command, params string[] arguments)
+    public static CmdCx args(this string command, params ArgCx[] arguments)
         => new(command, arguments);
 
     /// <summary>文字列をコマンドラインとみなし、コンソール出力なしのプロセス実行準備を行う</summary>

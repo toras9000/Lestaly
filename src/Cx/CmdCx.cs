@@ -4,6 +4,29 @@ using System.Text;
 
 namespace Lestaly.Cx;
 
+/// <summary>プロセス実行用の引数</summary>
+public readonly struct ArgCx
+{
+    /// <summary>コンストラクタ</summary>
+    /// <param name="str">引数値</param>
+    public ArgCx(string str) => this.Value = str;
+
+    /// <summary>文字列から ArgCx への暗黙変換オペレータ</summary>
+    /// <param name="str">文字列</param>
+    public static implicit operator ArgCx(string? str) => new ArgCx(str ?? "");
+
+    /// <summary>文字列スパンから ArgCx への暗黙変換オペレータ</summary>
+    /// <param name="span">文字列スパン</param>
+    public static implicit operator ArgCx(ReadOnlySpan<char> span) => new ArgCx(span.ToString());
+
+    /// <summary>ファイルシステム項目から ArgCx への暗黙変換オペレータ</summary>
+    /// <param name="info">ファイルシステム項目。フルパスとして評価される</param>
+    public static implicit operator ArgCx(FileSystemInfo info) => new ArgCx(info.FullName);
+
+    /// <summary>引数値</summary>
+    public string Value { get; }
+}
+
 /// <summary>
 /// プロセス実行準備クラス
 /// </summary>
@@ -35,14 +58,14 @@ public class CmdCx
     /// <summary>コマンドと引数リストを指定するコンストラクタ</summary>
     /// <param name="command">コマンド名</param>
     /// <param name="arguments">引数リスト</param>
-    public CmdCx(string command, params string[] arguments)
+    public CmdCx(string command, params ArgCx[] arguments)
     {
         this.command = command;
         this.argumenter = target =>
         {
             foreach (var arg in arguments)
             {
-                target.ArgumentList.Add(arg);
+                target.ArgumentList.Add(arg.Value);
             }
         };
     }
