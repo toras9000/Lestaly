@@ -21,8 +21,12 @@ public static class CmdResultExtensions
 
     /// <summary>コマンド実行結果から出力テキストを取得する。</summary>
     /// <param name="self">コマンド実行結果を得るタスク</param>
-    /// <returns>終出力テキストを得るタスク。終了コードは検証されない。</returns>
-    public static async Task<string> output(this Task<CmdResult> self)
-        => (await self.ConfigureAwait(false)).Output;
+    /// <param name="trim">出力の前後空白をトリムするか否か</param>
+    /// <returns>出力テキストを得るタスク。終了コードは検証されない。</returns>
+    public static async Task<string> output(this Task<CmdResult> self, bool trim = false)
+    {
+        var result = await self.ConfigureAwait(false);
+        return trim ? result.Output.Trim() : result.Output;
+    }
 }
 
