@@ -5,6 +5,20 @@
 /// </summary>
 public static class FileSystemInfoExtensions
 {
+    #region Convert
+    /// <summary>文字列をパスとして FileInfo インスタンスを作成する</summary>
+    /// <param name="self">パス文字列</param>
+    /// <returns>FileInfo インスタンス</returns>
+    public static FileInfo AsFileInfo(this string self)
+        => new FileInfo(self);
+
+    /// <summary>文字列をパスとして DirectoryInfo インスタンスを作成する</summary>
+    /// <param name="self">パス文字列</param>
+    /// <returns>DirectoryInfo インスタンス</returns>
+    public static DirectoryInfo AsDirectoryInfo(this string self)
+        => new DirectoryInfo(self);
+    #endregion
+
     #region FileSystem
     /// <summary>ファイル/ディレクトリがReadOnlyであるかを取得する。</summary>
     /// <param name="self">対象ファイル/ディレクトリ情報</param>

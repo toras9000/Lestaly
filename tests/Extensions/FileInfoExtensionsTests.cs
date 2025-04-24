@@ -12,6 +12,18 @@ public class FileExtensionsTests
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
     }
 
+    #region Create
+    [TestMethod]
+    public void AsInfo()
+    {
+        var thisFilePath = ThisSource.File().FullName;
+        var thisDirPath = ThisSource.File().DirectoryName!;
+
+        thisFilePath.AsFileInfo().FullName.Should().BeSameAs(thisFilePath);
+        thisDirPath.AsDirectoryInfo().FullName.Should().BeSameAs(thisDirPath);
+    }
+    #endregion
+
     #region Name
     [TestMethod]
     public void BaseName()
