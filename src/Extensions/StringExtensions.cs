@@ -1,8 +1,6 @@
-﻿using System.Buffers;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
-using System.Text.RegularExpressions;
 
 namespace Lestaly;
 
@@ -317,41 +315,6 @@ public static class StringExtensions
     public static ReadOnlySpan<char> TrimStartString(this ReadOnlySpan<char> self, ReadOnlySpan<char> value, bool ignoreCase)
         => self.StartsWith(value, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal) == true ? self[value.Length..] : self;
 
-    /// <summary>文字列が指定のパターンで始まっている場合に除去した文字列を取得する。</summary>
-    /// <param name="self">対象文字列</param>
-    /// <param name="pattern">除去するパターン</param>
-    /// <returns>指定したパターンで始まっていれば除去した文字列。そうでなければ元の文字列。</returns>
-    public static ReadOnlySpan<char> TrimStartPattern(this string? self, [StringSyntax(StringSyntaxAttribute.Regex)] string pattern)
-        => self.AsSpan().TrimStartPattern(pattern, default);
-
-    /// <summary>文字列が指定のパターンで始まっている場合に除去した文字列を取得する。</summary>
-    /// <param name="self">対象文字列</param>
-    /// <param name="pattern">除去するパターン</param>
-    /// <param name="options">マッチオプション</param>
-    /// <returns>指定したパターンで始まっていれば除去した文字列。そうでなければ元の文字列。</returns>
-    public static ReadOnlySpan<char> TrimStartPattern(this string? self, [StringSyntax(StringSyntaxAttribute.Regex, nameof(options))] string pattern, RegexOptions options)
-        => self.AsSpan().TrimStartPattern(pattern, options);
-
-    /// <summary>文字列が指定のパターンで始まっている場合に除去した文字列を取得する。</summary>
-    /// <param name="self">対象文字列</param>
-    /// <param name="pattern">除去するパターン</param>
-    /// <returns>指定したパターンで始まっていれば除去した文字列。そうでなければ元の文字列。</returns>
-    public static ReadOnlySpan<char> TrimStartPattern(this ReadOnlySpan<char> self, [StringSyntax(StringSyntaxAttribute.Regex)] string pattern)
-        => self.TrimStartPattern(pattern, default);
-
-    /// <summary>文字列が指定のパターンで始まっている場合に除去した文字列を取得する。</summary>
-    /// <param name="self">対象文字列</param>
-    /// <param name="pattern">除去するパターン</param>
-    /// <param name="options">マッチオプション</param>
-    /// <returns>指定したパターンで始まっていれば除去した文字列。そうでなければ元の文字列。</returns>
-    public static ReadOnlySpan<char> TrimStartPattern(this ReadOnlySpan<char> self, [StringSyntax(StringSyntaxAttribute.Regex, nameof(options))] string pattern, RegexOptions options)
-    {
-        var matches = Regex.EnumerateMatches(self, pattern, options);
-        if (!matches.MoveNext()) return self;
-        if (matches.Current.Index != 0) return self;
-        return self[matches.Current.Length..];
-    }
-
     /// <summary>文字列が指定の文字列で終わっている場合に除去した文字列を取得する。</summary>
     /// <param name="self">対象文字列</param>
     /// <param name="value">除去する文字列</param>
@@ -383,49 +346,6 @@ public static class StringExtensions
     /// <returns>指定した文字列で終わっていれば除去した文字列。そうでなければ元の文字列。</returns>
     public static ReadOnlySpan<char> TrimEndString(this ReadOnlySpan<char> self, string value, bool ignoreCase)
         => self.EndsWith(value, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal) == true ? self[0..^value.Length] : self;
-
-    /// <summary>文字列が指定のパターンで終わっている場合に除去した文字列を取得する。</summary>
-    /// <param name="self">対象文字列</param>
-    /// <param name="pattern">除去するパターン</param>
-    /// <returns>指定したパターンで始まっていれば除去した文字列。そうでなければ元の文字列。</returns>
-    public static ReadOnlySpan<char> TrimEndPattern(this string? self, [StringSyntax(StringSyntaxAttribute.Regex)] string pattern)
-        => self.AsSpan().TrimEndPattern(pattern, default);
-
-    /// <summary>文字列が指定のパターンで終わっている場合に除去した文字列を取得する。</summary>
-    /// <param name="self">対象文字列</param>
-    /// <param name="pattern">除去するパターン</param>
-    /// <param name="options">マッチオプション</param>
-    /// <returns>指定したパターンで始まっていれば除去した文字列。そうでなければ元の文字列。</returns>
-    public static ReadOnlySpan<char> TrimEndPattern(this string? self, [StringSyntax(StringSyntaxAttribute.Regex, nameof(options))] string pattern, RegexOptions options)
-        => self.AsSpan().TrimEndPattern(pattern, options);
-
-    /// <summary>文字列が指定のパターンで終わっている場合に除去した文字列を取得する。</summary>
-    /// <param name="self">対象文字列</param>
-    /// <param name="pattern">除去するパターン</param>
-    /// <returns>指定したパターンで始まっていれば除去した文字列。そうでなければ元の文字列。</returns>
-    public static ReadOnlySpan<char> TrimEndPattern(this ReadOnlySpan<char> self, [StringSyntax(StringSyntaxAttribute.Regex)] string pattern)
-        => self.TrimEndPattern(pattern, default);
-
-    /// <summary>文字列が指定のパターンで終わっている場合に除去した文字列を取得する。</summary>
-    /// <param name="self">対象文字列</param>
-    /// <param name="pattern">除去するパターン</param>
-    /// <param name="options">マッチオプション</param>
-    /// <returns>指定したパターンで始まっていれば除去した文字列。そうでなければ元の文字列。</returns>
-    public static ReadOnlySpan<char> TrimEndPattern(this ReadOnlySpan<char> self, [StringSyntax(StringSyntaxAttribute.Regex, nameof(options))] string pattern, RegexOptions options)
-    {
-        var matches = Regex.EnumerateMatches(self, pattern, options);
-        if (!matches.MoveNext()) return self;
-
-        var index = matches.Current.Index;
-        var length = matches.Current.Length;
-        while (matches.MoveNext())
-        {
-            index = matches.Current.Index;
-            length = matches.Current.Length;
-        }
-        if ((index + length) != self.Length) return self;
-        return self[..index];
-    }
 
     /// <summary>文字列が指定の文字列で始まるよう必要であれば付与する。</summary>
     /// <param name="self">対象文字列</param>
@@ -1065,7 +985,7 @@ public static class StringExtensions
         if (self == null || self.Length < 2) return self;
 
         // クォートキャラクタ候補。指定があればそれを、無ければダブル・シングルクォートキャラクタを候補とする。
-        var candidates = (quotes.Length == 0) ? stackalloc char[] { '"', '\'', } : quotes;
+        var candidates = (quotes.Length == 0) ? ['"', '\'',] : quotes;
 
         // 最初の文字がクォート文字候補のいずれかであるかを判別
         // クォート文字で始まらない場合は元の文字列を返す
@@ -1338,6 +1258,13 @@ public static class StringExtensions
     public static string ThrowIfEmpty(this string? self, Func<Exception>? generator = null)
         => string.IsNullOrEmpty(self) ? throw generator?.Invoke() ?? new InvalidDataException() : self;
 
+    /// <summary>文字列がnullや空であれば例外を送出する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="generator">例外オブジェクト生成デリゲート</param>
+    /// <returns>対象文字列</returns>
+    public static ReadOnlySpan<char> ThrowIfEmpty(this ReadOnlySpan<char> self, Func<Exception>? generator = null)
+        => self.IsEmpty ? throw generator?.Invoke() ?? new InvalidDataException() : self;
+
     /// <summary>文字列がnullや空白文字であれば例外を送出する。</summary>
     /// <param name="self">対象文字列</param>
     /// <param name="generator">例外オブジェクト生成デリゲート</param>
@@ -1345,17 +1272,36 @@ public static class StringExtensions
     public static string ThrowIfWhite(this string? self, Func<Exception>? generator = null)
         => string.IsNullOrWhiteSpace(self) ? throw generator?.Invoke() ?? new InvalidDataException() : self;
 
+    /// <summary>文字列がnullや空白文字であれば例外を送出する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="generator">例外オブジェクト生成デリゲート</param>
+    /// <returns>対象文字列</returns>
+    public static ReadOnlySpan<char> ThrowIfWhite(this ReadOnlySpan<char> self, Func<Exception>? generator = null)
+        => self.IsEmpty ? throw generator?.Invoke() ?? new InvalidDataException() : self;
+
     /// <summary>文字列がnullや空であればキャンセル例外を送出する。</summary>
     /// <param name="self">対象文字列</param>
     /// <returns>対象文字列</returns>
     public static string CancelIfEmpty(this string? self)
-    => self.ThrowIfEmpty(() => new OperationCanceledException());
+        => self.ThrowIfEmpty(() => new OperationCanceledException());
+
+    /// <summary>文字列がnullや空であればキャンセル例外を送出する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <returns>対象文字列</returns>
+    public static ReadOnlySpan<char> CancelIfEmpty(this ReadOnlySpan<char> self)
+        => self.ThrowIfEmpty(() => new OperationCanceledException());
 
     /// <summary>文字列がnullや空白文字であればキャンセル例外を送出する。</summary>
     /// <param name="self">対象文字列</param>
     /// <returns>対象文字列</returns>
     public static string CancelIfWhite(this string? self)
-    => self.ThrowIfWhite(() => new OperationCanceledException());
+        => self.ThrowIfWhite(() => new OperationCanceledException());
+
+    /// <summary>文字列がnullや空白文字であればキャンセル例外を送出する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <returns>対象文字列</returns>
+    public static ReadOnlySpan<char> CancelIfWhite(this ReadOnlySpan<char> self)
+        => self.ThrowIfWhite(() => new OperationCanceledException());
 
 
     /// <summary>改行キャラクタ配列</summary>

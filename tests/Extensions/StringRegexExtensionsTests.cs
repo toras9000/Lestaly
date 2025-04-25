@@ -61,5 +61,73 @@ public class StringRegexExtensionsTests
         "a".MatchSelect(@"A", RegexOptions.IgnoreCase, m => "@", "x").Should().Be("@");
     }
 
+    [TestMethod()]
+    public void StartsWithPattern()
+    {
+        {// string
+            "abcd".StartsWithPattern("ax").Should().Be(false);
+            "abcd".StartsWithPattern("ab").Should().Be(true);
+            "abcd".StartsWithPattern("AB").Should().Be(false);
+            "abcd".StartsWithPattern("AB", RegexOptions.IgnoreCase).Should().Be(true);
+        }
+        {// Span
+            "abcd".AsSpan().StartsWithPattern("ax").Should().Be(false);
+            "abcd".AsSpan().StartsWithPattern("ab").Should().Be(true);
+            "abcd".AsSpan().StartsWithPattern("AB").Should().Be(false);
+            "abcd".AsSpan().StartsWithPattern("AB", RegexOptions.IgnoreCase).Should().Be(true);
+        }
+    }
+
+    [TestMethod()]
+    public void EndsWithPattern()
+    {
+        {// string
+            "abcd".EndsWithPattern("cc").Should().Be(false);
+            "abcd".EndsWithPattern("cd").Should().Be(true);
+            "abcd".EndsWithPattern("CD").Should().Be(false);
+            "abcd".EndsWithPattern("cd", RegexOptions.IgnoreCase).Should().Be(true);
+        }
+        {// Span
+            "abcd".AsSpan().EndsWithPattern("cc").Should().Be(false);
+            "abcd".AsSpan().EndsWithPattern("cd").Should().Be(true);
+            "abcd".AsSpan().EndsWithPattern("CD").Should().Be(false);
+            "abcd".AsSpan().EndsWithPattern("cd", RegexOptions.IgnoreCase).Should().Be(true);
+        }
+    }
+
+    [TestMethod()]
+    public void TrimStartPattern()
+    {
+        {// string
+            "abcd".TrimStartPattern("ax").ToString().Should().Be("abcd");
+            "abcd".TrimStartPattern("ab").ToString().Should().Be("cd");
+            "abcd".TrimStartPattern("AB").ToString().Should().Be("abcd");
+            "abcd".TrimStartPattern("AB", RegexOptions.IgnoreCase).ToString().Should().Be("cd");
+        }
+        {// Span
+            "abcd".AsSpan().TrimStartPattern("ax").ToString().Should().Be("abcd");
+            "abcd".AsSpan().TrimStartPattern("ab").ToString().Should().Be("cd");
+            "abcd".AsSpan().TrimStartPattern("AB").ToString().Should().Be("abcd");
+            "abcd".AsSpan().TrimStartPattern("AB", RegexOptions.IgnoreCase).ToString().Should().Be("cd");
+        }
+    }
+
+    [TestMethod()]
+    public void TrimEndPattern()
+    {
+        {// string
+            "abcd".TrimEndPattern("cc").ToString().Should().Be("abcd");
+            "abcd".TrimEndPattern("cd").ToString().Should().Be("ab");
+            "abcd".TrimEndPattern("CD").ToString().Should().Be("abcd");
+            "abcd".TrimEndPattern("cd", RegexOptions.IgnoreCase).ToString().Should().Be("ab");
+        }
+        {// Span
+            "abcd".AsSpan().TrimEndPattern("cc").ToString().Should().Be("abcd");
+            "abcd".AsSpan().TrimEndPattern("cd").ToString().Should().Be("ab");
+            "abcd".AsSpan().TrimEndPattern("CD").ToString().Should().Be("abcd");
+            "abcd".AsSpan().TrimEndPattern("cd", RegexOptions.IgnoreCase).ToString().Should().Be("ab");
+        }
+    }
+
 
 }

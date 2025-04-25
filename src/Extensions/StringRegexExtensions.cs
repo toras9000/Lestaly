@@ -133,4 +133,159 @@ public static class StringRegexExtensions
         if (match.Success) return selector(match);
         return alt;
     }
+
+    /// <summary>文字列が指定のパターンで始まっているかを判定する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="pattern">除去するパターン</param>
+    /// <returns>指定したパターンで始まっているか否か。</returns>
+    public static bool StartsWithPattern(this string? self, [StringSyntax(StringSyntaxAttribute.Regex)] string pattern)
+        => self.AsSpan().StartsWithPattern(pattern, default);
+
+    /// <summary>文字列が指定のパターンで始まっているかを判定する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="pattern">除去するパターン</param>
+    /// <param name="options">マッチオプション</param>
+    /// <returns>指定したパターンで始まっているか否か。</returns>
+    public static bool StartsWithPattern(this string? self, [StringSyntax(StringSyntaxAttribute.Regex, nameof(options))] string pattern, RegexOptions options)
+        => self.AsSpan().StartsWithPattern(pattern, options);
+
+    /// <summary>文字列が指定のパターンで始まっているかを判定する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="pattern">除去するパターン</param>
+    /// <returns>指定したパターンで始まっているか否か。</returns>
+    public static bool StartsWithPattern(this ReadOnlySpan<char> self, [StringSyntax(StringSyntaxAttribute.Regex)] string pattern)
+        => self.StartsWithPattern(pattern, default);
+
+    /// <summary>文字列が指定のパターンで始まっているかを判定する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="pattern">除去するパターン</param>
+    /// <param name="options">マッチオプション</param>
+    /// <returns>指定したパターンで始まっているか否か。</returns>
+    public static bool StartsWithPattern(this ReadOnlySpan<char> self, [StringSyntax(StringSyntaxAttribute.Regex, nameof(options))] string pattern, RegexOptions options)
+    {
+        var matches = Regex.EnumerateMatches(self, pattern, options);
+        if (!matches.MoveNext()) return false;
+        return (matches.Current.Index == 0);
+    }
+
+    /// <summary>文字列が指定のパターンで終わっているかを判定する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="pattern">除去するパターン</param>
+    /// <returns>指定したパターンで終わっているか否か。</returns>
+    public static bool EndsWithPattern(this string? self, [StringSyntax(StringSyntaxAttribute.Regex)] string pattern)
+        => self.AsSpan().EndsWithPattern(pattern, default);
+
+    /// <summary>文字列が指定のパターンで終わっているかを判定する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="pattern">除去するパターン</param>
+    /// <param name="options">マッチオプション</param>
+    /// <returns>指定したパターンで終わっているか否か。</returns>
+    public static bool EndsWithPattern(this string? self, [StringSyntax(StringSyntaxAttribute.Regex, nameof(options))] string pattern, RegexOptions options)
+        => self.AsSpan().EndsWithPattern(pattern, options);
+
+    /// <summary>文字列が指定のパターンで終わっているかを判定する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="pattern">除去するパターン</param>
+    /// <returns>指定したパターンで終わっているか否か。</returns>
+    public static bool EndsWithPattern(this ReadOnlySpan<char> self, [StringSyntax(StringSyntaxAttribute.Regex)] string pattern)
+        => self.EndsWithPattern(pattern, default);
+
+    /// <summary>文字列が指定のパターンで終わっているかを判定する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="pattern">除去するパターン</param>
+    /// <param name="options">マッチオプション</param>
+    /// <returns>指定したパターンで終わっているか否か。</returns>
+    public static bool EndsWithPattern(this ReadOnlySpan<char> self, [StringSyntax(StringSyntaxAttribute.Regex, nameof(options))] string pattern, RegexOptions options)
+    {
+        var matches = Regex.EnumerateMatches(self, pattern, options);
+        if (!matches.MoveNext()) return false;
+
+        var index = matches.Current.Index;
+        var length = matches.Current.Length;
+        while (matches.MoveNext())
+        {
+            index = matches.Current.Index;
+            length = matches.Current.Length;
+        }
+
+        return ((index + length) == self.Length);
+    }
+
+    /// <summary>文字列が指定のパターンで始まっている場合に除去した文字列を取得する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="pattern">除去するパターン</param>
+    /// <returns>指定したパターンで始まっていれば除去した文字列。そうでなければ元の文字列。</returns>
+    public static ReadOnlySpan<char> TrimStartPattern(this string? self, [StringSyntax(StringSyntaxAttribute.Regex)] string pattern)
+        => self.AsSpan().TrimStartPattern(pattern, default);
+
+    /// <summary>文字列が指定のパターンで始まっている場合に除去した文字列を取得する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="pattern">除去するパターン</param>
+    /// <param name="options">マッチオプション</param>
+    /// <returns>指定したパターンで始まっていれば除去した文字列。そうでなければ元の文字列。</returns>
+    public static ReadOnlySpan<char> TrimStartPattern(this string? self, [StringSyntax(StringSyntaxAttribute.Regex, nameof(options))] string pattern, RegexOptions options)
+        => self.AsSpan().TrimStartPattern(pattern, options);
+
+    /// <summary>文字列が指定のパターンで始まっている場合に除去した文字列を取得する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="pattern">除去するパターン</param>
+    /// <returns>指定したパターンで始まっていれば除去した文字列。そうでなければ元の文字列。</returns>
+    public static ReadOnlySpan<char> TrimStartPattern(this ReadOnlySpan<char> self, [StringSyntax(StringSyntaxAttribute.Regex)] string pattern)
+        => self.TrimStartPattern(pattern, default);
+
+    /// <summary>文字列が指定のパターンで始まっている場合に除去した文字列を取得する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="pattern">除去するパターン</param>
+    /// <param name="options">マッチオプション</param>
+    /// <returns>指定したパターンで始まっていれば除去した文字列。そうでなければ元の文字列。</returns>
+    public static ReadOnlySpan<char> TrimStartPattern(this ReadOnlySpan<char> self, [StringSyntax(StringSyntaxAttribute.Regex, nameof(options))] string pattern, RegexOptions options)
+    {
+        var matches = Regex.EnumerateMatches(self, pattern, options);
+        if (!matches.MoveNext()) return self;
+        if (matches.Current.Index != 0) return self;
+        return self[matches.Current.Length..];
+    }
+
+    /// <summary>文字列が指定のパターンで終わっている場合に除去した文字列を取得する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="pattern">除去するパターン</param>
+    /// <returns>指定したパターンで始まっていれば除去した文字列。そうでなければ元の文字列。</returns>
+    public static ReadOnlySpan<char> TrimEndPattern(this string? self, [StringSyntax(StringSyntaxAttribute.Regex)] string pattern)
+        => self.AsSpan().TrimEndPattern(pattern, default);
+
+    /// <summary>文字列が指定のパターンで終わっている場合に除去した文字列を取得する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="pattern">除去するパターン</param>
+    /// <param name="options">マッチオプション</param>
+    /// <returns>指定したパターンで始まっていれば除去した文字列。そうでなければ元の文字列。</returns>
+    public static ReadOnlySpan<char> TrimEndPattern(this string? self, [StringSyntax(StringSyntaxAttribute.Regex, nameof(options))] string pattern, RegexOptions options)
+        => self.AsSpan().TrimEndPattern(pattern, options);
+
+    /// <summary>文字列が指定のパターンで終わっている場合に除去した文字列を取得する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="pattern">除去するパターン</param>
+    /// <returns>指定したパターンで始まっていれば除去した文字列。そうでなければ元の文字列。</returns>
+    public static ReadOnlySpan<char> TrimEndPattern(this ReadOnlySpan<char> self, [StringSyntax(StringSyntaxAttribute.Regex)] string pattern)
+        => self.TrimEndPattern(pattern, default);
+
+    /// <summary>文字列が指定のパターンで終わっている場合に除去した文字列を取得する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="pattern">除去するパターン</param>
+    /// <param name="options">マッチオプション</param>
+    /// <returns>指定したパターンで始まっていれば除去した文字列。そうでなければ元の文字列。</returns>
+    public static ReadOnlySpan<char> TrimEndPattern(this ReadOnlySpan<char> self, [StringSyntax(StringSyntaxAttribute.Regex, nameof(options))] string pattern, RegexOptions options)
+    {
+        var matches = Regex.EnumerateMatches(self, pattern, options);
+        if (!matches.MoveNext()) return self;
+
+        var index = matches.Current.Index;
+        var length = matches.Current.Length;
+        while (matches.MoveNext())
+        {
+            index = matches.Current.Index;
+            length = matches.Current.Length;
+        }
+        if ((index + length) != self.Length) return self;
+        return self[..index];
+    }
 }

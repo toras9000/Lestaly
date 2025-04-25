@@ -307,23 +307,6 @@ public class StringExtensionsTests
     }
 
     [TestMethod()]
-    public void TrimStartPattern()
-    {
-        {// string
-            "abcd".TrimStartPattern("ax").ToString().Should().Be("abcd");
-            "abcd".TrimStartPattern("ab").ToString().Should().Be("cd");
-            "abcd".TrimStartPattern("AB").ToString().Should().Be("abcd");
-            "abcd".TrimStartPattern("AB", RegexOptions.IgnoreCase).ToString().Should().Be("cd");
-        }
-        {// Span
-            "abcd".AsSpan().TrimStartPattern("ax").ToString().Should().Be("abcd");
-            "abcd".AsSpan().TrimStartPattern("ab").ToString().Should().Be("cd");
-            "abcd".AsSpan().TrimStartPattern("AB").ToString().Should().Be("abcd");
-            "abcd".AsSpan().TrimStartPattern("AB", RegexOptions.IgnoreCase).ToString().Should().Be("cd");
-        }
-    }
-
-    [TestMethod()]
     public void TrimEndString()
     {
         {// string
@@ -337,23 +320,6 @@ public class StringExtensionsTests
             "abcd".AsSpan().TrimEndString("cd", ignoreCase: false).ToString().Should().Be("ab");
             "abcd".AsSpan().TrimEndString("CD", ignoreCase: true).ToString().Should().Be("ab");
             "abcd".AsSpan().TrimEndString("cd", ignoreCase: true).ToString().Should().Be("ab");
-        }
-    }
-
-    [TestMethod()]
-    public void TrimEndPattern()
-    {
-        {// string
-            "abcd".TrimEndPattern("cc").ToString().Should().Be("abcd");
-            "abcd".TrimEndPattern("cd").ToString().Should().Be("ab");
-            "abcd".TrimEndPattern("CD").ToString().Should().Be("abcd");
-            "abcd".TrimEndPattern("cd", RegexOptions.IgnoreCase).ToString().Should().Be("ab");
-        }
-        {// Span
-            "abcd".AsSpan().TrimEndPattern("cc").ToString().Should().Be("abcd");
-            "abcd".AsSpan().TrimEndPattern("cd").ToString().Should().Be("ab");
-            "abcd".AsSpan().TrimEndPattern("CD").ToString().Should().Be("abcd");
-            "abcd".AsSpan().TrimEndPattern("cd", RegexOptions.IgnoreCase).ToString().Should().Be("ab");
         }
     }
 
