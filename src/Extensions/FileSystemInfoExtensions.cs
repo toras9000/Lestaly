@@ -97,6 +97,17 @@ public static class FileSystemInfoExtensions
     }
     #endregion
 
+    #region Info
+    /// <summary>ファイルシステムオブジェクトの状態を更新する。</summary>
+    /// <param name="self">対象ファイル/ディレクトリ情報</param>
+    /// <returns>元のファイル/ディレクトリ情報</returns>
+    public static TInfo WithRefresh<TInfo>(this TInfo self) where TInfo : FileSystemInfo
+    {
+        self.Refresh();
+        return self;
+    }
+    #endregion
+
     #region Check
     /// <summary>ファイルシステムオブジェクトが存在する場合に null に置き換える。</summary>
     /// <param name="self">対象ファイル/ディレクトリ情報</param>
