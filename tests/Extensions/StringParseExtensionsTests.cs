@@ -433,6 +433,46 @@ public class StringParseExtensionsTests
     }
     #endregion
 
+    #region TryParseHumanized
+    [TestMethod()]
+    public void TryParseHumanized()
+    {
+        // string
+        "2K".TryParseHumanized(si: true).Should().Be(2 * 1000L);
+        "2M".TryParseHumanized(si: true).Should().Be(2 * 1000L * 1000L);
+        "2G".TryParseHumanized(si: true).Should().Be(2 * 1000L * 1000L * 1000L);
+        "2T".TryParseHumanized(si: true).Should().Be(2 * 1000L * 1000L * 1000L * 1000L);
+        "2P".TryParseHumanized(si: true).Should().Be(2 * 1000L * 1000L * 1000L * 1000L * 1000L);
+        "2E".TryParseHumanized(si: true).Should().Be(2 * 1000L * 1000L * 1000L * 1000L * 1000L * 1000L);
+        "123E".TryParseHumanized(si: true).Should().Be(null);
+
+        "2K".TryParseHumanized(si: false).Should().Be(2 * 1024L);
+        "2M".TryParseHumanized(si: false).Should().Be(2 * 1024L * 1024L);
+        "2G".TryParseHumanized(si: false).Should().Be(2 * 1024L * 1024L * 1024L);
+        "2T".TryParseHumanized(si: false).Should().Be(2 * 1024L * 1024L * 1024L * 1024L);
+        "2P".TryParseHumanized(si: false).Should().Be(2 * 1024L * 1024L * 1024L * 1024L * 1024L);
+        "2E".TryParseHumanized(si: false).Should().Be(2 * 1024L * 1024L * 1024L * 1024L * 1024L * 1024L);
+        "123E".TryParseHumanized(si: false).Should().Be(null);
+
+        // ReadOnlySpan
+        "2K".AsSpan().TryParseHumanized(si: true).Should().Be(2 * 1000L);
+        "2M".AsSpan().TryParseHumanized(si: true).Should().Be(2 * 1000L * 1000L);
+        "2G".AsSpan().TryParseHumanized(si: true).Should().Be(2 * 1000L * 1000L * 1000L);
+        "2T".AsSpan().TryParseHumanized(si: true).Should().Be(2 * 1000L * 1000L * 1000L * 1000L);
+        "2P".AsSpan().TryParseHumanized(si: true).Should().Be(2 * 1000L * 1000L * 1000L * 1000L * 1000L);
+        "2E".AsSpan().TryParseHumanized(si: true).Should().Be(2 * 1000L * 1000L * 1000L * 1000L * 1000L * 1000L);
+        "123E".AsSpan().TryParseHumanized(si: true).Should().Be(null);
+
+        "2K".AsSpan().TryParseHumanized(si: false).Should().Be(2 * 1024L);
+        "2M".AsSpan().TryParseHumanized(si: false).Should().Be(2 * 1024L * 1024L);
+        "2G".AsSpan().TryParseHumanized(si: false).Should().Be(2 * 1024L * 1024L * 1024L);
+        "2T".AsSpan().TryParseHumanized(si: false).Should().Be(2 * 1024L * 1024L * 1024L * 1024L);
+        "2P".AsSpan().TryParseHumanized(si: false).Should().Be(2 * 1024L * 1024L * 1024L * 1024L * 1024L);
+        "2E".AsSpan().TryParseHumanized(si: false).Should().Be(2 * 1024L * 1024L * 1024L * 1024L * 1024L * 1024L);
+        "123E".AsSpan().TryParseHumanized(si: false).Should().Be(null);
+    }
+    #endregion
+
     #region TryParseBinNumber
     [TestMethod()]
     public void TryParseBinNumber()

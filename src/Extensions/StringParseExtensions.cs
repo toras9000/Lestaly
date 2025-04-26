@@ -224,6 +224,49 @@ public static class StringParseExtensions
 
         return self.TryParseHexNumber<TResult>(provider);
     }
+
+    /// <summary>補助単位付き表記文字列のパースを試みる</summary>
+    /// <remarks>サポートされる補助単位は K, M, G, T, P, E となる。</remarks>
+    /// <param name="self">対象文字列</param>
+    /// <param name="si">true を指定すると 1000 の累乗で解釈する。falseの場合は 1024 の累乗での解釈となる。</param>
+    /// <returns>パース結果値またはnull</returns>
+    public static long? TryParseHumanized(this string self, bool si = false)
+        => self.AsSpan().TryParseHumanized(si);
+
+    /// <summary>補助単位付き表記文字列のパースを試みる</summary>
+    /// <remarks>サポートされる補助単位は K, M, G, T, P, E となる。</remarks>
+    /// <param name="self">対象文字列</param>
+    /// <param name="si">true を指定すると 1000 の累乗で解釈する。falseの場合は 1024 の累乗での解釈となる。</param>
+    /// <returns>パース結果値またはnull</returns>
+    public static long? TryParseHumanized(this ReadOnlySpan<char> self, bool si = false)
+    {
+        var text = self.Trim();
+        if (text.IsEmpty) return default;
+
+        // 単位があれば係数に変換
+        var dist = si ? 1000L : 1024L;
+        var unitCoeff = text[^1] switch
+        {
+            'K' => dist,
+            'M' => dist * dist,
+            'G' => dist * dist * dist,
+            'T' => dist * dist * dist * dist,
+            'P' => dist * dist * dist * dist * dist,
+            'E' => dist * dist * dist * dist * dist * dist,
+            _ => default(long?),
+        };
+
+        // 係数があればパース値と係数を反映した値を返却
+        if (unitCoeff.HasValue)
+        {
+            var number = text[..^1].TryParseNumber<long>();
+            try { return checked(number * unitCoeff.Value); }
+            catch (OverflowException) { return null; }
+        }
+
+        // 係数がなければそのままパース
+        return text.TryParseNumber<long>();
+    }
     #endregion
 
     #region TryParseBin
