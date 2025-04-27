@@ -23,6 +23,10 @@ public readonly struct ArgCx
     /// <param name="info">ファイルシステム項目。フルパスとして評価される</param>
     public static implicit operator ArgCx(FileSystemInfo info) => new ArgCx(info.FullName);
 
+    /// <summary>URIから ArgCx への暗黙変換オペレータ</summary>
+    /// <param name="uri">URI。絶対URIとして評価される</param>
+    public static implicit operator ArgCx(Uri uri) => new ArgCx(uri.AbsoluteUri);
+
     /// <summary>引数値</summary>
     public string Value { get; }
 }
