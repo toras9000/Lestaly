@@ -6,6 +6,7 @@ public class StringTokenExtensionsTests
     [TestMethod]
     public void TakeLine()
     {
+        "abcdef".TakeLine(trim: true).ToString().Should().Be("abcdef");
         "abc\ndef".TakeLine(trim: true).ToString().Should().Be("abc");
         "abc\ndef".TakeLine(trim: false).ToString().Should().Be("abc");
         "aaa\rbbb".TakeLine(trim: true).ToString().Should().Be("aaa");
@@ -16,6 +17,10 @@ public class StringTokenExtensionsTests
         "".TakeLine(trim: false).ToString().Should().BeEmpty();
         default(string).TakeLine(trim: true).ToString().Should().BeEmpty();
         default(string).TakeLine(trim: false).ToString().Should().BeEmpty();
+        "aaa\rbbb\nccc".AsSpan().TakeLine(trim: true).ToString().Should().Be("aaa");
+        "aaa\rbbb\nccc".AsSpan().TakeLine(trim: false).ToString().Should().Be("aaa");
+        "aaa\rbbb\nccc".AsMemory().TakeLine(trim: true).ToString().Should().Be("aaa");
+        "aaa\rbbb\nccc".AsMemory().TakeLine(trim: false).ToString().Should().Be("aaa");
 
         "\n".TakeLine(trim: true).ToString().Should().BeEmpty();
         "\n".TakeLine(trim: false).ToString().Should().BeEmpty();
@@ -46,6 +51,10 @@ public class StringTokenExtensionsTests
         "".TakeLastLine(trim: false).ToString().Should().BeEmpty();
         default(string).TakeLastLine(trim: true).ToString().Should().BeEmpty();
         default(string).TakeLastLine(trim: false).ToString().Should().BeEmpty();
+        "aaa\rbbb\nccc".AsSpan().TakeLastLine(trim: true).ToString().Should().Be("ccc");
+        "aaa\rbbb\nccc".AsSpan().TakeLastLine(trim: false).ToString().Should().Be("ccc");
+        "aaa\rbbb\nccc".AsMemory().TakeLastLine(trim: true).ToString().Should().Be("ccc");
+        "aaa\rbbb\nccc".AsMemory().TakeLastLine(trim: false).ToString().Should().Be("ccc");
 
         "\n".TakeLastLine(trim: true).ToString().Should().BeEmpty();
         "\n".TakeLastLine(trim: false).ToString().Should().BeEmpty();
@@ -76,6 +85,10 @@ public class StringTokenExtensionsTests
         "".SkipLine(trim: false).ToString().Should().BeEmpty();
         default(string).SkipLine(trim: true).ToString().Should().BeEmpty();
         default(string).SkipLine(trim: false).ToString().Should().BeEmpty();
+        "aaa\r\nbbb\nccc".AsSpan().SkipLine(trim: true).ToString().Should().Be("bbb\nccc");
+        "aaa\r\nbbb\nccc".AsSpan().SkipLine(trim: false).ToString().Should().Be("bbb\nccc");
+        "aaa\r\nbbb\nccc".AsMemory().SkipLine(trim: true).ToString().Should().Be("bbb\nccc");
+        "aaa\r\nbbb\nccc".AsMemory().SkipLine(trim: false).ToString().Should().Be("bbb\nccc");
 
         "\n".SkipLine(trim: true).ToString().Should().BeEmpty();
         "\n".SkipLine(trim: false).ToString().Should().BeEmpty();
@@ -132,6 +145,16 @@ public class StringTokenExtensionsTests
             line.ToString().Should().Be("");
             next.ToString().Should().Be("");
         }
+        {
+            var line = "\nabc\n\ndef\n\nghi".AsSpan().TakeSkipLine(out var next, trim: true);
+            line.ToString().Should().Be("abc");
+            next.ToString().Should().Be("def\n\nghi");
+        }
+        {
+            var line = "\nabc\n\ndef\n\nghi".AsMemory().TakeSkipLine(out var next, trim: true);
+            line.ToString().Should().Be("abc");
+            next.ToString().Should().Be("def\n\nghi");
+        }
     }
 
     [TestMethod]
@@ -158,6 +181,9 @@ public class StringTokenExtensionsTests
 
         "ab cd ef".TakeToken().ToString().Should().Be("ab");
         "  ab cd,ef".TakeToken(',').ToString().Should().Be("  ab cd");
+
+        "ab cd ef".AsMemory().TakeToken().ToString().Should().Be("ab");
+        "  ab cd,ef".AsMemory().TakeToken(',').ToString().Should().Be("  ab cd");
     }
 
     [TestMethod]
@@ -185,6 +211,9 @@ public class StringTokenExtensionsTests
 
         "ab cd ef".TakeTokenAny([' ']).ToString().Should().Be("ab");
         "ab,cd ef".TakeTokenAny([' ', ',']).ToString().Should().Be("ab");
+
+        "ab cd ef".AsMemory().TakeTokenAny([' ']).ToString().Should().Be("ab");
+        "ab,cd ef".AsMemory().TakeTokenAny([' ', ',']).ToString().Should().Be("ab");
     }
 
     [TestMethod]
@@ -210,6 +239,9 @@ public class StringTokenExtensionsTests
 
         "ab cd ef".SkipToken().ToString().Should().Be("cd ef");
         "  ab cd,ef,gh ij".SkipToken(',').ToString().Should().Be("ef,gh ij");
+
+        "ab cd ef".AsMemory().SkipToken().ToString().Should().Be("cd ef");
+        "  ab cd,ef,gh ij".AsMemory().SkipToken(',').ToString().Should().Be("ef,gh ij");
     }
 
     [TestMethod]
@@ -239,6 +271,9 @@ public class StringTokenExtensionsTests
 
         "ab cd ef".SkipTokenAny([' ']).ToString().Should().Be("cd ef");
         "ab,cd ef".SkipTokenAny([' ', ',']).ToString().Should().Be("cd ef");
+
+        "ab cd ef".AsMemory().SkipTokenAny([' ']).ToString().Should().Be("cd ef");
+        "ab,cd ef".AsMemory().SkipTokenAny([' ', ',']).ToString().Should().Be("cd ef");
     }
 
     [TestMethod]
