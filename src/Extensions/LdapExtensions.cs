@@ -135,12 +135,12 @@ public static class LdapExtensions
     /// <param name="values">属性値</param>
     /// <param name="cancelToken">キャンセルトークン</param>
     /// <returns>レスポンス</returns>
-    public static async Task<DirectoryResponse> AddAttributeAsync(this LdapConnection self, string dn, string name, string[] values, CancellationToken cancelToken = default)
+    public static async Task<DirectoryResponse> AddAttributeAsync(this LdapConnection self, string dn, string name, IEnumerable<string> values, CancellationToken cancelToken = default)
     {
         var attrModify = new DirectoryAttributeModification();
         attrModify.Operation = DirectoryAttributeOperation.Add;
         attrModify.Name = name;
-        attrModify.AddRange(values);
+        foreach (var value in values) attrModify.Add(value);
 
         var addAttrReq = new ModifyRequest();
         addAttrReq.DistinguishedName = dn;
@@ -159,12 +159,36 @@ public static class LdapExtensions
     /// <param name="values">属性値</param>
     /// <param name="cancelToken">キャンセルトークン</param>
     /// <returns>レスポンス</returns>
-    public static async Task<DirectoryResponse> ReplaceAttributeAsync(this LdapConnection self, string dn, string name, string[] values, CancellationToken cancelToken = default)
+    public static async Task<DirectoryResponse> ReplaceAttributeAsync(this LdapConnection self, string dn, string name, IEnumerable<string> values, CancellationToken cancelToken = default)
     {
         var attrModify = new DirectoryAttributeModification();
         attrModify.Operation = DirectoryAttributeOperation.Replace;
         attrModify.Name = name;
-        attrModify.AddRange(values);
+        foreach (var value in values) attrModify.Add(value);
+
+        var addAttrReq = new ModifyRequest();
+        addAttrReq.DistinguishedName = dn;
+        addAttrReq.Modifications.Add(attrModify);
+
+        var addAttrRsp = await self.SendRequestAsync(addAttrReq, cancelToken: cancelToken);
+        if (addAttrRsp.ResultCode != 0) throw new PavedMessageException($"failed to search: {addAttrRsp.ErrorMessage}");
+
+        return addAttrRsp;
+    }
+
+    /// <summary>エントリの属性を削除する</summary>
+    /// <param name="self">LDAP接続</param>
+    /// <param name="dn">識別名(DN)</param>
+    /// <param name="name">属性名</param>
+    /// <param name="values">属性値</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>レスポンス</returns>
+    public static async Task<DirectoryResponse> DeleteAttributeAsync(this LdapConnection self, string dn, string name, IEnumerable<string> values, CancellationToken cancelToken = default)
+    {
+        var attrModify = new DirectoryAttributeModification();
+        attrModify.Operation = DirectoryAttributeOperation.Delete;
+        attrModify.Name = name;
+        foreach (var value in values) attrModify.Add(value);
 
         var addAttrReq = new ModifyRequest();
         addAttrReq.DistinguishedName = dn;

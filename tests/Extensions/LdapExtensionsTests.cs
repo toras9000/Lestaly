@@ -183,6 +183,28 @@ public class LdapExtensionsTests
     }
 
     [TestMethod()]
+    public async Task DeleteAttributeAsync()
+    {
+        if (TestServer == null) Assert.Inconclusive();
+
+        using var ldap = new LdapConnection(TestServer);
+        ldap.SessionOptions.ProtocolVersion = 3;
+        ldap.AuthType = AuthType.Basic;
+        ldap.Credential = ModifierCredential;
+        ldap.Bind();
+
+        var uid = Guid.NewGuid().ToString();
+        var dn = $"uid={uid},{TestUsersUnitDn}";
+        await ldap.CreateEntryAsync(dn, [new("objectClass", "account"), new("uid", uid)]);
+        await ldap.AddAttributeAsync(dn, "description", ["test1", "test2", "test3", "test4"]);
+
+        await ldap.DeleteAttributeAsync(dn, "description", ["test2", "test4"]);
+        var entry = await ldap.GetEntryOrDefaultAsync(dn);
+        entry.Should().NotBeNull();
+        entry.EnumerateAttributeValues("description").ToArray().Should().BeEquivalentTo(["test1", "test3"]);
+    }
+
+    [TestMethod()]
     public void MakePasswordHashSSHA()
     {
         var salt = (stackalloc byte[] { 0x75, 0x48, 0xE1, 0x72, 0x74, 0xAB, 0x86, 0x60 });
