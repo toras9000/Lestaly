@@ -114,6 +114,14 @@ public sealed class ConsoleWig : IConsoleWig
     public static Task<ConsoleKeyInfo?> WaitKeyAsync(bool intercept, int timeout, CancellationToken cancelToken = default)
         => Facade.WaitKeyAsync(intercept, timeout, cancelToken);
 
+    /// <summary>キー入力を読み取る</summary>
+    /// <param name="intercept">キー入力をインターセプトする(出力に出さない)かどうか。</param>
+    /// <param name="timeout">タイムアウト時間</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>押下されたキー情報</returns>
+    public static Task<ConsoleKeyInfo?> WaitKeyAsync(bool intercept, TimeSpan timeout, CancellationToken cancelToken = default)
+        => Facade.WaitKeyAsync(intercept, timeout, cancelToken);
+
     /// <summary>バッファ内のキー入力をスキップする。</summary>
     /// <param name="maxCount">最大スキップ数。継続的に入力される場合や</param>
     /// <returns>呼び出し元インスタンス自身</returns>
@@ -392,7 +400,15 @@ public interface IConsoleWig
     /// <param name="timeout">タイムアウト時間[ms]</param>
     /// <param name="cancelToken">キャンセルトークン</param>
     /// <returns>押下されたキー情報</returns>
-    public async Task<ConsoleKeyInfo?> WaitKeyAsync(bool intercept, int timeout, CancellationToken cancelToken = default)
+    public Task<ConsoleKeyInfo?> WaitKeyAsync(bool intercept, int timeout, CancellationToken cancelToken = default)
+        => WaitKeyAsync(intercept, TimeSpan.FromMicroseconds(timeout), cancelToken);
+
+    /// <summary>キー入力を読み取る</summary>
+    /// <param name="intercept">キー入力をインターセプトする(出力に出さない)かどうか。</param>
+    /// <param name="timeout">タイムアウト時間</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>押下されたキー情報</returns>
+    public async Task<ConsoleKeyInfo?> WaitKeyAsync(bool intercept, TimeSpan timeout, CancellationToken cancelToken = default)
     {
         var watch = Stopwatch.StartNew();
         while (true)
@@ -401,7 +417,7 @@ public interface IConsoleWig
             {
                 return Console.ReadKey(intercept);
             }
-            if (timeout <= watch.ElapsedMilliseconds)
+            if (timeout.Ticks <= watch.ElapsedTicks)
             {
                 break;
             }

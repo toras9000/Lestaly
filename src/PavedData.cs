@@ -1,24 +1,16 @@
 ﻿namespace Lestaly;
 
-/// <summary>
-/// 実行補助オプション
-/// </summary>
+/// <summary>実行補助オプション</summary>
 public class PavedOptions<T>
 {
     /// <summary>エラー発生時に一時停止するか否か</summary>
-    public bool PauseOnError { get; set; } = true;
+    public PavedPauseOptions PauseOnError { get; } = new(true);
 
     /// <summary>キャンセル発生時に一時停止するか否か</summary>
-    public bool PauseOnCancel { get; set; } = true;
+    public PavedPauseOptions PauseOnCancel { get; } = new(true);
 
     /// <summary>処理終了後に一時停止するか否か</summary>
-    public bool PauseOnExit { get; set; } = false;
-
-    /// <summary>一時停止時メッセージ</summary>
-    public string? PauseMessage { get; set; } = null;
-
-    /// <summary>一時停止時間[ms]</summary>
-    public int PauseTime { get; set; } = Timeout.Infinite;
+    public PavedPauseOptions PauseOnExit { get; } = new(false);
 
     /// <summary>エラー時ハンドラ</summary>
     public Func<Exception, T>? ErrorHandler { get; set; } = null;
@@ -26,62 +18,84 @@ public class PavedOptions<T>
     /// <summary>キャンセル時ハンドラ</summary>
     public Func<Exception, T>? CancelHandler { get; set; } = null;
 
-    /// <summary>コンソール出力I/F</summary>
-    public IConsoleWig? Console { get; set; } = null;
-
     #region 設定処理
     /// <summary>一時停止無しに設定する。</summary>
     public PavedOptions<T> NoPause()
     {
-        this.PauseOnError = false;
-        this.PauseOnCancel = false;
-        this.PauseOnExit = false;
+        this.PauseOnError.Enabled = false;
+        this.PauseOnCancel.Enabled = false;
+        this.PauseOnExit.Enabled = false;
         return this;
     }
 
     /// <summary>エラーによる一時停止ありに設定する。</summary>
-    public PavedOptions<T> ErrorPause(int timeout = Timeout.Infinite)
+    public PavedOptions<T> ErrorPause(string? message = default, TimeSpan time = default)
     {
-        this.PauseOnError = true;
-        this.PauseOnCancel = false;
-        this.PauseOnExit = false;
-        this.PauseTime = timeout;
+        this.PauseOnError.Enabled = true;
+        this.PauseOnError.Time = time;
+        this.PauseOnError.Message = message;
+        this.PauseOnCancel.Enabled = false;
+        this.PauseOnExit.Enabled = false;
+        this.PauseOnExit.Time = time;
+        this.PauseOnExit.Message = message;
         return this;
     }
 
     /// <summary>エラーとキャンセルによる一時停止ありに設定する。</summary>
-    public PavedOptions<T> CancelPause(int timeout = Timeout.Infinite)
+    public PavedOptions<T> CancelPause(string? message = default, TimeSpan time = default)
     {
-        this.PauseOnError = true;
-        this.PauseOnCancel = true;
-        this.PauseOnExit = false;
-        this.PauseTime = timeout;
+        this.PauseOnError.Enabled = true;
+        this.PauseOnError.Time = time;
+        this.PauseOnError.Message = message;
+        this.PauseOnCancel.Enabled = true;
+        this.PauseOnCancel.Time = time;
+        this.PauseOnCancel.Message = message;
+        this.PauseOnExit.Enabled = false;
+        this.PauseOnExit.Time = time;
+        this.PauseOnExit.Message = message;
         return this;
     }
+
     /// <summary>いずれかの要因による一時停止ありに設定する。</summary>
-    public PavedOptions<T> AnyPause(int timeout = Timeout.Infinite)
+    public PavedOptions<T> AnyPause(string? message = default, TimeSpan time = default)
     {
-        this.PauseOnError = true;
-        this.PauseOnCancel = true;
-        this.PauseOnExit = true;
-        this.PauseTime = timeout;
+        this.PauseOnError.Enabled = true;
+        this.PauseOnError.Time = time;
+        this.PauseOnError.Message = message;
+        this.PauseOnCancel.Enabled = true;
+        this.PauseOnCancel.Time = time;
+        this.PauseOnCancel.Message = message;
+        this.PauseOnExit.Enabled = true;
+        this.PauseOnExit.Time = time;
+        this.PauseOnExit.Message = message;
         return this;
     }
 
     /// <summary>一時停止モードを設定する。</summary>
-    public PavedOptions<T> PauseOn(PavedPause mode, int timeout = Timeout.Infinite) => mode switch
+    public PavedOptions<T> PauseOn(PavedPause mode, string? message = default, TimeSpan time = default) => mode switch
     {
         PavedPause.None => this.NoPause(),
-        PavedPause.Any => this.AnyPause(timeout),
-        PavedPause.Cancel => this.CancelPause(timeout),
-        _ => this.ErrorPause(timeout),
+        PavedPause.Any => this.AnyPause(message, time),
+        PavedPause.Cancel => this.CancelPause(message, time),
+        _ => this.ErrorPause(message, time),
     };
     #endregion
 }
 
-/// <summary>
-/// 一時停止モード識別子
-/// </summary>
+/// <summary>一時停止オプション</summary>
+public class PavedPauseOptions(bool enabled)
+{
+    /// <summary>一時停止するか否か</summary>
+    public bool Enabled { get; set; } = enabled;
+
+    /// <summary>一時停止時間</summary>
+    public TimeSpan Time { get; set; } = TimeSpan.Zero;
+
+    /// <summary>一時停止メッセージ</summary>
+    public string? Message { get; set; }
+}
+
+/// <summary>一時停止モード識別子</summary>
 public enum PavedPause
 {
     /// <summary>なし</summary>

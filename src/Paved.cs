@@ -8,93 +8,98 @@ public static class Paved
     /// <summary>例外を捕捉して処理を実行する。</summary>
     /// <typeparam name="T">戻り値の型</typeparam>
     /// <param name="action">実行処理</param>
-    /// <param name="config ">実行オプション設定デリゲート</param>
     /// <returns>処理の戻り値</returns>
-    public static async Task<T?> RunAsync<T>(Func<ValueTask<T>> action, Action<PavedOptions<T>>? config = null)
+    public static async Task<T?> RunAsync<T>(Func<PavedOptions<T>, ValueTask<T>> action)
     {
         var options = new PavedOptions<T>();
         var console = ConsoleWig.Facade;
-        var result = default(T);
+        var result = default(T?);
+        var time = default(TimeSpan?);
         var pause = false;
         try
         {
-            config?.Invoke(options);
-            if (options.Console != null) console = options.Console;
-
-            result = await action();
+            result = await action(options);
         }
         catch (Exception ex) when (ex is OperationCanceledException or CmdProcCancelException or CmdShellCancelException)
         {
             // キャンセル発生時の一時停止フラグを評価
-            pause = options.PauseOnCancel == true;
+            pause = options.PauseOnCancel.Enabled;
+            time = options.PauseOnCancel.Time;
 
-            // エラーハンドラがあればそれを実行。無ければ例外メッセージを出力しておく。
-            var handler = options.CancelHandler ?? options.ErrorHandler;
-            if (handler != null)
+            // エラーハンドラがあればそれを実行。無ければメッセージを出力しておく。
+            if (options.CancelHandler == null)
             {
-                result = handler(ex);
+                var message = options.PauseOnCancel.Message ?? "Operation cancelled.";
+                if (message.IsNotEmpty()) using (console.ForegroundColorPeriod(ConsoleColor.Yellow)) console.WriteLine();
             }
             else
             {
-                using (console.ForegroundColorPeriod(ConsoleColor.Yellow)) console.WriteLine("Operation cancelled.");
+                result = options.CancelHandler(ex);
             }
         }
         catch (Exception ex)
         {
             // エラー発生時の一時停止フラグを評価
-            pause = options.PauseOnError;
+            pause = options.PauseOnError.Enabled;
+            time = options.PauseOnError.Time;
 
             // エラーハンドラがあればそれを実行。無ければ例外メッセージを出力しておく。
-            if (options.ErrorHandler != null)
+            if (options.ErrorHandler == null)
             {
-                result = options.ErrorHandler(ex);
-            }
-            else if (ex is CmdProcExitCodeException cex)
-            {
-                using (console.ForegroundColorPeriod(ConsoleColor.Red))
+                if (options.PauseOnError.Message.IsNotEmpty())
                 {
-                    console.WriteLine(cex.Message);
-                    console.WriteLine($"Output: {cex.Output}");
+                    using var _ = console.ForegroundColorPeriod(ConsoleColor.Red);
+                    console.WriteLine(options.PauseOnError.Message);
                 }
-            }
-            else if (ex is PavedMessageException pex)
-            {
-                switch (pex.Kind)
+                else if (ex is CmdProcExitCodeException cex)
                 {
-                case PavedMessageKind.Error:
-                    using (console.ForegroundColorPeriod(ConsoleColor.Red)) console.WriteLine(pex.Message);
-                    break;
-                case PavedMessageKind.Warning:
-                case PavedMessageKind.Cancelled:
-                    using (console.ForegroundColorPeriod(ConsoleColor.Yellow)) console.WriteLine(pex.Message);
-                    break;
-                case PavedMessageKind.Information:
-                default:
-                    console.WriteLine(pex.Message);
-                    break;
+                    using var _ = console.ForegroundColorPeriod(ConsoleColor.Red);
+                    console.WriteLine(cex.Message);
+                    if (cex.Output.IsNotWhite()) console.WriteLine($"Output: {cex.Output}");
+                }
+                else if (ex is PavedMessageException pex)
+                {
+                    switch (pex.Kind)
+                    {
+                    case PavedMessageKind.Error:
+                        using (console.ForegroundColorPeriod(ConsoleColor.Red)) console.WriteLine(pex.Message);
+                        break;
+                    case PavedMessageKind.Warning:
+                    case PavedMessageKind.Cancelled:
+                        using (console.ForegroundColorPeriod(ConsoleColor.Yellow)) console.WriteLine(pex.Message);
+                        break;
+                    case PavedMessageKind.Information:
+                    default:
+                        console.WriteLine(pex.Message);
+                        break;
+                    }
+                }
+                else
+                {
+                    using (console.ForegroundColorPeriod(ConsoleColor.Red)) console.WriteLine(ex.ToString());
                 }
             }
             else
             {
-                using (console.ForegroundColorPeriod(ConsoleColor.Red)) console.WriteLine(ex.ToString());
+                result = options.ErrorHandler(ex);
             }
         }
 
         // 終了時の一時停止フラグを評価
-        pause = pause || options.PauseOnExit;
+        pause = pause || options.PauseOnExit.Enabled;
 
         // オプションで要求されていてリダイレクトされていない場合に一時停止する
         if (pause && !Console.IsInputRedirected)
         {
-            if (0 < options.PauseTime)
+            Console.WriteLine(options.PauseOnExit.Message ?? "(Press any key to exit.)");
+            time = time ?? options.PauseOnExit.Time;
+            if (time.Value == TimeSpan.Zero)
             {
-                Console.WriteLine(options.PauseMessage ?? "(Press any key to exit.)");
-                await ConsoleWig.WaitKeyAsync(intercept: true, options.PauseTime).ConfigureAwait(false);
+                Console.ReadKey(true);
             }
             else
             {
-                Console.WriteLine(options.PauseMessage ?? "(Press any key to exit.)");
-                Console.ReadKey(true);
+                await ConsoleWig.WaitKeyAsync(intercept: true, time.Value).ConfigureAwait(false);
             }
         }
 
@@ -103,61 +108,42 @@ public static class Paved
 
     /// <summary>例外を捕捉して処理を実行する。</summary>
     /// <param name="action">実行処理</param>
-    /// <param name="config ">実行オプション設定デリゲート</param>
     /// <returns>エラーコード</returns>
-    public static Task<int> RunAsync(Func<ValueTask> action, Action<PavedOptions<int>>? config = null)
+    public static async Task<int> RunAsync(Func<PavedOptions<int>, ValueTask> action)
     {
-        return RunAsync(async () => { await action(); return 0; }, options =>
-        {
-            var console = ConsoleWig.Facade;
-            options.ErrorHandler = (ex) =>
-            {
-                if (ex is OperationCanceledException)
-                {
-                    using (console.ForegroundColorPeriod(ConsoleColor.Yellow)) console.WriteLine("Operation cancelled.");
-                    return 254;
-                }
-                if (ex is CmdProcExitCodeException cex)
-                {
-                    using (console.ForegroundColorPeriod(ConsoleColor.Red))
-                    {
-                        console.WriteLine(cex.Message);
-                        console.WriteLine($"Output: {cex.Output}");
-                    }
-                    return cex.ExitCode;
-                }
-                if (ex is PavedMessageException pex)
-                {
-                    var exitCode = 255;
-                    switch (pex.Kind)
-                    {
-                    case PavedMessageKind.Error:
-                        using (console.ForegroundColorPeriod(ConsoleColor.Red)) console.WriteLine(pex.Message);
-                        break;
-                    case PavedMessageKind.Warning:
-                        using (console.ForegroundColorPeriod(ConsoleColor.Yellow)) console.WriteLine(pex.Message);
-                        break;
-                    case PavedMessageKind.Cancelled:
-                        exitCode = 254;
-                        using (console.ForegroundColorPeriod(ConsoleColor.Yellow)) console.WriteLine(pex.Message);
-                        break;
-                    case PavedMessageKind.Information:
-                    default:
-                        console.WriteLine(pex.Message);
-                        break;
-                    }
-                    if (pex is PavedExitException eex)
-                    {
-                        exitCode = eex.ExitCode;
-                    }
-                    return exitCode;
-                }
+        var exitCode = 0;
 
-                using (console.ForegroundColorPeriod(ConsoleColor.Red)) console.WriteLine(ex.ToString());
-                return 255;
-            };
-            config?.Invoke(options);
-            if (options.Console != null) console = options.Console;
+        await RunAsync<int>(async (options) =>
+        {
+            try
+            {
+                await action(options);
+                return 0;
+            }
+            catch (OperationCanceledException)
+            {
+                exitCode = 254;
+                throw;
+            }
+            catch (CmdProcExitCodeException cex)
+            {
+                exitCode = cex.ExitCode;
+                throw;
+            }
+            catch (Exception)
+            {
+                exitCode = 255;
+                throw;
+            }
         });
+
+        return exitCode;
     }
+
+    /// <summary>例外を捕捉して処理を実行する。</summary>
+    /// <param name="action">実行処理</param>
+    /// <returns>エラーコード</returns>
+    public static Task<int> RunAsync(Func<ValueTask> action)
+        => RunAsync(_ => action());
+
 }
