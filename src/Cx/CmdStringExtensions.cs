@@ -87,6 +87,11 @@ public static class CmdStringExtensions
     public static CmdCx nowindow(this string commandline)
         => new CmdCx(commandline).nowindow();
 
+    /// <summary>プロセスの実行動詞を指定する</summary>
+    /// <returns>自身のインスタンス</returns>
+    public static CmdCx verb(this string commandline, string verb)
+        => new CmdCx(commandline).verb(verb);
+
     /// <summary>文字列をコマンドラインとみなし、指定の作業ディレクトリとするプロセス実行準備を行う</summary>
     /// <param name="commandline">コマンドライン文字列。最初の空白より後ろを引数とみなす。</param>
     /// <param name="dir">作業ディレクトリ</param>

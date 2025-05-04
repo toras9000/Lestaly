@@ -142,13 +142,20 @@ public class CmdCx
     }
 
     /// <summary>ウィンドウを作成せずに実行する</summary>
-    /// <remarks>
-    /// この指定が効果を発する。
-    /// </remarks>
+    /// <remarks>この指定の効果はコンソールアプリケーションが対象となる。</remarks>
     /// <returns>自身のインスタンス</returns>
     public CmdCx nowindow()
     {
         this.noWindow = true;
+        return this;
+    }
+
+    /// <summary>プロセスの実行動詞を指定する</summary>
+    /// <param name="verb">動詞</param>
+    /// <returns>自身のインスタンス</returns>
+    public CmdCx verb(string verb)
+    {
+        this.procVerb = verb;
         return this;
     }
 
@@ -254,6 +261,9 @@ public class CmdCx
 
     /// <summary>ウィンドウを作らずに実行するか</summary>
     private bool noWindow;
+
+    /// <summary>プロセス実行動詞</summary>
+    private string? procVerb;
 
     /// <summary>作業ディレクトリ</summary>
     private string? echoPrompt;
@@ -371,6 +381,10 @@ public class CmdCx
         if (this.noWindow)
         {
             target.CreateNoWindow = true;
+        }
+        if (this.procVerb.IsNotWhite())
+        {
+            target.Verb = this.procVerb;
         }
         if (stdOut != null)
         {
