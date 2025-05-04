@@ -86,7 +86,7 @@ public static class FileSystemInfoExtensions
     /// <param name="baseDir">基準ディレクトリのDirectoryInfo</param>
     /// <param name="ignoreCase">大文字と小文字を同一視するか否か</param>
     /// <returns>相対パス</returns>
-    public static string RelativePathFrom(this FileSystemInfo self, DirectoryInfo baseDir, bool ignoreCase)
+    public static string RelativePathFrom(this FileSystemInfo self, DirectoryInfo baseDir, bool? ignoreCase = default)
     {
         return self switch
         {

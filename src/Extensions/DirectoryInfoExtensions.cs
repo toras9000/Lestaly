@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Lestaly;
@@ -139,7 +140,7 @@ public static class DirectoryInfoExtensions
     /// <param name="baseDir">基準ディレクトリのDirectoryInfo</param>
     /// <param name="ignoreCase">大文字と小文字を同一視するか否か</param>
     /// <returns>相対パス</returns>
-    public static string RelativePathFrom(this DirectoryInfo self, DirectoryInfo baseDir, bool ignoreCase)
+    public static string RelativePathFrom(this DirectoryInfo self, DirectoryInfo baseDir, bool? ignoreCase = default)
     {
         // パラメータチェック
         ArgumentNullException.ThrowIfNull(self);
@@ -153,7 +154,7 @@ public static class DirectoryInfoExtensions
     /// <param name="baseDir">基準ディレクトリのDirectoryInfo</param>
     /// <param name="ignoreCase">大文字と小文字を同一視するか否か</param>
     /// <returns>相対パス</returns>
-    internal static string SegmentsToReletivePath(IList<string> segments, DirectoryInfo baseDir, bool ignoreCase)
+    internal static string SegmentsToReletivePath(IList<string> segments, DirectoryInfo baseDir, bool? ignoreCase)
     {
         // パスセグメント長をチェック
         if (segments.Count <= 0)
@@ -167,7 +168,7 @@ public static class DirectoryInfoExtensions
 
         // ファイルとディレクトリのパスセグメントで一致する部分を検出
         var index = 0;
-        var matchRule = ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+        var matchRule = (ignoreCase ?? RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
         while (index < dirSegments.Count)
         {
             // ファイル名位置まで到達した場合はそこで終了。
