@@ -115,6 +115,15 @@ public static class EnumerableExtensions
         return self.Any(e => core.Span.Equals(e.AsSpan().Trim(), StringComparison.OrdinalIgnoreCase));
     }
 
+    /// <summary>前後空白や大文字/小文字の区別なく文字列が含まれているかを判定する。</summary>
+    /// <param name="self">文字列のシーケンス</param>
+    /// <param name="texts">判定する文字列のリスト</param>
+    /// <returns>含まれているか否か</returns>
+    public static bool RoughContainsAny(this IEnumerable<string> self, IEnumerable<string> texts)
+    {
+        return self.Any(t => t.RoughAny(texts));
+    }
+
     /// <summary>シーケンスの先頭から要素を分解する</summary>
     /// <typeparam name="TSource">要素の型</typeparam>
     /// <param name="self">対象シーケンス</param>
