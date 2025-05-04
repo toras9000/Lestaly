@@ -149,17 +149,31 @@ public static class Paved
     /// <summary>例外を捕捉して処理を実行する。デフォルトで一時停止。</summary>
     /// <param name="action">実行処理</param>
     /// <returns>エラーコード</returns>
+    public static Task<int> ProceedAsync(Func<PavedOptions<int>, ValueTask> action)
+        => RunAsync(options => { options.AnyPause(); return action(options); });
+
+    /// <summary>例外を捕捉して処理を実行する。デフォルトで一時停止。</summary>
+    /// <param name="noPause">非停止フラグ</param>
+    /// <param name="action">実行処理</param>
+    /// <returns>エラーコード</returns>
+    public static Task<int> ProceedAsync(bool noPause, Func<PavedOptions<int>, ValueTask> action)
+        => RunAsync(options =>
+        {
+            options.PauseOn(noPause ? PavedPause.None : PavedPause.Any);
+            return action(options);
+        });
+
+    /// <summary>例外を捕捉して処理を実行する。デフォルトで一時停止。</summary>
+    /// <param name="action">実行処理</param>
+    /// <returns>エラーコード</returns>
     public static Task<int> ProceedAsync(Func<ValueTask> action)
-        => RunAsync(options => { options.AnyPause(); return action(); });
+        => ProceedAsync(_ => action());
 
     /// <summary>例外を捕捉して処理を実行する。デフォルトで一時停止。</summary>
     /// <param name="noPause">非停止フラグ</param>
     /// <param name="action">実行処理</param>
     /// <returns>エラーコード</returns>
     public static Task<int> ProceedAsync(bool noPause, Func<ValueTask> action)
-        => RunAsync(options =>
-        {
-            options.PauseOn(noPause ? PavedPause.None : PavedPause.Any);
-            return action();
-        });
+        => ProceedAsync(noPause, _ => action());
+
 }
