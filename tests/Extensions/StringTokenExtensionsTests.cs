@@ -365,4 +365,36 @@ public class StringTokenExtensionsTests
         scan.ToString().Should().Be("jkl   mno");
     }
 
+    [TestMethod]
+    public void TakeLastToken()
+    {
+        "ab cd ef".AsSpan().TakeLastToken().ToString().Should().Be("ef");
+        "ab  cd  ef".AsSpan().TakeLastToken().ToString().Should().Be("ef");
+        "  ab cd ef   ".AsSpan().TakeLastToken().ToString().Should().Be("");
+        "abcdef".AsSpan().TakeLastToken().ToString().Should().Be("abcdef");
+
+        "ab,cd ef".AsSpan().TakeLastToken(',').ToString().Should().Be("cd ef");
+        ",,ab cd,ef  ".AsSpan().TakeLastToken(',').ToString().Should().Be("ef  ");
+        "abcdef".AsSpan().TakeLastToken(',').ToString().Should().Be("abcdef");
+
+        "ab cd ef".TakeLastToken().ToString().Should().Be("ef");
+        "  ab cd,ef  ".TakeLastToken(',').ToString().Should().Be("ef  ");
+
+        "ab cd ef".AsMemory().TakeLastToken().ToString().Should().Be("ef");
+        "  ab cd,ef  ".AsMemory().TakeLastToken(',').ToString().Should().Be("ef  ");
+    }
+
+    [TestMethod]
+    public void TakeLastTokenAny()
+    {
+        "ab c,d ef".AsSpan().TakeLastTokenAny([' ']).ToString().Should().Be("ef");
+        "ab c,d ef".AsSpan().TakeLastTokenAny([',']).ToString().Should().Be("d ef");
+        "ab c,d ef".AsSpan().TakeLastTokenAny([',', ' ']).ToString().Should().Be("ef");
+        "ab c,d ef ,".AsSpan().TakeLastTokenAny([',', ' ']).ToString().Should().Be("");
+        "ab c,d ef ,".AsSpan().TakeLastTokenAny(['#', '@']).ToString().Should().Be("ab c,d ef ,");
+
+        "ab c,d ef".TakeLastTokenAny([',', ' ']).ToString().Should().Be("ef");
+
+        "ab c,d ef".AsMemory().TakeLastTokenAny([',', ' ']).ToString().Should().Be("ef");
+    }
 }

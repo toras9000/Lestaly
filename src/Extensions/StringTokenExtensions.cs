@@ -570,6 +570,68 @@ public static class StringTokenExtensions
     }
     #endregion
 
+    #region TakeLastToken
+    /// <summary>文字列の最後のトークン部分を取得する</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="delimiter">区切り文字</param>
+    /// <returns>トークン文字列</returns>
+    public static ReadOnlySpan<char> TakeLastToken(this string self, char delimiter = ' ')
+        => self.AsSpan().TakeLastToken(delimiter);
+
+    /// <summary>文字列の最後のトークン部分を取得する</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="delimiter">区切り文字</param>
+    /// <returns>トークン文字列</returns>
+    public static ReadOnlySpan<char> TakeLastToken(this ReadOnlySpan<char> self, char delimiter = ' ')
+    {
+        var idx = self.LastIndexOf(delimiter);
+        if (idx <= 0) return self;
+        return self[(idx + 1)..];
+    }
+
+    /// <summary>文字列の最後のトークン部分を取得する</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="delimiter">区切り文字</param>
+    /// <returns>トークン文字列</returns>
+    public static ReadOnlyMemory<char> TakeLastToken(this ReadOnlyMemory<char> self, char delimiter = ' ')
+    {
+        var idx = self.Span.LastIndexOf(delimiter);
+        if (idx <= 0) return self;
+        return self[(idx + 1)..];
+    }
+    #endregion
+
+    #region TakeLastTokenAny
+    /// <summary>文字列の最後のトークン部分を取得する</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="delimiters">区切り文字のセット</param>
+    /// <returns>トークン文字列</returns>
+    public static ReadOnlySpan<char> TakeLastTokenAny(this string self, ReadOnlySpan<char> delimiters)
+        => self.AsSpan().TakeLastTokenAny(delimiters);
+
+    /// <summary>文字列の最後のトークン部分を取得する</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="delimiters">区切り文字のセット</param>
+    /// <returns>トークン文字列</returns>
+    public static ReadOnlySpan<char> TakeLastTokenAny(this ReadOnlySpan<char> self, ReadOnlySpan<char> delimiters)
+    {
+        var idx = self.LastIndexOfAny(delimiters);
+        if (idx <= 0) return self;
+        return self[(idx + 1)..];
+    }
+
+    /// <summary>文字列の最後のトークン部分を取得する</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="delimiters">区切り文字のセット</param>
+    /// <returns>トークン文字列</returns>
+    public static ReadOnlyMemory<char> TakeLastTokenAny(this ReadOnlyMemory<char> self, ReadOnlySpan<char> delimiters)
+    {
+        var idx = self.Span.LastIndexOfAny(delimiters);
+        if (idx <= 0) return self;
+        return self[(idx + 1)..];
+    }
+    #endregion
+
     /// <summary>改行キャラクタ配列</summary>
     private static readonly char[] LineBreakChars = ['\r', '\n',];
 
