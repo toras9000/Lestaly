@@ -67,6 +67,86 @@ public static class DirectoryInfoExtensions
     }
     #endregion
 
+    #region Find
+    /// <summary>ディレクトリ配下の指定のパターンにマッチする単一のファイルを取得する。</summary>
+    /// <param name="self">基準となるディレクトリ</param>
+    /// <param name="pattern">検索パターン。パターン解釈は MatchType.Simple による。パスが階層状の場合、途中のパスはプラットフォーム依存のマッチングのようなので注意。</param>
+    /// <param name="casing">キャラクタ照合方法</param>
+    /// <param name="first">複数ファイルが見つかった場合に最初のファイルを返すか否か</param>
+    /// <returns>
+    /// 検索結果が単一の場合はそのファイル情報。見つからない場合は null を返却。
+    /// 検索結果が複数の場合、first 引数が真であれば最初のファイル情報を、そうでなければ null を返却。
+    /// </returns>
+    public static FileInfo? FindFile(this DirectoryInfo self, string pattern, MatchCasing casing = MatchCasing.PlatformDefault, bool first = false)
+    {
+        ArgumentNullException.ThrowIfNull(self);
+        ArgumentException.ThrowIfNullOrWhiteSpace(pattern);
+
+        // 検索オプション
+        var options = new EnumerationOptions();
+        options.MatchCasing = casing;
+        options.MatchType = MatchType.Simple;
+        options.IgnoreInaccessible = true;
+        options.AttributesToSkip = FileAttributes.None;
+        options.ReturnSpecialDirectories = false;
+        options.RecurseSubdirectories = false;
+
+        // 指定のファイルを検索
+        var found = default(FileInfo);
+        foreach (var file in self.EnumerateFiles(pattern, options))
+        {
+            // 2つ以上見つかった場合は未確定として結果無しにする
+            if (found != null)
+            {
+                if (!first) found = null;
+                break;
+            }
+            // 見つかったファイルを保持
+            found = file;
+        }
+        return found;
+    }
+
+    /// <summary>ディレクトリ配下の指定のパターンにマッチする単一のディレクトリを取得する。</summary>
+    /// <param name="self">基準となるディレクトリ</param>
+    /// <param name="pattern">検索パターン。パターン解釈は MatchType.Simple による。パスが階層状の場合、途中のパスはプラットフォーム依存のマッチングのようなので注意。</param>
+    /// <param name="casing">キャラクタ照合方法</param>
+    /// <param name="first">複数ディレクトリが見つかった場合に最初のディレクトリを返すか否か</param>
+    /// <returns>
+    /// 検索結果が単一の場合はそのディレクトリ情報。見つからない場合は null を返却。
+    /// 検索結果が複数の場合、first 引数が真であれば最初のディレクトリ情報を、そうでなければ null を返却。
+    /// </returns>
+    public static DirectoryInfo? FindDirectory(this DirectoryInfo self, string pattern, MatchCasing casing = MatchCasing.PlatformDefault, bool first = false)
+    {
+        ArgumentNullException.ThrowIfNull(self);
+        ArgumentException.ThrowIfNullOrWhiteSpace(pattern);
+
+        // 検索オプション
+        var options = new EnumerationOptions();
+        options.MatchCasing = casing;
+        options.MatchType = MatchType.Simple;
+        options.IgnoreInaccessible = true;
+        options.AttributesToSkip = FileAttributes.None;
+        options.ReturnSpecialDirectories = false;
+        options.RecurseSubdirectories = false;
+
+        // 指定のディレクトリを検索
+        var found = default(DirectoryInfo);
+        foreach (var dir in self.EnumerateDirectories(pattern, options))
+        {
+            // 2つ以上見つかった場合は未確定として結果無しにする
+            if (found != null)
+            {
+                if (!first) found = null;
+                break;
+            }
+            // 見つかったディレクトリを保持
+            found = dir;
+        }
+        return found;
+    }
+    #endregion
+
     #region Path
     /// <summary>ディレクトリパスの構成セグメントを取得する。</summary>
     /// <param name="self">対象ディレクトリのDirectoryInfo</param>
