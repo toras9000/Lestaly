@@ -286,6 +286,7 @@ public class DirectoryInfoExtensionsTests
         tempDir.Info.FindFile("ABC", MatchCasing.CaseInsensitive).Should().NotBeNull();
         tempDir.Info.FindFile("abc", MatchCasing.CaseSensitive).Should().NotBeNull();
         tempDir.Info.FindFile("abc", MatchCasing.CaseInsensitive).Should().NotBeNull();
+        tempDir.Info.FindFile("ZZZ", MatchCasing.CaseInsensitive).Should().BeNull();
 
         // 途中のディレクトリに対するCasingは制御できないようなので、影響のないようにしておく。
         tempDir.Info.FindFile("XXX/ABC", MatchCasing.CaseSensitive).Should().BeNull();
@@ -297,6 +298,37 @@ public class DirectoryInfoExtensionsTests
         tempDir.Info.FindFile("ab*", MatchCasing.CaseInsensitive).Should().NotBeNull();
         tempDir.Info.FindFile("*", MatchCasing.CaseInsensitive).Should().BeNull();
         tempDir.Info.FindFile("*", MatchCasing.CaseInsensitive, first: true).Should().NotBeNull();
+
+        FluentActions.Invoking(() => tempDir.Info.FindFile("nothing/ABC", MatchCasing.CaseSensitive)).Should().Throw<Exception>();
+    }
+
+    [TestMethod]
+    public void FindPathFile()
+    {
+        var tempDir = new TempDir();
+        tempDir.Info.RelativeFile("abc").Touch();
+        tempDir.Info.RelativeFile("def").Touch();
+        tempDir.Info.RelativeFile("XXX/abc").Touch();
+        tempDir.Info.RelativeFile("XXX/def").Touch();
+        tempDir.Info.RelativeFile("YYY/abc").Touch();
+        tempDir.Info.RelativeFile("YYY/def").Touch();
+
+        tempDir.Info.FindPathFile(["ABC"], MatchCasing.CaseSensitive).Should().BeNull();
+        tempDir.Info.FindPathFile(["ABC"], MatchCasing.CaseInsensitive).Should().NotBeNull();
+        tempDir.Info.FindPathFile(["abc"], MatchCasing.CaseSensitive).Should().NotBeNull();
+        tempDir.Info.FindPathFile(["abc"], MatchCasing.CaseInsensitive).Should().NotBeNull();
+        tempDir.Info.FindPathFile(["ZZZ"], MatchCasing.CaseInsensitive).Should().BeNull();
+
+        tempDir.Info.FindPathFile(["XXX", "ABC"], MatchCasing.CaseSensitive).Should().BeNull();
+        tempDir.Info.FindPathFile(["XXX", "ABC"], MatchCasing.CaseInsensitive).Should().NotBeNull();
+        tempDir.Info.FindPathFile(["XXX", "abc"], MatchCasing.CaseSensitive).Should().NotBeNull();
+        tempDir.Info.FindPathFile(["XXX", "abc"], MatchCasing.CaseInsensitive).Should().NotBeNull();
+
+        tempDir.Info.FindPathFile(["yyy", "abc"], MatchCasing.CaseSensitive).Should().BeNull();
+        tempDir.Info.FindPathFile(["yyy", "abc"], MatchCasing.CaseInsensitive).Should().NotBeNull();
+
+        tempDir.Info.FindPathFile(["yyy", "abc"], fuzzy: false).Should().BeNull();
+        tempDir.Info.FindPathFile(["yyy", "abc"], fuzzy: true).Should().NotBeNull();
     }
 
     [TestMethod]
@@ -314,6 +346,7 @@ public class DirectoryInfoExtensionsTests
         tempDir.Info.FindDirectory("ABC", MatchCasing.CaseInsensitive).Should().NotBeNull();
         tempDir.Info.FindDirectory("abc", MatchCasing.CaseSensitive).Should().NotBeNull();
         tempDir.Info.FindDirectory("abc", MatchCasing.CaseInsensitive).Should().NotBeNull();
+        tempDir.Info.FindDirectory("ZZZ", MatchCasing.CaseSensitive).Should().BeNull();
 
         // 途中のディレクトリに対するCasingは制御できないようなので、影響のないようにしておく。
         tempDir.Info.FindDirectory("XXX/ABC", MatchCasing.CaseSensitive).Should().BeNull();
@@ -325,6 +358,37 @@ public class DirectoryInfoExtensionsTests
         tempDir.Info.FindDirectory("ab*", MatchCasing.CaseInsensitive).Should().NotBeNull();
         tempDir.Info.FindDirectory("*", MatchCasing.CaseInsensitive).Should().BeNull();
         tempDir.Info.FindDirectory("*", MatchCasing.CaseInsensitive, first: true).Should().NotBeNull();
+
+        FluentActions.Invoking(() => tempDir.Info.FindDirectory("nothing/ABC", MatchCasing.CaseSensitive)).Should().Throw<Exception>();
+    }
+
+    [TestMethod]
+    public void FindPathDirectory()
+    {
+        var tempDir = new TempDir();
+        tempDir.Info.RelativeFile("abc/file").Touch();
+        tempDir.Info.RelativeFile("def/file").Touch();
+        tempDir.Info.RelativeFile("XXX/abc/file").Touch();
+        tempDir.Info.RelativeFile("XXX/def/file").Touch();
+        tempDir.Info.RelativeFile("YYY/abc/file").Touch();
+        tempDir.Info.RelativeFile("YYY/def/file").Touch();
+
+        tempDir.Info.FindPathDirectory(["ABC"], MatchCasing.CaseSensitive).Should().BeNull();
+        tempDir.Info.FindPathDirectory(["ABC"], MatchCasing.CaseInsensitive).Should().NotBeNull();
+        tempDir.Info.FindPathDirectory(["abc"], MatchCasing.CaseSensitive).Should().NotBeNull();
+        tempDir.Info.FindPathDirectory(["abc"], MatchCasing.CaseInsensitive).Should().NotBeNull();
+        tempDir.Info.FindPathDirectory(["ZZZ"], MatchCasing.CaseSensitive).Should().BeNull();
+
+        tempDir.Info.FindPathDirectory(["XXX", "ABC"], MatchCasing.CaseSensitive).Should().BeNull();
+        tempDir.Info.FindPathDirectory(["XXX", "ABC"], MatchCasing.CaseInsensitive).Should().NotBeNull();
+        tempDir.Info.FindPathDirectory(["XXX", "abc"], MatchCasing.CaseSensitive).Should().NotBeNull();
+        tempDir.Info.FindPathDirectory(["XXX", "abc"], MatchCasing.CaseInsensitive).Should().NotBeNull();
+
+        tempDir.Info.FindPathDirectory(["yyy", "abc"], MatchCasing.CaseSensitive).Should().BeNull();
+        tempDir.Info.FindPathDirectory(["yyy", "abc"], MatchCasing.CaseInsensitive).Should().NotBeNull();
+
+        tempDir.Info.FindPathDirectory(["yyy", "abc"], fuzzy: false).Should().BeNull();
+        tempDir.Info.FindPathDirectory(["yyy", "abc"], fuzzy: true).Should().NotBeNull();
     }
     #endregion
 
