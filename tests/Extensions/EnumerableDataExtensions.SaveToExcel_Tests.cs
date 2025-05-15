@@ -807,10 +807,10 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         var sheet = book.Worksheets.First();
         var fileLink = sheet.Cell(row: 2, column: 2).GetHyperlink();
         fileLink.ExternalAddress.Should().Be(new Uri(target.FullName));
-        fileLink.Cell.GetFormattedString().Should().Be(target.FullName);
+        fileLink.Cell?.GetFormattedString().Should().Be(target.FullName);
         var urlLink = sheet.Cell(row: 2, column: 3).GetHyperlink();
         urlLink.ExternalAddress.Should().Be(new Uri(@"https://example.com/"));
-        urlLink.Cell.GetFormattedString().Should().Be(@"https://example.com/");
+        urlLink.Cell?.GetFormattedString().Should().Be(@"https://example.com/");
     }
 
     [TestMethod]
