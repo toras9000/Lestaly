@@ -25,7 +25,7 @@ public class TryTests
         alternater.Verify(m => m(It.IsAny<Exception>()), Times.Never());
 
         FluentActions.Invoking(() => Try.Action(() => throw err, alternater.Object)).Should().NotThrow();
-        alternater.Verify(m => m(It.IsAny<InvalidDataException>()), Times.Once());
+        alternater.Verify(m => m(It.IsAny<InvalidDataException>()), Moq.Times.Once());
 
         FluentActions.Invoking(() => Try.Action(() => throw err, ex => throw err)).Should().NotThrow();
     }
@@ -49,10 +49,10 @@ public class TryTests
         var alternater = new Mock<Func<Exception, Task>>();
 
         await FluentActions.Awaiting(() => Try.ActionAsync(() => Task.CompletedTask, alternater.Object)).Should().NotThrowAsync();
-        alternater.Verify(m => m(It.IsAny<Exception>()), Times.Never());
+        alternater.Verify(m => m(It.IsAny<Exception>()), Moq.Times.Never());
 
         await FluentActions.Awaiting(() => Try.ActionAsync(() => throw err, alternater.Object)).Should().NotThrowAsync();
-        alternater.Verify(m => m(It.IsAny<InvalidDataException>()), Times.Once());
+        alternater.Verify(m => m(It.IsAny<InvalidDataException>()), Moq.Times.Once());
 
         await FluentActions.Awaiting(() => Try.ActionAsync(() => throw err, ex => throw err)).Should().NotThrowAsync();
     }
@@ -176,6 +176,22 @@ public class TryTests
 
         (await FluentActions.Awaiting(() => Try.FuncOrDefaultAsync<string>(() => throw err)).Should().NotThrowAsync())
             .Which.Should().BeNull();
+    }
+
+    [TestMethod()]
+    public void TryTimes()
+    {
+        Try.Times(3, TimeSpan.FromMicroseconds(1), (n) => (n == 2) ? 100 : throw new Exception()).Should().Be(100);
+
+        FluentActions.Invoking(() => Try.Times(3, n => n < 0 ? 0 : throw new Exception())).Should().Throw<Exception>();
+    }
+
+    [TestMethod()]
+    public async Task TimesAsync()
+    {
+        (await Try.TimesAsync(3, TimeSpan.FromMicroseconds(1), (n) => (n == 2) ? ValueTask.FromResult(100) : throw new Exception())).Should().Be(100);
+
+        await FluentActions.Awaiting(async () => await Try.TimesAsync(3, _ => ValueTask.FromException<int>(new Exception()))).Should().ThrowAsync<Exception>();
     }
 
 }
