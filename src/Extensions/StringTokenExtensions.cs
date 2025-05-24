@@ -320,7 +320,7 @@ public static class StringTokenExtensions
         var scan = self;
         while (!scan.IsEmpty)
         {
-            var part = scan.TakeSkipToken(out scan, delimiter);
+            var part = scan.TakeSkipFirstToken(out scan, delimiter);
             if (part.Equals(token, comparison)) return true;
         }
         return false;
@@ -337,236 +337,222 @@ public static class StringTokenExtensions
         var scan = self;
         while (!scan.IsEmpty)
         {
-            var part = scan.TakeSkipTokenAny(out scan, delimiters);
+            var part = scan.TakeSkipFirstTokenAny(out scan, delimiters);
             if (part.Equals(token, comparison)) return true;
         }
         return false;
     }
     #endregion
 
-    #region TakeToken
+    #region TakeFirstToken
     /// <summary>文字列の最初のトークン部分を取得する</summary>
-    /// <remarks>連続する区切り文字は1まとまりとみなす。先頭に区切り文字がある場合はスキップする。空のトークンという概念はない。</remarks>
     /// <param name="self">対象文字列</param>
     /// <param name="delimiter">区切り文字</param>
     /// <returns>トークン文字列</returns>
-    public static ReadOnlySpan<char> TakeToken(this string self, char delimiter = ' ')
-        => self.AsSpan().TakeToken(delimiter);
+    public static ReadOnlySpan<char> TakeFirstToken(this string self, char delimiter = ' ')
+        => self.AsSpan().TakeFirstToken(delimiter);
 
     /// <summary>文字列の最初のトークン部分を取得する</summary>
-    /// <remarks>連続する区切り文字は1まとまりとみなす。先頭に区切り文字がある場合はスキップする。空のトークンという概念はない。</remarks>
     /// <param name="self">対象文字列</param>
     /// <param name="delimiter">区切り文字</param>
     /// <returns>トークン文字列</returns>
-    public static ReadOnlySpan<char> TakeToken(this ReadOnlySpan<char> self, char delimiter = ' ')
+    public static ReadOnlySpan<char> TakeFirstToken(this ReadOnlySpan<char> self, char delimiter = ' ')
     {
-        var token = self.TrimStart(delimiter);
-        var idx = token.IndexOf(delimiter);
-        if (idx <= 0) return token;
-        return token[0..idx];
+        var idx = self.IndexOf(delimiter);
+        if (idx < 0) return self;
+        return self[0..idx];
     }
 
     /// <summary>文字列の最初のトークン部分を取得する</summary>
-    /// <remarks>連続する区切り文字は1まとまりとみなす。先頭に区切り文字がある場合はスキップする。空のトークンという概念はない。</remarks>
     /// <param name="self">対象文字列</param>
     /// <param name="delimiter">区切り文字</param>
     /// <returns>トークン文字列</returns>
-    public static ReadOnlyMemory<char> TakeToken(this ReadOnlyMemory<char> self, char delimiter = ' ')
+    public static ReadOnlyMemory<char> TakeFirstToken(this ReadOnlyMemory<char> self, char delimiter = ' ')
     {
-        var token = self.TrimStart(delimiter);
-        var idx = token.Span.IndexOf(delimiter);
-        if (idx <= 0) return token;
-        return token[0..idx];
+        var idx = self.Span.IndexOf(delimiter);
+        if (idx < 0) return self;
+        return self[0..idx];
     }
     #endregion
 
     #region TakeTokenAny
     /// <summary>文字列の最初のトークン部分を取得する</summary>
-    /// <remarks>連続する区切り文字は1まとまりとみなす。先頭に区切り文字がある場合はスキップする。空のトークンという概念はない。</remarks>
     /// <param name="self">対象文字列</param>
     /// <param name="delimiters">区切り文字のセット</param>
     /// <returns>トークン文字列</returns>
-    public static ReadOnlySpan<char> TakeTokenAny(this string self, ReadOnlySpan<char> delimiters)
-        => self.AsSpan().TakeTokenAny(delimiters);
+    public static ReadOnlySpan<char> TakeFirstTokenAny(this string self, ReadOnlySpan<char> delimiters)
+        => self.AsSpan().TakeFirstTokenAny(delimiters);
 
     /// <summary>文字列の最初のトークン部分を取得する</summary>
-    /// <remarks>連続する区切り文字は1まとまりとみなす。先頭に区切り文字がある場合はスキップする。空のトークンという概念はない。</remarks>
     /// <param name="self">対象文字列</param>
     /// <param name="delimiters">区切り文字のセット</param>
     /// <returns>トークン文字列</returns>
-    public static ReadOnlySpan<char> TakeTokenAny(this ReadOnlySpan<char> self, ReadOnlySpan<char> delimiters)
+    public static ReadOnlySpan<char> TakeFirstTokenAny(this ReadOnlySpan<char> self, ReadOnlySpan<char> delimiters)
     {
-        var token = self.TrimStart(delimiters);
-        var idx = token.IndexOfAny(delimiters);
-        if (idx <= 0) return token;
-        return token[0..idx];
+        var idx = self.IndexOfAny(delimiters);
+        if (idx < 0) return self;
+        return self[0..idx];
     }
 
     /// <summary>文字列の最初のトークン部分を取得する</summary>
-    /// <remarks>連続する区切り文字は1まとまりとみなす。先頭に区切り文字がある場合はスキップする。空のトークンという概念はない。</remarks>
     /// <param name="self">対象文字列</param>
     /// <param name="delimiters">区切り文字のセット</param>
     /// <returns>トークン文字列</returns>
-    public static ReadOnlyMemory<char> TakeTokenAny(this ReadOnlyMemory<char> self, ReadOnlySpan<char> delimiters)
+    public static ReadOnlyMemory<char> TakeFirstTokenAny(this ReadOnlyMemory<char> self, ReadOnlySpan<char> delimiters)
     {
-        var token = self.TrimStart(delimiters);
-        var idx = token.Span.IndexOfAny(delimiters);
-        if (idx <= 0) return token;
-        return token[0..idx];
+        var idx = self.Span.IndexOfAny(delimiters);
+        if (idx < 0) return self;
+        return self[0..idx];
     }
     #endregion
 
-    #region SkipToken
+    #region SkipFirstToken
     /// <summary>文字列の最初のトークン部分をスキップした部分を取得する</summary>
-    /// <remarks>連続する区切り文字は1まとまりとみなす。先頭に区切り文字がある場合はスキップする。空のトークンという概念はない。</remarks>
     /// <param name="self">対象文字列</param>
     /// <param name="delimiter">区切り文字。</param>
     /// <returns>トークンをスキップした文字列</returns>
-    public static ReadOnlySpan<char> SkipToken(this string self, char delimiter = ' ')
-        => self.AsSpan().SkipToken(delimiter);
+    public static ReadOnlySpan<char> SkipFirstToken(this string self, char delimiter = ' ')
+        => self.AsSpan().SkipFirstToken(delimiter);
 
     /// <summary>文字列の最初のトークン部分をスキップした部分を取得する</summary>
-    /// <remarks>連続する区切り文字は1まとまりとみなす。先頭に区切り文字がある場合はスキップする。空のトークンという概念はない。</remarks>
     /// <param name="self">対象文字列</param>
     /// <param name="delimiter">区切り文字。</param>
     /// <returns>トークンをスキップした文字列</returns>
-    public static ReadOnlySpan<char> SkipToken(this ReadOnlySpan<char> self, char delimiter = ' ')
+    public static ReadOnlySpan<char> SkipFirstToken(this ReadOnlySpan<char> self, char delimiter = ' ')
     {
-        var token = self.TrimStart(delimiter);
-        var idx = token.IndexOf(delimiter);
-        if (idx <= 0) return ReadOnlySpan<char>.Empty;
-        return token[idx..].TrimStart(delimiter);
+        var idx = self.IndexOf(delimiter);
+        if (idx < 0) return ReadOnlySpan<char>.Empty;
+        return self[(idx + 1)..];
     }
 
     /// <summary>文字列の最初のトークン部分をスキップした部分を取得する</summary>
-    /// <remarks>連続する区切り文字は1まとまりとみなす。先頭に区切り文字がある場合はスキップする。空のトークンという概念はない。</remarks>
     /// <param name="self">対象文字列</param>
     /// <param name="delimiter">区切り文字。</param>
     /// <returns>トークンをスキップした文字列</returns>
-    public static ReadOnlyMemory<char> SkipToken(this ReadOnlyMemory<char> self, char delimiter = ' ')
+    public static ReadOnlyMemory<char> SkipFirstToken(this ReadOnlyMemory<char> self, char delimiter = ' ')
     {
-        var token = self.TrimStart(delimiter);
-        var idx = token.Span.IndexOf(delimiter);
-        if (idx <= 0) return ReadOnlyMemory<char>.Empty;
-        return token[idx..].TrimStart(delimiter);
+        var idx = self.Span.IndexOf(delimiter);
+        if (idx < 0) return ReadOnlyMemory<char>.Empty;
+        return self[(idx + 1)..];
     }
     #endregion
 
-    #region SkipTokenAny
+    #region SkipFirstTokenAny
     /// <summary>文字列の最初のトークン部分をスキップした部分を取得する</summary>
-    /// <remarks>連続する区切り文字は1まとまりとみなす。先頭に区切り文字がある場合はスキップする。空のトークンという概念はない。</remarks>
     /// <param name="self">対象文字列</param>
     /// <param name="delimiters">区切り文字のセット</param>
     /// <returns>トークンをスキップした文字列</returns>
-    public static ReadOnlySpan<char> SkipTokenAny(this string self, ReadOnlySpan<char> delimiters)
-        => self.AsSpan().SkipTokenAny(delimiters);
+    public static ReadOnlySpan<char> SkipFirstTokenAny(this string self, ReadOnlySpan<char> delimiters)
+        => self.AsSpan().SkipFirstTokenAny(delimiters);
 
     /// <summary>文字列の最初のトークン部分をスキップした部分を取得する</summary>
-    /// <remarks>連続する区切り文字は1まとまりとみなす。先頭に区切り文字がある場合はスキップする。空のトークンという概念はない。</remarks>
     /// <param name="self">対象文字列</param>
     /// <param name="delimiters">区切り文字のセット</param>
     /// <returns>トークンをスキップした文字列</returns>
-    public static ReadOnlySpan<char> SkipTokenAny(this ReadOnlySpan<char> self, ReadOnlySpan<char> delimiters)
+    public static ReadOnlySpan<char> SkipFirstTokenAny(this ReadOnlySpan<char> self, ReadOnlySpan<char> delimiters)
     {
-        var token = self.TrimStart(delimiters);
-        var idx = token.IndexOfAny(delimiters);
-        if (idx <= 0) return ReadOnlySpan<char>.Empty;
-        return token[idx..].TrimStart(delimiters);
+        var idx = self.IndexOfAny(delimiters);
+        if (idx < 0) return ReadOnlySpan<char>.Empty;
+        return self[(idx + 1)..];
     }
 
     /// <summary>文字列の最初のトークン部分をスキップした部分を取得する</summary>
-    /// <remarks>連続する区切り文字は1まとまりとみなす。先頭に区切り文字がある場合はスキップする。空のトークンという概念はない。</remarks>
     /// <param name="self">対象文字列</param>
     /// <param name="delimiters">区切り文字のセット</param>
     /// <returns>トークンをスキップした文字列</returns>
-    public static ReadOnlyMemory<char> SkipTokenAny(this ReadOnlyMemory<char> self, ReadOnlySpan<char> delimiters)
+    public static ReadOnlyMemory<char> SkipFirstTokenAny(this ReadOnlyMemory<char> self, ReadOnlySpan<char> delimiters)
     {
-        var token = self.TrimStart(delimiters);
-        var idx = token.Span.IndexOfAny(delimiters);
-        if (idx <= 0) return ReadOnlyMemory<char>.Empty;
-        return token[idx..].TrimStart(delimiters);
+        var idx = self.Span.IndexOfAny(delimiters);
+        if (idx < 0) return ReadOnlyMemory<char>.Empty;
+        return self[(idx + 1)..];
     }
     #endregion
 
-    #region TakeSkipToken
+    #region TakeSkipFirstToken
     /// <summary>文字列の最初のトークン部分を取得する</summary>
-    /// <remarks>連続する区切り文字は1まとまりとみなす。先頭に区切り文字がある場合はスキップする。空のトークンという概念はない。</remarks>
     /// <param name="self">対象文字列</param>
     /// <param name="next">トークンの次の部分</param>
     /// <param name="delimiter">区切り文字</param>
     /// <returns>トークン文字列</returns>
-    public static ReadOnlySpan<char> TakeSkipToken(this string self, out ReadOnlySpan<char> next, char delimiter = ' ')
-        => self.AsSpan().TakeSkipToken(out next, delimiter);
+    public static ReadOnlySpan<char> TakeSkipFirstToken(this string self, out ReadOnlySpan<char> next, char delimiter = ' ')
+        => self.AsSpan().TakeSkipFirstToken(out next, delimiter);
 
     /// <summary>文字列の最初のトークン部分を取得する</summary>
-    /// <remarks>連続する区切り文字は1まとまりとみなす。先頭に区切り文字がある場合はスキップする。空のトークンという概念はない。</remarks>
     /// <param name="self">対象文字列</param>
     /// <param name="next">トークンの次の部分</param>
     /// <param name="delimiter">区切り文字</param>
     /// <returns>トークン文字列</returns>
-    public static ReadOnlySpan<char> TakeSkipToken(this ReadOnlySpan<char> self, out ReadOnlySpan<char> next, char delimiter = ' ')
+    public static ReadOnlySpan<char> TakeSkipFirstToken(this ReadOnlySpan<char> self, out ReadOnlySpan<char> next, char delimiter = ' ')
     {
-        var origin = self.TrimStart(delimiter);
-        var idx = origin.IndexOf(delimiter);
-        var token = (idx <= 0) ? origin : origin[0..idx];
-        next = origin[token.Length..].TrimStart(delimiter);
-        return token;
+        var idx = self.IndexOf(delimiter);
+        if (idx < 0)
+        {
+            next = self[self.Length..];
+            return self;
+        }
+        next = self[(idx + 1)..];
+        return self[..idx];
     }
 
     /// <summary>文字列の最初のトークン部分を取得する</summary>
-    /// <remarks>連続する区切り文字は1まとまりとみなす。先頭に区切り文字がある場合はスキップする。空のトークンという概念はない。</remarks>
     /// <param name="self">対象文字列</param>
     /// <param name="next">トークンの次の部分</param>
     /// <param name="delimiter">区切り文字</param>
     /// <returns>トークン文字列</returns>
-    public static ReadOnlyMemory<char> TakeSkipToken(this ReadOnlyMemory<char> self, out ReadOnlyMemory<char> next, char delimiter = ' ')
+    public static ReadOnlyMemory<char> TakeSkipFirstToken(this ReadOnlyMemory<char> self, out ReadOnlyMemory<char> next, char delimiter = ' ')
     {
-        var origin = self.TrimStart(delimiter);
-        var idx = origin.Span.IndexOf(delimiter);
-        var token = (idx <= 0) ? origin : origin[0..idx];
-        next = origin[token.Length..].TrimStart(delimiter);
-        return token;
+        var idx = self.Span.IndexOf(delimiter);
+        if (idx < 0)
+        {
+            next = self[self.Length..];
+            return self;
+        }
+        next = self[(idx + 1)..];
+        return self[..idx];
     }
     #endregion
 
-    #region TakeSkipTokenAny
+    #region TakeSkipFirstTokenAny
     /// <summary>文字列の最初のトークン部分を取得する</summary>
-    /// <remarks>連続する区切り文字は1まとまりとみなす。先頭に区切り文字がある場合はスキップする。空のトークンという概念はない。</remarks>
     /// <param name="self">対象文字列</param>
     /// <param name="next">トークンの次の部分</param>
     /// <param name="delimiters">区切り文字のセット</param>
     /// <returns>トークン文字列</returns>
-    public static ReadOnlySpan<char> TakeSkipTokenAny(this string self, out ReadOnlySpan<char> next, ReadOnlySpan<char> delimiters)
-        => self.AsSpan().TakeSkipTokenAny(out next, delimiters);
+    public static ReadOnlySpan<char> TakeSkipFirstTokenAny(this string self, out ReadOnlySpan<char> next, ReadOnlySpan<char> delimiters)
+        => self.AsSpan().TakeSkipFirstTokenAny(out next, delimiters);
 
     /// <summary>文字列の最初のトークン部分を取得する</summary>
-    /// <remarks>連続する区切り文字は1まとまりとみなす。先頭に区切り文字がある場合はスキップする。空のトークンという概念はない。</remarks>
     /// <param name="self">対象文字列</param>
     /// <param name="next">トークンの次の部分</param>
     /// <param name="delimiters">区切り文字のセット</param>
     /// <returns>トークン文字列</returns>
-    public static ReadOnlySpan<char> TakeSkipTokenAny(this ReadOnlySpan<char> self, out ReadOnlySpan<char> next, ReadOnlySpan<char> delimiters)
+    public static ReadOnlySpan<char> TakeSkipFirstTokenAny(this ReadOnlySpan<char> self, out ReadOnlySpan<char> next, ReadOnlySpan<char> delimiters)
     {
-        var origin = self.TrimStart(delimiters);
-        var idx = origin.IndexOfAny(delimiters);
-        var token = (idx <= 0) ? origin : origin[0..idx];
-        next = origin[token.Length..].TrimStart(delimiters);
-        return token;
+        var idx = self.IndexOfAny(delimiters);
+        if (idx < 0)
+        {
+            next = self[self.Length..];
+            return self;
+        }
+        next = self[(idx + 1)..];
+        return self[..idx];
     }
 
     /// <summary>文字列の最初のトークン部分を取得する</summary>
-    /// <remarks>連続する区切り文字は1まとまりとみなす。先頭に区切り文字がある場合はスキップする。空のトークンという概念はない。</remarks>
     /// <param name="self">対象文字列</param>
     /// <param name="next">トークンの次の部分</param>
     /// <param name="delimiters">区切り文字のセット</param>
     /// <returns>トークン文字列</returns>
-    public static ReadOnlyMemory<char> TakeSkipTokenAny(this ReadOnlyMemory<char> self, out ReadOnlyMemory<char> next, ReadOnlySpan<char> delimiters)
+    public static ReadOnlyMemory<char> TakeSkipFirstTokenAny(this ReadOnlyMemory<char> self, out ReadOnlyMemory<char> next, ReadOnlySpan<char> delimiters)
     {
-        var origin = self.TrimStart(delimiters);
-        var idx = origin.Span.IndexOfAny(delimiters);
-        var token = (idx <= 0) ? origin : origin[0..idx];
-        next = origin[token.Length..].TrimStart(delimiters);
-        return token;
+        var idx = self.Span.IndexOfAny(delimiters);
+        if (idx < 0)
+        {
+            next = self[self.Length..];
+            return self;
+        }
+        next = self[(idx + 1)..];
+        return self[..idx];
     }
     #endregion
 
