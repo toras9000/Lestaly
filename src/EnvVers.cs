@@ -59,7 +59,7 @@ public static class EnvVers
     /// <param name="alt">代替相対パス</param>
     /// <returns>環境変数のファイル情報または代替値</returns>
     [return: NotNullIfNotNull(nameof(alt))]
-    public static FileInfo? CurrentnRelativeFile(string name, string? alt = default)
+    public static FileInfo? CurrentRelativeFile(string name, string? alt = default)
         => CurrentDir.RelativeFileAt(Environment.GetEnvironmentVariable(name).WhenWhite(alt));
 
     /// <summary>環境変数をカレントディレクトリからの相対パスとしてディレクトリ情報を取得する</summary>
@@ -67,7 +67,23 @@ public static class EnvVers
     /// <param name="alt">代替相対パス</param>
     /// <returns>環境変数のファイル情報または代替値</returns>
     [return: NotNullIfNotNull(nameof(alt))]
-    public static DirectoryInfo? CurrentnRelativeDirectory(string name, string? alt = default)
+    public static DirectoryInfo? CurrentRelativeDirectory(string name, string? alt = default)
+        => CurrentDir.RelativeDirectoryAt(Environment.GetEnvironmentVariable(name).WhenWhite(alt));
+
+    /// <summary>環境変数をアプリケーションベースディレクトリからの相対パスとしてファイル情報を取得する</summary>
+    /// <param name="name">環境変数名</param>
+    /// <param name="alt">代替相対パス</param>
+    /// <returns>環境変数のファイル情報または代替値</returns>
+    [return: NotNullIfNotNull(nameof(alt))]
+    public static FileInfo? AppRelativeFile(string name, string? alt = default)
+        => AppBaseDir.RelativeFileAt(Environment.GetEnvironmentVariable(name).WhenWhite(alt));
+
+    /// <summary>環境変数をアプリケーションベースディレクトリからの相対パスとしてディレクトリ情報を取得する</summary>
+    /// <param name="name">環境変数名</param>
+    /// <param name="alt">代替相対パス</param>
+    /// <returns>環境変数のファイル情報または代替値</returns>
+    [return: NotNullIfNotNull(nameof(alt))]
+    public static DirectoryInfo? AppRelativeDirectory(string name, string? alt = default)
         => CurrentDir.RelativeDirectoryAt(Environment.GetEnvironmentVariable(name).WhenWhite(alt));
 
 }
