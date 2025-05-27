@@ -1161,7 +1161,7 @@ public class FileExtensionsTests
             .Should().BeTrue();
 
         new FileInfo(@"c:/abc/def/zxc/asd/qwe.txt")
-            .IsDescendantOf(new DirectoryInfo(@"c:"))
+            .IsDescendantOf(new DirectoryInfo(@"c:\"))
             .Should().BeTrue();
 
         new FileInfo(@"c:/abc/def/zxc/asd/qwe.txt")

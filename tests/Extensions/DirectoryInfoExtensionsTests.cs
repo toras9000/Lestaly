@@ -422,7 +422,7 @@ public class DirectoryInfoExtensionsTests
             .Should().BeTrue();
 
         new DirectoryInfo(@"c:/abc/def/zxc/asd")
-            .IsDescendantOf(new DirectoryInfo(@"c:"), false)
+            .IsDescendantOf(new DirectoryInfo(@"c:\"), false)
             .Should().BeTrue();
 
         new DirectoryInfo(@"c:/abc/def/zxc/asd")
@@ -453,7 +453,7 @@ public class DirectoryInfoExtensionsTests
             .IsAncestorOf(new DirectoryInfo(@"c:/abc/def/zxc/asd"), false)
             .Should().BeTrue();
 
-        new DirectoryInfo(@"c:")
+        new DirectoryInfo(@"c:\")
             .IsAncestorOf(new DirectoryInfo(@"c:/abc/def/zxc/asd"), false)
             .Should().BeTrue();
 
