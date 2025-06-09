@@ -1001,9 +1001,16 @@ public static class StringExtensions
 
     /// <summary>文字列がnullや空白文字であればキャンセル例外を送出する。</summary>
     /// <param name="self">対象文字列</param>
+    /// <param name="trim">前後空白をトリムするか否か</param>
+    /// <param name="unquote">クォート解除を試みるか否か</param>
     /// <returns>対象文字列</returns>
-    public static string CancelIfWhite(this string? self)
-        => self.ThrowIfWhite(() => new OperationCanceledException());
+    public static string CancelIfWhite(this string? self, bool trim = false, bool unquote = false)
+    {
+        var target = self;
+        if (unquote) target = target?.Unquote();
+        if (trim) target = target?.Trim();
+        return target.ThrowIfWhite(() => new OperationCanceledException());
+    }
 
     /// <summary>文字列がnullや空白文字であればキャンセル例外を送出する。</summary>
     /// <param name="self">対象文字列</param>
