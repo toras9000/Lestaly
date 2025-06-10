@@ -58,7 +58,7 @@ public static class LdapExtensions
         var searchReq = new SearchRequest();
         searchReq.DistinguishedName = baseDn;
         searchReq.Scope = scope;
-        if (searchReq.Filter != null) searchReq.Filter = filter;
+        if (filter != null) searchReq.Filter = filter;
 
         return self.SearchAsync(searchReq, PartialResultProcessing.NoPartialResultSupport, cancelToken);
     }

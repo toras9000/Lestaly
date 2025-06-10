@@ -83,6 +83,37 @@ public class LdapExtensionsTests
     }
 
     [TestMethod()]
+    public async Task SearchAsync_filter()
+    {
+        if (TestServer == null) Assert.Inconclusive();
+
+        using var ldap = new LdapConnection(TestServer);
+        ldap.SessionOptions.ProtocolVersion = 3;
+        ldap.AuthType = AuthType.Basic;
+        ldap.Credential = ModifierCredential;
+        ldap.Bind();
+
+        var time = DateTime.Now.Ticks.ToString();
+        var uids = new[]
+        {
+            $"@aaa-{time}-{Guid.NewGuid()}",
+            $"@bbb-{time}-{Guid.NewGuid()}",
+            $"@ccc-{time}-{Guid.NewGuid()}",
+            $"@ddd-{time}-{Guid.NewGuid()}",
+        };
+        foreach (var uid in uids)
+        {
+            await ldap.CreateEntryAsync($"uid={uid},{TestUsersUnitDn}", [new("objectClass", "account"), new("uid", uid)]);
+        }
+
+        var searchRsp = await ldap.SearchAsync(TestUsersUnitDn, SearchScope.OneLevel, filter: $"(|(uid=@bbb-{time}-*)(uid=@ccc-{time}-*))");
+        var entries = searchRsp.Entries.Cast<SearchResultEntry>().ToArray();
+        entries.Should().HaveCount(2);
+        entries.Should().Contain(e => e.DistinguishedName.Contains("@bbb-"));
+        entries.Should().Contain(e => e.DistinguishedName.Contains("@ccc-"));
+    }
+
+    [TestMethod()]
     public async Task GetEntryAsync()
     {
         if (TestServer == null) Assert.Inconclusive();
