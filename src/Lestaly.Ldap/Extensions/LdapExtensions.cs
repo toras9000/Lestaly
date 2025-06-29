@@ -41,8 +41,8 @@ public static class LdapExtensions
     public static async Task<SearchResponse> SearchAsync(this LdapConnection self, SearchRequest request, PartialResultProcessing partialMode = PartialResultProcessing.NoPartialResultSupport, CancellationToken cancelToken = default)
     {
         var response = await self.SendRequestAsync(request, partialMode, cancelToken);
-        if (response.ResultCode != 0) throw new PavedMessageException($"failed to search: {response.ErrorMessage}");
-        var searchResult = response as SearchResponse ?? throw new PavedMessageException("unexpected result");
+        if (response.ResultCode != 0) throw new LdapExtensionException($"failed to search: {response.ErrorMessage}");
+        var searchResult = response as SearchResponse ?? throw new LdapExtensionException("unexpected result");
         return searchResult;
     }
 
@@ -77,8 +77,8 @@ public static class LdapExtensions
 
         // Request a search.
         var searchRsp = await self.SendRequestAsync(searchReq, cancelToken: cancelToken);
-        if (searchRsp.ResultCode != 0) throw new PavedMessageException($"failed to search: {searchRsp.ErrorMessage}");
-        var searchResult = searchRsp as SearchResponse ?? throw new PavedMessageException("unexpected result");
+        if (searchRsp.ResultCode != 0) throw new LdapExtensionException($"failed to search: {searchRsp.ErrorMessage}");
+        var searchResult = searchRsp as SearchResponse ?? throw new LdapExtensionException("unexpected result");
 
         return searchResult.Entries[0];
     }
@@ -123,7 +123,7 @@ public static class LdapExtensions
         }
 
         var createEntryRsp = await self.SendRequestAsync(createEntryReq, cancelToken: cancelToken);
-        if (createEntryRsp.ResultCode != 0) throw new PavedMessageException($"failed to search: {createEntryRsp.ErrorMessage}");
+        if (createEntryRsp.ResultCode != 0) throw new LdapExtensionException($"failed to search: {createEntryRsp.ErrorMessage}");
 
         return createEntryRsp;
     }
@@ -147,7 +147,7 @@ public static class LdapExtensions
         addAttrReq.Modifications.Add(attrModify);
 
         var addAttrRsp = await self.SendRequestAsync(addAttrReq, cancelToken: cancelToken);
-        if (addAttrRsp.ResultCode != 0) throw new PavedMessageException($"failed to search: {addAttrRsp.ErrorMessage}");
+        if (addAttrRsp.ResultCode != 0) throw new LdapExtensionException($"failed to search: {addAttrRsp.ErrorMessage}");
 
         return addAttrRsp;
     }
@@ -171,7 +171,7 @@ public static class LdapExtensions
         addAttrReq.Modifications.Add(attrModify);
 
         var addAttrRsp = await self.SendRequestAsync(addAttrReq, cancelToken: cancelToken);
-        if (addAttrRsp.ResultCode != 0) throw new PavedMessageException($"failed to search: {addAttrRsp.ErrorMessage}");
+        if (addAttrRsp.ResultCode != 0) throw new LdapExtensionException($"failed to search: {addAttrRsp.ErrorMessage}");
 
         return addAttrRsp;
     }
@@ -195,7 +195,7 @@ public static class LdapExtensions
         addAttrReq.Modifications.Add(attrModify);
 
         var addAttrRsp = await self.SendRequestAsync(addAttrReq, cancelToken: cancelToken);
-        if (addAttrRsp.ResultCode != 0) throw new PavedMessageException($"failed to search: {addAttrRsp.ErrorMessage}");
+        if (addAttrRsp.ResultCode != 0) throw new LdapExtensionException($"failed to search: {addAttrRsp.ErrorMessage}");
 
         return addAttrRsp;
     }

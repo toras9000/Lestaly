@@ -4,10 +4,15 @@
     <TargetFrameworks>net8.0;net9.0;</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <RootNamespace>Lestaly</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="System.Threading.Tasks.Dataflow" Version="9.0.6" />
+  </ItemGroup>
+
   <PropertyGroup>
-    <PackageId>Lestaly</PackageId>
+    <PackageId>Lestaly.Dataflow</PackageId>
     <PackageDescription>Ad hoc code that can be useful in certain situations.</PackageDescription>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
@@ -15,7 +20,7 @@
   <PropertyGroup>
     <Authors>toras9000</Authors>
     <Company />
-    <Version>0.84.0</Version>
+    <Version>0.100.0</Version>
   </PropertyGroup>
   <PropertyGroup>
     <PackageProjectUrl>https://github.com/toras9000/Lestaly</PackageProjectUrl>
@@ -35,16 +40,10 @@
     <DeterministicSourcePaths>true</DeterministicSourcePaths>
   </PropertyGroup>
   <PropertyGroup>
-    <PackageOutputPath>$(MSBuildThisFileDirectory)/../packages/$(Configuration)</PackageOutputPath>
+    <PackageOutputPath>$(MSBuildThisFileDirectory)/../../packages/$(Configuration)</PackageOutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="../readme.md" Pack="true" PackagePath="\" Visible="false" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="ClosedXML" Version="0.105.0" />
-    <PackageReference Include="CometFlavor.Unicode" Version="0.7.0" />
-    <PackageReference Include="System.DirectoryServices.Protocols" Version="9.0.5" />
-    <PackageReference Include="System.Threading.Tasks.Dataflow" Version="9.0.5" />
+    <None Include="../../readme.md" Pack="true" PackagePath="\" Visible="false" />
   </ItemGroup>
 
 </Project>

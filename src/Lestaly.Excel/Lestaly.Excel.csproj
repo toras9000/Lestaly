@@ -1,0 +1,52 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net9.0;</TargetFrameworks>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Lestaly</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ClosedXML" Version="0.105.0" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <PackageId>Lestaly.Excel</PackageId>
+    <PackageDescription>Ad hoc code that can be useful in certain situations.</PackageDescription>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <Authors>toras9000</Authors>
+    <Company />
+    <Version>0.100.0</Version>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PackageProjectUrl>https://github.com/toras9000/Lestaly</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/toras9000/Lestaly</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <EmbedAllSources>true</EmbedAllSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>portable</DebugType>
+  </PropertyGroup>
+  <PropertyGroup>
+    <DeterministicSourcePaths>true</DeterministicSourcePaths>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PackageOutputPath>$(MSBuildThisFileDirectory)/../../packages/$(Configuration)</PackageOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="../../readme.md" Pack="true" PackagePath="\" Visible="false" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Lestaly.General\Lestaly.General.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -367,6 +367,19 @@ public static partial class EnumerableDataExtensions
         };
     }
 
+    /// <summary>型カラム情報</summary>
+    /// <typeparam name="TSource">対象の型</typeparam>
+    /// <param name="Member">メンバ情報</param>
+    /// <param name="MemberType">メンバの取得値型</param>
+    /// <param name="Getter">メンバからの値取得デリゲート</param>
+    /// <param name="Span">メンバが利用するカラム数</param>
+    /// <param name="Captions">カラムキャプション</param>
+    /// <param name="Order">カラムの順序</param>
+    private record TypeColumn<TSource>(MemberInfo Member, Type MemberType, Func<TSource, object?> Getter, int Span, string[] Captions, int Order)
+    {
+        /// <summary>代表キャプション</summary>
+        public string Caption => this.Captions?.FirstOrDefault() ?? this.Member.Name;
+    }
     /// <summary>型のメンバをカラムとして取り扱うための情報を収集する</summary>
     /// <typeparam name="TSource">対象の型</typeparam>
     /// <param name="options">型のカラム収集設定</param>
@@ -483,17 +496,4 @@ public static partial class EnumerableDataExtensions
         return columns;
     }
 
-    /// <summary>型カラム情報</summary>
-    /// <typeparam name="TSource">対象の型</typeparam>
-    /// <param name="Member">メンバ情報</param>
-    /// <param name="MemberType">メンバの取得値型</param>
-    /// <param name="Getter">メンバからの値取得デリゲート</param>
-    /// <param name="Span">メンバが利用するカラム数</param>
-    /// <param name="Captions">カラムキャプション</param>
-    /// <param name="Order">カラムの順序</param>
-    private record TypeColumn<TSource>(MemberInfo Member, Type MemberType, Func<TSource, object?> Getter, int Span, string[] Captions, int Order)
-    {
-        /// <summary>代表キャプション</summary>
-        public string Caption => this.Captions?.FirstOrDefault() ?? this.Member.Name;
-    }
 }

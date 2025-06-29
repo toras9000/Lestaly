@@ -1,0 +1,55 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net9.0;</TargetFrameworks>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Lestaly</RootNamespace>
+
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <NoBuild>true</NoBuild>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>Lestaly</PackageId>
+    <PackageDescription>Ad hoc code that can be useful in certain situations.</PackageDescription>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <Authors>toras9000</Authors>
+    <Company />
+    <Version>0.100.0</Version>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PackageProjectUrl>https://github.com/toras9000/Lestaly</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/toras9000/Lestaly</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <EmbedAllSources>false</EmbedAllSources>
+    <IncludeSymbols>false</IncludeSymbols>
+    <SymbolPackageFormat></SymbolPackageFormat>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+  <PropertyGroup>
+    <DeterministicSourcePaths>true</DeterministicSourcePaths>
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PackageOutputPath>$(MSBuildThisFileDirectory)/../../packages/$(Configuration)</PackageOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="../../readme.md" Pack="true" PackagePath="\" Visible="false" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Lestaly.Dataflow\Lestaly.Dataflow.csproj" />
+    <ProjectReference Include="..\Lestaly.Excel\Lestaly.Excel.csproj" />
+    <ProjectReference Include="..\Lestaly.General\Lestaly.General.csproj" />
+    <ProjectReference Include="..\Lestaly.Ldap\Lestaly.Ldap.csproj" />
+  </ItemGroup>
+
+</Project>
