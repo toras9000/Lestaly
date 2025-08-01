@@ -678,6 +678,27 @@ public class FileExtensionsTests
     }
 
     [TestMethod]
+    public void WriteAllBytes_stream()
+    {
+        // テスト用に一時ディレクトリ
+        using var tempDir = new TempDir();
+
+        // テストデータ
+        var data = Enumerable.Range(30, 256).Select(n => (byte)n).ToArray();
+        using var stream = new MemoryStream(data);
+
+        // テストファイル
+        var target = tempDir.Info.RelativeFile("test.txt");
+
+        // テスト対象実行
+        stream.Position = 10;
+        target.WriteAllBytes(stream, options: new() { Mode = FileMode.Create, BufferSize = 1, });
+
+        // 検証
+        File.ReadAllBytes(target.FullName).Should().Equal(data[10..]);
+    }
+
+    [TestMethod]
     public void WriteAllText()
     {
         // テスト用に一時ディレクトリ
@@ -841,6 +862,27 @@ public class FileExtensionsTests
 
         // 検証
         File.ReadAllBytes(target.FullName).Should().Equal(data);
+    }
+
+    [TestMethod]
+    public async Task WriteAllBytesAsync_stream()
+    {
+        // テスト用に一時ディレクトリ
+        using var tempDir = new TempDir();
+
+        // テストデータ
+        var data = Enumerable.Range(30, 256).Select(n => (byte)n).ToArray();
+        using var stream = new MemoryStream(data);
+
+        // テストファイル
+        var target = tempDir.Info.RelativeFile("test.txt");
+
+        // テスト対象実行
+        stream.Position = 10;
+        await target.WriteAllBytesAsync(stream, options: new() { Mode = FileMode.Create, BufferSize = 1, });
+
+        // 検証
+        File.ReadAllBytes(target.FullName).Should().Equal(data[10..]);
     }
 
     [TestMethod]

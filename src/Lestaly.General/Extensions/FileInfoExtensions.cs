@@ -259,6 +259,18 @@ public static class FileInfoExtensions
         self.Refresh();
     }
 
+    /// <summary>ファイル内容に指定のストリーム内容を書き込む。</summary>
+    /// <param name="self">対象ファイルのFileInfo</param>
+    /// <param name="stream">書き込みデータを読み出すストリーム</param>
+    /// <param name="options">ファイルストリームを開くオプション。Access プロパティは無視する。</param>
+    public static void WriteAllBytes(this FileInfo self, Stream stream, FileStreamOptions? options = null)
+    {
+        ArgumentNullException.ThrowIfNull(self);
+        using var fileStream = self.CreateWrite(options);
+        stream.CopyTo(fileStream);
+        self.Refresh();
+    }
+
     /// <summary>ファイル内容が指定のテキストとなるように書き込む。</summary>
     /// <param name="self">対象ファイルのFileInfo</param>
     /// <param name="contents">書き込むテキスト</param>
@@ -372,6 +384,19 @@ public static class FileInfoExtensions
         ArgumentNullException.ThrowIfNull(self);
         using var stream = self.CreateWrite(options);
         await stream.WriteAsync(bytes, cancelToken).ConfigureAwait(false);
+        self.Refresh();
+    }
+
+    /// <summary>ファイル内容が指定のバイト列となるように書き込む。</summary>
+    /// <param name="self">対象ファイルのFileInfo</param>
+    /// <param name="stream">書き込みデータを読み出すストリーム</param>
+    /// <param name="options">ファイルストリームを開くオプション。Access プロパティは無視する。</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    public static async ValueTask WriteAllBytesAsync(this FileInfo self, Stream stream, FileStreamOptions? options = null, CancellationToken cancelToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(self);
+        using var fileStream = self.CreateWrite(options);
+        await stream.CopyToAsync(fileStream, cancelToken).ConfigureAwait(false);
         self.Refresh();
     }
 
