@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using System.IO;
 using System.IO.Pipelines;
 
 namespace LestalyTest.Extensions;
@@ -168,4 +169,68 @@ public class StreamExtensionsTests
         var lines = file.ReadAllLines();
         lines.Should().Equal(["abc", "def", "ghi"]);
     }
+
+    [TestMethod]
+    public async Task WriteToFileAsync()
+    {
+        // テスト用に一時ディレクトリ
+        using var tempDir = new TempDir();
+
+        // テストデータ
+        var data = Enumerable.Range(30, 256).Select(n => (byte)n).ToArray();
+        using var stream = new MemoryStream(data);
+
+        // テストファイル
+        var target = tempDir.Info.RelativeFile("test.txt");
+
+        // テスト対象実行
+        stream.Position = 10;
+        await stream.WriteToFileAsync(target);
+
+        // 検証
+        File.ReadAllBytes(target.FullName).Should().Equal(data[10..]);
+    }
+
+    [TestMethod]
+    public async Task WriteToFileAsync_task()
+    {
+        // テスト用に一時ディレクトリ
+        using var tempDir = new TempDir();
+
+        // テストデータ
+        var data = Enumerable.Range(30, 256).Select(n => (byte)n).ToArray();
+        using var stream = new MemoryStream(data);
+
+        // テストファイル
+        var target = tempDir.Info.RelativeFile("test.txt");
+
+        // テスト対象実行
+        stream.Position = 10;
+        await Task.FromResult(stream).WriteToFileAsync(target);
+
+        // 検証
+        File.ReadAllBytes(target.FullName).Should().Equal(data[10..]);
+    }
+
+    [TestMethod]
+    public async Task ToMemoryAsync()
+    {
+        // テスト用に一時ディレクトリ
+        using var tempDir = new TempDir();
+
+        // テストデータ
+        var data = Enumerable.Range(30, 256).Select(n => (byte)n).ToArray();
+        using var stream = new MemoryStream(data);
+
+        // テストファイル
+        var target = tempDir.Info.RelativeFile("test.txt");
+
+        // テスト対象実行
+        stream.Position = 10;
+        var memory = await stream.ToMemoryAsync();
+
+        // 検証
+        memory.ToArray().Should().Equal(data[10..]);
+    }
+
 }

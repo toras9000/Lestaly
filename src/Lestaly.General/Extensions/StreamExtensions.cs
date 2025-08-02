@@ -152,4 +152,86 @@ public static class StreamExtensions
         }
     }
 
+    /// <summary>ストリーム内容をファイルに保存する</summary>
+    /// <param name="self">ストリームを得るタスク</param>
+    /// <param name="file">保存先ファイル</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>保存したファイル情報</returns>
+    public static async ValueTask<FileInfo> WriteToFileAsync(this Stream self, FileInfo file, CancellationToken cancelToken = default)
+    {
+        await file.WriteAllBytesAsync(self, default, cancelToken);
+        return file;
+    }
+
+    /// <summary>ストリーム内容をファイルに保存する</summary>
+    /// <param name="self">ストリームを得るタスク</param>
+    /// <param name="filePath">保存先ファイルパス</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>保存したファイル情報</returns>
+    public static ValueTask<FileInfo> WriteToFileAsync(this Stream self, string filePath, CancellationToken cancelToken = default)
+        => self.WriteToFileAsync(new FileInfo(filePath), cancelToken);
+
+    /// <summary>ストリーム内容をファイルに保存する</summary>
+    /// <param name="self">ストリームを得るタスク。ここで得たストリームは書き込み後に破棄する。</param>
+    /// <param name="file">保存先ファイル</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>保存したファイル情報</returns>
+    public static async ValueTask<FileInfo> WriteToFileAsync<TStream>(this Task<TStream> self, FileInfo file, CancellationToken cancelToken = default) where TStream : Stream
+    {
+        using var stream = await self.ConfigureAwait(false);
+        await file.WriteAllBytesAsync(stream, default, cancelToken);
+        return file;
+    }
+
+    /// <summary>ストリーム内容をファイルに保存する</summary>
+    /// <param name="self">ストリームを得るタスク。ここで得たストリームは書き込み後に破棄する。</param>
+    /// <param name="filePath">保存先ファイルパス</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>保存したファイル情報</returns>
+    public static ValueTask<FileInfo> WriteToFileAsync<TStream>(this Task<TStream> self, string filePath, CancellationToken cancelToken = default) where TStream : Stream
+        => self.WriteToFileAsync(new FileInfo(filePath), cancelToken);
+
+    /// <summary>ストリーム内容を読み出す</summary>
+    /// <param name="self">読み出すストリーム</param>
+    /// <param name="bufferSize">バッファサイズ</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>読みだした内容</returns>
+    public static async ValueTask<ReadOnlyMemory<byte>> ToMemoryAsync(this Stream self, int bufferSize, CancellationToken cancelToken = default)
+    {
+        var writer = new ArrayBufferWriter<byte>();
+        while (true)
+        {
+            var buffer = writer.GetMemory(bufferSize);
+            var length = await self.ReadAsync(buffer, cancelToken);
+            if (length == 0) break;
+            writer.Advance(length);
+        }
+        return writer.WrittenMemory;
+    }
+
+    /// <summary>ストリーム内容を読み出す</summary>
+    /// <param name="self">読み出すストリーム</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>読みだした内容</returns>
+    public static ValueTask<ReadOnlyMemory<byte>> ToMemoryAsync(this Stream self, CancellationToken cancelToken = default)
+        => self.ToMemoryAsync(64 * 1024, cancelToken);
+
+    /// <summary>ストリーム内容を読み出す</summary>
+    /// <param name="self">読み出すストリームを得るタスク。ここで得たストリームは書き込み後に破棄する。</param>
+    /// <param name="bufferSize">バッファサイズ</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>読みだした内容</returns>
+    public static async ValueTask<ReadOnlyMemory<byte>> ToMemoryAsync<TStream>(this Task<TStream> self, int bufferSize, CancellationToken cancelToken = default) where TStream : Stream
+    {
+        using var stream = await self.ConfigureAwait(false);
+        return await stream.ToMemoryAsync(bufferSize, cancelToken);
+    }
+
+    /// <summary>ストリーム内容を読み出す</summary>
+    /// <param name="self">読み出すストリームを得るタスク。ここで得たストリームは書き込み後に破棄する。</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>読みだした内容</returns>
+    public static ValueTask<ReadOnlyMemory<byte>> ToMemoryAsync<TStream>(this Task<TStream> self, CancellationToken cancelToken = default) where TStream : Stream
+        => self.ToMemoryAsync(64 * 1024, cancelToken);
+
 }
