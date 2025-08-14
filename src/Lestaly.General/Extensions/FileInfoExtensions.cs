@@ -603,6 +603,14 @@ public static class FileInfoExtensions
         var decoded = await JsonSerializer.DeserializeAsync(stream, typeof(TObject), options, cancelToken).ConfigureAwait(false);
         return (TObject?)decoded;
     }
+
+    /// <summary>ファイルから緩くJSONデータを読み取る</summary>
+    /// <typeparam name="TObject">JSONをデシリアライズする型</typeparam>
+    /// <param name="self">読み取り元ファイル</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>デシリアライズしたインスタンス</returns>
+    public static ValueTask<TObject?> ReadRoughJsonAsync<TObject>(this FileInfo self, CancellationToken cancelToken = default)
+        => self.ReadJsonAsync<TObject>(JsonRoughReadOptions, cancelToken);
     #endregion
 
     #region Write JSON
@@ -625,6 +633,23 @@ public static class FileInfoExtensions
         using var stream = self.CreateWrite();
         await JsonSerializer.SerializeAsync(stream, value, options, cancelToken).ConfigureAwait(false);
     }
+
+    /// <summary>オブジェクトを整形したJSON形式でファイルに保存する</summary>
+    /// <typeparam name="TObject">JSONにデシリアライズする型</typeparam>
+    /// <param name="self">保存先ファイル</param>
+    /// <param name="value">保存するオブジェクト</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    public static ValueTask WritePrettyJsonAsync<TObject>(this FileInfo self, TObject value, CancellationToken cancelToken = default)
+        => self.WriteJsonAsync(value, JsonPrettyWriteOptions, cancelToken);
+
+    /// <summary>オブジェクトを整形したJSON形式でファイルに保存する</summary>
+    /// <typeparam name="TObject">JSONにデシリアライズする型</typeparam>
+    /// <param name="self">保存先ファイル</param>
+    /// <param name="value">保存するオブジェクト</param>
+    /// <param name="ignoreNulls">nullプロパティを無視するか否か</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    public static ValueTask WritePrettyJsonAsync<TObject>(this FileInfo self, TObject value, bool ignoreNulls, CancellationToken cancelToken = default)
+        => self.WriteJsonAsync(value, ignoreNulls ? JsonPrettyNullIgnoreWriteOptions : JsonPrettyWriteOptions, cancelToken);
     #endregion
 
     #region FileSystem
@@ -720,6 +745,32 @@ public static class FileInfoExtensions
 
         return DirectoryInfoExtensions.SegmentsToReletivePath(self.GetPathSegments(), baseDir, ignoreCase);
     }
+    #endregion
+
+    // 非公開フィールド
+    #region Fixed Values
+    /// <summary>整形保存用オプション</summary>
+    private static readonly JsonSerializerOptions JsonPrettyWriteOptions = new JsonSerializerOptions
+    {
+        WriteIndented = true,
+        Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+    };
+
+    /// <summary>整形保存(null無視)用オプション</summary>
+    private static readonly JsonSerializerOptions JsonPrettyNullIgnoreWriteOptions = new JsonSerializerOptions
+    {
+        WriteIndented = true,
+        Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+        DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
+    };
+
+    /// <summary>大雑把な読み取り用オプション</summary>
+    private static readonly JsonSerializerOptions JsonRoughReadOptions = new JsonSerializerOptions
+    {
+        AllowTrailingCommas = true,
+        ReadCommentHandling = JsonCommentHandling.Skip,
+        NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString,
+    };
     #endregion
 
     // 非公開メソッド

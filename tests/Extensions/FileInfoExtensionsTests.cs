@@ -1100,6 +1100,27 @@ public class FileExtensionsTests
         var actual = await file.ReadJsonByTemplateAsync(data);
         actual.Should().Be(data);
     }
+
+    [TestMethod()]
+    public async Task ReadRoughJsonAsync()
+    {
+        using var tempDir = new TempDir();
+
+        var file = tempDir.Info.RelativeFile("asd.txt");
+        await file.WriteAllTextAsync("""
+        {
+            // commment
+            "String": "text",
+            /* comment */
+            "Integer": "99",
+        }
+        """);
+
+        var actual = await file.ReadRoughJsonAsync<TestData>();
+        actual.Should().NotBeNull();
+        actual.String.Should().Be("text");
+        actual.Integer.Should().Be(99);
+    }
     #endregion
 
     #region Write JSON
@@ -1141,6 +1162,40 @@ public class FileExtensionsTests
         var json = await file.ReadAllTextAsync();
         var actual = decodeJsonByTemplate(json, data);
         actual.Should().Be(data);
+    }
+
+    [TestMethod()]
+    public async Task WritePrettyJsonAsync()
+    {
+        using var tempDir = new TempDir();
+
+        var file = tempDir.Info.RelativeFile("asd.txt");
+        var data = new
+        {
+            Text = "test",
+            Number = 123,
+        };
+        await file.WritePrettyJsonAsync(data);
+
+        var json = await file.ReadAllTextAsync();
+        json.Should().Contain("\n");
+    }
+
+    [TestMethod()]
+    public async Task WritePrettyJsonAsync_IgnoreNull()
+    {
+        using var tempDir = new TempDir();
+
+        var file = tempDir.Info.RelativeFile("asd.txt");
+        var data = new
+        {
+            Text = default(string),
+            Number = 123,
+        };
+        await file.WritePrettyJsonAsync(data, ignoreNulls: true);
+
+        var json = await file.ReadAllTextAsync();
+        json.Should().NotContain("Text");
     }
     #endregion
 
