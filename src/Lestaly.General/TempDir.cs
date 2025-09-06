@@ -9,13 +9,21 @@ public class TempDir : IDisposable
     #region コンストラクタ
     /// <summary>一時ディレクトリを作成するコンストラクタ</summary>
     /// <param name="autoDelete">インスタンスの破棄時に一時ディレクトリを自動削除するか否か</param>
-    public TempDir(bool autoDelete = true)
+    /// <remarks>
+    /// このオーバロードではシステムのテンポラリディレクトリを利用する。
+    /// </remarks>
+    public TempDir(bool autoDelete = true) : this(Path.GetTempPath(), autoDelete)
+    { }
+
+    /// <summary>一時ディレクトリを作成するコンストラクタ</summary>
+    /// <param name="tempDir">一時ディレクトリを作成するベースディレクトリパス</param>
+    /// <param name="autoDelete">インスタンスの破棄時に一時ディレクトリを自動削除するか否か</param>
+    public TempDir(string tempDir, bool autoDelete = true)
     {
+        if (!Directory.Exists(tempDir)) throw new ArgumentException($"'{tempDir}' is not exists.");
+
         // 設定保持
         this.AutoDelete = autoDelete;
-
-        // システムの一時ディレクトリ取得
-        var tempDir = Path.GetTempPath();
 
         // 一時ディレクトリ配下にGUID名のディレクトリ作成を試みる
         for (var i = 0; i < 3; i++)
