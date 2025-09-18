@@ -105,6 +105,20 @@ public static class EnumerableExtensions
         return repeated(self, count);
     }
 
+    /// <summary>シーケンス要素に対して処理を呼び出す。</summary>
+    /// <remarks>IxのDo()などと同じもの。</remarks>
+    /// <param name="self">文字列のシーケンス</param>
+    /// <param name="visit">呼び出す処理</param>
+    /// <returns>元のシーケンスそのまま</returns>
+    public static IEnumerable<TSource> Alley<TSource>(this IEnumerable<TSource> self, Action<TSource> visit)
+    {
+        foreach (var item in self)
+        {
+            visit(item);
+            yield return item;
+        }
+    }
+
     /// <summary>前後空白や大文字/小文字の区別なく文字列が含まれているかを判定する。</summary>
     /// <param name="self">文字列のシーケンス</param>
     /// <param name="text">判定する文字列</param>

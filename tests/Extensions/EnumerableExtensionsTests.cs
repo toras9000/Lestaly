@@ -42,6 +42,15 @@ public class EnumerableExtensionsTests
             .Should().Throw<ApplicationException>().Where(ex => ex.Message == "test-ex");
     }
 
+    [TestMethod()]
+    public void Alley()
+    {
+        var list = new List<int>();
+        var source = new[] { 1, 2, 3, 4, 5, };
+        source.Alley(i => list.Add(i)).ToArray();
+        list.Should().Equal(source);
+    }
+
     [TestMethod]
     public void Repetition()
     {
