@@ -110,7 +110,10 @@ public static class StringExtensions
     /// <param name="ignoreCase">大文字/小文字の違いを無視するか否か(序数ベース)</param>
     /// <returns>いずれかで始まっているか否か</returns>
     public static bool StartsWithAny(this string self, IEnumerable<string> values, bool ignoreCase)
-        => self != null && self.AsSpan().StartsWithAny(values, ignoreCase);
+    {
+        ArgumentNullException.ThrowIfNull(self);
+        return self.AsSpan().StartsWithAny(values, ignoreCase);
+    }
 
     /// <summary>文字列が指定のテキストのいずれかで始まるかを判定する。</summary>
     /// <param name="self">対象文字列</param>
@@ -118,7 +121,10 @@ public static class StringExtensions
     /// <param name="comparison">文字列比較方法</param>
     /// <returns>いずれかで始まっているか否か</returns>
     public static bool StartsWithAny(this string self, IEnumerable<string> values, StringComparison comparison = StringComparison.Ordinal)
-        => self != null && self.AsSpan().StartsWithAny(values, comparison);
+    {
+        ArgumentNullException.ThrowIfNull(self);
+        return self.AsSpan().StartsWithAny(values, comparison);
+    }
 
     /// <summary>文字列が指定のテキストのいずれかで始まるかを判定する。</summary>
     /// <param name="self">対象文字列</param>
@@ -131,14 +137,37 @@ public static class StringExtensions
     /// <summary>文字列が指定のテキストのいずれかで始まるかを判定する。</summary>
     /// <param name="self">対象文字列</param>
     /// <param name="values">始まるかを判定する文字列。nullや空の要素は無視される。</param>
+    /// <param name="ignoreCase">大文字/小文字の違いを無視するか否か(序数ベース)</param>
+    /// <param name="next">先頭一致した場合に、一致文字列の次の位置</param>
+    /// <returns>いずれかで始まっているか否か</returns>
+    public static bool StartsWithAny(this ReadOnlySpan<char> self, IEnumerable<string> values, bool ignoreCase, out int next)
+        => self.StartsWithAny(values, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal, out next);
+
+    /// <summary>文字列が指定のテキストのいずれかで始まるかを判定する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="values">始まるかを判定する文字列。nullや空の要素は無視される。</param>
     /// <param name="comparison">文字列比較方法</param>
     /// <returns>いずれかで始まっているか否か</returns>
     public static bool StartsWithAny(this ReadOnlySpan<char> self, IEnumerable<string> values, StringComparison comparison = StringComparison.Ordinal)
+        => self.StartsWithAny(values, comparison, out _);
+
+    /// <summary>文字列が指定のテキストのいずれかで始まるかを判定する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="values">始まるかを判定する文字列。nullや空の要素は無視される。</param>
+    /// <param name="comparison">文字列比較方法</param>
+    /// <param name="next">先頭一致した場合に、一致文字列の次の位置</param>
+    /// <returns>いずれかで始まっているか否か</returns>
+    private static bool StartsWithAny(this ReadOnlySpan<char> self, IEnumerable<string> values, StringComparison comparison, out int next)
     {
+        next = -1;
         foreach (var value in values)
         {
             if (string.IsNullOrEmpty(value)) continue;
-            if (self.StartsWith(value, comparison)) return true;
+            if (self.StartsWith(value, comparison))
+            {
+                next = value.Length;    // comparison 次第では正しい位置ではない。
+                return true;
+            }
         }
         return false;
     }
@@ -148,14 +177,37 @@ public static class StringExtensions
     /// <param name="values">始まるかを判定する文字列。nullや空の要素は無視される。</param>
     /// <returns>いずれかで始まっているか否か</returns>
     public static bool StartsWithAnyIgnoreCase(this string self, IEnumerable<string> values)
-        => self != null && self.AsSpan().StartsWithAny(values, StringComparison.OrdinalIgnoreCase);
+    {
+        ArgumentNullException.ThrowIfNull(self);
+        return self.AsSpan().StartsWithAny(values, StringComparison.OrdinalIgnoreCase, out _);
+    }
+
+    /// <summary>文字列が指定のテキストのいずれかで始まるかを判定する。(大文字/小文字区別なし)</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="values">始まるかを判定する文字列。nullや空の要素は無視される。</param>
+    /// <param name="next">先頭一致した場合に、一致文字列の次の位置</param>
+    /// <returns>いずれかで始まっているか否か</returns>
+    public static bool StartsWithAnyIgnoreCase(this string self, IEnumerable<string> values, out int next)
+    {
+        ArgumentNullException.ThrowIfNull(self);
+        next = -1;
+        return self.AsSpan().StartsWithAny(values, StringComparison.OrdinalIgnoreCase, out next);
+    }
 
     /// <summary>文字列が指定のテキストのいずれかで始まるかを判定する。(大文字/小文字区別なし)</summary>
     /// <param name="self">対象文字列</param>
     /// <param name="values">始まるかを判定する文字列。nullや空の要素は無視される。</param>
     /// <returns>いずれかで始まっているか否か</returns>
     public static bool StartsWithAnyIgnoreCase(this ReadOnlySpan<char> self, IEnumerable<string> values)
-        => self.StartsWithAny(values, StringComparison.OrdinalIgnoreCase);
+        => self.StartsWithAny(values, StringComparison.OrdinalIgnoreCase, out _);
+
+    /// <summary>文字列が指定のテキストのいずれかで始まるかを判定する。(大文字/小文字区別なし)</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="values">始まるかを判定する文字列。nullや空の要素は無視される。</param>
+    /// <param name="next">先頭一致した場合に、一致文字列の次の位置</param>
+    /// <returns>いずれかで始まっているか否か</returns>
+    public static bool StartsWithAnyIgnoreCase(this ReadOnlySpan<char> self, IEnumerable<string> values, out int next)
+        => self.StartsWithAny(values, StringComparison.OrdinalIgnoreCase, out next);
 
     /// <summary>文字列が指定のテキストのいずれかで終わるかを判定する。</summary>
     /// <param name="self">対象文字列</param>
@@ -163,7 +215,10 @@ public static class StringExtensions
     /// <param name="ignoreCase">大文字/小文字の違いを無視するか否か(序数ベース)</param>
     /// <returns>いずれかで終わっているか否か</returns>
     public static bool EndsWithAny(this string self, IEnumerable<string> values, bool ignoreCase)
-        => self != null && self.AsSpan().EndsWithAny(values, ignoreCase);
+    {
+        ArgumentNullException.ThrowIfNull(self);
+        return self.AsSpan().EndsWithAny(values, ignoreCase);
+    }
 
     /// <summary>文字列が指定のテキストのいずれかで終わるかを判定する。</summary>
     /// <param name="self">対象文字列</param>
@@ -171,7 +226,10 @@ public static class StringExtensions
     /// <param name="comparison">文字列比較方法</param>
     /// <returns>いずれかで終わっているか否か</returns>
     public static bool EndsWithAny(this string self, IEnumerable<string> values, StringComparison comparison = StringComparison.Ordinal)
-        => self != null && self.AsSpan().EndsWithAny(values, comparison);
+    {
+        ArgumentNullException.ThrowIfNull(self);
+        return self.AsSpan().EndsWithAny(values, comparison);
+    }
 
     /// <summary>文字列が指定のテキストのいずれかで終わるかを判定する。</summary>
     /// <param name="self">対象文字列</param>
@@ -201,7 +259,10 @@ public static class StringExtensions
     /// <param name="values">終わるかを判定する文字列。nullや空の要素は無視される。</param>
     /// <returns>いずれかで終わっているか否か</returns>
     public static bool EndsWithAnyIgnoreCase(this string self, IEnumerable<string> values)
-        => self != null && self.AsSpan().EndsWithAny(values, StringComparison.OrdinalIgnoreCase);
+    {
+        ArgumentNullException.ThrowIfNull(self);
+        return self.AsSpan().EndsWithAny(values, StringComparison.OrdinalIgnoreCase);
+    }
 
     /// <summary>文字列が指定のテキストのいずれかで終わるかを判定する。(大文字/小文字区別なし)</summary>
     /// <param name="self">対象文字列</param>
@@ -260,14 +321,7 @@ public static class StringExtensions
     public static bool RoughAny(this string? self, IEnumerable<string> values)
     {
         if (self == null) return values.Contains(null);
-
-        var core = self.AsSpan().Trim();
-        foreach (var value in values)
-        {
-            if (value == null) continue;
-            if (core.Equals(value.AsSpan().Trim(), StringComparison.OrdinalIgnoreCase)) return true;
-        }
-        return false;
+        return self.AsSpan().RoughAny(values);
     }
 
     /// <summary>文字列が指定のシーケンスのいずれかと一致するかを判定する。</summary>
@@ -281,6 +335,57 @@ public static class StringExtensions
         {
             if (value == null) continue;
             if (core.Equals(value.AsSpan().Trim(), StringComparison.OrdinalIgnoreCase)) return true;
+        }
+        return false;
+    }
+
+    /// <summary>文字列が指定のシーケンスのいずれかで開始するかを判定する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="values">比較する文字列のシーケンス。nullは無視される。</param>
+    /// <returns>いずれかと一致するか否か</returns>
+    public static bool RoughStartsAny(this string? self, IEnumerable<string> values)
+    {
+        if (self == null) return values.Contains(null);
+        return self.AsSpan().RoughStartsAny(values);
+    }
+
+    /// <summary>文字列が指定のシーケンスのいずれかで開始するかを判定する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="values">比較する文字列のシーケンス。nullは無視される。</param>
+    /// <param name="next">先頭一致の次の位置</param>
+    /// <returns>いずれかと一致するか否か</returns>
+    public static bool RoughStartsAny(this string? self, IEnumerable<string> values, out int next)
+    {
+        next = -1;
+        if (self == null) return values.Contains(null);
+        return self.AsSpan().RoughStartsAny(values, out next);
+    }
+
+    /// <summary>文字列が指定のシーケンスのいずれかで開始するかを判定する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="values">比較する文字列のシーケンス。nullは無視される。</param>
+    /// <returns>いずれかと一致するか否か</returns>
+    public static bool RoughStartsAny(this ReadOnlySpan<char> self, IEnumerable<string> values)
+        => self.RoughStartsAny(values, out _);
+
+    /// <summary>文字列が指定のシーケンスのいずれかで開始するかを判定する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="values">比較する文字列のシーケンス。nullは無視される。</param>
+    /// <param name="next">先頭一致の次の位置</param>
+    /// <returns>いずれかと一致するか否か</returns>
+    public static bool RoughStartsAny(this ReadOnlySpan<char> self, IEnumerable<string> values, out int next)
+    {
+        next = -1;
+        var core = self.TrimStart();
+        foreach (var value in values)
+        {
+            if (value == null) continue;
+            var valCore = value.AsSpan().Trim();
+            if (core.StartsWith(valCore, StringComparison.OrdinalIgnoreCase))
+            {
+                next = (self.Length - core.Length) + valCore.Length;
+                return true;
+            }
         }
         return false;
     }
@@ -650,28 +755,25 @@ public static class StringExtensions
     }
 
     /// <summary>文字列をクォートする。</summary>
-    /// <param name="text">対象文字列。nullの場合は空文字列と同じ扱いとする。</param>
+    /// <param name="self">対象文字列。nullの場合は空文字列と同じ扱いとする。</param>
     /// <param name="quote">クォートキャラクタ</param>
     /// <param name="escape">対象文字列中のクォートキャラクタをエスケープするキャラクタ</param>
     /// <returns>クォートされたキャラクタ</returns>
-    public static string Quote(this string? text, char quote = '"', char? escape = null)
-    {
-        if (text == null) return new string(quote, 2);
-        return text.AsSpan().Quote(quote, escape);
-    }
+    public static string Quote(this string? self, char quote = '"', char? escape = null)
+        => self.AsSpan().Quote(quote, escape);
 
     /// <summary>文字列をクォートする。</summary>
-    /// <param name="text">対象文字列。nullの場合は空文字列と同じ扱いとする。</param>
+    /// <param name="self">対象文字列。nullの場合は空文字列と同じ扱いとする。</param>
     /// <param name="quote">クォートキャラクタ</param>
     /// <param name="escape">対象文字列中のクォートキャラクタをエスケープするキャラクタ</param>
     /// <returns>クォートされたキャラクタ</returns>
-    public static string Quote(this ReadOnlySpan<char> text, char quote = '"', char? escape = null)
+    public static string Quote(this ReadOnlySpan<char> self, char quote = '"', char? escape = null)
     {
-        if (text.IsEmpty) return new string(quote, 2);
+        if (self.IsEmpty) return new string(quote, 2);
         var esc = escape ?? quote;
-        var buffer = new StringBuilder(text.Length + 10);
+        var buffer = new StringBuilder(self.Length + 10);
         buffer.Append(quote);
-        foreach (var c in text)
+        foreach (var c in self)
         {
             if (c == quote) buffer.Append(esc);
             buffer.Append(c);
@@ -734,6 +836,27 @@ public static class StringExtensions
         return buffer.ToString();
     }
 
+    /// <summary>カラム状の出力を想定してセパレータと桁揃えキャラクタを付与した文字列を作る</summary>
+    /// <param name="self">フィールド文字列</param>
+    /// <param name="separator">区切り文字列</param>
+    /// <param name="width">カラム幅(区切り文字列含まず)</param>
+    /// <param name="pad">桁揃えキャラクタ</param>
+    /// <returns>作成された文字列</returns>
+    public static string PadColumn(this string? self, ReadOnlySpan<char> separator, int width, char pad = ' ')
+        => self.AsSpan().PadColumn(separator, width, pad);
+
+    /// <summary>カラム状の出力を想定してセパレータと桁揃えキャラクタを付与した文字列を作る</summary>
+    /// <param name="self">フィールド文字列</param>
+    /// <param name="separator">区切り文字列</param>
+    /// <param name="width">カラム幅(区切り文字列含まず)</param>
+    /// <param name="pad">桁揃えキャラクタ</param>
+    /// <returns>作成された文字列</returns>
+    public static string PadColumn(this ReadOnlySpan<char> self, ReadOnlySpan<char> separator, int width, char pad = ' ')
+    {
+        var padLen = width < self.Length ? 0 : width - self.Length;
+        return $"{self}{separator}{new string(pad, padLen)}";
+    }
+
     /// <summary>文字列のテキスト要素を列挙する。</summary>
     /// <param name="self">対象文字列</param>
     /// <returns>テキスト要素シーケンス</returns>
@@ -754,7 +877,10 @@ public static class StringExtensions
     /// <param name="self">対象文字列</param>
     /// <returns>テキスト要素数</returns>
     public static int TextElementCount(this string self)
-        => self.AsSpan().TextElementCount();
+    {
+        ArgumentNullException.ThrowIfNull(self);
+        return self.AsSpan().TextElementCount();
+    }
 
     /// <summary>文字列のテキスト要素数を取得する。</summary>
     /// <param name="self">対象文字列</param>

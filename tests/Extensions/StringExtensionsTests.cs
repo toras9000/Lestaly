@@ -146,6 +146,8 @@ public class StringExtensionsTests
             "abcd".StartsWithAny(["aa", "cd"], ignoreCase: true).Should().BeFalse();
             "abcd".StartsWithAny(["",], ignoreCase: true).Should().BeFalse();
             "abcd".StartsWithAny([default(string)!,], ignoreCase: true).Should().BeFalse();
+
+            new Action(() => default(string)!.StartsWithAny(["a", "b"])).Should().Throw<ArgumentNullException>();
         }
         {// Span
             "abcd".AsSpan().StartsWithAny(["aa", "ab", "ac"], ignoreCase: false).Should().Be(true);
@@ -174,6 +176,10 @@ public class StringExtensionsTests
             "abcd".StartsWithAnyIgnoreCase(["aa", "cd"]).Should().BeFalse();
             "abcd".StartsWithAnyIgnoreCase([""]).Should().BeFalse();
             "abcd".StartsWithAnyIgnoreCase([]).Should().BeFalse();
+
+            new Action(() => default(string)!.StartsWithAnyIgnoreCase(["a", "b"])).Should().Throw<ArgumentNullException>();
+
+            { "abcd".StartsWithAnyIgnoreCase(["AA", "AB", "AC"], out var next).Should().BeTrue(); next.Should().Be(2); }
         }
         {// Span
             "abcd".AsSpan().StartsWithAnyIgnoreCase(["aa", "ab", "ac"]).Should().BeTrue();
@@ -202,6 +208,8 @@ public class StringExtensionsTests
             "abcd".EndsWithAny(["ab", "ce"], ignoreCase: true).Should().BeFalse();
             "abcd".EndsWithAny(["",], ignoreCase: true).Should().BeFalse();
             "abcd".EndsWithAny([default(string)!,], ignoreCase: true).Should().BeFalse();
+
+            new Action(() => default(string)!.EndsWithAny(["a", "b"])).Should().Throw<ArgumentNullException>();
         }
         {// Span
             "abcd".AsSpan().EndsWithAny(["cc", "cd", "ce"], ignoreCase: false).Should().Be(true);
@@ -229,6 +237,8 @@ public class StringExtensionsTests
             "abcd".EndsWithAnyIgnoreCase(["ab", "ce"]).Should().BeFalse();
             "abcd".EndsWithAnyIgnoreCase([""]).Should().BeFalse();
             "abcd".EndsWithAnyIgnoreCase([]).Should().BeFalse();
+
+            new Action(() => default(string)!.EndsWithAnyIgnoreCase(["a", "b"])).Should().Throw<ArgumentNullException>();
         }
         {// Span
             "abcd".AsSpan().EndsWithAnyIgnoreCase(["cc", "cd", "ce"]).Should().BeTrue();
@@ -246,6 +256,9 @@ public class StringExtensionsTests
         {// string
             "abcd".EqualsAny(["ABC", "ABCD", "BCD"], StringComparison.Ordinal).Should().BeFalse();
             "abcd".EqualsAny(["ABC", "ABCD", "BCD"], StringComparison.OrdinalIgnoreCase).Should().BeTrue();
+
+            default(string)!.EqualsAny(["a", "b"]).Should().BeFalse();
+            default(string)!.EqualsAny(["a", default!]).Should().BeTrue();
         }
         {// Span
             "abcd".AsSpan().EqualsAny(["ABC", "ABCD", "BCD"], StringComparison.Ordinal).Should().BeFalse();
@@ -260,6 +273,9 @@ public class StringExtensionsTests
             "abcd".EqualsAnyIgnoreCase(["abc", "abcd", "bcd"]).Should().BeTrue();
             "abcd".EqualsAnyIgnoreCase(["ABC", "ABCD", "BCD"]).Should().BeTrue();
             "abcd".EqualsAnyIgnoreCase(["ABC", "BCD"]).Should().BeFalse();
+
+            default(string)!.EqualsAnyIgnoreCase(["a", "b"]).Should().BeFalse();
+            default(string)!.EqualsAnyIgnoreCase(["a", default!]).Should().BeTrue();
         }
         {// Span
             "abcd".AsSpan().EqualsAnyIgnoreCase(["ABC", "ABCD", "BCD"]).Should().BeTrue();
@@ -277,6 +293,9 @@ public class StringExtensionsTests
             "abcd".AsSpan().RoughAny([" ABC ", " ABCD ", " BCD "]).Should().Be(true);
             "abcd".AsSpan().RoughAny([" ABC ", " ABCD ", " BCD "]).Should().Be(true);
             "ABCD".AsSpan().RoughAny(["ABC", "AB CD", "BCD"]).Should().Be(false);
+
+            default(string)!.RoughAny(["a", "b"]).Should().Be(false);
+            default(string)!.RoughAny([default!, "b"]).Should().Be(true);
         }
         {// Span
             "abcd".RoughAny(["ABC", "ABCD", "BCD"]).Should().Be(true);
@@ -284,6 +303,38 @@ public class StringExtensionsTests
             "abcd".RoughAny([" ABC ", " ABCD ", " BCD "]).Should().Be(true);
             "abcd".RoughAny([" ABC ", " ABCD ", " BCD "]).Should().Be(true);
             "ABCD".RoughAny(["ABC", "AB CD", "BCD"]).Should().Be(false);
+        }
+    }
+
+    [TestMethod()]
+    public void RoughStartsAny()
+    {
+        {// string
+            "abcd".AsSpan().RoughStartsAny(["ABC", "ABCD", "BCD"]).Should().Be(true);
+            "ABCD".AsSpan().RoughStartsAny(["ABC", "ABCD", "BCD"]).Should().Be(true);
+            "abcd".AsSpan().RoughStartsAny([" ABC ", " ABCD ", " BCD "]).Should().Be(true);
+            "abcd".AsSpan().RoughStartsAny([" ABC ", " ABCD ", " BCD "]).Should().Be(true);
+            "  abcd  ".AsSpan().RoughStartsAny(["ABC", "ABCD", "BCD"]).Should().Be(true);
+            "abcd".AsSpan().RoughStartsAny(["BCD", "bcd"]).Should().Be(false);
+
+            default(string)!.RoughStartsAny(["a", "b"]).Should().Be(false);
+            default(string)!.RoughStartsAny([default!, "b"]).Should().Be(true);
+
+            { "abcd".AsSpan().RoughStartsAny(["xyz", "ABC", "ABCD", "BCD"], out var next).Should().Be(true); next.Should().Be(3); }
+            { "abcd".AsSpan().RoughStartsAny(["xyz", "ABCD", "ABC", "BCD"], out var next).Should().Be(true); next.Should().Be(4); }
+            { "   abcd".AsSpan().RoughStartsAny(["xyz", "ABC", "ABCD", "BCD"], out var next).Should().Be(true); next.Should().Be(6); }
+        }
+        {// Span
+            "abcd".RoughStartsAny(["ABC", "ABCD", "BCD"]).Should().Be(true);
+            "ABCD".RoughStartsAny(["ABC", "ABCD", "BCD"]).Should().Be(true);
+            "abcd".RoughStartsAny([" ABC ", " ABCD ", " BCD "]).Should().Be(true);
+            "abcd".RoughStartsAny([" ABC ", " ABCD ", " BCD "]).Should().Be(true);
+            "  abcd  ".RoughStartsAny(["ABC", "ABCD", "BCD"]).Should().Be(true);
+            "abcd".RoughStartsAny(["BCD", "bcd"]).Should().Be(false);
+
+            { "abcd".RoughStartsAny(["xyz", "ABC", "ABCD", "BCD"], out var next).Should().Be(true); next.Should().Be(3); }
+            { "abcd".RoughStartsAny(["xyz", "ABCD", "ABC", "BCD"], out var next).Should().Be(true); next.Should().Be(4); }
+            { "   abcd".RoughStartsAny(["xyz", "ABC", "ABCD", "BCD"], out var next).Should().Be(true); next.Should().Be(6); }
         }
     }
 
@@ -571,6 +622,8 @@ public class StringExtensionsTests
 
         "abc".AsSpan().Quote(quote: '\'', escape: '/').Should().Be("'abc'");
         "ab'c".AsSpan().Quote(quote: '\'', escape: '/').Should().Be("'ab/'c'");
+
+        default(string).Quote('"').Should().Be("\"\"");
     }
 
     [TestMethod]
@@ -585,6 +638,17 @@ public class StringExtensionsTests
 
         "'abc'".Unquote(quotes: ['\''], escape: '/').Should().Be("abc");
         "'ab/'c'".Unquote(quotes: ['\''], escape: '/').Should().Be("ab'c");
+
+        default(string).Unquote().Should().BeNull();
+    }
+
+    [TestMethod]
+    public void PadColumn()
+    {
+        "abc".PadColumn(",", 10).Should().Be("abc,       ");
+        "abc".PadColumn(",", 10, '_').Should().Be("abc,_______");
+        "abc".PadColumn("//", 8).Should().Be("abc//     ");
+        "abc".PadColumn("//", 2).Should().Be("abc//");
     }
 
     [TestMethod]
