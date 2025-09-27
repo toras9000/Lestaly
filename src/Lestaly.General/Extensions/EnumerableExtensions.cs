@@ -5,6 +5,13 @@
 /// </summary>
 public static class EnumerableExtensions
 {
+    /// <summary>シーケンス要素型のデフォルト値を取得する。</summary>
+    /// <typeparam name="TSource">シーケンスの要素型</typeparam>
+    /// <param name="self">対象シーケンス</param>
+    /// <returns>要素型のデフォルト値</returns>
+    public static TSource? ElementDefault<TSource>(this IEnumerable<TSource> self)
+        => default;
+
     /// <summary>シーケンスのフィルタと条件に適合しない場合のアクションを指定するオペレータ。</summary>
     /// <typeparam name="TSource">シーケンスの要素型</typeparam>
     /// <param name="self">対象シーケンス</param>

@@ -4,6 +4,13 @@
 public class EnumerableExtensionsTests
 {
     [TestMethod]
+    public void ElementDefault()
+    {
+        new[] { 1, 2, 3, }.ElementDefault().Should().Be(0);
+        new[] { "a", "b", "c", }.ElementDefault().Should().BeNull();
+    }
+
+    [TestMethod]
     public void WhereElse()
     {
         var source = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, };
