@@ -687,7 +687,7 @@ public static class StringExtensions
     /// <param name="escape">クォートキャラクタをエスケープしているキャラクタ。指定がない場合はクォートキャラクタ2つで</param>
     /// <returns>アンクォートされた文字列</returns>
     [return: NotNullIfNotNull(nameof(self))]
-    public static string? Unquote(this string self, ReadOnlySpan<char> quotes = default, char? escape = null)
+    public static string? Unquote(this string? self, ReadOnlySpan<char> quotes = default, char? escape = null)
     {
         // nullやクォート分の幅がなければそのまま返す。
         if (self == null || self.Length < 2) return self;
