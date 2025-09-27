@@ -1,4 +1,6 @@
-﻿namespace Lestaly;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace Lestaly;
 
 /// <summary>ファイル処理オプション</summary>
 /// <param name="Recurse">再帰検索を行うか否か</param>
@@ -7,24 +9,35 @@
 /// <param name="Buffered">検索結果をバッファリングしてから列挙するか否か</param>
 /// <param name="SkipInaccessible">アクセスできないファイル/ディレクトリをスキップするか否か</param>
 /// <param name="SkipAttributes">スキップ対象のファイル属性</param>
-public record SelectFilesOptions(bool Recurse = true, SelectFilesHandling? Handling = null, bool Sort = true, bool Buffered = true, bool SkipInaccessible = false, FileAttributes SkipAttributes = FileAttributes.Hidden | FileAttributes.System);
+/// <param name="FileFilter">ファイル列挙フィルタ</param>
+/// <param name="DirectoryFilter">ディレクトリ列挙フィルタ</param>
+public record VisitFilesOptions(
+    bool Recurse = true,
+    VisitFilesHandling? Handling = null,
+    bool Sort = true,
+    bool Buffered = true,
+    bool SkipInaccessible = false,
+    FileAttributes SkipAttributes = FileAttributes.Hidden | FileAttributes.System,
+    Func<FileInfo, bool>? FileFilter = default,
+    Func<DirectoryInfo, bool>? DirectoryFilter = default
+);
 
 /// <summary>ファイル検索時の処理対象設定</summary>
 /// <param name="File">ファイルを処理対象にするか否か</param>
 /// <param name="Directory">ディレクトリを処理対象にするか否か</param>
-public record SelectFilesHandling(bool File = true, bool Directory = false)
+public record VisitFilesHandling(bool File = true, bool Directory = false)
 {
     /// <summary>デフォルトの処理対象設定</summary>
-    public static readonly SelectFilesHandling Default = new();
+    public static readonly VisitFilesHandling Default = new();
 
     /// <summary>ファイルとディレクトリを処理対象とする設定</summary>
-    public static readonly SelectFilesHandling All = new(File: true, Directory: true);
+    public static readonly VisitFilesHandling All = new(File: true, Directory: true);
 
     /// <summary>ファイルのみを処理対象とする設定</summary>
-    public static readonly SelectFilesHandling OnlyFile = new(File: true, Directory: false);
+    public static readonly VisitFilesHandling OnlyFile = new(File: true, Directory: false);
 
     /// <summary>ディレクトリのみを処理対象とする設定</summary>
-    public static readonly SelectFilesHandling OnlyDirectory = new(File: false, Directory: true);
+    public static readonly VisitFilesHandling OnlyDirectory = new(File: false, Directory: true);
 }
 
 /// <summary>
@@ -36,7 +49,7 @@ public record SelectFilesHandling(bool File = true, bool Directory = false)
 /// 列挙オプションでディレクトリに対するハンドリングが有効な場合、処理デリゲートはディレクトリに対しても呼び出される。
 /// ディレクトリに対する処理デリゲートの呼び出しでは<see cref="File"/>プロパティがnullとなるため、それによってディレクトリ対象であるかを判断できる。
 /// </remarks>
-public interface IFileWalker
+public interface IVisitFilesContext
 {
     /// <summary>列挙対象ディレクトリまたはファイル (列挙対象アイテム)</summary>
     FileSystemInfo Item { get; }
@@ -52,12 +65,16 @@ public interface IFileWalker
     bool Break { get; set; }
     /// <summary>列挙処理自体の終了を指定するフラグ。</summary>
     bool Exit { get; set; }
+
+    /// <summary>ファイルが対称であるか否か。</summary>
+    [MemberNotNullWhen(true, nameof(File))]
+    bool IsFile => this.File != null;
 }
 
 /// <summary>
 /// 列挙処理でのファイル/ディレクトリに対する処理情報と結果設定
 /// </summary>
-public interface IFileConverter<TResult> : IFileWalker
+public interface IVisitFilesContext<TResult> : IVisitFilesContext
 {
     /// <summary>列挙対象のファイル/ディレクトリに対する処理結果を設定する。</summary>
     /// <param name="value">結果値</param>
@@ -67,19 +84,10 @@ public interface IFileConverter<TResult> : IFileWalker
 /// <summary>列挙したファイル/ディレクトリに対する変換処理デリゲート型</summary>
 /// <typeparam name="TResult">変換結果の型</typeparam>
 /// <param name="context">変換コンテキストデータ</param>
-public delegate void SelectFilesWalker<TResult>(IFileConverter<TResult> context);
+public delegate void VisitFilesWalker<TResult>(IVisitFilesContext<TResult> context);
 
 /// <summary>列挙したファイル/ディレクトリに対する非同期変換処理デリゲート型</summary>
 /// <typeparam name="TResult">変換結果の型</typeparam>
 /// <param name="context">変換コンテキストデータ</param>
 /// <returns>処理タスク</returns>
-public delegate ValueTask AsyncSelectFilesWalker<TResult>(IFileConverter<TResult> context);
-
-/// <summary>列挙したファイル/ディレクトリに対する処理デリゲート型</summary>
-/// <param name="context">列挙コンテキストデータ</param>
-public delegate void DoFilesWalker(IFileWalker context);
-
-/// <summary>列挙したファイル/ディレクトリに対する非同期処理デリゲート型</summary>
-/// <param name="context">列挙コンテキストデータ</param>
-/// <returns>処理タスク</returns>
-public delegate ValueTask AsyncDoFilesWalker(IFileWalker context);
+public delegate ValueTask AsyncVisitFilesWalker<TResult>(IVisitFilesContext<TResult> context);

@@ -416,13 +416,13 @@ public static class DirectoryInfoExtensions
     /// <param name="selector">ファイル/ディレクトリに対する変換処理</param>
     /// <param name="options">検索オプション</param>
     /// <returns>変換結果のシーケンス</returns>
-    public static IEnumerable<TResult> VisitFiles<TResult>(this DirectoryInfo self, SelectFilesWalker<TResult> selector, SelectFilesOptions? options = null)
+    public static IEnumerable<TResult> VisitFiles<TResult>(this DirectoryInfo self, VisitFilesWalker<TResult> selector, VisitFilesOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(self);
         ArgumentNullException.ThrowIfNull(selector);
 
         // ディレクトリ配下を検索するローカル関数
-        static IEnumerable<TResult> enumerate(SelectFilesContext<TResult> context, DirectoryInfo directory)
+        static IEnumerable<TResult> enumerate(VisitFilesContext<TResult> context, DirectoryInfo directory)
         {
             // ファイルのハンドリングが有効であればファイルを処理
             if (context.Handling.File)
@@ -434,6 +434,10 @@ public static class DirectoryInfoExtensions
                 // ファイル列挙
                 foreach (var file in files)
                 {
+                    // フィルタの適用
+                    var pass = context.Options.FileFilter?.Invoke(file) ?? true;
+                    if (!pass) continue;
+
                     // ファイル処理上の状態初期化
                     context.State.SetFile(file);
 
@@ -466,6 +470,10 @@ public static class DirectoryInfoExtensions
             // サブディレクトリ列挙
             foreach (var subdir in subdirs)
             {
+                // フィルタの適用
+                var pass = context.Options.DirectoryFilter?.Invoke(subdir) ?? true;
+                if (!pass) continue;
+
                 // ディレクトリのハンドリングが有効であればディレクトリを処理
                 if (context.Handling.Directory)
                 {
@@ -508,7 +516,7 @@ public static class DirectoryInfoExtensions
         options ??= new();
 
         // 列挙ハンドリングを決定
-        var handling = options.Handling ?? SelectFilesHandling.Default;
+        var handling = options.Handling ?? VisitFilesHandling.Default;
 
         // ファイルシステム列挙オプション
         var enumeration = new EnumerationOptions();
@@ -518,105 +526,8 @@ public static class DirectoryInfoExtensions
         enumeration.AttributesToSkip = options.SkipAttributes;
 
         // 列挙
-        var context = new SelectFilesContext<TResult>(new SelectFilesState<TResult>(self), selector, options, handling, enumeration);
+        var context = new VisitFilesContext<TResult>(new VisitFileWalkContext<TResult>(self), selector, options, handling, enumeration);
         return enumerate(context, self);
-    }
-
-    /// <summary>ディレクトリ配下のファイル/ディレクトリを検索して変換処理を行う</summary>
-    /// <remarks>
-    /// ディレクトリ内を列挙する際は最初にファイルを列挙し、オプションで指定されていれば次にサブディレクトリを列挙する。
-    /// このメソッドではサブディレクトリ配下の検索に再帰呼び出しを利用する。
-    /// ディレクトリ構成によってはスタックを大量に消費する可能性があることに注意。
-    /// </remarks>
-    /// <typeparam name="TResult">ファイル/ディレクトリに対する変換結果の型</typeparam>
-    /// <param name="self">検索の起点ディレクトリ</param>
-    /// <param name="selector">ファイル/ディレクトリに対する変換処理</param>
-    /// <param name="excludes">列挙対象から除外するパターンのコレクション</param>
-    /// <param name="includes">列挙対象に含めるパターンのコレクション。除外されなかったファイルに適用する。nullの場合は全てのファイルが列挙対象。</param>
-    /// <param name="options">検索オプション</param>
-    /// <returns>変換結果のシーケンス</returns>
-    public static IEnumerable<TResult> VisitFiles<TResult>(this DirectoryInfo self, SelectFilesWalker<TResult> selector, IReadOnlyCollection<Regex> excludes, IReadOnlyCollection<Regex>? includes = null, SelectFilesOptions? options = null)
-    {
-        ArgumentNullException.ThrowIfNull(selector);
-        ArgumentNullException.ThrowIfNull(excludes);
-        return self.VisitFiles<TResult>(options: options, selector: c =>
-        {
-            var name = default(string?);
-            // ディレクトリに対する呼び出しであるかを判定
-            if (c.File == null)
-            {
-                // ディレクトリが除外パターンにマッチする場合、そのディレクトリの配下に入らないようフラグを立てる
-                if (excludes.Any(e => e.IsMatch(c.Directory.Name))) { c.Break = true; return; }
-                // 仲介判定用の名称はディレクトリ名
-                name = c.Directory.Name;
-            }
-            else
-            {
-                // ファイルが除外パターンにマッチする場合、単に仲介せずに終える。
-                if (excludes.Any(e => e.IsMatch(c.File.Name))) { return; }
-                // 仲介判定用の名称はファイル名
-                name = c.File.Name;
-            }
-            // 処理対象パターンが無し、もしくは指定されていてパターンに一致する場合に処理を仲介する
-            if (includes == null || includes.Any(e => e.IsMatch(name)))
-            {
-                selector(c);
-            }
-        });
-    }
-
-    /// <summary>ディレクトリ配下のファイル/ディレクトリを検索して変換処理を行う</summary>
-    /// <remarks>
-    /// ディレクトリ内を列挙する際は最初にファイルを列挙し、オプションで指定されていれば次にサブディレクトリを列挙する。
-    /// このメソッドではサブディレクトリ配下の検索に再帰呼び出しを利用する。
-    /// ディレクトリ構成によってはスタックを大量に消費する可能性があることに注意。
-    /// </remarks>
-    /// <typeparam name="TResult">ファイル/ディレクトリに対する変換結果の型</typeparam>
-    /// <param name="self">検索の起点ディレクトリ</param>
-    /// <param name="selector">ファイル/ディレクトリに対する変換処理</param>
-    /// <param name="options">検索オプション</param>
-    /// <returns>変換結果のシーケンス</returns>
-    public static IEnumerable<TResult> SelectFiles<TResult>(this DirectoryInfo self, Func<IFileWalker, TResult> selector, SelectFilesOptions? options = null)
-    {
-        ArgumentNullException.ThrowIfNull(selector);
-        return self.VisitFiles<TResult>(c => c.SetResult(selector(c)), options);
-    }
-
-    /// <summary>ディレクトリ配下のファイル/ディレクトリを検索して変換処理を行う</summary>
-    /// <remarks>
-    /// ディレクトリ内を列挙する際は最初にファイルを列挙し、オプションで指定されていれば次にサブディレクトリを列挙する。
-    /// このメソッドではサブディレクトリ配下の検索に再帰呼び出しを利用する。
-    /// ディレクトリ構成によってはスタックを大量に消費する可能性があることに注意。
-    /// </remarks>
-    /// <typeparam name="TResult">ファイル/ディレクトリに対する変換結果の型</typeparam>
-    /// <param name="self">検索の起点ディレクトリ</param>
-    /// <param name="filter">検索対象をフィルタする処理</param>
-    /// <param name="selector">ファイル/ディレクトリに対する変換処理</param>
-    /// <param name="options">検索オプション</param>
-    /// <returns>変換結果のシーケンス</returns>
-    public static IEnumerable<TResult> SelectFiles<TResult>(this DirectoryInfo self, Func<IFileWalker, bool> filter, Func<IFileWalker, TResult> selector, SelectFilesOptions? options = null)
-    {
-        ArgumentNullException.ThrowIfNull(selector);
-        return self.VisitFiles<TResult>(c => { if (filter(c)) { c.SetResult(selector(c)); } else if (c.File == null) { c.Break = true; } }, options);
-    }
-
-    /// <summary>ディレクトリ配下のファイル/ディレクトリを検索して変換処理を行う</summary>
-    /// <remarks>
-    /// ディレクトリ内を列挙する際は最初にファイルを列挙し、オプションで指定されていれば次にサブディレクトリを列挙する。
-    /// このメソッドではサブディレクトリ配下の検索に再帰呼び出しを利用する。
-    /// ディレクトリ構成によってはスタックを大量に消費する可能性があることに注意。
-    /// </remarks>
-    /// <typeparam name="TResult">ファイル/ディレクトリに対する変換結果の型</typeparam>
-    /// <param name="self">検索の起点ディレクトリ</param>
-    /// <param name="selector">ファイル/ディレクトリに対する変換処理</param>
-    /// <param name="excludes">列挙対象から除外するパターンのコレクション</param>
-    /// <param name="includes">列挙対象に含めるパターンのコレクション。除外されなかったファイルに適用する。nullの場合は全てのファイルが列挙対象。</param>
-    /// <param name="options">検索オプション</param>
-    /// <returns>変換結果のシーケンス</returns>
-    public static IEnumerable<TResult> SelectFiles<TResult>(this DirectoryInfo self, Func<IFileWalker, TResult> selector, IReadOnlyCollection<Regex> excludes, IReadOnlyCollection<Regex>? includes = null, SelectFilesOptions? options = null)
-    {
-        ArgumentNullException.ThrowIfNull(selector);
-        return self.VisitFiles<TResult>(c => c.SetResult(selector(c)), excludes, includes, options);
     }
 
     /// <summary>ディレクトリ配下のファイル/ディレクトリを検索して変換処理を行う</summary>
@@ -630,13 +541,13 @@ public static class DirectoryInfoExtensions
     /// <param name="selector">ファイル/ディレクトリに対する変換処理</param>
     /// <param name="options">検索オプション</param>
     /// <returns>変換結果の非同期シーケンス</returns>
-    public static IAsyncEnumerable<TResult> VisitFilesAsync<TResult>(this DirectoryInfo self, AsyncSelectFilesWalker<TResult> selector, SelectFilesOptions? options = null)
+    public static IAsyncEnumerable<TResult> VisitFilesAsync<TResult>(this DirectoryInfo self, AsyncVisitFilesWalker<TResult> selector, VisitFilesOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(self);
         ArgumentNullException.ThrowIfNull(selector);
 
         // ディレクトリ配下を検索するローカル関数
-        static async IAsyncEnumerable<TResult> enumerateAsync(SelectFilesAsyncContext<TResult> context, DirectoryInfo directory)
+        static async IAsyncEnumerable<TResult> enumerateAsync(VisitFilesAsyncContext<TResult> context, DirectoryInfo directory)
         {
             // ファイルの列挙シーケンスを取得。オプションによってバッファリングとソート。
             var files = context.Options.Buffered ? directory.GetFiles("*", context.Enumeration) : directory.EnumerateFiles("*", context.Enumeration);
@@ -648,6 +559,10 @@ public static class DirectoryInfoExtensions
                 // ファイル列挙
                 foreach (var file in files)
                 {
+                    // フィルタの適用
+                    var pass = context.Options.FileFilter?.Invoke(file) ?? true;
+                    if (!pass) continue;
+
                     // ファイル処理上の状態初期化
                     context.State.SetFile(file);
 
@@ -680,6 +595,10 @@ public static class DirectoryInfoExtensions
             // サブディレクトリ列挙
             foreach (var subdir in subdirs)
             {
+                // フィルタの適用
+                var pass = context.Options.DirectoryFilter?.Invoke(subdir) ?? true;
+                if (!pass) continue;
+
                 // ディレクトリに対するハンドリングが有効な場合は処理デリゲートを呼び出す
                 if (context.Handling.Directory)
                 {
@@ -724,7 +643,7 @@ public static class DirectoryInfoExtensions
         options ??= new();
 
         // 列挙ハンドリングを決定
-        var handling = options.Handling ?? SelectFilesHandling.Default;
+        var handling = options.Handling ?? VisitFilesHandling.Default;
 
         // ファイルシステム列挙オプション
         var enumeration = new EnumerationOptions();
@@ -734,107 +653,15 @@ public static class DirectoryInfoExtensions
         enumeration.AttributesToSkip = options.SkipAttributes;
 
         // 列挙
-        var context = new SelectFilesAsyncContext<TResult>(new SelectFilesState<TResult>(self), selector, options, handling, enumeration);
+        var context = new VisitFilesAsyncContext<TResult>(new VisitFileWalkContext<TResult>(self), selector, options, handling, enumeration);
         return enumerateAsync(context, self);
-    }
-
-    /// <summary>ディレクトリ配下のファイル/ディレクトリを検索して変換処理を行う</summary>
-    /// <typeparam name="TResult">ファイル/ディレクトリに対する変換結果の型</typeparam>
-    /// <param name="self">検索の起点ディレクトリ</param>
-    /// <param name="selector">ファイル/ディレクトリに対する変換処理</param>
-    /// <param name="excludes">列挙対象から除外するパターンのコレクション</param>
-    /// <param name="includes">列挙対象に含めるパターンのコレクション。除外されなかったファイルに適用する。nullの場合は全てのファイルが列挙対象。</param>
-    /// <param name="options">検索オプション</param>
-    /// <returns>変換結果のシーケンス</returns>
-    public static IAsyncEnumerable<TResult> VisitFilesAsync<TResult>(this DirectoryInfo self, AsyncSelectFilesWalker<TResult> selector, IReadOnlyCollection<Regex> excludes, IReadOnlyCollection<Regex>? includes = null, SelectFilesOptions? options = null)
-    {
-        ArgumentNullException.ThrowIfNull(selector);
-        ArgumentNullException.ThrowIfNull(excludes);
-        return self.VisitFilesAsync<TResult>(options: options, selector: async c =>
-        {
-            var name = default(string?);
-            // ディレクトリに対する呼び出しであるかを判定
-            if (c.File == null)
-            {
-                // ディレクトリが除外パターンにマッチする場合、そのディレクトリの配下に入らないようフラグを立てる
-                if (excludes.Any(e => e.IsMatch(c.Directory.Name))) { c.Break = true; return; }
-                // 仲介判定用の名称はディレクトリ名
-                name = c.Directory.Name;
-            }
-            else
-            {
-                // ファイルが除外パターンにマッチする場合、単に仲介せずに終える。
-                if (excludes.Any(e => e.IsMatch(c.File.Name))) { return; }
-                // 仲介判定用の名称はファイル名
-                name = c.File.Name;
-            }
-            // 処理対象パターンが無し、もしくは指定されていてパターンに一致する場合に処理を仲介する
-            if (includes == null || includes.Any(e => e.IsMatch(name)))
-            {
-                await selector(c).ConfigureAwait(false);
-            }
-        });
-    }
-
-    /// <summary>ディレクトリ配下のファイル/ディレクトリを検索して変換処理を行う</summary>
-    /// <remarks>
-    /// ディレクトリ内を列挙する際は最初にファイルを列挙し、オプションで指定されていれば次にサブディレクトリを列挙する。
-    /// このメソッドではサブディレクトリ配下の検索に再帰呼び出しを利用する。
-    /// ディレクトリ構成によってはスタックを大量に消費する可能性があることに注意。
-    /// </remarks>
-    /// <typeparam name="TResult">ファイル/ディレクトリに対する変換結果の型</typeparam>
-    /// <param name="self">検索の起点ディレクトリ</param>
-    /// <param name="selector">ファイル/ディレクトリに対する変換処理</param>
-    /// <param name="options">検索オプション</param>
-    /// <returns>変換結果のシーケンス</returns>
-    public static IAsyncEnumerable<TResult> SelectFilesAsync<TResult>(this DirectoryInfo self, Func<IFileWalker, ValueTask<TResult>> selector, SelectFilesOptions? options = null)
-    {
-        ArgumentNullException.ThrowIfNull(selector);
-        return self.VisitFilesAsync<TResult>(async c => c.SetResult(await selector(c).ConfigureAwait(false)), options);
-    }
-
-    /// <summary>ディレクトリ配下のファイル/ディレクトリを検索して変換処理を行う</summary>
-    /// <remarks>
-    /// ディレクトリ内を列挙する際は最初にファイルを列挙し、オプションで指定されていれば次にサブディレクトリを列挙する。
-    /// このメソッドではサブディレクトリ配下の検索に再帰呼び出しを利用する。
-    /// ディレクトリ構成によってはスタックを大量に消費する可能性があることに注意。
-    /// </remarks>
-    /// <typeparam name="TResult">ファイル/ディレクトリに対する変換結果の型</typeparam>
-    /// <param name="self">検索の起点ディレクトリ</param>
-    /// <param name="filter">検索対象をフィルタする処理</param>
-    /// <param name="selector">ファイル/ディレクトリに対する変換処理</param>
-    /// <param name="options">検索オプション</param>
-    /// <returns>変換結果のシーケンス</returns>
-    public static IAsyncEnumerable<TResult> SelectFilesAsync<TResult>(this DirectoryInfo self, Func<IFileWalker, bool> filter, Func<IFileWalker, ValueTask<TResult>> selector, SelectFilesOptions? options = null)
-    {
-        ArgumentNullException.ThrowIfNull(selector);
-        return self.VisitFilesAsync<TResult>(async c => { if (filter(c)) { c.SetResult(await selector(c).ConfigureAwait(false)); } else if (c.File == null) { c.Break = true; } }, options);
-    }
-
-    /// <summary>ディレクトリ配下のファイル/ディレクトリを検索して変換処理を行う</summary>
-    /// <remarks>
-    /// ディレクトリ内を列挙する際は最初にファイルを列挙し、オプションで指定されていれば次にサブディレクトリを列挙する。
-    /// このメソッドではサブディレクトリ配下の検索に再帰呼び出しを利用する。
-    /// ディレクトリ構成によってはスタックを大量に消費する可能性があることに注意。
-    /// </remarks>
-    /// <typeparam name="TResult">ファイル/ディレクトリに対する変換結果の型</typeparam>
-    /// <param name="self">検索の起点ディレクトリ</param>
-    /// <param name="selector">ファイル/ディレクトリに対する変換処理</param>
-    /// <param name="excludes">列挙対象から除外するパターンのコレクション</param>
-    /// <param name="includes">列挙対象に含めるパターンのコレクション。除外されなかったファイルに適用する。nullの場合は全てのファイルが列挙対象。</param>
-    /// <param name="options">検索オプション</param>
-    /// <returns>変換結果のシーケンス</returns>
-    public static IAsyncEnumerable<TResult> SelectFilesAsync<TResult>(this DirectoryInfo self, Func<IFileWalker, ValueTask<TResult>> selector, IReadOnlyCollection<Regex> excludes, IReadOnlyCollection<Regex>? includes = null, SelectFilesOptions? options = null)
-    {
-        ArgumentNullException.ThrowIfNull(selector);
-        return self.VisitFilesAsync<TResult>(async c => c.SetResult(await selector(c).ConfigureAwait(false)), excludes, includes, options);
     }
 
     /// <summary>ディレクトリ配下のファイル/ディレクトリを検索して処理を行う</summary>
     /// <param name="self">検索の起点ディレクトリ</param>
     /// <param name="processor">ファイル/ディレクトリに対する処理</param>
     /// <param name="options">検索オプション</param>
-    public static void DoFiles(this DirectoryInfo self, DoFilesWalker processor, SelectFilesOptions? options = null)
+    public static void DoFiles(this DirectoryInfo self, Action<IVisitFilesContext> processor, VisitFilesOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(self);
         ArgumentNullException.ThrowIfNull(processor);
@@ -844,85 +671,47 @@ public static class DirectoryInfoExtensions
     /// <summary>ディレクトリ配下のファイル/ディレクトリを検索して処理を行う</summary>
     /// <param name="self">検索の起点ディレクトリ</param>
     /// <param name="processor">ファイル/ディレクトリに対する処理</param>
-    /// <param name="excludes">列挙対象から除外するパターンのコレクション</param>
-    /// <param name="includes">列挙対象に含めるパターンのコレクション。除外されなかったファイルに適用する。nullの場合は全てのファイルが列挙対象。</param>
-    /// <param name="options">検索オプション</param>
-    public static void DoFiles(this DirectoryInfo self, DoFilesWalker processor, IReadOnlyCollection<Regex> excludes, IReadOnlyCollection<Regex>? includes = null, SelectFilesOptions? options = null)
-    {
-        ArgumentNullException.ThrowIfNull(processor);
-        ArgumentNullException.ThrowIfNull(excludes);
-        self.DoFiles(options: options, processor: c =>
-        {
-            var name = default(string?);
-            // ディレクトリに対する呼び出しであるかを判定
-            if (c.File == null)
-            {
-                // ディレクトリが除外パターンにマッチする場合、そのディレクトリの配下に入らないようフラグを立てる
-                if (excludes.Any(e => e.IsMatch(c.Directory.Name))) { c.Break = true; return; }
-                // 仲介判定用の名称はディレクトリ名
-                name = c.Directory.Name;
-            }
-            else
-            {
-                // ファイルが除外パターンにマッチする場合、単に仲介せずに終える。
-                if (excludes.Any(e => e.IsMatch(c.File.Name))) { return; }
-                // 仲介判定用の名称はファイル名
-                name = c.File.Name;
-            }
-            // 処理対象パターンが無し、もしくは指定されていてパターンに一致する場合に処理を仲介する
-            if (includes == null || includes.Any(e => e.IsMatch(name)))
-            {
-                processor(c);
-            }
-        });
-    }
-
-    /// <summary>ディレクトリ配下のファイル/ディレクトリを検索して処理を行う</summary>
-    /// <param name="self">検索の起点ディレクトリ</param>
-    /// <param name="processor">ファイル/ディレクトリに対する処理</param>
     /// <param name="options">検索オプション</param>
     /// <returns>検索処理タスク</returns>
-    public static async Task DoFilesAsync(this DirectoryInfo self, AsyncDoFilesWalker processor, SelectFilesOptions? options = null)
+    public static async Task DoFilesAsync(this DirectoryInfo self, Func<IVisitFilesContext, ValueTask> processor, VisitFilesOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(self);
         ArgumentNullException.ThrowIfNull(processor);
         await foreach (var _ in self.VisitFilesAsync<int>(c => processor(c), options).ConfigureAwait(false)) ;
     }
 
-    /// <summary>ディレクトリ配下のファイル/ディレクトリを検索して処理を行う</summary>
+    /// <summary>ディレクトリ配下のファイル/ディレクトリを検索して変換処理を行う</summary>
+    /// <remarks>
+    /// ディレクトリ内を列挙する際は最初にファイルを列挙し、オプションで指定されていれば次にサブディレクトリを列挙する。
+    /// このメソッドではサブディレクトリ配下の検索に再帰呼び出しを利用する。
+    /// ディレクトリ構成によってはスタックを大量に消費する可能性があることに注意。
+    /// </remarks>
+    /// <typeparam name="TResult">ファイル/ディレクトリに対する変換結果の型</typeparam>
     /// <param name="self">検索の起点ディレクトリ</param>
-    /// <param name="processor">ファイル/ディレクトリに対する処理</param>
-    /// <param name="excludes">列挙対象から除外するパターンのコレクション</param>
-    /// <param name="includes">列挙対象に含めるパターンのコレクション。除外されなかったファイルに適用する。nullの場合は全てのファイルが列挙対象。</param>
+    /// <param name="selector">ファイル/ディレクトリに対する変換処理</param>
     /// <param name="options">検索オプション</param>
-    /// <returns>検索処理タスク</returns>
-    public static Task DoFilesAsync(this DirectoryInfo self, AsyncDoFilesWalker processor, IReadOnlyCollection<Regex> excludes, IReadOnlyCollection<Regex>? includes = null, SelectFilesOptions? options = null)
+    /// <returns>変換結果のシーケンス</returns>
+    public static IEnumerable<TResult> SelectFiles<TResult>(this DirectoryInfo self, Func<IVisitFilesContext, TResult> selector, VisitFilesOptions? options = null)
     {
-        ArgumentNullException.ThrowIfNull(processor);
-        return self.DoFilesAsync(options: options, processor: async c =>
-        {
-            var name = default(string?);
-            // ディレクトリに対する呼び出しであるかを判定
-            if (c.File == null)
-            {
-                // ディレクトリが除外パターンにマッチする場合、そのディレクトリの配下に入らないようフラグを立てる
-                if (excludes.Any(e => e.IsMatch(c.Directory.Name))) { c.Break = true; return; }
-                // 仲介判定用の名称はディレクトリ名
-                name = c.Directory.Name;
-            }
-            else
-            {
-                // ファイルが除外パターンにマッチする場合、単に仲介せずに終える。
-                if (excludes.Any(e => e.IsMatch(c.File.Name))) { return; }
-                // 仲介判定用の名称はファイル名
-                name = c.File.Name;
-            }
-            // 処理対象パターンが無し、もしくは指定されていてパターンに一致する場合に処理を仲介する
-            if (includes == null || includes.Any(e => e.IsMatch(name)))
-            {
-                await processor(c).ConfigureAwait(false);
-            }
-        });
+        ArgumentNullException.ThrowIfNull(selector);
+        return self.VisitFiles<TResult>(c => c.SetResult(selector(c)), options);
+    }
+
+    /// <summary>ディレクトリ配下のファイル/ディレクトリを検索して変換処理を行う</summary>
+    /// <remarks>
+    /// ディレクトリ内を列挙する際は最初にファイルを列挙し、オプションで指定されていれば次にサブディレクトリを列挙する。
+    /// このメソッドではサブディレクトリ配下の検索に再帰呼び出しを利用する。
+    /// ディレクトリ構成によってはスタックを大量に消費する可能性があることに注意。
+    /// </remarks>
+    /// <typeparam name="TResult">ファイル/ディレクトリに対する変換結果の型</typeparam>
+    /// <param name="self">検索の起点ディレクトリ</param>
+    /// <param name="selector">ファイル/ディレクトリに対する変換処理</param>
+    /// <param name="options">検索オプション</param>
+    /// <returns>変換結果のシーケンス</returns>
+    public static IAsyncEnumerable<TResult> SelectFilesAsync<TResult>(this DirectoryInfo self, Func<IVisitFilesContext, ValueTask<TResult>> selector, VisitFilesOptions? options = null)
+    {
+        ArgumentNullException.ThrowIfNull(selector);
+        return self.VisitFilesAsync<TResult>(async c => c.SetResult(await selector(c)), options);
     }
 
     /// <summary>ファイル列挙変換コンテキスト情報</summary>
@@ -932,7 +721,7 @@ public static class DirectoryInfoExtensions
     /// <param name="Options">検索オプション</param>
     /// <param name="Handling">処理対象設定</param>
     /// <param name="Enumeration">ファイルシステム列挙オプション</param>
-    private record SelectFilesContext<TResult>(SelectFilesState<TResult> State, SelectFilesWalker<TResult> Selector, SelectFilesOptions Options, SelectFilesHandling Handling, EnumerationOptions Enumeration);
+    private record VisitFilesContext<TResult>(VisitFileWalkContext<TResult> State, VisitFilesWalker<TResult> Selector, VisitFilesOptions Options, VisitFilesHandling Handling, EnumerationOptions Enumeration);
 
     /// <summary>ファイル列挙変換コンテキスト情報(非同期)</summary>
     /// <typeparam name="TResult">変換結果の型</typeparam>
@@ -941,17 +730,17 @@ public static class DirectoryInfoExtensions
     /// <param name="Options">検索オプション</param>
     /// <param name="Handling">処理対象設定</param>
     /// <param name="Enumeration">ファイルシステム列挙オプション</param>
-    private record SelectFilesAsyncContext<TResult>(SelectFilesState<TResult> State, AsyncSelectFilesWalker<TResult> Selector, SelectFilesOptions Options, SelectFilesHandling Handling, EnumerationOptions Enumeration);
+    private record VisitFilesAsyncContext<TResult>(VisitFileWalkContext<TResult> State, AsyncVisitFilesWalker<TResult> Selector, VisitFilesOptions Options, VisitFilesHandling Handling, EnumerationOptions Enumeration);
 
     /// <summary>ファイル列挙変換状態情報</summary>
     /// <typeparam name="TResult">変換結果の型</typeparam>
-    private class SelectFilesState<TResult> : IFileConverter<TResult>
+    private class VisitFileWalkContext<TResult> : IVisitFilesContext<TResult>
     {
         // 構築
         #region コンストラクタ
         /// <summary>起点ディレクトリを指定するコンストラクタ</summary>
         /// <param name="dir">起点ディレクトリ</param>
-        public SelectFilesState(DirectoryInfo dir)
+        public VisitFileWalkContext(DirectoryInfo dir)
         {
             this.Directory = dir;
             this.Value = default!;
@@ -1035,7 +824,7 @@ public static class DirectoryInfoExtensions
 
         // 配下のファイル/ディレクトリに読み取り専用属性が付いていれば削除する。
         // ただ、これだけが削除を阻害する要因ではないので気休め程度ではある。
-        var options = new SelectFilesOptions(Recurse: true, new(File: true, Directory: true), Sort: false, Buffered: false);
+        var options = new VisitFilesOptions(Recurse: true, new(File: true, Directory: true), Sort: false, Buffered: false);
         self.DoFiles(w => w.Item.SetReadOnly(false), options);
 
         // 再帰的に削除する

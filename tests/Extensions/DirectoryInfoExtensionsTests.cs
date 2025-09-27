@@ -534,7 +534,7 @@ public class DirectoryInfoExtensionsTests
             await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
         }
 
-        var testOpt = new SelectFilesOptions
+        var testOpt = new VisitFilesOptions
         {
             Recurse = false,
             Buffered = false,
@@ -542,7 +542,7 @@ public class DirectoryInfoExtensionsTests
         };
 
         static string selector(FileInfo file) => file.ReadAllText();
-        var converter = new SelectFilesWalker<string>(context => context.SetResult(selector(context.File!)));
+        var converter = new VisitFilesWalker<string>(context => context.SetResult(selector(context.File!)));
 
         var testExpects = testDir.Info.EnumerateFiles("*", SearchOption.TopDirectoryOnly).Select(selector);
 
@@ -572,7 +572,7 @@ public class DirectoryInfoExtensionsTests
             await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
         }
 
-        var testOpt = new SelectFilesOptions
+        var testOpt = new VisitFilesOptions
         {
             Recurse = true,
             Buffered = false,
@@ -580,7 +580,7 @@ public class DirectoryInfoExtensionsTests
         };
 
         static string selector(FileInfo file) => file.ReadAllText();
-        var converter = new SelectFilesWalker<string>(context =>
+        var converter = new VisitFilesWalker<string>(context =>
         {
             if (context.File == null) context.Item.Should().BeOfType<DirectoryInfo>().And.Be(context.Directory);
             else context.Item.Should().BeOfType<FileInfo>().And.Be(context.File);
@@ -615,7 +615,7 @@ public class DirectoryInfoExtensionsTests
             await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
         }
 
-        var testOpt = new SelectFilesOptions
+        var testOpt = new VisitFilesOptions
         {
             Recurse = false,
             Handling = new(File: true, Directory: false),
@@ -623,7 +623,7 @@ public class DirectoryInfoExtensionsTests
             Sort = false,
         };
 
-        var converter = new SelectFilesWalker<string>(context =>
+        var converter = new VisitFilesWalker<string>(context =>
         {
             if (context.File == null)
             {
@@ -667,7 +667,7 @@ public class DirectoryInfoExtensionsTests
             await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
         }
 
-        var testOpt = new SelectFilesOptions
+        var testOpt = new VisitFilesOptions
         {
             Recurse = false,
             Handling = new(File: false, Directory: true),
@@ -675,7 +675,7 @@ public class DirectoryInfoExtensionsTests
             Sort = false,
         };
 
-        var converter = new SelectFilesWalker<string>(context =>
+        var converter = new VisitFilesWalker<string>(context =>
         {
             if (context.File == null)
             {
@@ -718,7 +718,7 @@ public class DirectoryInfoExtensionsTests
             await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
         }
 
-        var testOpt = new SelectFilesOptions
+        var testOpt = new VisitFilesOptions
         {
             Recurse = false,
             Handling = new(File: true, Directory: true),
@@ -726,7 +726,7 @@ public class DirectoryInfoExtensionsTests
             Sort = false,
         };
 
-        var converter = new SelectFilesWalker<string>(context =>
+        var converter = new VisitFilesWalker<string>(context =>
         {
             var relPath = context.Item.RelativePathFrom(testDir.Info, ignoreCase: true).Replace('\\', '/');
             context.SetResult(relPath);
@@ -765,7 +765,7 @@ public class DirectoryInfoExtensionsTests
             await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
         }
 
-        var testOpt = new SelectFilesOptions
+        var testOpt = new VisitFilesOptions
         {
             Recurse = true,
             Handling = new(File: true, Directory: false),
@@ -773,7 +773,7 @@ public class DirectoryInfoExtensionsTests
             Sort = false,
         };
 
-        var converter = new SelectFilesWalker<string>(context =>
+        var converter = new VisitFilesWalker<string>(context =>
         {
             if (context.File == null)
             {
@@ -824,7 +824,7 @@ public class DirectoryInfoExtensionsTests
             await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
         }
 
-        var testOpt = new SelectFilesOptions
+        var testOpt = new VisitFilesOptions
         {
             Recurse = true,
             Handling = new(File: false, Directory: true),
@@ -832,7 +832,7 @@ public class DirectoryInfoExtensionsTests
             Sort = false,
         };
 
-        var converter = new SelectFilesWalker<string>(context =>
+        var converter = new VisitFilesWalker<string>(context =>
         {
             if (context.File == null)
             {
@@ -876,7 +876,7 @@ public class DirectoryInfoExtensionsTests
             await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
         }
 
-        var testOpt = new SelectFilesOptions
+        var testOpt = new VisitFilesOptions
         {
             Recurse = true,
             Handling = new(File: true, Directory: true),
@@ -884,7 +884,7 @@ public class DirectoryInfoExtensionsTests
             Sort = false,
         };
 
-        var converter = new SelectFilesWalker<string>(context =>
+        var converter = new VisitFilesWalker<string>(context =>
         {
             var relPath = context.Item.RelativePathFrom(testDir.Info, ignoreCase: true).Replace('\\', '/');
             context.SetResult(relPath);
@@ -909,7 +909,7 @@ public class DirectoryInfoExtensionsTests
     }
 
     [TestMethod]
-    public async Task VisitFiles_Filter()
+    public async Task VisitFiles_FileFilter()
     {
         // Walkerデリゲートで条件付けされた変換結果の設定
 
@@ -931,16 +931,18 @@ public class DirectoryInfoExtensionsTests
             await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
         }
 
-        var testOpt = new SelectFilesOptions
+        static string selector(FileInfo file) => file.ReadAllText();
+        static bool filter(FileSystemInfo item) => item is DirectoryInfo || item.Name.Contains(".txt");
+        var converter = new VisitFilesWalker<string>(context => context.SetResult(selector(context.File!)));
+
+        var testOpt = new VisitFilesOptions
         {
             Recurse = true,
             Buffered = false,
             Sort = false,
+            Handling = VisitFilesHandling.OnlyFile,
+            FileFilter = filter,
         };
-
-        static string selector(FileInfo file) => file.ReadAllText();
-        static bool filter(FileSystemInfo item) => item is DirectoryInfo || item.Name.Contains(".txt");
-        var converter = new SelectFilesWalker<string>(context => { if (filter(context.File!)) context.SetResult(selector(context.File!)); });
 
         var testExpects = testDir.Info.EnumerateFiles("*", SearchOption.AllDirectories)
             .Where(f => filter(f)).Select(selector);
@@ -949,7 +951,7 @@ public class DirectoryInfoExtensionsTests
     }
 
     [TestMethod]
-    public async Task VisitFiles_Filter_Dir()
+    public async Task VisitFiles_DirectoryFilter()
     {
         // ディレクトリをWalkerハンドラ呼び出しにし、一部のディレクトリ列挙をスキップする
 
@@ -971,24 +973,18 @@ public class DirectoryInfoExtensionsTests
             await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
         }
 
-        var testOpt = new SelectFilesOptions
+        var testOpt = new VisitFilesOptions
         {
             Recurse = true,
-            Handling = SelectFilesHandling.All,
+            Handling = VisitFilesHandling.All,
             Buffered = false,
             Sort = false,
+            DirectoryFilter = dir => dir.Name != "abc",
         };
 
-        var converter = new SelectFilesWalker<string>(context =>
+        var converter = new VisitFilesWalker<string>(context =>
         {
-            if (context.File == null)
-            {
-                if (context.Directory.Name == "abc") context.Break = true;
-            }
-            else
-            {
-                context.SetResult(context.File.ReadAllText());
-            }
+            if (context.File != null) context.SetResult(context.File.ReadAllText());
         });
 
         testDir.Info.VisitFiles(converter, options: testOpt).Should().BeEquivalentTo(new[]
@@ -998,89 +994,6 @@ public class DirectoryInfoExtensionsTests
             @"eee.png",
             @"asd/qwe/ggg.txt",
             @"hhh.txt",
-        });
-    }
-
-    [TestMethod]
-    public async Task VisitFiles_Excludes()
-    {
-        // 除外パターン指定
-
-        var testFiles = new[]
-        {
-            @"abc/aaa.txt",
-            @"def/ghi/bbb.txt",
-            @"ccc.txt",
-            @"abc/ddd.txt",
-            @"eee.txt",
-            @"abc/fff.txt",
-            @"asd/qwe/ggg.txt",
-            @"hhh.txt",
-        };
-
-        using var testDir = new TempDir();
-        foreach (var path in testFiles)
-        {
-            await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
-        }
-
-        var testOpt = new SelectFilesOptions
-        {
-            Recurse = true,
-            Buffered = false,
-            Sort = false,
-        };
-        var excludes = new[] { new Regex(@"[defg]+.txt"), };
-
-        var converter = new SelectFilesWalker<string>(context => context.SetResult(context.File!.ReadAllText()));
-
-        testDir.Info.VisitFiles(converter, excludes, options: testOpt).Should().BeEquivalentTo(new[]
-        {
-            @"abc/aaa.txt",
-            @"def/ghi/bbb.txt",
-            @"ccc.txt",
-            @"hhh.txt",
-        });
-    }
-
-    [TestMethod]
-    public async Task VisitFiles_Includes()
-    {
-        var testFiles = new[]
-        {
-            @"abc/aaa.txt",
-            @"def/ghi/bbb.txt",
-            @"ccc.txt",
-            @"abc/ddd.txt",
-            @"eee.txt",
-            @"abc/fff.txt",
-            @"asd/qwe/ggg.txt",
-            @"hhh.txt",
-        };
-
-        using var testDir = new TempDir();
-        foreach (var path in testFiles)
-        {
-            await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
-        }
-
-        var testOpt = new SelectFilesOptions
-        {
-            Recurse = true,
-            Buffered = false,
-            Sort = false,
-        };
-        var excludes = new Regex[0];
-        var includes = new[] { new Regex(@"[defg]+.txt"), };
-
-        var converter = new SelectFilesWalker<string>(context => context.SetResult(context.File!.ReadAllText()));
-
-        testDir.Info.VisitFiles(converter, excludes, includes, options: testOpt).Should().BeEquivalentTo(new[]
-        {
-            @"abc/ddd.txt",
-            @"eee.txt",
-            @"abc/fff.txt",
-            @"asd/qwe/ggg.txt",
         });
     }
 
@@ -1105,7 +1018,7 @@ public class DirectoryInfoExtensionsTests
             await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
         }
 
-        var testOpt = new SelectFilesOptions
+        var testOpt = new VisitFilesOptions
         {
             Recurse = true,
             Buffered = false,
@@ -1118,140 +1031,6 @@ public class DirectoryInfoExtensionsTests
             .Select(selector);
 
         testDir.Info.SelectFiles(w => selector(w.File!), options: testOpt).Should().BeEquivalentTo(testExpects);
-    }
-
-    [TestMethod]
-    public async Task SelectFiles_Filter()
-    {
-        var testFiles = new[]
-        {
-            @"abc/aaa.txt",
-            @"def/ghi/bbb.png",
-            @"ccc.jpg",
-            @"abc/ddd.txt",
-            @"eee.png",
-            @"abc/fff.jpg",
-            @"asd/qwe/ggg.txt",
-            @"hhh.txt",
-        };
-
-        using var testDir = new TempDir();
-        foreach (var path in testFiles)
-        {
-            await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
-        }
-
-        var testOpt = new SelectFilesOptions
-        {
-            Recurse = true,
-            Buffered = false,
-            Sort = false,
-        };
-
-        static string selector(FileInfo file) => file.ReadAllText();
-        static bool filter(FileSystemInfo item) => item is DirectoryInfo || item.Name.Contains(".txt");
-
-        var testExpects = testDir.Info.EnumerateFiles("*", SearchOption.AllDirectories)
-            .Where(f => filter(f)).Select(selector);
-
-        testDir.Info.SelectFiles(w => filter(w.File!), w => selector(w.File!), options: testOpt).Should().BeEquivalentTo(testExpects);
-    }
-
-    [TestMethod]
-    public async Task SelectFiles_Excludes()
-    {
-        var testFiles = new[]
-        {
-            @"abc/aaa.txt",
-            @"def/ghi/bbb.txt",
-            @"ccc.txt",
-            @"abc/ddd.txt",
-            @"eee.txt",
-            @"abc/fff.txt",
-            @"asd/qwe/ggg.txt",
-            @"hhh.txt",
-        };
-
-        using var testDir = new TempDir();
-        foreach (var path in testFiles)
-        {
-            await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
-        }
-
-        var testOpt = new SelectFilesOptions
-        {
-            Recurse = true,
-            Buffered = false,
-            Sort = false,
-        };
-        var excludes = new[] { new Regex(@"[defg]+.txt"), };
-
-        static string selector(FileInfo file) => file.ReadAllText();
-
-        testDir.Info.SelectFiles(w => selector(w.File!), excludes, options: testOpt).Should().BeEquivalentTo(new[]
-        {
-            @"abc/aaa.txt",
-            @"def/ghi/bbb.txt",
-            @"ccc.txt",
-            @"hhh.txt",
-        });
-    }
-
-    [TestMethod]
-    public async Task SelectFiles_Includes()
-    {
-        var testFiles = new[]
-        {
-            @"abc/aaa.txt",
-            @"def/ghi/bbb.txt",
-            @"ccc.txt",
-            @"abc/ddd.txt",
-            @"eee.txt",
-            @"abc/fff.txt",
-            @"asd/qwe/ggg.txt",
-            @"hhh.txt",
-        };
-
-        using var testDir = new TempDir();
-        foreach (var path in testFiles)
-        {
-            await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
-        }
-
-        var testOpt = new SelectFilesOptions
-        {
-            Recurse = true,
-            Buffered = false,
-            Sort = false,
-        };
-        var excludes = new Regex[0];
-        var includes = new[] { new Regex(@"[defg]+.txt"), };
-
-        static string selector(FileInfo file) => file.ReadAllText();
-
-        testDir.Info.SelectFiles(w => selector(w.File!), excludes, includes, options: testOpt).Should().BeEquivalentTo(new[]
-        {
-            @"abc/ddd.txt",
-            @"eee.txt",
-            @"abc/fff.txt",
-            @"asd/qwe/ggg.txt",
-        });
-    }
-
-    [TestMethod]
-    public async Task SelectFiles_SpecialDir()
-    {
-        var docDir = SpecialFolder.Get(Environment.SpecialFolder.MyDocuments);
-        var options = new SelectFilesOptions { Recurse = true, Sort = false, SkipAttributes = FileAttributes.None, SkipInaccessible = true, };
-
-        await FluentActions
-            .Awaiting(async () => await docDir.SelectFilesAsync(w => ValueTask.FromResult(w.Item.FullName), options with { Buffered = false, }).ToArrayAsync())
-            .Should().NotThrowAsync();
-
-        await FluentActions
-            .Awaiting(async () => await docDir.SelectFilesAsync(w => ValueTask.FromResult(w.Item.FullName), options with { Buffered = true, }).ToArrayAsync())
-            .Should().NotThrowAsync();
-
     }
 
     [TestMethod]
@@ -1275,14 +1054,14 @@ public class DirectoryInfoExtensionsTests
             await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
         }
 
-        var testOpt = new SelectFilesOptions
+        var testOpt = new VisitFilesOptions
         {
             Recurse = false,
             Buffered = false,
             Sort = false,
         };
 
-        var converter = new AsyncSelectFilesWalker<string>(async context =>
+        var converter = new AsyncVisitFilesWalker<string>(async context =>
         {
             context.SetResult(await context.File!.ReadAllTextAsync());
         });
@@ -1317,14 +1096,14 @@ public class DirectoryInfoExtensionsTests
             await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
         }
 
-        var testOpt = new SelectFilesOptions
+        var testOpt = new VisitFilesOptions
         {
             Recurse = true,
             Buffered = false,
             Sort = false,
         };
 
-        var converter = new AsyncSelectFilesWalker<string>(async context =>
+        var converter = new AsyncVisitFilesWalker<string>(async context =>
         {
             if (context.File == null) context.Item.Should().BeOfType<DirectoryInfo>().And.Be(context.Directory);
             else context.Item.Should().BeOfType<FileInfo>().And.Be(context.File);
@@ -1362,7 +1141,7 @@ public class DirectoryInfoExtensionsTests
             await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
         }
 
-        var testOpt = new SelectFilesOptions
+        var testOpt = new VisitFilesOptions
         {
             Recurse = false,
             Handling = new(File: true, Directory: false),
@@ -1370,7 +1149,7 @@ public class DirectoryInfoExtensionsTests
             Sort = false,
         };
 
-        var converter = new AsyncSelectFilesWalker<string>(async context =>
+        var converter = new AsyncVisitFilesWalker<string>(async context =>
         {
             await Task.CompletedTask;
             if (context.File == null)
@@ -1415,7 +1194,7 @@ public class DirectoryInfoExtensionsTests
             await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
         }
 
-        var testOpt = new SelectFilesOptions
+        var testOpt = new VisitFilesOptions
         {
             Recurse = false,
             Handling = new(File: false, Directory: true),
@@ -1423,7 +1202,7 @@ public class DirectoryInfoExtensionsTests
             Sort = false,
         };
 
-        var converter = new AsyncSelectFilesWalker<string>(async context =>
+        var converter = new AsyncVisitFilesWalker<string>(async context =>
         {
             await Task.CompletedTask;
             if (context.File == null)
@@ -1467,7 +1246,7 @@ public class DirectoryInfoExtensionsTests
             await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
         }
 
-        var testOpt = new SelectFilesOptions
+        var testOpt = new VisitFilesOptions
         {
             Recurse = false,
             Handling = new(File: true, Directory: true),
@@ -1475,7 +1254,7 @@ public class DirectoryInfoExtensionsTests
             Sort = false,
         };
 
-        var converter = new AsyncSelectFilesWalker<string>(async context =>
+        var converter = new AsyncVisitFilesWalker<string>(async context =>
         {
             await Task.CompletedTask;
             var relPath = context.Item.RelativePathFrom(testDir.Info, ignoreCase: true).Replace('\\', '/');
@@ -1515,7 +1294,7 @@ public class DirectoryInfoExtensionsTests
             await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
         }
 
-        var testOpt = new SelectFilesOptions
+        var testOpt = new VisitFilesOptions
         {
             Recurse = true,
             Handling = new(File: true, Directory: false),
@@ -1523,7 +1302,7 @@ public class DirectoryInfoExtensionsTests
             Sort = false,
         };
 
-        var converter = new AsyncSelectFilesWalker<string>(async context =>
+        var converter = new AsyncVisitFilesWalker<string>(async context =>
         {
             await Task.CompletedTask;
             if (context.File == null)
@@ -1575,7 +1354,7 @@ public class DirectoryInfoExtensionsTests
             await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
         }
 
-        var testOpt = new SelectFilesOptions
+        var testOpt = new VisitFilesOptions
         {
             Recurse = true,
             Handling = new(File: false, Directory: true),
@@ -1583,7 +1362,7 @@ public class DirectoryInfoExtensionsTests
             Sort = false,
         };
 
-        var converter = new AsyncSelectFilesWalker<string>(async context =>
+        var converter = new AsyncVisitFilesWalker<string>(async context =>
         {
             await Task.CompletedTask;
             if (context.File == null)
@@ -1628,7 +1407,7 @@ public class DirectoryInfoExtensionsTests
             await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
         }
 
-        var testOpt = new SelectFilesOptions
+        var testOpt = new VisitFilesOptions
         {
             Recurse = true,
             Handling = new(File: true, Directory: true),
@@ -1636,7 +1415,7 @@ public class DirectoryInfoExtensionsTests
             Sort = false,
         };
 
-        var converter = new AsyncSelectFilesWalker<string>(async context =>
+        var converter = new AsyncVisitFilesWalker<string>(async context =>
         {
             await Task.CompletedTask;
             var relPath = context.Item.RelativePathFrom(testDir.Info, ignoreCase: true).Replace('\\', '/');
@@ -1662,7 +1441,7 @@ public class DirectoryInfoExtensionsTests
     }
 
     [TestMethod]
-    public async Task VisitFilesAsync_Filter()
+    public async Task VisitFilesAsync_FileFilter()
     {
         // Walkerデリゲートで条件付けされた変換結果の設定
 
@@ -1684,18 +1463,20 @@ public class DirectoryInfoExtensionsTests
             await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
         }
 
-        var testOpt = new SelectFilesOptions
+        static bool filter(FileSystemInfo item) => item is DirectoryInfo || item.Name.Contains(".txt");
+        var converter = new AsyncVisitFilesWalker<string>(async context =>
+        {
+            context.SetResult(await context.File!.ReadAllTextAsync());
+        });
+
+        var testOpt = new VisitFilesOptions
         {
             Recurse = true,
             Buffered = false,
             Sort = false,
+            Handling = VisitFilesHandling.OnlyFile,
+            FileFilter = filter,
         };
-
-        static bool filter(FileSystemInfo item) => item is DirectoryInfo || item.Name.Contains(".txt");
-        var converter = new AsyncSelectFilesWalker<string>(async context =>
-        {
-            if (filter(context.File!)) context.SetResult(await context.File!.ReadAllTextAsync());
-        });
 
         var testExpects = testDir.Info.EnumerateFiles("*", SearchOption.AllDirectories)
             .Where(f => filter(f)).Select(f => f.ReadAllText());
@@ -1705,7 +1486,7 @@ public class DirectoryInfoExtensionsTests
     }
 
     [TestMethod]
-    public async Task VisitFilesAsync_Filter_Dir()
+    public async Task VisitFilesAsync_DirectoryFilter()
     {
         // ディレクトリをWalkerハンドラ呼び出しにし、一部のディレクトリ列挙をスキップする
 
@@ -1727,24 +1508,18 @@ public class DirectoryInfoExtensionsTests
             await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
         }
 
-        var testOpt = new SelectFilesOptions
+        var testOpt = new VisitFilesOptions
         {
             Recurse = true,
-            Handling = SelectFilesHandling.All,
+            Handling = VisitFilesHandling.All,
             Buffered = false,
             Sort = false,
+            DirectoryFilter = dir => dir.Name != "abc",
         };
 
-        var converter = new AsyncSelectFilesWalker<string>(async context =>
+        var converter = new AsyncVisitFilesWalker<string>(async context =>
         {
-            if (context.File == null)
-            {
-                if (context.Directory.Name == "abc") context.Break = true;
-            }
-            else
-            {
-                context.SetResult(await context.File.ReadAllTextAsync());
-            }
+            if (context.File != null) context.SetResult(await context.File.ReadAllTextAsync());
         });
 
         (await testDir.Info.VisitFilesAsync(converter, options: testOpt).ToArrayAsync()).Should().BeEquivalentTo(new[]
@@ -1754,89 +1529,6 @@ public class DirectoryInfoExtensionsTests
             @"eee.png",
             @"asd/qwe/ggg.txt",
             @"hhh.txt",
-        });
-    }
-
-    [TestMethod]
-    public async Task VisitFilesAsync_Excludes()
-    {
-        // 除外パターン指定
-
-        var testFiles = new[]
-        {
-            @"abc/aaa.txt",
-            @"def/ghi/bbb.txt",
-            @"ccc.txt",
-            @"abc/ddd.txt",
-            @"eee.txt",
-            @"abc/fff.txt",
-            @"asd/qwe/ggg.txt",
-            @"hhh.txt",
-        };
-
-        using var testDir = new TempDir();
-        foreach (var path in testFiles)
-        {
-            await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
-        }
-
-        var testOpt = new SelectFilesOptions
-        {
-            Recurse = true,
-            Buffered = false,
-            Sort = false,
-        };
-        var excludes = new[] { new Regex(@"[defg]+.txt"), };
-
-        var converter = new AsyncSelectFilesWalker<string>(async context => context.SetResult(await context.File!.ReadAllTextAsync()));
-
-        (await testDir.Info.VisitFilesAsync(converter, excludes, options: testOpt).ToArrayAsync()).Should().BeEquivalentTo(new[]
-        {
-            @"abc/aaa.txt",
-            @"def/ghi/bbb.txt",
-            @"ccc.txt",
-            @"hhh.txt",
-        });
-    }
-
-    [TestMethod]
-    public async Task VisitFilesAsync_Includes()
-    {
-        var testFiles = new[]
-        {
-            @"abc/aaa.txt",
-            @"def/ghi/bbb.txt",
-            @"ccc.txt",
-            @"abc/ddd.txt",
-            @"eee.txt",
-            @"abc/fff.txt",
-            @"asd/qwe/ggg.txt",
-            @"hhh.txt",
-        };
-
-        using var testDir = new TempDir();
-        foreach (var path in testFiles)
-        {
-            await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
-        }
-
-        var testOpt = new SelectFilesOptions
-        {
-            Recurse = true,
-            Buffered = false,
-            Sort = false,
-        };
-        var excludes = new Regex[0];
-        var includes = new[] { new Regex(@"[defg]+.txt"), };
-
-        var converter = new AsyncSelectFilesWalker<string>(async context => context.SetResult(await context.File!.ReadAllTextAsync()));
-
-        (await testDir.Info.VisitFilesAsync(converter, excludes, includes, options: testOpt).ToArrayAsync()).Should().BeEquivalentTo(new[]
-        {
-            @"abc/ddd.txt",
-            @"eee.txt",
-            @"abc/fff.txt",
-            @"asd/qwe/ggg.txt",
         });
     }
 
@@ -1861,7 +1553,7 @@ public class DirectoryInfoExtensionsTests
             await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
         }
 
-        var testOpt = new SelectFilesOptions
+        var testOpt = new VisitFilesOptions
         {
             Recurse = true,
             Buffered = false,
@@ -1873,120 +1565,6 @@ public class DirectoryInfoExtensionsTests
 
         (await testDir.Info.SelectFilesAsync(async w => await w.File!.ReadAllTextAsync(), options: testOpt).ToArrayAsync())
             .Should().BeEquivalentTo(testExpects);
-    }
-
-    [TestMethod]
-    public async Task SelectFilesAsync_Filter()
-    {
-        var testFiles = new[]
-        {
-            @"abc/aaa.txt",
-            @"def/ghi/bbb.png",
-            @"ccc.jpg",
-            @"abc/ddd.txt",
-            @"eee.png",
-            @"abc/fff.jpg",
-            @"asd/qwe/ggg.txt",
-            @"hhh.txt",
-        };
-
-        using var testDir = new TempDir();
-        foreach (var path in testFiles)
-        {
-            await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
-        }
-
-        var testOpt = new SelectFilesOptions
-        {
-            Recurse = true,
-            Buffered = false,
-            Sort = false,
-        };
-
-        static bool filter(FileSystemInfo item) => item is DirectoryInfo || item.Name.Contains(".txt");
-
-        var testExpects = testDir.Info.EnumerateFiles("*", SearchOption.AllDirectories)
-            .Where(f => filter(f)).Select(f => f.ReadAllText());
-
-        (await testDir.Info.SelectFilesAsync(w => filter(w.File!), async w => await w.File!.ReadAllTextAsync(), options: testOpt).ToArrayAsync())
-            .Should().BeEquivalentTo(testExpects);
-    }
-
-    [TestMethod]
-    public async Task SelectFilesAsync_Excludes()
-    {
-        var testFiles = new[]
-        {
-            @"abc/aaa.txt",
-            @"def/ghi/bbb.txt",
-            @"ccc.txt",
-            @"abc/ddd.txt",
-            @"eee.txt",
-            @"abc/fff.txt",
-            @"asd/qwe/ggg.txt",
-            @"hhh.txt",
-        };
-
-        using var testDir = new TempDir();
-        foreach (var path in testFiles)
-        {
-            await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
-        }
-
-        var testOpt = new SelectFilesOptions
-        {
-            Recurse = true,
-            Buffered = false,
-            Sort = false,
-        };
-        var excludes = new[] { new Regex(@"[defg]+.txt"), };
-
-        (await testDir.Info.SelectFilesAsync(async w => await w.File!.ReadAllTextAsync(), excludes, options: testOpt).ToArrayAsync()).Should().BeEquivalentTo(new[]
-        {
-            @"abc/aaa.txt",
-            @"def/ghi/bbb.txt",
-            @"ccc.txt",
-            @"hhh.txt",
-        });
-    }
-
-    [TestMethod]
-    public async Task SelectFilesAsync_Includes()
-    {
-        var testFiles = new[]
-        {
-            @"abc/aaa.txt",
-            @"def/ghi/bbb.txt",
-            @"ccc.txt",
-            @"abc/ddd.txt",
-            @"eee.txt",
-            @"abc/fff.txt",
-            @"asd/qwe/ggg.txt",
-            @"hhh.txt",
-        };
-
-        using var testDir = new TempDir();
-        foreach (var path in testFiles)
-        {
-            await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
-        }
-
-        var testOpt = new SelectFilesOptions
-        {
-            Recurse = true,
-            Buffered = false,
-            Sort = false,
-        };
-        var excludes = new Regex[0];
-        var includes = new[] { new Regex(@"[defg]+.txt"), };
-
-        (await testDir.Info.SelectFilesAsync(async w => await w.File!.ReadAllTextAsync(), excludes, includes, options: testOpt).ToArrayAsync()).Should().BeEquivalentTo(new[]
-        {
-            @"abc/ddd.txt",
-            @"eee.txt",
-            @"abc/fff.txt",
-            @"asd/qwe/ggg.txt",
-        });
     }
 
     [TestMethod]
@@ -2012,7 +1590,7 @@ public class DirectoryInfoExtensionsTests
             await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
         }
 
-        var testOpt = new SelectFilesOptions
+        var testOpt = new VisitFilesOptions
         {
             Recurse = true,
             Buffered = false,
@@ -2022,46 +1600,6 @@ public class DirectoryInfoExtensionsTests
         var contents = new List<string>();
         testDir.Info.DoFiles(w => contents.Add(w.File!.ReadAllText()), options: testOpt);
         contents.Should().BeEquivalentTo(testFiles);
-    }
-
-    [TestMethod]
-    public async Task DoFiles_ExcludesIncludes()
-    {
-        var testFiles = new[]
-        {
-            @"abc/aaa.txt",
-            @"def/ghi/bbb.txt",
-            @"ccc.txt",
-            @"abc/ddd.txt",
-            @"eee.txt",
-            @"abc/fff.txt",
-            @"asd/qwe/ggg.txt",
-            @"hhh.txt",
-        };
-
-        using var testDir = new TempDir();
-        foreach (var path in testFiles)
-        {
-            await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
-        }
-
-        var testOpt = new SelectFilesOptions
-        {
-            Recurse = true,
-            Buffered = false,
-            Sort = false,
-        };
-        var excludes = new[] { new Regex(@"[cde]+.txt"), };
-        var includes = new[] { new Regex(@"[defg]+.txt"), };
-        var contents = new List<string>();
-
-        testDir.Info.DoFiles(w => contents.Add(w.File!.ReadAllText()), excludes, includes, options: testOpt);
-
-        contents.Should().BeEquivalentTo(new[]
-        {
-            @"abc/fff.txt",
-            @"asd/qwe/ggg.txt",
-        });
     }
 
     [TestMethod]
@@ -2087,7 +1625,7 @@ public class DirectoryInfoExtensionsTests
             await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
         }
 
-        var testOpt = new SelectFilesOptions
+        var testOpt = new VisitFilesOptions
         {
             Recurse = true,
             Buffered = false,
@@ -2097,46 +1635,6 @@ public class DirectoryInfoExtensionsTests
         var contents = new List<string>();
         await testDir.Info.DoFilesAsync(async w => contents.Add(await w.File!.ReadAllTextAsync()), options: testOpt);
         contents.Should().BeEquivalentTo(testFiles);
-    }
-
-    [TestMethod]
-    public async Task DoFilesAsync_ExcludesIncludes()
-    {
-        var testFiles = new[]
-        {
-            @"abc/aaa.txt",
-            @"def/ghi/bbb.txt",
-            @"ccc.txt",
-            @"abc/ddd.txt",
-            @"eee.txt",
-            @"abc/fff.txt",
-            @"asd/qwe/ggg.txt",
-            @"hhh.txt",
-        };
-
-        using var testDir = new TempDir();
-        foreach (var path in testFiles)
-        {
-            await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
-        }
-
-        var testOpt = new SelectFilesOptions
-        {
-            Recurse = true,
-            Buffered = false,
-            Sort = false,
-        };
-        var excludes = new[] { new Regex(@"[cde]+.txt"), };
-        var includes = new[] { new Regex(@"[defg]+.txt"), };
-        var contents = new List<string>();
-
-        await testDir.Info.DoFilesAsync(async w => contents.Add(await w.File!.ReadAllTextAsync()), excludes, includes, options: testOpt);
-
-        contents.Should().BeEquivalentTo(new[]
-        {
-            @"abc/fff.txt",
-            @"asd/qwe/ggg.txt",
-        });
     }
     #endregion
 
@@ -2163,7 +1661,7 @@ public class DirectoryInfoExtensionsTests
         }
 
         // 作成したファイル・ディレクトリに読み取り専用属性を付与
-        testDir.Info.DoFiles(w => w.Item.SetReadOnly(true), new() { Handling = SelectFilesHandling.All, });
+        testDir.Info.DoFiles(w => w.Item.SetReadOnly(true), new() { Handling = VisitFilesHandling.All, });
 
         // 削除する
         testDir.Info.DeleteRecurse();
