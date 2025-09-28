@@ -19,7 +19,7 @@
   <PropertyGroup>
     <Authors>toras9000</Authors>
     <Company />
-    <Version>0.104.0</Version>
+    <Version>0.105.0</Version>
   </PropertyGroup>
   <PropertyGroup>
     <PackageProjectUrl>https://github.com/toras9000/Lestaly</PackageProjectUrl>
