@@ -138,12 +138,16 @@ public static class StreamExtensions
     /// <param name="self">書き込み先ストリーム</param>
     /// <param name="lines">書き込む行ストリーム</param>
     /// <param name="encoding">テキスト書き込みエンコーディング</param>
+    /// <param name="delimiter">行区切り文字列</param>
     /// <param name="cancelToken">キャンセルトークン</param>
     /// <returns>書き込みタスク</returns>
-    public static async ValueTask WriteAllLinesAsync(this Stream self, IEnumerable<string?> lines, Encoding? encoding = null, CancellationToken cancelToken = default)
+    public static async ValueTask WriteAllLinesAsync(this Stream self, IEnumerable<string?> lines, Encoding? encoding = null, string? delimiter = null, CancellationToken cancelToken = default)
     {
         // テキストライターを生成
         using var writer = new StreamWriter(self, encoding: encoding, leaveOpen: true);
+
+        // 行区切り文字列の設定
+        if (delimiter != null) writer.NewLine = delimiter;
 
         // 全行書き込み
         foreach (var line in lines)

@@ -1,6 +1,7 @@
 ﻿using System.Buffers;
 using System.IO;
 using System.IO.Pipelines;
+using System.Text;
 
 namespace LestalyTest.Extensions;
 
@@ -168,6 +169,32 @@ public class StreamExtensionsTests
         }
         var lines = file.ReadAllLines();
         lines.Should().Equal(["abc", "def", "ghi"]);
+    }
+
+    [TestMethod]
+    public async Task WriteAllLinesAsync_Encoding()
+    {
+        using var tempDir = new TempDir();
+        var file = tempDir.Info.RelativeFile("test.txt");
+        using (var stream = file.OpenWrite())
+        {
+            await stream.WriteAllLinesAsync(["abc", "def", "ghi"], Encoding.UTF32);
+        }
+        var lines = file.ReadAllLines(Encoding.UTF32);
+        lines.Should().Equal(["abc", "def", "ghi"]);
+    }
+
+    [TestMethod]
+    public async Task WriteAllLinesAsync_Delimiter()
+    {
+        using var tempDir = new TempDir();
+        var file = tempDir.Info.RelativeFile("test.txt");
+        using (var stream = file.OpenWrite())
+        {
+            await stream.WriteAllLinesAsync(["abc", "def", "ghi"], delimiter: "\n\r");
+        }
+        var lines = file.ReadAllText();
+        lines.Should().Be("abc\n\rdef\n\rghi\n\r");
     }
 
     [TestMethod]
