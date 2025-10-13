@@ -497,6 +497,24 @@ public class StringExtensionsTests
         "\n\r".AsTextLines().Should().Equal("", "", "");
     }
 
+    [TestMethod]
+    public void AsTextLineRanges()
+    {
+        var source = "abc\rdef\nghi\r\njkl";
+        var lines = new List<string>();
+        foreach (var range in source.AsSpan().AsTextLineRanges())
+        {
+            lines.Add(source[range]);
+        }
+
+        lines.Should().Equal([
+            "abc",
+            "def",
+            "ghi",
+            "jkl",
+        ]);
+    }
+
     [TestMethod()]
     public void DropEmpty()
     {

@@ -595,6 +595,12 @@ public static class StringExtensions
         yield return self[idx..];
     }
 
+    /// <summary>文字列の行範囲を列挙する</summary>
+    /// <param name="self">対象文字列</param>
+    /// <returns>行範囲列挙子</returns>
+    public static StringLineSpanEnumerator AsTextLineRanges(this ReadOnlySpan<char> self)
+        => new StringLineSpanEnumerator(self);
+
     /// <summary>文字列のシーケンスからnull/空を取り除く。</summary>
     /// <param name="self">文字列のシーケンス</param>
     /// <returns>null/空以外のシーケンス</returns>

@@ -126,6 +126,27 @@ public static class EnumerableExtensions
         }
     }
 
+    /// <summary>行文字列のシーケンスを分割行によって分割する</summary>
+    /// <param name="self">行文字列のシーケンス</param>
+    /// <param name="separator">セパレータ行判定処理</param>
+    /// <returns>分割された行のあつまりのシーケンス</returns>
+    public static IEnumerable<string[]> Divide(this IEnumerable<string> self, Func<string, bool> separator)
+    {
+        var list = new List<string>();
+        foreach (var item in self)
+        {
+            if (separator(item))
+            {
+                if (0 < list.Count) yield return list.ToArray();
+                list.Clear();
+                continue;
+            }
+
+            list.Add(item);
+        }
+        yield return list.ToArray();
+    }
+
     /// <summary>前後空白や大文字/小文字の区別なく文字列が含まれているかを判定する。</summary>
     /// <param name="self">文字列のシーケンス</param>
     /// <param name="text">判定する文字列</param>

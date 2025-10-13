@@ -58,6 +58,24 @@ public class EnumerableExtensionsTests
         list.Should().Equal(source);
     }
 
+    [TestMethod()]
+    public void Divide()
+    {
+        var lines = new[] {
+            "abc",
+            "def",
+            "ghi",
+            "jkl",
+            "mno",
+            "pqr",
+            "stu",
+        };
+        var division = lines.Divide(l => l.Contains("e") || l.Contains("r")).ToArray();
+        division[0].Should().Equal(["abc"]);
+        division[1].Should().Equal(["ghi", "jkl", "mno"]);
+        division[2].Should().Equal(["stu"]);
+    }
+
     [TestMethod]
     public void Repetition()
     {
