@@ -263,10 +263,16 @@ public class DirectoryInfoExtensionsTests
     {
         using var testDir = new TempDir();
 
-        var tempDir = testDir.Info.FullName;
-        var subDir = Path.Combine(tempDir, "ttt");
-        new DirectoryInfo(subDir).WithCreate().FullName.Should().Be(subDir);
-        Directory.Exists(subDir).Should().BeTrue();
+        {
+            var subDir = testDir.Info.RelativeDirectory("ttt");
+            subDir.WithCreate().FullName.Should().Be(subDir.FullName);
+            Directory.Exists(subDir.FullName).Should().BeTrue();
+        }
+        {
+            var deepDir = testDir.Info.RelativeDirectory("aaa/bbb/ccc");
+            deepDir.WithCreate().FullName.Should().Be(deepDir.FullName);
+            Directory.Exists(deepDir.FullName).Should().BeTrue();
+        }
     }
     #endregion
 

@@ -190,7 +190,6 @@ public static class StringExtensions
     public static bool StartsWithAnyIgnoreCase(this string self, IEnumerable<string> values, out int next)
     {
         ArgumentNullException.ThrowIfNull(self);
-        next = -1;
         return self.AsSpan().StartsWithAny(values, StringComparison.OrdinalIgnoreCase, out next);
     }
 

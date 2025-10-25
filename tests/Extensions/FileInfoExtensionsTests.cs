@@ -1205,10 +1205,9 @@ public class FileExtensionsTests
     {
         using var testDir = new TempDir();
 
-        var tempDir = testDir.Info.FullName;
-        var subDirFile = Path.GetFullPath(Path.Combine(tempDir, "abc/def.txt"));
-        new FileInfo(subDirFile).WithDirectoryCreate().FullName.Should().Be(subDirFile);
-        Directory.Exists(Path.GetDirectoryName(subDirFile)).Should().BeTrue();
+        var subDirFile = testDir.Info.RelativeFile("abc/def.txt");
+        subDirFile.WithDirectoryCreate().FullName.Should().Be(subDirFile.FullName);
+        Directory.Exists(subDirFile.DirectoryName).Should().BeTrue();
     }
 
     [TestMethod()]
