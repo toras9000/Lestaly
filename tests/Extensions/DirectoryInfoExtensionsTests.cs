@@ -1640,6 +1640,90 @@ public class DirectoryInfoExtensionsTests
 
     #region Utility
     [TestMethod]
+    public async Task CopyFilesTo()
+    {
+        var testFiles = new[]
+        {
+            @"abc/aaa.txt",
+            @"def/ghi/bbb.txt",
+            @"ccc.txt",
+            @"abc/ddd.txt",
+            @"eee.txt",
+            @"abc/fff.txt",
+            @"asd/qwe/ggg.txt",
+            @"hhh.txt",
+        };
+
+        using var testDir = new TempDir();
+
+        // テストデータ作成
+        var srcDir = testDir.Info.RelativeDirectory("src").WithCreate();
+        foreach (var path in testFiles)
+        {
+            await srcDir.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
+        }
+
+        // テスト実行 (新規作成)
+        var destDir = testDir.Info.RelativeDirectory("dest");
+        srcDir.CopyFilesTo(destDir);
+
+        // 結果検証
+        var destFilePaths = destDir.EnumerateFiles("*", SearchOption.AllDirectories)
+            .Select(f => f.RelativePathFrom(destDir).Replace('\\', '/'))
+            .ToArray();
+        destFilePaths.Should().BeEquivalentTo(testFiles);
+
+        // テストファイルを更新
+        foreach (var file in srcDir.GetFiles("*", SearchOption.AllDirectories))
+        {
+            await file.WriteAllTextAsync(file.FullName);
+        }
+
+        // テスト実行 (上書き)
+        srcDir.CopyFilesTo(destDir, overwrite: true);
+
+        // 結果検証
+        foreach (var file in destDir.GetFiles("*", SearchOption.AllDirectories))
+        {
+            var expectContent = srcDir.RelativeFile(file.RelativePathFrom(destDir)).FullName;
+            var fileContent = await file.ReadAllTextAsync();
+            fileContent.Should().Be(expectContent);
+        }
+    }
+
+    [TestMethod]
+    public async Task CopyFilesTo_filter()
+    {
+        var testFiles = new[]
+        {
+            @"abc/aaa.txt",
+            @"def/ghi/bbb.txt",
+            @"ccc.txt",
+            @"abc/ddd.txt",
+            @"eee.txt",
+            @"abc/fff.txt",
+            @"asd/qwe/ggg.txt",
+            @"hhh.txt",
+        };
+
+        using var testDir = new TempDir();
+
+        // テストデータ作成
+        var srcDir = testDir.Info.RelativeDirectory("src").WithCreate();
+        foreach (var path in testFiles)
+        {
+            await srcDir.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
+        }
+
+        // テスト実行 (フィルタ適用)
+        var destDir = testDir.Info.RelativeDirectory("dest");
+        srcDir.CopyFilesTo(destDir, predicator: file => file.Name == "eee.txt");
+
+        // 結果検証
+        destDir.GetFiles("*", SearchOption.AllDirectories).Select(f => f.Name).Should().AllBe("eee.txt");
+    }
+
+    [TestMethod]
     public async Task DeleteRecurse()
     {
         var testFiles = new[]

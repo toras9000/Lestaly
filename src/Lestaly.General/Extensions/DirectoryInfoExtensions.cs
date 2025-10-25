@@ -814,6 +814,38 @@ public static class DirectoryInfoExtensions
     #endregion
 
     #region Utility
+    /// <summary>ディレクトリ配下のファイルをコピーする</summary>
+    /// <param name="self">コピー元ディレクトリ</param>
+    /// <param name="dest">コピー先ディレクトリ</param>
+    /// <param name="overwrite">上書きするか否か</param>
+    /// <param name="options">ファイル列挙オプション</param>
+    /// <param name="predicator">ファイルコピー判定デリゲート</param>
+    public static void CopyFilesTo(this DirectoryInfo self, DirectoryInfo dest, bool overwrite = false, EnumerationOptions? options = null, Func<FileInfo, bool>? predicator = null)
+    {
+        // オプション指定が無ければデフォルト設定
+        var enumOptions = options ?? new EnumerationOptions()
+        {
+            AttributesToSkip = FileAttributes.None,
+            RecurseSubdirectories = true,
+            MatchType = MatchType.Simple,
+        };
+
+        // 全ファイルをコピー
+        foreach (var file in self.EnumerateFiles("*", enumOptions))
+        {
+            // コピー先ファイルパス作成
+            var relPath = file.RelativePathFrom(self);
+            var destFile = dest.RelativeFile(relPath);
+
+            // デリゲートが指定されていればコピー判定
+            var doCopy = predicator?.Invoke(destFile) ?? true;
+            if (!doCopy) continue;
+
+            // コピー実施
+            file.CopyTo(destFile.WithDirectoryCreate().FullName, overwrite);
+        }
+    }
+
     /// <summary>ディレクトリを再帰的に削除する</summary>
     /// <remarks></remarks>
     /// <param name="self">削除対象ディレクトリ</param>
