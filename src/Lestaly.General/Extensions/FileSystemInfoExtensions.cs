@@ -133,8 +133,8 @@ public static class FileSystemInfoExtensions
         {
             throw generator?.Invoke(self) ?? self switch
             {
-                FileInfo f => new FileNotFoundException($"`{f.FullName}` is not found.", f.FullName),
-                DirectoryInfo d => new DirectoryNotFoundException($"`{d.FullName}` is not found."),
+                FileInfo f => new FileNotFoundException($"`{f.FullName}` is already exists.", f.FullName),
+                DirectoryInfo d => new DirectoryNotFoundException($"`{d.FullName}` is already exists."),
                 _ => new InvalidDataException(),
             };
         }
