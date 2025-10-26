@@ -674,6 +674,18 @@ public static class FileInfoExtensions
         self.LastWriteTimeUtc = DateTime.UtcNow;
         return self;
     }
+
+    /// <summary>ファイルをリネームする</summary>
+    /// <param name="self">対象ファイル</param>
+    /// <param name="name">新しい名前。元の場所を基準とした名前。</param>
+    /// <returns>リネームした対象ファイル情報。元のインスタンスと同一。</returns>
+    public static FileInfo Rename(this FileInfo self, string name)
+    {
+        if (self.DirectoryName == null) throw new InvalidOperationException();
+        var newPath = Path.Combine(self.DirectoryName, name);
+        self.MoveTo(newPath);
+        return self;
+    }
     #endregion
 
     #region Path

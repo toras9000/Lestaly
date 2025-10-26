@@ -1730,6 +1730,39 @@ public class DirectoryInfoExtensionsTests
     }
 
     [TestMethod]
+    public async Task Rename()
+    {
+        var testFiles = new[]
+        {
+            @"abc/aaa.txt",
+            @"def/ghi/bbb.txt",
+            @"ccc.txt",
+            @"abc/ddd.txt",
+            @"eee.txt",
+            @"abc/fff.txt",
+            @"asd/qwe/ggg.txt",
+            @"hhh.txt",
+        };
+
+        using var testDir = new TempDir();
+
+        var orgDir = testDir.Info.RelativeDirectory("aaa");
+        var orgPath = orgDir.FullName;
+        foreach (var path in testFiles)
+        {
+            await orgDir.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
+        }
+
+        var newDir = orgDir.Rename("bbb");
+        newDir.Exists.Should().BeTrue();
+
+        orgDir.Should().BeSameAs(newDir);
+        orgDir.Name.Should().Be("bbb");
+
+        Directory.Exists(orgPath).Should().BeFalse();
+    }
+
+    [TestMethod]
     public async Task DeleteRecurse()
     {
         var testFiles = new[]

@@ -846,6 +846,18 @@ public static class DirectoryInfoExtensions
         }
     }
 
+    /// <summary>ディレクトリをリネームする</summary>
+    /// <param name="self">対象ディレクトリ</param>
+    /// <param name="name">新しい名前。元の場所を基準とした名前。</param>
+    /// <returns>リネームした対象ディレクトリ情報。元のインスタンスと同一。</returns>
+    public static DirectoryInfo Rename(this DirectoryInfo self, string name)
+    {
+        if (self.Parent == null) throw new InvalidOperationException();
+        var newPath = Path.Combine(self.Parent.FullName, name);
+        self.MoveTo(newPath);
+        return self;
+    }
+
     /// <summary>ディレクトリを再帰的に削除する</summary>
     /// <remarks></remarks>
     /// <param name="self">削除対象ディレクトリ</param>

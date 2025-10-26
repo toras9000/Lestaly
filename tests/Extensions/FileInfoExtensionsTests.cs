@@ -1225,6 +1225,24 @@ public class FileExtensionsTests
         file.Touch();
         file.LastWriteTimeUtc.Should().NotBe(timestamp);
     }
+
+    [TestMethod()]
+    public void Rename()
+    {
+        using var testDir = new TempDir();
+
+        var orgFile = testDir.Info.RelativeFile("a.txt");
+        orgFile.WriteAllText("a");
+        var orgPath = orgFile.FullName;
+
+        var newFile = orgFile.Rename("b.txt");
+        newFile.Exists.Should().BeTrue();
+
+        orgFile.Should().BeSameAs(newFile);
+        orgFile.Name.Should().Be("b.txt");
+
+        File.Exists(orgPath).Should().BeFalse();
+    }
     #endregion
 
     #region Path
