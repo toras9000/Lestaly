@@ -154,6 +154,18 @@ public class SemanticVersion : IEquatable<SemanticVersion>, IComparable<Semantic
 
     /// <inheritdoc />
     public static bool operator !=(SemanticVersion r1, SemanticVersion r2) => !(r1 == r2);
+
+    /// <inheritdoc />
+    public static bool operator <(SemanticVersion r1, SemanticVersion r2) => r1.CompareTo(r2) < 0;
+
+    /// <inheritdoc />
+    public static bool operator <=(SemanticVersion r1, SemanticVersion r2) => r1.CompareTo(r2) <= 0;
+
+    /// <inheritdoc />
+    public static bool operator >(SemanticVersion r1, SemanticVersion r2) => 0 < r1.CompareTo(r2);
+
+    /// <inheritdoc />
+    public static bool operator >=(SemanticVersion r1, SemanticVersion r2) => 0 <= r1.CompareTo(r2);
     #endregion
 
     // 構築 (非公開)

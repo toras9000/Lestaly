@@ -101,4 +101,44 @@ public class SemanticVersionTests
         a.CompareTo(SemanticVersion.Parse("1.2.3.5-pre+build")).Should().BeLessThan(0);
     }
 
+    [TestMethod()]
+    public void CompareOperator()
+    {
+        var a = SemanticVersion.Parse("1.2.3.4-x");
+
+        (a < SemanticVersion.Parse("1.2.3.4-w")).Should().Be(false);
+        (a < SemanticVersion.Parse("1.2.3.3-x")).Should().Be(false);
+        (a < SemanticVersion.Parse("1.2.3.4-x")).Should().Be(false);
+        (a < SemanticVersion.Parse("2.2.3.4-x")).Should().Be(true);
+        (a < SemanticVersion.Parse("1.3.3.4-x")).Should().Be(true);
+        (a < SemanticVersion.Parse("1.2.4.4-x")).Should().Be(true);
+        (a < SemanticVersion.Parse("1.2.3.5-x")).Should().Be(true);
+        (a < SemanticVersion.Parse("1.2.3.4-y")).Should().Be(true);
+
+        (a <= SemanticVersion.Parse("1.2.3.4-w")).Should().Be(false);
+        (a <= SemanticVersion.Parse("1.2.3.3-x")).Should().Be(false);
+        (a <= SemanticVersion.Parse("1.2.3.4-x")).Should().Be(true);
+        (a <= SemanticVersion.Parse("2.2.3.4-x")).Should().Be(true);
+        (a <= SemanticVersion.Parse("1.3.3.4-x")).Should().Be(true);
+        (a <= SemanticVersion.Parse("1.2.4.4-x")).Should().Be(true);
+        (a <= SemanticVersion.Parse("1.2.3.5-x")).Should().Be(true);
+        (a <= SemanticVersion.Parse("1.2.3.4-y")).Should().Be(true);
+
+        (a > SemanticVersion.Parse("1.2.3.5-x")).Should().Be(false);
+        (a > SemanticVersion.Parse("1.2.3.4-x")).Should().Be(false);
+        (a > SemanticVersion.Parse("1.2.3.4-w")).Should().Be(true);
+        (a > SemanticVersion.Parse("1.2.3.3-x")).Should().Be(true);
+        (a > SemanticVersion.Parse("1.2.2.4-x")).Should().Be(true);
+        (a > SemanticVersion.Parse("1.1.3.4-x")).Should().Be(true);
+        (a > SemanticVersion.Parse("0.2.3.4-x")).Should().Be(true);
+
+        (a >= SemanticVersion.Parse("1.2.3.5-x")).Should().Be(false);
+        (a >= SemanticVersion.Parse("1.2.3.4-y")).Should().Be(false);
+        (a >= SemanticVersion.Parse("1.2.3.4-x")).Should().Be(true);
+        (a >= SemanticVersion.Parse("1.2.3.4-w")).Should().Be(true);
+        (a >= SemanticVersion.Parse("1.2.3.3-x")).Should().Be(true);
+        (a >= SemanticVersion.Parse("1.2.2.4-x")).Should().Be(true);
+        (a >= SemanticVersion.Parse("1.1.3.4-x")).Should().Be(true);
+        (a >= SemanticVersion.Parse("0.2.3.4-x")).Should().Be(true);
+    }
 }
