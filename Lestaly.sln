@@ -18,8 +18,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lestaly.General", "src\Lest
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lestaly.Excel", "src\Lestaly.Excel\Lestaly.Excel.csproj", "{EF8F0FE2-9B06-03C1-E63E-A14FC1A377BD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lestaly.Dataflow", "src\Lestaly.Dataflow\Lestaly.Dataflow.csproj", "{D9BC769A-FF7D-45EF-9183-7345FBDAAE4C}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -46,10 +44,6 @@ Global
 		{EF8F0FE2-9B06-03C1-E63E-A14FC1A377BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF8F0FE2-9B06-03C1-E63E-A14FC1A377BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF8F0FE2-9B06-03C1-E63E-A14FC1A377BD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D9BC769A-FF7D-45EF-9183-7345FBDAAE4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D9BC769A-FF7D-45EF-9183-7345FBDAAE4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D9BC769A-FF7D-45EF-9183-7345FBDAAE4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D9BC769A-FF7D-45EF-9183-7345FBDAAE4C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
