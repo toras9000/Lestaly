@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 namespace LestalyTest.Extensions;
 
 [TestClass()]
+[DoNotParallelize]
 public class HttpClientExtensionsTests
 {
     public static WebApplication? TestServer;

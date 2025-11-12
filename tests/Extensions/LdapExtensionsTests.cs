@@ -5,6 +5,7 @@ using Lestaly.Extensions;
 namespace LestalyTest.Extensions;
 
 [TestClass]
+[DoNotParallelize]
 public class LdapExtensionsTests
 {
     public static LdapDirectoryIdentifier? TestServer;

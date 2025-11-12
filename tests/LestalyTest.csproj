@@ -30,4 +30,11 @@
     <ProjectReference Include="..\src\Lestaly\Lestaly.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <AssemblyAttribute Include="Microsoft.VisualStudio.TestTools.UnitTesting.ParallelizeAttribute">
+      <Scope>Microsoft.VisualStudio.TestTools.UnitTesting.ExecutionScope.ClassLevel</Scope>
+      <Scope_IsLiteral>true</Scope_IsLiteral>
+    </AssemblyAttribute>
+  </ItemGroup>
+
 </Project>
