@@ -277,7 +277,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         // 検証
         using var book = new XLWorkbook(target.FullName, new LoadOptions { RecalculateAllFormulas = true, });
         var sheet = book.Worksheets.First();
-        sheet.Row(2).Cell(1).ToObjectValue().Should().BeOfType<string>().Which.Contains("ExcelFormula");
+        sheet.Row(2).Cell(1).ToObjectValue().Should().BeOfType<string>().Which.Should().Contain("1+2");
         sheet.Row(2).Cell(2).ToObjectValue().Should().Be(7);
     }
 
