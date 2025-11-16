@@ -1,6 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
 
 namespace Lestaly;
 
@@ -558,7 +559,19 @@ public static class FileInfoExtensions
     /// <param name="cancelToken">キャンセルトークン</param>
     /// <returns>デシリアライズしたインスタンス</returns>
     public static ValueTask<TObject?> ReadJsonAsync<TObject>(this FileInfo self, CancellationToken cancelToken)
-        => self.ReadJsonAsync<TObject>(default, cancelToken);
+        => self.ReadJsonAsync<TObject>(options: default, cancelToken);
+
+    /// <summary>ファイルからJSONデータを読み取る</summary>
+    /// <typeparam name="TObject">JSONをデシリアライズする型</typeparam>
+    /// <param name="self">読み取り元ファイル</param>
+    /// <param name="typeInfo">変換メタデータ</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>デシリアライズしたインスタンス</returns>
+    public static async ValueTask<TObject?> ReadJsonAsync<TObject>(this FileInfo self, JsonTypeInfo<TObject> typeInfo, CancellationToken cancelToken = default)
+    {
+        using var stream = self.OpenRead();
+        return await JsonSerializer.DeserializeAsync(stream, typeInfo, cancelToken).ConfigureAwait(false);
+    }
 
     /// <summary>ファイルからJSONデータを読み取る</summary>
     /// <typeparam name="TObject">JSONをデシリアライズする型</typeparam>
@@ -620,7 +633,19 @@ public static class FileInfoExtensions
     /// <param name="value">保存するオブジェクト</param>
     /// <param name="cancelToken">キャンセルトークン</param>
     public static ValueTask WriteJsonAsync<TObject>(this FileInfo self, TObject value, CancellationToken cancelToken)
-        => self.WriteJsonAsync(value, default, cancelToken);
+        => self.WriteJsonAsync(value, options: default, cancelToken);
+
+    /// <summary>オブジェクトをJSON形式でファイルに保存する</summary>
+    /// <typeparam name="TObject">JSONにデシリアライズする型</typeparam>
+    /// <param name="self">保存先ファイル</param>
+    /// <param name="value">保存するオブジェクト</param>
+    /// <param name="typeInfo">変換メタデータ</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    public static async ValueTask WriteJsonAsync<TObject>(this FileInfo self, TObject value, JsonTypeInfo<TObject> typeInfo, CancellationToken cancelToken = default)
+    {
+        using var stream = self.CreateWrite();
+        await JsonSerializer.SerializeAsync(stream, value, typeInfo, cancelToken).ConfigureAwait(false);
+    }
 
     /// <summary>オブジェクトをJSON形式でファイルに保存する</summary>
     /// <typeparam name="TObject">JSONにデシリアライズする型</typeparam>

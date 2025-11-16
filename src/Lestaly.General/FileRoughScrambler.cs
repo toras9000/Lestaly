@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using System.Text.Json.Serialization.Metadata;
 
 namespace Lestaly;
 
@@ -63,11 +64,30 @@ public class FileRoughScrambler
     /// <summary>オブジェクトをJSONシリアライズを介してスクランブルしファイルに保存する。</summary>
     /// <typeparam name="T">対象オブジェクト型</typeparam>
     /// <param name="value">スクランブルするオブジェクト</param>
+    /// <param name="typeInfo">変換メタデータ</param>
+    /// <param name="options">ファイルストリームを開くオプション。Access プロパティは無視する。</param>
+    /// <param name="ignoreErr">保存エラーを無視するか否か</param>
+    public void ScrambleObject<T>(T value, JsonTypeInfo<T> typeInfo, FileStreamOptions? options = null, bool ignoreErr = false)
+        => this.Scrambler.ScrambleObjectToFile(this.File, value, typeInfo, options, ignoreErr);
+
+    /// <summary>オブジェクトをJSONシリアライズを介してスクランブルしファイルに保存する。</summary>
+    /// <typeparam name="T">対象オブジェクト型</typeparam>
+    /// <param name="value">スクランブルするオブジェクト</param>
     /// <param name="options">ファイルストリームを開くオプション。Access プロパティは無視する。</param>
     /// <param name="ignoreErr">保存エラーを無視するか否か</param>
     /// <param name="cancelToken">キャンセルトークン</param>
     public ValueTask ScrambleObjectAsync<T>(T value, FileStreamOptions? options = null, bool ignoreErr = false, CancellationToken cancelToken = default)
         => this.Scrambler.ScrambleObjectToFileAsync(this.File, value, options, ignoreErr, cancelToken);
+
+    /// <summary>オブジェクトをJSONシリアライズを介してスクランブルしファイルに保存する。</summary>
+    /// <typeparam name="T">対象オブジェクト型</typeparam>
+    /// <param name="value">スクランブルするオブジェクト</param>
+    /// <param name="typeInfo">変換メタデータ</param>
+    /// <param name="options">ファイルストリームを開くオプション。Access プロパティは無視する。</param>
+    /// <param name="ignoreErr">保存エラーを無視するか否か</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    public ValueTask ScrambleObjectAsync<T>(T value, JsonTypeInfo<T> typeInfo, FileStreamOptions? options = null, bool ignoreErr = false, CancellationToken cancelToken = default)
+        => this.Scrambler.ScrambleObjectToFileAsync(this.File, value, typeInfo, options, ignoreErr, cancelToken);
     #endregion
 
     #region スクランブル解除
@@ -90,9 +110,24 @@ public class FileRoughScrambler
 
     /// <summary>ファイルから読み込んでJSONデシリアライズを介してオブジェクトのスクランブル解除を行う</summary>
     /// <typeparam name="T">対象オブジェクト型</typeparam>
+    /// <param name="typeInfo">変換メタデータ</param>
+    /// <returns>スクランブル解除したオブジェクト。失敗時はnullを返却。</returns>
+    public T? DescrambleObject<T>(JsonTypeInfo<T> typeInfo)
+        => this.Scrambler.DescrambleObjectFromFile<T>(this.File, typeInfo);
+
+    /// <summary>ファイルから読み込んでJSONデシリアライズを介してオブジェクトのスクランブル解除を行う</summary>
+    /// <typeparam name="T">対象オブジェクト型</typeparam>
     /// <param name="cancelToken">キャンセルトークン</param>
     /// <returns>スクランブル解除したオブジェクト。失敗時はnullを返却。</returns>
     public ValueTask<T?> DescrambleObjectAsync<T>(CancellationToken cancelToken = default)
         => this.Scrambler.DescrambleObjectFromFileAsync<T>(this.File, cancelToken);
+
+    /// <summary>ファイルから読み込んでJSONデシリアライズを介してオブジェクトのスクランブル解除を行う</summary>
+    /// <typeparam name="T">対象オブジェクト型</typeparam>
+    /// <param name="typeInfo">変換メタデータ</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>スクランブル解除したオブジェクト。失敗時はnullを返却。</returns>
+    public ValueTask<T?> DescrambleObjectAsync<T>(JsonTypeInfo<T> typeInfo, CancellationToken cancelToken = default)
+        => this.Scrambler.DescrambleObjectFromFileAsync<T>(this.File, typeInfo, cancelToken);
     #endregion
 }

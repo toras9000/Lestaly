@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
 
 namespace Lestaly;
 
@@ -30,6 +31,19 @@ public static class RoughScramblerExtensions
     public static byte[] ScrambleObject<T>(this RoughScrambler self, T value)
     {
         var json = JsonSerializer.Serialize(value);
+        return self.ScrambleText(json);
+    }
+
+    /// <summary>オブジェクトをJSONシリアライズを介してスクランブルする。</summary>
+    /// <remarks>このメソッドでスクランブルされたデータは <see cref="DescrambleObject{T}(RoughScrambler, ReadOnlySpan{byte}, JsonTypeInfo{T})"/> で解除することを想定している。</remarks>
+    /// <typeparam name="T">対象オブジェクト型</typeparam>
+    /// <param name="self">利用するスクランブル化処理インスタンス</param>
+    /// <param name="value">スクランブルするオブジェクト</param>
+    /// <param name="typeInfo">変換メタデータ</param>
+    /// <returns>スクランブルされたバイト列</returns>
+    public static byte[] ScrambleObject<T>(this RoughScrambler self, T value, JsonTypeInfo<T> typeInfo)
+    {
+        var json = JsonSerializer.Serialize(value, typeInfo);
         return self.ScrambleText(json);
     }
     #endregion 
@@ -66,6 +80,27 @@ public static class RoughScramblerExtensions
             var json = self.DescrambleText(bin);
             if (json == null) return default;
             return JsonSerializer.Deserialize<T>(json);
+        }
+        catch
+        {
+            return default;
+        }
+    }
+
+    /// <summary>オブジェクトをJSONデシリアライズを介してスクランブル解除を行う</summary>
+    /// <remarks>このメソッドは <see cref="ScrambleObject{T}(RoughScrambler, T)"/> でスクランブルされたデータを元に戻す目的のものとなる。</remarks>
+    /// <typeparam name="T">対象オブジェクト型</typeparam>
+    /// <param name="self">利用するスクランブル化処理インスタンス</param>
+    /// <param name="bin">スクランブルされたデータ</param>
+    /// <param name="typeInfo">変換メタデータ</param>
+    /// <returns>スクランブル解除されたオブジェクト。解除失敗時は デフォルト値 を返却する。</returns>
+    public static T? DescrambleObject<T>(this RoughScrambler self, ReadOnlySpan<byte> bin, JsonTypeInfo<T> typeInfo)
+    {
+        try
+        {
+            var json = self.DescrambleText(bin);
+            if (json == null) return default;
+            return JsonSerializer.Deserialize<T>(json, typeInfo);
         }
         catch
         {
@@ -133,6 +168,25 @@ public static class RoughScramblerExtensions
     /// <param name="self">利用するスクランブル化処理インスタンス</param>
     /// <param name="file">保存先ファイル情報</param>
     /// <param name="value">スクランブルするオブジェクト</param>
+    /// <param name="typeInfo">変換メタデータ</param>
+    /// <param name="options">ファイルストリームを開くオプション。Access プロパティは無視する。</param>
+    /// <param name="ignoreErr">保存エラーを無視するか否か</param>
+    public static void ScrambleObjectToFile<T>(this RoughScrambler self, FileInfo file, T value, JsonTypeInfo<T> typeInfo, FileStreamOptions? options = null, bool ignoreErr = false)
+    {
+        ArgumentNullException.ThrowIfNull(file);
+        try
+        {
+            var bin = self.ScrambleObject(value, typeInfo);
+            file.WriteAllBytes(bin, options);
+        }
+        catch when (ignoreErr) { }
+    }
+
+    /// <summary>オブジェクトをJSONシリアライズを介してスクランブルしファイルに保存する。</summary>
+    /// <typeparam name="T">対象オブジェクト型</typeparam>
+    /// <param name="self">利用するスクランブル化処理インスタンス</param>
+    /// <param name="file">保存先ファイル情報</param>
+    /// <param name="value">スクランブルするオブジェクト</param>
     /// <param name="options">ファイルストリームを開くオプション。Access プロパティは無視する。</param>
     /// <param name="ignoreErr">保存エラーを無視するか否か</param>
     /// <param name="cancelToken">キャンセルトークン</param>
@@ -142,6 +196,26 @@ public static class RoughScramblerExtensions
         try
         {
             var bin = self.ScrambleObject(value);
+            await file.WriteAllBytesAsync(bin, options, cancelToken).ConfigureAwait(false);
+        }
+        catch when (ignoreErr) { }
+    }
+
+    /// <summary>オブジェクトをJSONシリアライズを介してスクランブルしファイルに保存する。</summary>
+    /// <typeparam name="T">対象オブジェクト型</typeparam>
+    /// <param name="self">利用するスクランブル化処理インスタンス</param>
+    /// <param name="file">保存先ファイル情報</param>
+    /// <param name="value">スクランブルするオブジェクト</param>
+    /// <param name="typeInfo">変換メタデータ</param>
+    /// <param name="options">ファイルストリームを開くオプション。Access プロパティは無視する。</param>
+    /// <param name="ignoreErr">保存エラーを無視するか否か</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    public static async ValueTask ScrambleObjectToFileAsync<T>(this RoughScrambler self, FileInfo file, T value, JsonTypeInfo<T> typeInfo, FileStreamOptions? options = null, bool ignoreErr = false, CancellationToken cancelToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(file);
+        try
+        {
+            var bin = self.ScrambleObject(value, typeInfo);
             await file.WriteAllBytesAsync(bin, options, cancelToken).ConfigureAwait(false);
         }
         catch when (ignoreErr) { }
@@ -212,6 +286,27 @@ public static class RoughScramblerExtensions
     /// <typeparam name="T">対象オブジェクト型</typeparam>
     /// <param name="self">利用するスクランブル化処理インスタンス</param>
     /// <param name="file">読込元ファイル情報</param>
+    /// <param name="typeInfo">変換メタデータ</param>
+    /// <returns>スクランブル解除したオブジェクト。失敗時はnullを返却。</returns>
+    public static T? DescrambleObjectFromFile<T>(this RoughScrambler self, FileInfo file, JsonTypeInfo<T> typeInfo)
+    {
+        ArgumentNullException.ThrowIfNull(file);
+        try
+        {
+            var bin = file.ReadAllBytes();
+            var value = self.DescrambleObject<T>(bin, typeInfo);
+            return value;
+        }
+        catch
+        {
+            return default;
+        }
+    }
+
+    /// <summary>ファイルから読み込んでJSONデシリアライズを介してオブジェクトのスクランブル解除を行う</summary>
+    /// <typeparam name="T">対象オブジェクト型</typeparam>
+    /// <param name="self">利用するスクランブル化処理インスタンス</param>
+    /// <param name="file">読込元ファイル情報</param>
     /// <param name="cancelToken">キャンセルトークン</param>
     /// <returns>スクランブル解除したオブジェクト。失敗時はnullを返却。</returns>
     public static async ValueTask<T?> DescrambleObjectFromFileAsync<T>(this RoughScrambler self, FileInfo file, CancellationToken cancelToken = default)
@@ -221,6 +316,28 @@ public static class RoughScramblerExtensions
         {
             var bin = await file.ReadAllBytesAsync(cancelToken).ConfigureAwait(false);
             var value = self.DescrambleObject<T>(bin);
+            return value;
+        }
+        catch
+        {
+            return default;
+        }
+    }
+
+    /// <summary>ファイルから読み込んでJSONデシリアライズを介してオブジェクトのスクランブル解除を行う</summary>
+    /// <typeparam name="T">対象オブジェクト型</typeparam>
+    /// <param name="self">利用するスクランブル化処理インスタンス</param>
+    /// <param name="file">読込元ファイル情報</param>
+    /// <param name="typeInfo">変換メタデータ</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>スクランブル解除したオブジェクト。失敗時はnullを返却。</returns>
+    public static async ValueTask<T?> DescrambleObjectFromFileAsync<T>(this RoughScrambler self, FileInfo file, JsonTypeInfo<T> typeInfo, CancellationToken cancelToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(file);
+        try
+        {
+            var bin = await file.ReadAllBytesAsync(cancelToken).ConfigureAwait(false);
+            var value = self.DescrambleObject<T>(bin, typeInfo);
             return value;
         }
         catch
