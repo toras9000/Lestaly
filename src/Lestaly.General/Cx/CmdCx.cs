@@ -127,7 +127,7 @@ public class CmdCx
     /// <remarks>
     /// このメソッドは <see cref="interactive"/> の構成を上書きする。
     /// </remarks>
-    /// <param name="text">入力テキストー</param>
+    /// <param name="text">入力テキスト</param>
     /// <returns>自身のインスタンス</returns>
     public CmdCx input(string text)
         => this.input(new StringReader(text));

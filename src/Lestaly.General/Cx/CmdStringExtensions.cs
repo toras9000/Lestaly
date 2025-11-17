@@ -67,6 +67,13 @@ public static class CmdStringExtensions
     public static CmdCx input(this string commandline, TextReader reader)
         => new CmdCx(commandline).input(reader);
 
+    /// <summary>文字列をコマンドラインとみなし、指定の文字列を入力とするプロセス実行準備を行う</summary>
+    /// <param name="commandline">コマンドライン文字列。最初の空白より後ろを引数とみなす。</param>
+    /// <param name="text">入力テキスト</param>
+    /// <returns>コマンド実行準備インスタンス</returns>
+    public static CmdCx input(this string commandline, string text)
+        => new CmdCx(commandline).input(text);
+
     /// <summary>文字列をコマンドラインとみなし、指定の入出力エンコーディングとするプロセス実行準備を行う</summary>
     /// <param name="commandline">コマンドライン文字列。最初の空白より後ろを引数とみなす。</param>
     /// <param name="encoding">プロセス入出力エンコーディング</param>
@@ -74,7 +81,7 @@ public static class CmdStringExtensions
     public static CmdCx encoding(this string commandline, Encoding encoding)
         => new CmdCx(commandline).encoding(encoding);
 
-    /// <summary>呼び出しコマンドラインのエコーを構成する</summary>
+    /// <summary>文字列をコマンドラインとみなし、呼び出しコマンドラインのエコーを構成するプロセス実行準備を行う</summary>
     /// <param name="commandline">コマンドライン文字列。最初の空白より後ろを引数とみなす。</param>
     /// <param name="prompt">呼び出しコマンドラインエコーの先頭に付与するプロンプト文字列。nullを指定するとエコーなしとみなす。</param>
     /// <returns>コマンド実行準備インスタンス</returns>
@@ -87,7 +94,7 @@ public static class CmdStringExtensions
     public static CmdCx nowindow(this string commandline)
         => new CmdCx(commandline).nowindow();
 
-    /// <summary>プロセスの実行動詞を指定する</summary>
+    /// <summary>文字列をコマンドラインとみなし、プロセスの実行動詞を指定するプロセス実行準備を行う</summary>
     /// <returns>自身のインスタンス</returns>
     public static CmdCx verb(this string commandline, string verb)
         => new CmdCx(commandline).verb(verb);
