@@ -50,4 +50,19 @@ public static class ThisSource
     /// <param name="member">この引数は省略する必要がある。</param>
     /// <returns>メンバー名</returns>
     public static string MemberName([CallerMemberName] string member = "") => member;
+
+    /// <summary>指定の名前の祖先ディレクトリを探す</summary>
+    /// <param name="name">ディレクトリ名</param>
+    /// <param name="ignoreCase">大文字と小文字を同一視するか否か</param>
+    /// <param name="path">この引数は省略する必要がある。</param>
+    /// <returns>条件にマッチしたディレクトリ。見つからない場合は null</returns>
+    public static DirectoryInfo? FindAncestor(string name, bool? ignoreCase = default, [CallerFilePath] string path = "")
+        => new FileInfo(path).FindAncestor(name, ignoreCase);
+
+    /// <summary>指定の条件にマッチする祖先ディレクトリを探す</summary>
+    /// <param name="finder">条件にマッチするかを判定するデリゲート</param>
+    /// <param name="path">この引数は省略する必要がある。</param>
+    /// <returns>条件にマッチしたディレクトリ。見つからない場合は null</returns>
+    public static DirectoryInfo? FindAncestor(Func<DirectoryInfo, bool> finder, [CallerFilePath] string path = "")
+        => new FileInfo(path).FindAncestor(finder);
 }

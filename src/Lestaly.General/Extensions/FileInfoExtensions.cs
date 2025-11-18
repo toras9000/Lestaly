@@ -713,6 +713,34 @@ public static class FileInfoExtensions
     }
     #endregion
 
+    #region Find
+    /// <summary>指定の名前の祖先ディレクトリを探す</summary>
+    /// <param name="self">基準となるディレクトリ</param>
+    /// <param name="name">ディレクトリ名</param>
+    /// <param name="ignoreCase">大文字と小文字を同一視するか否か</param>
+    /// <returns>条件にマッチしたディレクトリ。見つからない場合は null</returns>
+    public static DirectoryInfo? FindAncestor(this FileInfo self, string name, bool? ignoreCase = default)
+    {
+        var matchRule = (ignoreCase ?? RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+        return self.FindAncestor(dir => string.Equals(dir.Name, name, matchRule));
+    }
+
+    /// <summary>指定の条件にマッチする祖先ディレクトリを探す</summary>
+    /// <param name="self">基準となるディレクトリ</param>
+    /// <param name="finder">条件にマッチするかを判定するデリゲート</param>
+    /// <returns>条件にマッチしたディレクトリ。見つからない場合は null</returns>
+    public static DirectoryInfo? FindAncestor(this FileInfo self, Func<DirectoryInfo, bool> finder)
+    {
+        var scan = self.Directory;
+        while (scan != null)
+        {
+            if (finder(scan)) break;
+            scan = scan.Parent;
+        }
+        return scan;
+    }
+    #endregion
+
     #region Path
     /// <summary>ファイルパスの構成セグメントを取得する。</summary>
     /// <param name="self">対象ファイルのFileInfo</param>

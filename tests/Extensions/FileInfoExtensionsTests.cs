@@ -1245,6 +1245,19 @@ public class FileExtensionsTests
     }
     #endregion
 
+    #region Find
+    [TestMethod]
+    public void FindAncestor()
+    {
+        using var testDir = new TempDir();
+
+        var file = testDir.Info.RelativeFile("abc/def/ghi/jkl").Touch();
+        var found = file.FindAncestor("def");
+        found.Should().NotBeNull();
+        found.RelativePathFrom(testDir.Info).Replace('\\', '/').Should().Be("abc/def");
+    }
+    #endregion
+
     #region Path
     [TestMethod]
     public void GetPathSegments()

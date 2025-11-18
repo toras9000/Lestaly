@@ -396,6 +396,17 @@ public class DirectoryInfoExtensionsTests
         tempDir.Info.FindPathDirectory(["yyy", "abc"], fuzzy: false).Should().BeNull();
         tempDir.Info.FindPathDirectory(["yyy", "abc"], fuzzy: true).Should().NotBeNull();
     }
+
+    [TestMethod]
+    public void FindAncestor()
+    {
+        using var testDir = new TempDir();
+
+        var dir = testDir.Info.RelativeDirectory("abc/def/ghi/jkl").WithCreate();
+        var found = dir.FindAncestor("def");
+        found.Should().NotBeNull();
+        found.RelativePathFrom(testDir.Info).Replace('\\', '/').Should().Be("abc/def");
+    }
     #endregion
 
     #region Path
