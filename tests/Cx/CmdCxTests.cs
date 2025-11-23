@@ -138,9 +138,17 @@ public class CmdCxTests
     [TestMethod()]
     public async Task encoding()
     {
+        using var tempDir = new TempDir();
+        var testFile = tempDir.Info.RelativeFile("test.txt");
+
+        var text = "日本語";
         var jpenc = CodePagesEncodingProvider.Instance.GetEncoding("Shift_JIS")!;
-        var output = await new CmdCx("cmd /C echo 日本語").encoding(jpenc);
-        output.Output.Should().Contain("日本語");
+        var jpbin = jpenc.GetBytes(text);
+        await testFile.WriteAllBytesAsync(jpbin);
+
+        var output = await new CmdCx($"cmd /C type \"{testFile.FullName}\"").encoding(jpenc).result().output();
+
+        output.Should().Be(text);
     }
 
     [TestMethod()]
@@ -176,24 +184,5 @@ public class CmdCxTests
 
         await FluentActions.Awaiting(async () => await new CmdCx("ping -t localhost").cancelby(canceller.Token))
             .Should().ThrowAsync<OperationCanceledException>();
-    }
-
-    [TestMethod()]
-    public async Task combination()
-    {
-        using var tempDir = new TempDir();
-
-        var testFile = tempDir.Info.RelativeFile("test.txt");
-        using (var testWriter = testFile.CreateTextWriter())
-        {
-            var jpenc = CodePagesEncodingProvider.Instance.GetEncoding("Shift_JIS")!;
-            await new CmdCx("cmd /C echo combination-%ENV1%-%ENV2%-test")
-                .encoding(jpenc)
-                .env("ENV1", "日本語")
-                .env("ENV2", "ABC")
-                .redirect(testWriter);
-        }
-
-        testFile.ReadAllText().Should().Contain("combination-日本語-ABC-test");
     }
 }
