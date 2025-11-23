@@ -11,31 +11,20 @@ namespace Lestaly;
 /// </remarks>
 public class SemanticVersion : IEquatable<SemanticVersion>, IComparable<SemanticVersion>
 {
-    // 公開プロパティ
-    #region バージョン情報
-    /// <summary>解釈元の文字列</summary>
-    public string Original { get; }
-
-    /// <summary>メジャーバージョン</summary>
-    public int Major { get; }
-
-    /// <summary>マイナーバージョン</summary>
-    public int? Minor { get; }
-
-    /// <summary>パッチバージョン</summary>
-    public int? Patch { get; }
-
-    /// <summary>細かなバージョン</summary>
-    public int? Filum { get; }
-
-    /// <summary>プレリリースバージョン</summary>
-    public string PreRelease { get; }
-
-    /// <summary>ビルドメタデータ</summary>
-    public string Build { get; }
+    // 構築
+    #region コンストラクタ
+    /// <summary>解釈結果値を受け取るコンストラクタ</summary>
+    /// <param name="major">メジャーバージョン</param>
+    /// <param name="minor">マイナーバージョン</param>
+    /// <param name="patch">パッチバージョン</param>
+    /// <param name="filum">細かなバージョン</param>
+    /// <param name="pre">プレリリースバージョン</param>
+    /// <param name="build">ビルドメタデータ</param>
+    public SemanticVersion(int major, int? minor = default, int? patch = default, int? filum = default, string? pre = default, string? build = default)
+        : this(buildString(major, minor, patch, filum, pre, build), major, minor, patch, filum, pre, build)
+    { }
     #endregion
 
-    // 公開メソッド
     #region 静的：パース
     /// <summary>文字列をセマンティックバージョンとして解釈</summary>
     /// <param name="text">対象文字列</param>
@@ -59,8 +48,10 @@ public class SemanticVersion : IEquatable<SemanticVersion>, IComparable<Semantic
         var filum = (2 < subver.Captures.Count && int.TryParse(subver.Captures[2].Value, out var s2)) ? s2 : default(int?);
 
         // 追加情報解釈
-        var pre = match.Groups["pre"].Value;
-        var build = match.Groups["build"].Value;
+        var captPre = match.Groups["pre"];
+        var captBuild = match.Groups["build"];
+        var pre = captPre.Success ? captPre.Value : default;
+        var build = captBuild.Success ? captBuild.Value : default;
 
         // インスタンス構築
         version = new SemanticVersion(text, major, minor, patch, filum, pre, build);
@@ -75,6 +66,31 @@ public class SemanticVersion : IEquatable<SemanticVersion>, IComparable<Semantic
         => TryParse(text, out var version) ? version : throw new FormatException("Unrecognized semver string");
     #endregion
 
+    // 公開プロパティ
+    #region バージョン情報
+    /// <summary>解釈元の文字列</summary>
+    public string Original { get; }
+
+    /// <summary>メジャーバージョン</summary>
+    public int Major { get; }
+
+    /// <summary>マイナーバージョン</summary>
+    public int? Minor { get; }
+
+    /// <summary>パッチバージョン</summary>
+    public int? Patch { get; }
+
+    /// <summary>細かなバージョン</summary>
+    public int? Filum { get; }
+
+    /// <summary>プレリリースバージョン</summary>
+    public string? PreRelease { get; }
+
+    /// <summary>ビルドメタデータ</summary>
+    public string? Build { get; }
+    #endregion
+
+    // 公開メソッド
     #region 文字列化
     /// <summary>文字列表現を得る</summary>
     /// <returns>解釈元の文字列</returns>
@@ -86,16 +102,8 @@ public class SemanticVersion : IEquatable<SemanticVersion>, IComparable<Semantic
     {
         if (this.reformed == null)
         {
-            // 未構築ならば構築する
-            var builder = new StringBuilder();
-            builder.Append(this.Major);
-            if (this.Minor.HasValue) builder.Append('.').Append(this.Minor);
-            if (this.Patch.HasValue) builder.Append('.').Append(this.Patch);
-            if (this.Filum.HasValue) builder.Append('.').Append(this.Filum);
-            if (!string.IsNullOrWhiteSpace(this.PreRelease)) builder.Append('-').Append(this.PreRelease);
-            if (!string.IsNullOrWhiteSpace(this.Build)) builder.Append('+').Append(this.Build);
-            // 構築結果は保持しておく
-            this.reformed = builder.ToString();
+            // 未構築ならば構築する。構築結果は保持しておく
+            this.reformed = buildString(this.Major, this.Minor, this.Patch, this.Filum, this.PreRelease, this.Build);
         }
         return this.reformed;
     }
@@ -150,10 +158,10 @@ public class SemanticVersion : IEquatable<SemanticVersion>, IComparable<Semantic
 
     #region 演算子のオーバロード
     /// <inheritdoc />
-    public static bool operator ==(SemanticVersion r1, SemanticVersion r2) => object.ReferenceEquals(r1, r2) || (r1 is not null && r1.Equals(r2));
+    public static bool operator ==(SemanticVersion? r1, SemanticVersion? r2) => object.ReferenceEquals(r1, r2) || (r1 is not null && r1.Equals(r2));
 
     /// <inheritdoc />
-    public static bool operator !=(SemanticVersion r1, SemanticVersion r2) => !(r1 == r2);
+    public static bool operator !=(SemanticVersion? r1, SemanticVersion? r2) => !(r1 == r2);
 
     /// <inheritdoc />
     public static bool operator <(SemanticVersion r1, SemanticVersion r2) => r1.CompareTo(r2) < 0;
@@ -178,7 +186,7 @@ public class SemanticVersion : IEquatable<SemanticVersion>, IComparable<Semantic
     /// <param name="filum">細かなバージョン</param>
     /// <param name="pre">プレリリースバージョン</param>
     /// <param name="build">ビルドメタデータ</param>
-    private SemanticVersion(string original, int major, int? minor, int? patch, int? filum, string pre, string build)
+    private SemanticVersion(string original, int major, int? minor, int? patch, int? filum, string? pre, string? build)
     {
         this.Original = original;
         this.Major = major;
@@ -199,6 +207,28 @@ public class SemanticVersion : IEquatable<SemanticVersion>, IComparable<Semantic
     #region キャッシュ
     /// <summary>再構築文字列キャッシュ</summary>
     private string? reformed;
+    #endregion
+
+    // 非公開メソッド
+    #region 静的：文字列化
+    /// <summary>バージョン文字列を構築する</summary>
+    /// <param name="major">メジャーバージョン</param>
+    /// <param name="minor">マイナーバージョン</param>
+    /// <param name="patch">パッチバージョン</param>
+    /// <param name="filum">細かなバージョン</param>
+    /// <param name="pre">プレリリースバージョン</param>
+    /// <param name="build">ビルドメタデータ</param>
+    private static string buildString(int major, int? minor = default, int? patch = default, int? filum = default, string? pre = default, string? build = default)
+    {
+        var builder = new StringBuilder();
+        builder.Append(major);
+        if (minor.HasValue) builder.Append('.').Append(minor);
+        if (patch.HasValue) builder.Append('.').Append(patch);
+        if (filum.HasValue) builder.Append('.').Append(filum);
+        if (!string.IsNullOrWhiteSpace(pre)) builder.Append('-').Append(pre);
+        if (!string.IsNullOrWhiteSpace(build)) builder.Append('+').Append(build);
+        return builder.ToString();
+    }
     #endregion
 
 }

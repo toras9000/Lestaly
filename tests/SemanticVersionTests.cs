@@ -4,6 +4,28 @@
 public class SemanticVersionTests
 {
     [TestMethod()]
+    public void Nnew()
+    {
+        new SemanticVersion(1234, 2345, 3456, 4567, "pre", "build").Should().Match<SemanticVersion>(
+            v => v.Major == 1234
+              && v.Minor == 2345
+              && v.Patch == 3456
+              && v.Filum == 4567
+              && v.PreRelease == "pre"
+              && v.Build == "build"
+        );
+
+        new SemanticVersion(1).Should().Match<SemanticVersion>(
+            v => v.Major == 1
+              && v.Minor == null
+              && v.Patch == null
+              && v.Filum == null
+              && v.PreRelease == null
+              && v.Build == null
+        );
+    }
+
+    [TestMethod()]
     public void Parse()
     {
         SemanticVersion.Parse("1234.2345.3456.4567-pre+build").Should().Match<SemanticVersion>(
@@ -29,7 +51,7 @@ public class SemanticVersionTests
               && v.Minor == 2345
               && v.Patch == 3456
               && v.Filum == null
-              && v.PreRelease == ""
+              && v.PreRelease == null
               && v.Build == "build"
         );
 
@@ -38,8 +60,8 @@ public class SemanticVersionTests
               && v.Minor == 2345
               && v.Patch == null
               && v.Filum == null
-              && v.PreRelease == ""
-              && v.Build == ""
+              && v.PreRelease == null
+              && v.Build == null
         );
 
         SemanticVersion.Parse("1234").Should().Match<SemanticVersion>(
@@ -47,8 +69,8 @@ public class SemanticVersionTests
               && v.Minor == null
               && v.Patch == null
               && v.Filum == null
-              && v.PreRelease == ""
-              && v.Build == ""
+              && v.PreRelease == null
+              && v.Build == null
         );
     }
 
@@ -87,6 +109,10 @@ public class SemanticVersionTests
         a.Equals(SemanticVersion.Parse("1.2.3.3-pre+build")).Should().BeFalse();
         a.Equals(SemanticVersion.Parse("1.2.3.4-pre2+build")).Should().BeFalse();
         a.Equals(SemanticVersion.Parse("1.2.3.4-pre+build2")).Should().BeFalse();
+
+        (default == a).Should().BeFalse();
+        (a == default).Should().BeFalse();
+        (default(SemanticVersion) == default(SemanticVersion)).Should().BeTrue();
     }
 
     [TestMethod()]
