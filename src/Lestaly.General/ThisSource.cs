@@ -13,6 +13,12 @@ public static class ThisSource
     public static FileInfo File([CallerFilePath] string path = "")
         => new(path);
 
+    /// <summary>呼び出し元ソースファイルの格納ディレクトリを示すディレクトリ情報を取得する。</summary>
+    /// <param name="path">この引数は省略する必要がある。</param>
+    /// <returns>呼び出し元ソースの格納ディレクトリ情報</returns>
+    public static DirectoryInfo Directory([CallerFilePath] string path = "")
+        => new(Path.GetDirectoryName(path)!);
+
     /// <summary>呼び出し元ソースファイルからの相対パスで示されるファイル情報を取得する。</summary>
     /// <param name="relativePath">相対パス</param>
     /// <param name="path">この引数は省略する必要がある。</param>
