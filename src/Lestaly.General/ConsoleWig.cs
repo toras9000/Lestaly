@@ -176,13 +176,6 @@ public sealed class ConsoleWig : IConsoleWig
     private static readonly Lazy<ConsoleInReader> inReader = new(() => new ConsoleInReader());
 }
 
-/// <summary>キャンセルトークンを保持する区間</summary>
-public interface ICancelTokenPeriod : IDisposable
-{
-    /// <summary>キャンセルトークン</summary>
-    CancellationToken Token { get; }
-}
-
 /// <summary>
 /// コンソール関連のユーティリティ
 /// </summary>
