@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/ソリューション項目/">
+    <File Path=".editorconfig" />
+  </Folder>
+  <Project Path="src/Lestaly.Excel/Lestaly.Excel.csproj" />
+  <Project Path="src/Lestaly.General/Lestaly.General.csproj" />
+  <Project Path="src/Lestaly.Ldap/Lestaly.Ldap.csproj" />
+  <Project Path="src/Lestaly/Lestaly.csproj" />
+  <Project Path="tests/LestalyTest.csproj" />
+</Solution>
