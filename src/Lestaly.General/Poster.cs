@@ -17,6 +17,14 @@ public class EscLinkBuilder
     /// <summary>ハイパーリンク エスケープシーケンステキストを作成する</summary>
     /// <param name="uri">リンク先URI</param>
     /// <returns>ハイパーリンク エスケープシーケンステキスト</returns>
+    public string this[Uri uri]
+    {
+        get => this[uri.AbsoluteUri, uri.ToString()];
+    }
+
+    /// <summary>ハイパーリンク エスケープシーケンステキストを作成する</summary>
+    /// <param name="uri">リンク先URI</param>
+    /// <returns>ハイパーリンク エスケープシーケンステキスト</returns>
     public string this[string uri]
     {
         get => this[uri, uri];
