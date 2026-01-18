@@ -74,6 +74,55 @@ public static class RandomExtensions
         return picked;
     }
 
+    /// <summary>コレクションからランダムに要素を取り除き取得する</summary>
+    /// <typeparam name="TItem">要素の型</typeparam>
+    /// <param name="self">ランダム値を生成するインスタンス</param>
+    /// <param name="items">対象コレクション</param>
+    /// <param name="count">取得数。ただしコレクション長でキャップされる。</param>
+    /// <returns>取り除いた要素の配列</returns>
+    public static TItem[] RemoveItems<TItem>(this Random self, IList<TItem> items, int count)
+    {
+        ArgumentNullException.ThrowIfNull(items);
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
+
+        if (count == 0) return Array.Empty<TItem>();
+        var pickCount = Math.Min(count, items.Count);
+        var picked = new TItem[pickCount];
+        for (var i = 0; i < pickCount; i++)
+        {
+            var index = self.Next(items.Count);
+            picked[i] = items[index];
+            items.RemoveAt(index);
+        }
+        return picked;
+    }
+
+    /// <summary>シーケンスに一定の確率で要素を通過させるフィルタをかける</summary>
+    /// <typeparam name="TItem">要素の型</typeparam>
+    /// <param name="self">ランダム値を生成するインスタンス</param>
+    /// <param name="sequence">元のシーケンス</param>
+    /// <param name="rate">通過率</param>
+    /// <returns>フィルタをかけたシーケンス</returns>
+    public static IEnumerable<TItem> PassRate<TItem>(this Random self, IEnumerable<TItem> sequence, double rate)
+    {
+        foreach (var item in sequence)
+        {
+            if (self.NextDouble() < rate)
+            {
+                yield return item;
+            }
+        }
+    }
+
+    /// <summary>シーケンスに一定の確率で要素を通過させるフィルタをかける</summary>
+    /// <typeparam name="TItem">要素の型</typeparam>
+    /// <param name="self">元のシーケンス</param>
+    /// <param name="rate">通過率</param>
+    /// <param name="random">ランダム値を生成するインスタンス。省略時は Random.Shared を利用する</param>
+    /// <returns>フィルタをかけたシーケンス</returns>
+    public static IEnumerable<TItem> PassRate<TItem>(this IEnumerable<TItem> self, double rate, Random? random = default)
+        => (random ?? Random.Shared).PassRate(self, rate);
+
     /// <summary>重みづけした選択肢の中からランダムで1つ値を選択する</summary>
     /// <typeparam name="TOption">選択肢データ型</typeparam>
     /// <param name="self">ランダム値を生成するインスタンス</param>

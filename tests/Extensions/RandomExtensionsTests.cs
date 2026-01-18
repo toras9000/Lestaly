@@ -30,6 +30,32 @@ public class RandomExtensionsTests
     }
 
     [TestMethod()]
+    public void RemoveItems()
+    {
+        var items = Enumerable.Range(1, 100).Select(n => n * 3).ToList();
+
+        var picked = Random.Shared.RemoveItems(items, 10);
+        picked.Should().HaveCount(10);
+        items.Should().HaveCount(90);
+        picked.Should().NotIntersectWith(items);
+    }
+
+    [TestMethod()]
+    public void PassRate()
+    {
+        var items = Enumerable.Range(1, 100).Select(n => n * 3).ToArray();
+
+        var passed1 = Random.Shared.PassRate(items, 0.3).ToArray();
+        passed1.Should().HaveCountLessThan(50);
+
+        var passed2 = items.PassRate(0.3, Random.Shared).ToArray();
+        passed2.Should().HaveCountLessThan(50);
+
+        var passed3 = items.PassRate(0.3).ToArray();
+        passed3.Should().HaveCountLessThan(50);
+    }
+
+    [TestMethod()]
     public void Choice()
     {
         var options = new[]
