@@ -133,6 +133,7 @@ public class CmdExtensionsTests
     }
 
     [TestMethod()]
+    [DoNotParallelize]
     public async Task encoding()
     {
         var jpenc = CodePagesEncodingProvider.Instance.GetEncoding("Shift_JIS")!;

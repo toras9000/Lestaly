@@ -1,6 +1,7 @@
 ﻿namespace LestalyTest;
 
 [TestClass()]
+[DoNotParallelize]
 public class EnvVarsTests
 {
     [TestMethod()]

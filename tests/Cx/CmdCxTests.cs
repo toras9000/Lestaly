@@ -8,6 +8,7 @@ namespace LestalyTest.Cx;
 public class CmdCxTests
 {
     [TestMethod()]
+    [DoNotParallelize]
     public async Task methods()
     {
         // 可能な操作を列挙するためだけのメソッド
@@ -136,6 +137,7 @@ public class CmdCxTests
     }
 
     [TestMethod()]
+    [DoNotParallelize]
     public async Task encoding()
     {
         using var tempDir = new TempDir();
