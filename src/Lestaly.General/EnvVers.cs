@@ -84,7 +84,7 @@ public static class EnvVers
     /// <returns>環境変数のファイル情報または代替値</returns>
     [return: NotNullIfNotNull(nameof(alt))]
     public static DirectoryInfo? AppRelativeDirectory(string name, string? alt = default)
-        => CurrentDir.RelativeDirectoryAt(Environment.GetEnvironmentVariable(name).WhenWhite(alt));
+        => AppBaseDir.RelativeDirectoryAt(Environment.GetEnvironmentVariable(name).WhenWhite(alt));
 
 }
 
