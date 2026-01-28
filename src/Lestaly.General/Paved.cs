@@ -12,7 +12,6 @@ public static class Paved
     public static async Task<T?> RunAsync<T>(Func<PavedOptions<T>, ValueTask<T>> action)
     {
         var options = new PavedOptions<T>();
-        var console = ConsoleWig.Facade;
         var result = default(T?);
         var time = default(TimeSpan?);
         var pause = false;
@@ -30,7 +29,7 @@ public static class Paved
             if (options.CancelHandler == null)
             {
                 var message = options.PauseOnCancel.Message ?? "Operation cancelled.";
-                if (message.IsNotEmpty()) using (console.ForegroundColorPeriod(ConsoleColor.Yellow)) console.WriteLine();
+                if (message.IsNotEmpty()) using (Console.ForegroundColorPeriod(ConsoleColor.Yellow)) Console.WriteLine(message);
             }
             else
             {
@@ -48,35 +47,35 @@ public static class Paved
             {
                 if (options.PauseOnError.Message.IsNotEmpty())
                 {
-                    using var _ = console.ForegroundColorPeriod(ConsoleColor.Red);
-                    console.WriteLine(options.PauseOnError.Message);
+                    using var _ = Console.ForegroundColorPeriod(ConsoleColor.Red);
+                    Console.WriteLine(options.PauseOnError.Message);
                 }
                 else if (ex is CmdProcExitCodeException cex)
                 {
-                    using var _ = console.ForegroundColorPeriod(ConsoleColor.Red);
-                    console.WriteLine(cex.Message);
-                    if (cex.Output.IsNotWhite()) console.WriteLine($"Output: {cex.Output}");
+                    using var _ = Console.ForegroundColorPeriod(ConsoleColor.Red);
+                    Console.WriteLine(cex.Message);
+                    if (cex.Output.IsNotWhite()) Console.WriteLine($"Output: {cex.Output}");
                 }
                 else if (ex is PavedMessageException pex)
                 {
                     switch (pex.Kind)
                     {
                     case PavedMessageKind.Error:
-                        using (console.ForegroundColorPeriod(ConsoleColor.Red)) console.WriteLine(pex.Message);
+                        using (Console.ForegroundColorPeriod(ConsoleColor.Red)) Console.WriteLine(pex.Message);
                         break;
                     case PavedMessageKind.Warning:
                     case PavedMessageKind.Cancelled:
-                        using (console.ForegroundColorPeriod(ConsoleColor.Yellow)) console.WriteLine(pex.Message);
+                        using (Console.ForegroundColorPeriod(ConsoleColor.Yellow)) Console.WriteLine(pex.Message);
                         break;
                     case PavedMessageKind.Information:
                     default:
-                        console.WriteLine(pex.Message);
+                        Console.WriteLine(pex.Message);
                         break;
                     }
                 }
                 else
                 {
-                    using (console.ForegroundColorPeriod(ConsoleColor.Red)) console.WriteLine(ex.ToString());
+                    using (Console.ForegroundColorPeriod(ConsoleColor.Red)) Console.WriteLine(ex.ToString());
                 }
             }
             else
@@ -92,14 +91,14 @@ public static class Paved
         if (pause && !Console.IsInputRedirected)
         {
             Console.WriteLine(options.PauseOnExit.Message ?? "(Press any key to exit.)");
-            time = time ?? options.PauseOnExit.Time;
+            time ??= options.PauseOnExit.Time;
             if (time.Value == TimeSpan.Zero)
             {
                 Console.ReadKey(true);
             }
             else
             {
-                await ConsoleWig.WaitKeyAsync(intercept: true, time.Value).ConfigureAwait(false);
+                await Console.WaitKeyAsync(intercept: true, time.Value).ConfigureAwait(false);
             }
         }
 

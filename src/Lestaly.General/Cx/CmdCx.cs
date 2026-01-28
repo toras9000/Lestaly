@@ -108,7 +108,7 @@ public class CmdCx
     /// </remarks>
     /// <returns>自身のインスタンス</returns>
     public CmdCx interactive()
-        => this.input(ConsoleWig.InReader);
+        => this.input(Console.InReader);
 
     /// <summary>指定したリーダーから呼び出しプロセス標準入力へのリダイレクトを構成する</summary>
     /// <remarks>
