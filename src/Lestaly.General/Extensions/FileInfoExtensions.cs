@@ -115,6 +115,16 @@ public static class FileInfoExtensions
         return File.ReadAllBytes(self.FullName);
     }
 
+    /// <summary>ファイル内容の全バイト列読み出しを試みる</summary>
+    /// <param name="self">対象ファイルのFileInfo</param>
+    /// <returns>ファイルから読みだしたバイト列。失敗時は null</returns>
+    public static byte[]? TryReadAllBytes(this FileInfo self)
+    {
+        ArgumentNullException.ThrowIfNull(self);
+        try { return File.ReadAllBytes(self.FullName); }
+        catch { return default; }
+    }
+
     /// <summary>ファイル内容の全テキストを読み出す。</summary>
     /// <param name="self">対象ファイルのFileInfo</param>
     /// <returns>ファイルから読みだした全テキスト</returns>
@@ -132,6 +142,17 @@ public static class FileInfoExtensions
     {
         ArgumentNullException.ThrowIfNull(self);
         return File.ReadAllText(self.FullName, encoding);
+    }
+
+    /// <summary>ファイル内容の全テキスト読み出しを試みる。</summary>
+    /// <param name="self">対象ファイルのFileInfo</param>
+    /// <param name="encoding">ファイル内容をデコードするテキストエンコーディング</param>
+    /// <returns>ファイルから読みだした全テキスト。失敗時は null</returns>
+    public static string? TryReadAllText(this FileInfo self, Encoding? encoding = default)
+    {
+        ArgumentNullException.ThrowIfNull(self);
+        try { return File.ReadAllText(self.FullName, encoding ?? Encoding.UTF8); }
+        catch { return default; }
     }
 
     /// <summary>ファイル内容の全テキスト行を読み出す。</summary>
