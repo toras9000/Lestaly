@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
@@ -579,6 +580,8 @@ public static class FileInfoExtensions
     /// <param name="self">読み取り元ファイル</param>
     /// <param name="cancelToken">キャンセルトークン</param>
     /// <returns>デシリアライズしたインスタンス</returns>
+    [RequiresUnreferencedCode("This uses JsonSerializer.")]
+    [RequiresDynamicCode("This uses JsonSerializer.")]
     public static ValueTask<TObject?> ReadJsonAsync<TObject>(this FileInfo self, CancellationToken cancelToken)
         => self.ReadJsonAsync<TObject>(options: default, cancelToken);
 
@@ -600,6 +603,8 @@ public static class FileInfoExtensions
     /// <param name="options">デシリアライズオプション</param>
     /// <param name="cancelToken">キャンセルトークン</param>
     /// <returns>デシリアライズしたインスタンス</returns>
+    [RequiresUnreferencedCode("This uses JsonSerializer.")]
+    [RequiresDynamicCode("This uses JsonSerializer.")]
     public static async ValueTask<TObject?> ReadJsonAsync<TObject>(this FileInfo self, JsonSerializerOptions? options = null, CancellationToken cancelToken = default)
     {
         using var stream = self.OpenRead();
@@ -616,6 +621,8 @@ public static class FileInfoExtensions
     /// </param>
     /// <param name="cancelToken">キャンセルトークン</param>
     /// <returns>デシリアライズしたインスタンス</returns>
+    [RequiresUnreferencedCode("This uses JsonSerializer.")]
+    [RequiresDynamicCode("This uses JsonSerializer.")]
     public static ValueTask<TObject?> ReadJsonByTemplateAsync<TObject>(this FileInfo self, TObject? template, CancellationToken cancelToken)
         => self.ReadJsonByTemplateAsync<TObject>(template, default, cancelToken);
 
@@ -630,6 +637,8 @@ public static class FileInfoExtensions
     /// <param name="options">デシリアライズオプション</param>
     /// <param name="cancelToken">キャンセルトークン</param>
     /// <returns>デシリアライズしたインスタンス</returns>
+    [RequiresUnreferencedCode("This uses JsonSerializer.")]
+    [RequiresDynamicCode("This uses JsonSerializer.")]
     public static async ValueTask<TObject?> ReadJsonByTemplateAsync<TObject>(this FileInfo self, TObject? template, JsonSerializerOptions? options = null, CancellationToken cancelToken = default)
     {
         _ = template;
@@ -643,6 +652,8 @@ public static class FileInfoExtensions
     /// <param name="self">読み取り元ファイル</param>
     /// <param name="cancelToken">キャンセルトークン</param>
     /// <returns>デシリアライズしたインスタンス</returns>
+    [RequiresUnreferencedCode("This uses JsonSerializer.")]
+    [RequiresDynamicCode("This uses JsonSerializer.")]
     public static ValueTask<TObject?> ReadRoughJsonAsync<TObject>(this FileInfo self, CancellationToken cancelToken = default)
         => self.ReadJsonAsync<TObject>(JsonRoughReadOptions, cancelToken);
     #endregion
@@ -653,6 +664,8 @@ public static class FileInfoExtensions
     /// <param name="self">保存先ファイル</param>
     /// <param name="value">保存するオブジェクト</param>
     /// <param name="cancelToken">キャンセルトークン</param>
+    [RequiresUnreferencedCode("This uses JsonSerializer.")]
+    [RequiresDynamicCode("This uses JsonSerializer.")]
     public static ValueTask WriteJsonAsync<TObject>(this FileInfo self, TObject value, CancellationToken cancelToken)
         => self.WriteJsonAsync(value, options: default, cancelToken);
 
@@ -674,6 +687,8 @@ public static class FileInfoExtensions
     /// <param name="value">保存するオブジェクト</param>
     /// <param name="options">シリアライズオプション</param>
     /// <param name="cancelToken">キャンセルトークン</param>
+    [RequiresUnreferencedCode("This uses JsonSerializer.")]
+    [RequiresDynamicCode("This uses JsonSerializer.")]
     public static async ValueTask WriteJsonAsync<TObject>(this FileInfo self, TObject value, JsonSerializerOptions? options = null, CancellationToken cancelToken = default)
     {
         using var stream = self.CreateWrite();
@@ -685,6 +700,8 @@ public static class FileInfoExtensions
     /// <param name="self">保存先ファイル</param>
     /// <param name="value">保存するオブジェクト</param>
     /// <param name="cancelToken">キャンセルトークン</param>
+    [RequiresUnreferencedCode("This uses JsonSerializer.")]
+    [RequiresDynamicCode("This uses JsonSerializer.")]
     public static ValueTask WritePrettyJsonAsync<TObject>(this FileInfo self, TObject value, CancellationToken cancelToken = default)
         => self.WriteJsonAsync(value, JsonPrettyWriteOptions, cancelToken);
 
@@ -694,6 +711,8 @@ public static class FileInfoExtensions
     /// <param name="value">保存するオブジェクト</param>
     /// <param name="ignoreNulls">nullプロパティを無視するか否か</param>
     /// <param name="cancelToken">キャンセルトークン</param>
+    [RequiresUnreferencedCode("This uses JsonSerializer.")]
+    [RequiresDynamicCode("This uses JsonSerializer.")]
     public static ValueTask WritePrettyJsonAsync<TObject>(this FileInfo self, TObject value, bool ignoreNulls, CancellationToken cancelToken = default)
         => self.WriteJsonAsync(value, ignoreNulls ? JsonPrettyNullIgnoreWriteOptions : JsonPrettyWriteOptions, cancelToken);
     #endregion

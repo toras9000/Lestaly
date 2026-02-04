@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
@@ -28,6 +29,8 @@ public static class RoughScramblerExtensions
     /// <param name="self">利用するスクランブル化処理インスタンス</param>
     /// <param name="value">スクランブルするオブジェクト</param>
     /// <returns>スクランブルされたバイト列</returns>
+    [RequiresUnreferencedCode("This uses JsonSerializer.")]
+    [RequiresDynamicCode("This uses JsonSerializer.")]
     public static byte[] ScrambleObject<T>(this RoughScrambler self, T value)
     {
         var json = JsonSerializer.Serialize(value);
@@ -73,6 +76,8 @@ public static class RoughScramblerExtensions
     /// <param name="self">利用するスクランブル化処理インスタンス</param>
     /// <param name="bin">スクランブルされたデータ</param>
     /// <returns>スクランブル解除されたオブジェクト。解除失敗時は デフォルト値 を返却する。</returns>
+    [RequiresUnreferencedCode("This uses JsonSerializer.")]
+    [RequiresDynamicCode("This uses JsonSerializer.")]
     public static T? DescrambleObject<T>(this RoughScrambler self, ReadOnlySpan<byte> bin)
     {
         try
@@ -152,6 +157,8 @@ public static class RoughScramblerExtensions
     /// <param name="value">スクランブルするオブジェクト</param>
     /// <param name="options">ファイルストリームを開くオプション。Access プロパティは無視する。</param>
     /// <param name="ignoreErr">保存エラーを無視するか否か</param>
+    [RequiresUnreferencedCode("This uses JsonSerializer.")]
+    [RequiresDynamicCode("This uses JsonSerializer.")]
     public static void ScrambleObjectToFile<T>(this RoughScrambler self, FileInfo file, T value, FileStreamOptions? options = null, bool ignoreErr = false)
     {
         ArgumentNullException.ThrowIfNull(file);
@@ -190,6 +197,8 @@ public static class RoughScramblerExtensions
     /// <param name="options">ファイルストリームを開くオプション。Access プロパティは無視する。</param>
     /// <param name="ignoreErr">保存エラーを無視するか否か</param>
     /// <param name="cancelToken">キャンセルトークン</param>
+    [RequiresUnreferencedCode("This uses JsonSerializer.")]
+    [RequiresDynamicCode("This uses JsonSerializer.")]
     public static async ValueTask ScrambleObjectToFileAsync<T>(this RoughScrambler self, FileInfo file, T value, FileStreamOptions? options = null, bool ignoreErr = false, CancellationToken cancelToken = default)
     {
         ArgumentNullException.ThrowIfNull(file);
@@ -267,6 +276,8 @@ public static class RoughScramblerExtensions
     /// <param name="self">利用するスクランブル化処理インスタンス</param>
     /// <param name="file">読込元ファイル情報</param>
     /// <returns>スクランブル解除したオブジェクト。失敗時はnullを返却。</returns>
+    [RequiresUnreferencedCode("This uses JsonSerializer.")]
+    [RequiresDynamicCode("This uses JsonSerializer.")]
     public static T? DescrambleObjectFromFile<T>(this RoughScrambler self, FileInfo file)
     {
         ArgumentNullException.ThrowIfNull(file);
@@ -309,6 +320,8 @@ public static class RoughScramblerExtensions
     /// <param name="file">読込元ファイル情報</param>
     /// <param name="cancelToken">キャンセルトークン</param>
     /// <returns>スクランブル解除したオブジェクト。失敗時はnullを返却。</returns>
+    [RequiresUnreferencedCode("This uses JsonSerializer.")]
+    [RequiresDynamicCode("This uses JsonSerializer.")]
     public static async ValueTask<T?> DescrambleObjectFromFileAsync<T>(this RoughScrambler self, FileInfo file, CancellationToken cancelToken = default)
     {
         ArgumentNullException.ThrowIfNull(file);
