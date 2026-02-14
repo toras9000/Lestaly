@@ -1,6 +1,4 @@
-﻿using System.Collections.ObjectModel;
-
-namespace Lestaly;
+﻿namespace Lestaly;
 
 /// <summary>
 /// HttpClient に対する拡張メソッド
