@@ -597,11 +597,42 @@ public static class FileInfoExtensions
         self.Refresh();
     }
 
+    /// <summary>新しいファイルの作成モードで書き込み用のストリームを開く</summary>
+    /// <param name="self">対象ファイルのFileInfo</param>
+    /// <param name="options">ファイルストリームを開くオプション。Access プロパティは無視する。</param>
+    /// <returns>書き込み用のストリーム</returns>
+    public static FileStream CreateWrite(this FileInfo self, FileStreamOptions? options = null)
+    {
+        return new FileStream(self.FullName, createStreamWriteOptions(options));
+    }
+
+    /// <summary>ファイル内容をテキストで読み取るリーダーを生成する。</summary>
+    /// <param name="self">対象ファイルのFileInfo</param>
+    /// <param name="encoding">ファイル内容をデコードするテキストエンコーディング</param>
+    /// <param name="append">追記するか否か</param>
+    /// <returns>ストリームリーダー</returns>
+    public static StreamWriter CreateTextWriter(this FileInfo self, bool append = false, Encoding? encoding = null)
+    {
+        return new StreamWriter(self.FullName, append, encoding ?? Encoding.UTF8);
+    }
+
+    /// <summary>ファイル内容をテキストで読み取るリーダーを生成する。</summary>
+    /// <param name="self">対象ファイルのFileInfo</param>
+    /// <param name="encoding">ファイル内容をデコードするテキストエンコーディング</param>
+    /// <param name="options">元になるファイルストリームを開くオプション</param>
+    /// <returns>ストリームリーダー</returns>
+    public static StreamWriter CreateTextWriter(this FileInfo self, FileStreamOptions options, Encoding? encoding = null)
+    {
+        return new StreamWriter(self.FullName, encoding ?? Encoding.UTF8, options);
+    }
+    #endregion
+
+    #region Update
     /// <summary>行の更新デリゲート</summary>
     /// <param name="line">行テキスト</param>
     /// <param name="writer">更新テキスト書き込み処理</param>
     /// <returns>行末を書き込むか否か</returns>
-    public delegate bool LineUpdater(ReadOnlySpan<char> line, IStringWriter writer);
+    public delegate bool LineUpdater(ReadOnlySpan<char> line, StringBuilder writer);
 
     /// <summary>ファイルを行ごとに更新する</summary>
     /// <param name="self">対象ファイル</param>
@@ -626,7 +657,7 @@ public static class FileInfoExtensions
             }
 
             // 更新テキストを作成
-            var textWriter = new BuilderStringWriter(capacity: contents.Length + 1024);
+            var builder = new StringBuilder(capacity: contents.Length + 1024);
 
             // 1行ずつ処理してバッファに溜めていく
             var remaining = contents.AsSpan();
@@ -638,7 +669,7 @@ public static class FileInfoExtensions
                 remaining = remaining[line.Length..];
 
                 // 行の更新処理
-                var written = updater(line, textWriter);
+                var written = updater(line, builder);
 
                 // 行末処理
                 if (remaining is ['\r', '\n', ..])
@@ -646,8 +677,8 @@ public static class FileInfoExtensions
                     // 行末書き込み無しでなければ書く
                     if (written != false)
                     {
-                        if (lineBreak.IsEmpty) textWriter.Write("\r\n");
-                        else textWriter.Write(lineBreak);
+                        if (lineBreak.IsEmpty) builder.Append("\r\n");
+                        else builder.Append(lineBreak);
                     }
                     // 行末消費
                     remaining = remaining[2..];
@@ -657,8 +688,8 @@ public static class FileInfoExtensions
                     // 行末書き込み無しでなければ書く
                     if (written != false)
                     {
-                        if (lineBreak.IsEmpty) textWriter.Write(remaining[0]);
-                        else textWriter.Write(lineBreak);
+                        if (lineBreak.IsEmpty) builder.Append(remaining[0]);
+                        else builder.Append(lineBreak);
                     }
                     // 行末消費
                     remaining = remaining[1..];
@@ -671,7 +702,7 @@ public static class FileInfoExtensions
 
             // 更新した内容を書き込み
             using var writer = new StreamWriter(file, encoding, leaveOpen: true);
-            writer.Write(textWriter.Builder);
+            writer.Write(builder);
         }
 
         self.Refresh();
@@ -701,7 +732,7 @@ public static class FileInfoExtensions
             }
 
             // 更新テキストを作成
-            var textWriter = new BuilderStringWriter(capacity: contents.Length + 1024);
+            var builder = new StringBuilder(capacity: contents.Length + 1024);
 
             // 1行ずつ処理してバッファに溜めていく
             var remaining = contents.AsSpan();
@@ -713,7 +744,7 @@ public static class FileInfoExtensions
                 remaining = remaining[line.Length..];
 
                 // 行の更新処理
-                var written = updater(line, textWriter);
+                var written = updater(line, builder);
 
                 // 行末処理
                 if (remaining is ['\r', '\n', ..])
@@ -721,8 +752,8 @@ public static class FileInfoExtensions
                     // 行末書き込み無しでなければ書く
                     if (written != false)
                     {
-                        if (lineBreak == null) textWriter.Write("\r\n");
-                        else textWriter.Write(lineBreak);
+                        if (lineBreak == null) builder.Append("\r\n");
+                        else builder.Append(lineBreak);
                     }
                     // 行末消費
                     remaining = remaining[2..];
@@ -732,8 +763,8 @@ public static class FileInfoExtensions
                     // 行末書き込み無しでなければ書く
                     if (written != false)
                     {
-                        if (lineBreak == null) textWriter.Write(remaining[0]);
-                        else textWriter.Write(lineBreak);
+                        if (lineBreak == null) builder.Append(remaining[0]);
+                        else builder.Append(lineBreak);
                     }
                     // 行末消費
                     remaining = remaining[1..];
@@ -746,39 +777,10 @@ public static class FileInfoExtensions
 
             // 更新した内容を書き込み
             using var writer = new StreamWriter(file, encoding, leaveOpen: true);
-            await writer.WriteAsync(textWriter.Builder, cancelToken);
+            await writer.WriteAsync(builder, cancelToken);
         }
 
         self.Refresh();
-    }
-
-    /// <summary>新しいファイルの作成モードで書き込み用のストリームを開く</summary>
-    /// <param name="self">対象ファイルのFileInfo</param>
-    /// <param name="options">ファイルストリームを開くオプション。Access プロパティは無視する。</param>
-    /// <returns>書き込み用のストリーム</returns>
-    public static FileStream CreateWrite(this FileInfo self, FileStreamOptions? options = null)
-    {
-        return new FileStream(self.FullName, createStreamWriteOptions(options));
-    }
-
-    /// <summary>ファイル内容をテキストで読み取るリーダーを生成する。</summary>
-    /// <param name="self">対象ファイルのFileInfo</param>
-    /// <param name="encoding">ファイル内容をデコードするテキストエンコーディング</param>
-    /// <param name="append">追記するか否か</param>
-    /// <returns>ストリームリーダー</returns>
-    public static StreamWriter CreateTextWriter(this FileInfo self, bool append = false, Encoding? encoding = null)
-    {
-        return new StreamWriter(self.FullName, append, encoding ?? Encoding.UTF8);
-    }
-
-    /// <summary>ファイル内容をテキストで読み取るリーダーを生成する。</summary>
-    /// <param name="self">対象ファイルのFileInfo</param>
-    /// <param name="encoding">ファイル内容をデコードするテキストエンコーディング</param>
-    /// <param name="options">元になるファイルストリームを開くオプション</param>
-    /// <returns>ストリームリーダー</returns>
-    public static StreamWriter CreateTextWriter(this FileInfo self, FileStreamOptions options, Encoding? encoding = null)
-    {
-        return new StreamWriter(self.FullName, encoding ?? Encoding.UTF8, options);
     }
     #endregion
 

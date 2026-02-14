@@ -1,6 +1,5 @@
 ﻿using System.Text;
 using System.Text.Json;
-using DocumentFormat.OpenXml.Bibliography;
 
 namespace LestalyTest.Extensions;
 
@@ -1085,14 +1084,13 @@ public class FileExtensionsTests
         {
             if (0 < line.Length)
             {
-                writer.Write(line);
-                writer.Write(line.Slice(0, 1));
+                writer.Append($"[{line}]");
             }
             return true;
         });
 
         // 検証
-        var expect = "aaaa\nbbbb\rcccc\r\ndddd\n\reeee\n";
+        var expect = "[aaa]\n[bbb]\r[ccc]\r\n[ddd]\n\r[eee]\n";
         File.ReadAllText(target.FullName).Should().Be(expect);
     }
 
@@ -1114,14 +1112,13 @@ public class FileExtensionsTests
         {
             if (0 < line.Length)
             {
-                writer.Write(line);
-                writer.Write(line.Slice(0, 1));
+                writer.Append($"[{line}]");
             }
             return true;
         });
 
         // 検証
-        var expect = "aaaa\r\nbbbb\r\ncccc\r\ndddd\r\n\r\neeee\r\n";
+        var expect = "[aaa]\r\n[bbb]\r\n[ccc]\r\n[ddd]\r\n\r\n[eee]\r\n";
         File.ReadAllText(target.FullName).Should().Be(expect);
     }
 
@@ -1144,14 +1141,13 @@ public class FileExtensionsTests
             if (line is ['c', ..]) return false;
             if (0 < line.Length)
             {
-                writer.Write(line);
-                writer.Write(line.Slice(0, 1));
+                writer.Append($"[{line}]");
             }
             return true;
         });
 
         // 検証
-        var expect = "aaaa\nbbbb\rdddd\n\reeee\n";
+        var expect = "[aaa]\n[bbb]\r[ddd]\n\r[eee]\n";
         File.ReadAllText(target.FullName).Should().Be(expect);
     }
 
@@ -1172,7 +1168,7 @@ public class FileExtensionsTests
         // テスト対象実行
         target.UpdateAllLines(encoding: sjis, updater: (line, writer) =>
         {
-            writer.Write(line);
+            writer.Append(line);
             return true;
         });
 
@@ -1200,14 +1196,13 @@ public class FileExtensionsTests
         {
             if (0 < line.Length)
             {
-                writer.Write(line);
-                writer.Write(line.Slice(0, 1));
+                writer.Append($"[{line}]");
             }
             return true;
         });
 
         // 検証
-        var expect = "aaaa\nbbbb\rcccc\r\ndddd\n\reeee\n";
+        var expect = "[aaa]\n[bbb]\r[ccc]\r\n[ddd]\n\r[eee]\n";
         File.ReadAllText(target.FullName).Should().Be(expect);
     }
 
@@ -1229,14 +1224,13 @@ public class FileExtensionsTests
         {
             if (0 < line.Length)
             {
-                writer.Write(line);
-                writer.Write(line.Slice(0, 1));
+                writer.Append($"[{line}]");
             }
             return true;
         });
 
         // 検証
-        var expect = "aaaa\r\nbbbb\r\ncccc\r\ndddd\r\n\r\neeee\r\n";
+        var expect = "[aaa]\r\n[bbb]\r\n[ccc]\r\n[ddd]\r\n\r\n[eee]\r\n";
         File.ReadAllText(target.FullName).Should().Be(expect);
     }
 
@@ -1259,14 +1253,13 @@ public class FileExtensionsTests
             if (line is ['c', ..]) return false;
             if (0 < line.Length)
             {
-                writer.Write(line);
-                writer.Write(line.Slice(0, 1));
+                writer.Append($"[{line}]");
             }
             return true;
         });
 
         // 検証
-        var expect = "aaaa\nbbbb\rdddd\n\reeee\n";
+        var expect = "[aaa]\n[bbb]\r[ddd]\n\r[eee]\n";
         File.ReadAllText(target.FullName).Should().Be(expect);
     }
 
@@ -1287,7 +1280,7 @@ public class FileExtensionsTests
         // テスト対象実行
         await target.UpdateAllLinesAsync(encoding: sjis, updater: (line, writer) =>
         {
-            writer.Write(line);
+            writer.Append(line);
             return true;
         });
 
