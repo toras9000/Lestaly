@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
@@ -277,8 +278,10 @@ public static class FileInfoExtensions
     public static void WriteAllBytes(this FileInfo self, ReadOnlySpan<byte> bytes, FileStreamOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(self);
-        using var stream = self.CreateWrite(options);
-        stream.Write(bytes);
+        using (var stream = self.CreateWrite(options))
+        {
+            stream.Write(bytes);
+        }
         self.Refresh();
     }
 
@@ -289,8 +292,10 @@ public static class FileInfoExtensions
     public static void WriteAllBytes(this FileInfo self, Stream stream, FileStreamOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(self);
-        using var fileStream = self.CreateWrite(options);
-        stream.CopyTo(fileStream);
+        using (var fileStream = self.CreateWrite(options))
+        {
+            stream.CopyTo(fileStream);
+        }
         self.Refresh();
     }
 
@@ -323,8 +328,10 @@ public static class FileInfoExtensions
     public static void WriteAllText(this FileInfo self, ReadOnlySpan<char> contents, FileStreamOptions? options = null, Encoding? encoding = null)
     {
         ArgumentNullException.ThrowIfNull(self);
-        using var writer = self.CreateTextWriter(createStreamWriteOptions(options), encoding);
-        writer.Write(contents);
+        using (var writer = self.CreateTextWriter(createStreamWriteOptions(options), encoding))
+        {
+            writer.Write(contents);
+        }
         self.Refresh();
     }
 
@@ -346,6 +353,25 @@ public static class FileInfoExtensions
     {
         ArgumentNullException.ThrowIfNull(self);
         File.WriteAllLines(self.FullName, contents, encoding);
+        self.Refresh();
+    }
+
+    /// <summary>ファイル内容が指定のテキスト行となるように書き込む。</summary>
+    /// <param name="self">対象ファイルのFileInfo</param>
+    /// <param name="contents">書き込むテキスト行</param>
+    /// <param name="lineBreak">改行文字</param>
+    /// <param name="encoding">書き込むテキストをエンコードするテキストエンコーディング。省略時は UTF-8</param>
+    public static void WriteAllLines(this FileInfo self, IEnumerable<string> contents, string lineBreak, Encoding? encoding = default)
+    {
+        ArgumentNullException.ThrowIfNull(self);
+        using (var writer = self.CreateTextWriter(append: false, encoding: encoding ?? Encoding.UTF8))
+        {
+            writer.NewLine = lineBreak;
+            foreach (var line in contents)
+            {
+                writer.WriteLine(line);
+            }
+        }
         self.Refresh();
     }
 
@@ -375,13 +401,15 @@ public static class FileInfoExtensions
         ArgumentNullException.ThrowIfNull(self);
         var breaker = lineBreak;
         if (breaker.IsEmpty) breaker = Environment.NewLine;
-        using var writer = self.CreateTextWriter(createStreamWriteOptions(options), encoding);
-        var first = true;
-        foreach (var line in multiline.EnumerateLines())
+        using (var writer = self.CreateTextWriter(createStreamWriteOptions(options), encoding))
         {
-            if (first) first = false;
-            else writer.Write(breaker);
-            writer.Write(line);
+            var first = true;
+            foreach (var line in multiline.EnumerateLines())
+            {
+                if (first) first = false;
+                else writer.Write(breaker);
+                writer.Write(line);
+            }
         }
         self.Refresh();
     }
@@ -405,8 +433,10 @@ public static class FileInfoExtensions
     public static async ValueTask WriteAllBytesAsync(this FileInfo self, ReadOnlyMemory<byte> bytes, FileStreamOptions? options = null, CancellationToken cancelToken = default)
     {
         ArgumentNullException.ThrowIfNull(self);
-        using var stream = self.CreateWrite(options);
-        await stream.WriteAsync(bytes, cancelToken).ConfigureAwait(false);
+        using (var stream = self.CreateWrite(options))
+        {
+            await stream.WriteAsync(bytes, cancelToken).ConfigureAwait(false);
+        }
         self.Refresh();
     }
 
@@ -418,8 +448,10 @@ public static class FileInfoExtensions
     public static async ValueTask WriteAllBytesAsync(this FileInfo self, Stream stream, FileStreamOptions? options = null, CancellationToken cancelToken = default)
     {
         ArgumentNullException.ThrowIfNull(self);
-        using var fileStream = self.CreateWrite(options);
-        await stream.CopyToAsync(fileStream, cancelToken).ConfigureAwait(false);
+        using (var fileStream = self.CreateWrite(options))
+        {
+            await stream.CopyToAsync(fileStream, cancelToken).ConfigureAwait(false);
+        }
         self.Refresh();
     }
 
@@ -455,8 +487,10 @@ public static class FileInfoExtensions
     public static async ValueTask WriteAllTextAsync(this FileInfo self, ReadOnlyMemory<char> contents, FileStreamOptions? options = null, Encoding? encoding = null, CancellationToken cancelToken = default)
     {
         ArgumentNullException.ThrowIfNull(self);
-        using var writer = self.CreateTextWriter(createStreamWriteOptions(options), encoding);
-        await writer.WriteAsync(contents, cancelToken).ConfigureAwait(false);
+        using (var writer = self.CreateTextWriter(createStreamWriteOptions(options), encoding))
+        {
+            await writer.WriteAsync(contents, cancelToken).ConfigureAwait(false);
+        }
         self.Refresh();
     }
 
@@ -483,12 +517,32 @@ public static class FileInfoExtensions
         self.Refresh();
     }
 
+    /// <summary>ファイル内容が指定のテキスト行となるように書き込む。</summary>
+    /// <param name="self">対象ファイルのFileInfo</param>
+    /// <param name="contents">書き込むテキスト行</param>
+    /// <param name="lineBreak">行末文字</param>
+    /// <param name="encoding">書き込むテキストをエンコードするテキストエンコーディング</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    public static async ValueTask WriteAllLinesAsync(this FileInfo self, IEnumerable<string> contents, string lineBreak, Encoding? encoding = default, CancellationToken cancelToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(self);
+        using (var writer = self.CreateTextWriter(append: false, encoding: encoding ?? Encoding.UTF8))
+        {
+            writer.NewLine = lineBreak;
+            foreach (var line in contents)
+            {
+                await writer.WriteLineAsync(line.AsMemory(), cancelToken).ConfigureAwait(false);
+            }
+        }
+        self.Refresh();
+    }
+
     /// <summary>ファイルに行末文字を正規化した複数行テキストを書き込む。</summary>
     /// <param name="self">対象ファイルのFileInfo</param>
     /// <param name="lineBreak">行末文字</param>
     /// <param name="multiline">書き込む複数行テキスト</param>
     /// <param name="cancelToken">キャンセルトークン</param>
-    public static ValueTask WriteMultilineTextAsync(this FileInfo self, ReadOnlyMemory<char> lineBreak, ReadOnlyMemory<char> multiline, CancellationToken cancelToken = default)
+    public static ValueTask WriteMultilineTextAsync(this FileInfo self, string? lineBreak, ReadOnlyMemory<char> multiline, CancellationToken cancelToken = default)
         => self.WriteMultilineTextAsync(multiline, options: default, encoding: default, lineBreak, cancelToken);
 
     /// <summary>ファイルに行末文字を正規化した複数行テキストを書き込む。</summary>
@@ -497,7 +551,7 @@ public static class FileInfoExtensions
     /// <param name="encoding">書き込むテキストをエンコードするテキストエンコーディング</param>
     /// <param name="multiline">書き込む複数行テキスト</param>
     /// <param name="cancelToken">キャンセルトークン</param>
-    public static ValueTask WriteMultilineTextAsync(this FileInfo self, ReadOnlyMemory<char> lineBreak, Encoding? encoding, ReadOnlyMemory<char> multiline, CancellationToken cancelToken = default)
+    public static ValueTask WriteMultilineTextAsync(this FileInfo self, string? lineBreak, Encoding? encoding, ReadOnlyMemory<char> multiline, CancellationToken cancelToken = default)
         => self.WriteMultilineTextAsync(multiline, options: default, encoding, lineBreak, cancelToken);
 
     /// <summary>ファイルに行末文字を正規化した複数行テキストを書き込む。</summary>
@@ -507,40 +561,195 @@ public static class FileInfoExtensions
     /// <param name="options">ファイルストリームを開くオプション。Access プロパティは無視する。</param>
     /// <param name="encoding">書き込むテキストをエンコードするテキストエンコーディング</param>
     /// <param name="cancelToken">キャンセルトークン</param>
-    public static async ValueTask WriteMultilineTextAsync(this FileInfo self, ReadOnlyMemory<char> multiline, FileStreamOptions? options = null, Encoding? encoding = null, ReadOnlyMemory<char> lineBreak = default, CancellationToken cancelToken = default)
+    public static async ValueTask WriteMultilineTextAsync(this FileInfo self, ReadOnlyMemory<char> multiline, FileStreamOptions? options = null, Encoding? encoding = null, string? lineBreak = default, CancellationToken cancelToken = default)
     {
         ArgumentNullException.ThrowIfNull(self);
 
         // 改行文字を決定
-        var breaker = lineBreak;
-        if (breaker.IsEmpty) breaker = Environment.NewLine.AsMemory();
+        var breaker = lineBreak ?? Environment.NewLine;
 
-        using var writer = self.CreateTextWriter(createStreamWriteOptions(options), encoding);
-
-        var first = true;
-        var scan = multiline;
-        while (true)
+        using (var writer = self.CreateTextWriter(createStreamWriteOptions(options), encoding))
         {
-            // 改行書き出し。これは同期で。
-            if (first) first = false;
-            else writer.Write(breaker);
-
-            // 改行検索
-            var breakIdx = scan.Span.IndexOfAny('\r', '\n');
-            if (breakIdx < 0)
+            var first = true;
+            var scan = multiline;
+            while (true)
             {
-                // 改行が見つからなければ最終パート
-                await writer.WriteAsync(scan, cancelToken).ConfigureAwait(false);
-                break;
+                // 改行書き出し。これは同期で。
+                if (first) first = false;
+                else writer.Write(breaker);
+
+                // 改行検索
+                var breakIdx = scan.Span.IndexOfAny('\r', '\n');
+                if (breakIdx < 0)
+                {
+                    // 改行が見つからなければ最終パート
+                    await writer.WriteAsync(scan, cancelToken).ConfigureAwait(false);
+                    break;
+                }
+
+                // 行の書き出し。
+                await writer.WriteAsync(scan[..breakIdx], cancelToken).ConfigureAwait(false);
+
+                // 改行文字の後ろから
+                var breakLen = scan.Span[breakIdx..] is ['\r', '\n', ..] ? 2 : 1;
+                scan = scan[(breakIdx + breakLen)..];
+            }
+        }
+        self.Refresh();
+    }
+
+    /// <summary>行の更新デリゲート</summary>
+    /// <param name="line">行テキスト</param>
+    /// <param name="writer">更新テキスト書き込み処理</param>
+    /// <returns>行末を書き込むか否か</returns>
+    public delegate bool LineUpdater(ReadOnlySpan<char> line, IStringWriter writer);
+
+    /// <summary>ファイルを行ごとに更新する</summary>
+    /// <param name="self">対象ファイル</param>
+    /// <param name="updater">行更新デリゲート</param>
+    /// <param name="lineBreak">行末文字。</param>
+    /// <param name="encoding">読み書きテキストエンコーディング</param>
+    public static void UpdateAllLines(this FileInfo self, LineUpdater updater, ReadOnlySpan<char> lineBreak = default, Encoding? encoding = default)
+    {
+        ArgumentNullException.ThrowIfNull(self);
+
+        // 読み書きオープン
+        using (var file = self.Open(FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+        {
+            // デフォルトはUTF8とする
+            encoding ??= Encoding.UTF8;
+
+            // ファイル内容を全てテキスト読み取り
+            var contents = default(string);
+            using (var reader = new StreamReader(file, encoding, detectEncodingFromByteOrderMarks: true, leaveOpen: true))
+            {
+                contents = reader.ReadToEnd();
             }
 
-            // 行の書き出し。
-            await writer.WriteAsync(scan[..breakIdx], cancelToken).ConfigureAwait(false);
+            // 更新テキストを作成
+            var textWriter = new BuilderStringWriter(capacity: contents.Length + 1024);
 
-            // 改行文字の後ろから
-            var breakLen = scan.Span[breakIdx..] is ['\r', '\n', ..] ? 2 : 1;
-            scan = scan[(breakIdx + breakLen)..];
+            // 1行ずつ処理してバッファに溜めていく
+            var remaining = contents.AsSpan();
+            while (!remaining.IsEmpty)
+            {
+                // 行の切り出し
+                var termIdx = remaining.IndexOfAny(['\r', '\n']);
+                var line = termIdx < 0 ? remaining : remaining[..termIdx];
+                remaining = remaining[line.Length..];
+
+                // 行の更新処理
+                var written = updater(line, textWriter);
+
+                // 行末処理
+                if (remaining is ['\r', '\n', ..])
+                {
+                    // 行末書き込み無しでなければ書く
+                    if (written != false)
+                    {
+                        if (lineBreak.IsEmpty) textWriter.Write("\r\n");
+                        else textWriter.Write(lineBreak);
+                    }
+                    // 行末消費
+                    remaining = remaining[2..];
+                }
+                else if (remaining is ['\r', ..] or ['\n', ..])
+                {
+                    // 行末書き込み無しでなければ書く
+                    if (written != false)
+                    {
+                        if (lineBreak.IsEmpty) textWriter.Write(remaining[0]);
+                        else textWriter.Write(lineBreak);
+                    }
+                    // 行末消費
+                    remaining = remaining[1..];
+                }
+            }
+
+            // ファイル内容を空にする
+            file.Position = 0;
+            file.SetLength(0);
+
+            // 更新した内容を書き込み
+            using var writer = new StreamWriter(file, encoding, leaveOpen: true);
+            writer.Write(textWriter.Builder);
         }
+
+        self.Refresh();
+    }
+
+    /// <summary>ファイルを行ごとに更新する</summary>
+    /// <param name="self">対象ファイル</param>
+    /// <param name="updater">行更新デリゲート</param>
+    /// <param name="lineBreak">行末文字。</param>
+    /// <param name="encoding">読み書きテキストエンコーディング</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    public static async Task UpdateAllLinesAsync(this FileInfo self, LineUpdater updater, string? lineBreak = default, Encoding? encoding = default, CancellationToken cancelToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(self);
+
+        // 読み書きオープン
+        using (var file = self.Open(FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+        {
+            // デフォルトはUTF8とする
+            encoding ??= Encoding.UTF8;
+
+            // ファイル内容を全てテキスト読み取り
+            var contents = default(string);
+            using (var reader = new StreamReader(file, encoding, detectEncodingFromByteOrderMarks: true, leaveOpen: true))
+            {
+                contents = await reader.ReadToEndAsync(cancelToken);
+            }
+
+            // 更新テキストを作成
+            var textWriter = new BuilderStringWriter(capacity: contents.Length + 1024);
+
+            // 1行ずつ処理してバッファに溜めていく
+            var remaining = contents.AsSpan();
+            while (!remaining.IsEmpty)
+            {
+                // 行の切り出し
+                var termIdx = remaining.IndexOfAny(['\r', '\n']);
+                var line = termIdx < 0 ? remaining : remaining[..termIdx];
+                remaining = remaining[line.Length..];
+
+                // 行の更新処理
+                var written = updater(line, textWriter);
+
+                // 行末処理
+                if (remaining is ['\r', '\n', ..])
+                {
+                    // 行末書き込み無しでなければ書く
+                    if (written != false)
+                    {
+                        if (lineBreak == null) textWriter.Write("\r\n");
+                        else textWriter.Write(lineBreak);
+                    }
+                    // 行末消費
+                    remaining = remaining[2..];
+                }
+                else if (remaining is ['\r', ..] or ['\n', ..])
+                {
+                    // 行末書き込み無しでなければ書く
+                    if (written != false)
+                    {
+                        if (lineBreak == null) textWriter.Write(remaining[0]);
+                        else textWriter.Write(lineBreak);
+                    }
+                    // 行末消費
+                    remaining = remaining[1..];
+                }
+            }
+
+            // ファイル内容を空にする
+            file.Position = 0;
+            file.SetLength(0);
+
+            // 更新した内容を書き込み
+            using var writer = new StreamWriter(file, encoding, leaveOpen: true);
+            await writer.WriteAsync(textWriter.Builder, cancelToken);
+        }
+
         self.Refresh();
     }
 

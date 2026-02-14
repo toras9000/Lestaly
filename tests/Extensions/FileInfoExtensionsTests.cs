@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using System.Text.Json;
+using DocumentFormat.OpenXml.Bibliography;
 
 namespace LestalyTest.Extensions;
 
@@ -1012,7 +1013,7 @@ public class FileExtensionsTests
         var target = tempDir.Info.RelativeFile("test.txt");
 
         // テスト対象実行
-        await target.WriteMultilineTextAsync("\r\n".AsMemory(), encoding, multiline.AsMemory());
+        await target.WriteMultilineTextAsync("\r\n", encoding, multiline.AsMemory());
 
         // 検証
         File.ReadAllBytes(target.FullName).Should().Equal("abc\r\ndef\r\nghi\r\njkl"u8.ToArray());
@@ -1063,6 +1064,239 @@ public class FileExtensionsTests
         // 検証
         File.ReadAllText(target.FullName, enc).Should().Be("あいうえおか");
     }
+    #endregion
+
+    #region Update
+    [TestMethod]
+    public void UpdateAllLines_keep_break()
+    {
+        // テスト用に一時ディレクトリ
+        using var tempDir = new TempDir();
+
+        // テストデータ
+        var text = "aaa\nbbb\rccc\r\nddd\n\reee\n";
+
+        // テストファイル
+        var target = tempDir.Info.RelativeFile("test.txt");
+        target.WriteAllText(text);
+
+        // テスト対象実行
+        target.UpdateAllLines((line, writer) =>
+        {
+            if (0 < line.Length)
+            {
+                writer.Write(line);
+                writer.Write(line.Slice(0, 1));
+            }
+            return true;
+        });
+
+        // 検証
+        var expect = "aaaa\nbbbb\rcccc\r\ndddd\n\reeee\n";
+        File.ReadAllText(target.FullName).Should().Be(expect);
+    }
+
+    [TestMethod]
+    public void UpdateAllLines_unify_break()
+    {
+        // テスト用に一時ディレクトリ
+        using var tempDir = new TempDir();
+
+        // テストデータ
+        var text = "aaa\nbbb\rccc\r\nddd\n\reee\n";
+
+        // テストファイル
+        var target = tempDir.Info.RelativeFile("test.txt");
+        target.WriteAllText(text);
+
+        // テスト対象実行
+        target.UpdateAllLines(lineBreak: "\r\n", updater: (line, writer) =>
+        {
+            if (0 < line.Length)
+            {
+                writer.Write(line);
+                writer.Write(line.Slice(0, 1));
+            }
+            return true;
+        });
+
+        // 検証
+        var expect = "aaaa\r\nbbbb\r\ncccc\r\ndddd\r\n\r\neeee\r\n";
+        File.ReadAllText(target.FullName).Should().Be(expect);
+    }
+
+    [TestMethod]
+    public void UpdateAllLines_skip()
+    {
+        // テスト用に一時ディレクトリ
+        using var tempDir = new TempDir();
+
+        // テストデータ
+        var text = "aaa\nbbb\rccc\r\nddd\n\reee\n";
+
+        // テストファイル
+        var target = tempDir.Info.RelativeFile("test.txt");
+        target.WriteAllText(text);
+
+        // テスト対象実行
+        target.UpdateAllLines(updater: (line, writer) =>
+        {
+            if (line is ['c', ..]) return false;
+            if (0 < line.Length)
+            {
+                writer.Write(line);
+                writer.Write(line.Slice(0, 1));
+            }
+            return true;
+        });
+
+        // 検証
+        var expect = "aaaa\nbbbb\rdddd\n\reeee\n";
+        File.ReadAllText(target.FullName).Should().Be(expect);
+    }
+
+    [TestMethod]
+    public void UpdateAllLines_encoding()
+    {
+        // テスト用に一時ディレクトリ
+        using var tempDir = new TempDir();
+
+        // テストデータ
+        var text = "あ\nい\rう\r\nえ\n\rお\n";
+
+        // テストファイル
+        var sjis = Encoding.GetEncoding(codepage: 932);
+        var target = tempDir.Info.RelativeFile("test.txt");
+        target.WriteAllText(text, encoding: sjis);
+
+        // テスト対象実行
+        target.UpdateAllLines(encoding: sjis, updater: (line, writer) =>
+        {
+            writer.Write(line);
+            return true;
+        });
+
+        // 検証
+        var expect = sjis.GetBytes(text);
+        var result = File.ReadAllBytes(target.FullName);
+        result.Should().Equal(expect);
+    }
+
+    [TestMethod]
+    public async Task UpdateAllLinesAsync_keep_break()
+    {
+        // テスト用に一時ディレクトリ
+        using var tempDir = new TempDir();
+
+        // テストデータ
+        var text = "aaa\nbbb\rccc\r\nddd\n\reee\n";
+
+        // テストファイル
+        var target = tempDir.Info.RelativeFile("test.txt");
+        target.WriteAllText(text);
+
+        // テスト対象実行
+        await target.UpdateAllLinesAsync((line, writer) =>
+        {
+            if (0 < line.Length)
+            {
+                writer.Write(line);
+                writer.Write(line.Slice(0, 1));
+            }
+            return true;
+        });
+
+        // 検証
+        var expect = "aaaa\nbbbb\rcccc\r\ndddd\n\reeee\n";
+        File.ReadAllText(target.FullName).Should().Be(expect);
+    }
+
+    [TestMethod]
+    public async Task UpdateAllLinesAsync_unify_break()
+    {
+        // テスト用に一時ディレクトリ
+        using var tempDir = new TempDir();
+
+        // テストデータ
+        var text = "aaa\nbbb\rccc\r\nddd\n\reee\n";
+
+        // テストファイル
+        var target = tempDir.Info.RelativeFile("test.txt");
+        target.WriteAllText(text);
+
+        // テスト対象実行
+        await target.UpdateAllLinesAsync(lineBreak: "\r\n", updater: (line, writer) =>
+        {
+            if (0 < line.Length)
+            {
+                writer.Write(line);
+                writer.Write(line.Slice(0, 1));
+            }
+            return true;
+        });
+
+        // 検証
+        var expect = "aaaa\r\nbbbb\r\ncccc\r\ndddd\r\n\r\neeee\r\n";
+        File.ReadAllText(target.FullName).Should().Be(expect);
+    }
+
+    [TestMethod]
+    public async Task UpdateAllLinesAsync_skip()
+    {
+        // テスト用に一時ディレクトリ
+        using var tempDir = new TempDir();
+
+        // テストデータ
+        var text = "aaa\nbbb\rccc\r\nddd\n\reee\n";
+
+        // テストファイル
+        var target = tempDir.Info.RelativeFile("test.txt");
+        target.WriteAllText(text);
+
+        // テスト対象実行
+        await target.UpdateAllLinesAsync(updater: (line, writer) =>
+        {
+            if (line is ['c', ..]) return false;
+            if (0 < line.Length)
+            {
+                writer.Write(line);
+                writer.Write(line.Slice(0, 1));
+            }
+            return true;
+        });
+
+        // 検証
+        var expect = "aaaa\nbbbb\rdddd\n\reeee\n";
+        File.ReadAllText(target.FullName).Should().Be(expect);
+    }
+
+    [TestMethod]
+    public async Task UpdateAllLinesAsync_encoding()
+    {
+        // テスト用に一時ディレクトリ
+        using var tempDir = new TempDir();
+
+        // テストデータ
+        var text = "あ\nい\rう\r\nえ\n\rお\n";
+
+        // テストファイル
+        var sjis = Encoding.GetEncoding(codepage: 932);
+        var target = tempDir.Info.RelativeFile("test.txt");
+        target.WriteAllText(text, encoding: sjis);
+
+        // テスト対象実行
+        await target.UpdateAllLinesAsync(encoding: sjis, updater: (line, writer) =>
+        {
+            writer.Write(line);
+            return true;
+        });
+
+        // 検証
+        var expect = sjis.GetBytes(text);
+        var result = File.ReadAllBytes(target.FullName);
+        result.Should().Equal(expect);
+    }
+
     #endregion
 
     private static TObject? decodeJsonByTemplate<TObject>(string json, TObject template)
