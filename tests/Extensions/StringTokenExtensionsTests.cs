@@ -404,4 +404,32 @@ public class StringTokenExtensionsTests
 
         "ab c,d ef".AsMemory().TakeLastTokenAny([',', ' ']).ToString().Should().Be("ef");
     }
+
+#if NET9_0_OR_GREATER
+    [TestMethod]
+    public void TakeField()
+    {
+        "ab cd ef".AsSpan().TakeField(0, skipEmpty: false).ToString().Should().Be("ab");
+        "ab cd ef".AsSpan().TakeField(1, skipEmpty: false).ToString().Should().Be("cd");
+        "ab cd ef".AsSpan().TakeField(2, skipEmpty: false).ToString().Should().Be("ef");
+        "ab cd ef".AsSpan().TakeField(3, skipEmpty: false).ToString().Should().Be("");
+
+        "ab cd ef".AsSpan().TakeField(0, skipEmpty: true).ToString().Should().Be("ab");
+        "ab cd ef".AsSpan().TakeField(1, skipEmpty: true).ToString().Should().Be("cd");
+        "ab cd ef".AsSpan().TakeField(2, skipEmpty: true).ToString().Should().Be("ef");
+        "ab cd ef".AsSpan().TakeField(3, skipEmpty: true).ToString().Should().Be("");
+
+        "ab  cd  ef".AsSpan().TakeField(0, skipEmpty: false).ToString().Should().Be("ab");
+        "ab  cd  ef".AsSpan().TakeField(1, skipEmpty: false).ToString().Should().Be("");
+        "ab  cd  ef".AsSpan().TakeField(2, skipEmpty: false).ToString().Should().Be("cd");
+        "ab  cd  ef".AsSpan().TakeField(3, skipEmpty: false).ToString().Should().Be("");
+        "ab  cd  ef".AsSpan().TakeField(4, skipEmpty: false).ToString().Should().Be("ef");
+
+        "ab  cd  ef".AsSpan().TakeField(0, skipEmpty: true).ToString().Should().Be("ab");
+        "ab  cd  ef".AsSpan().TakeField(1, skipEmpty: true).ToString().Should().Be("cd");
+        "ab  cd  ef".AsSpan().TakeField(2, skipEmpty: true).ToString().Should().Be("ef");
+        "ab  cd  ef".AsSpan().TakeField(3, skipEmpty: true).ToString().Should().Be("");
+        "ab  cd  ef".AsSpan().TakeField(4, skipEmpty: true).ToString().Should().Be("");
+    }
+#endif
 }

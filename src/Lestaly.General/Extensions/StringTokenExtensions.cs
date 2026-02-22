@@ -618,6 +618,29 @@ public static class StringTokenExtensions
     }
     #endregion
 
+    #region TakeToken
+#if NET9_0_OR_GREATER
+    /// <summary>カラム文字列の指定のインデクスのフィールド文字列を取得する</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="index">対象文字列</param>
+    /// <param name="delimiter">区切り文字</param>
+    /// <param name="skipEmpty">空のフィールドを無視するか否か</param>
+    /// <returns>フィールド文字列</returns>
+    public static ReadOnlySpan<char> TakeField(this ReadOnlySpan<char> self, int index, char delimiter = ' ', bool skipEmpty = false)
+    {
+        var count = 0;
+        foreach (var range in self.Split(delimiter))
+        {
+            var token = self[range];
+            if (skipEmpty && token.IsEmpty) continue;
+            if (count == index) return token;
+            count++;
+        }
+        return ReadOnlySpan<char>.Empty;
+    }
+#endif
+    #endregion
+
     /// <summary>改行キャラクタ配列</summary>
     private static readonly char[] LineBreakChars = ['\r', '\n',];
 
