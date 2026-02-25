@@ -260,5 +260,29 @@ public static class MemoryExtensions
         source.CopyTo(self);
         return self[source.Length..];
     }
-    #endregion 
+    #endregion
+
+    #region Count
+#if NET10_0_OR_GREATER
+    /// <summary>シーケンスに含まれるパターンの数をカウントする</summary>
+    /// <typeparam name="T">要素型</typeparam>
+    /// <param name="self">格納先スパン</param>
+    /// <param name="pattern">コピー元ソース</param>
+    /// <param name="comparer">比較子</param>
+    public static int CountPattern<T>(this ReadOnlySpan<T> self, ReadOnlySpan<T> pattern, IEqualityComparer<T>? comparer = null)
+    {
+        var count = 0;
+        var scan = self;
+        while (!scan.IsEmpty)
+        {
+            var pos = scan.IndexOf(pattern, comparer);
+            if (pos < 0) break;
+            count++;
+            scan = scan[(pos + pattern.Length)..];
+        }
+        return count;
+    }
+#endif
+    #endregion
+
 }
