@@ -127,7 +127,7 @@ public class TeeWriter : TextWriter, ITeeWriter, IDisposable
     #endregion
 
     // 公開プロパティ
-    #region 
+    #region TextWriter
     /// <summary>出力を書き込む文字エンコーディングを返却する</summary>
     /// <remarks>
     /// このメソッドは紐づけられている最初の TextWriter インスタンスの値を返却する。
