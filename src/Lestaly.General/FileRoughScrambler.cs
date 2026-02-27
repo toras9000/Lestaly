@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization.Metadata;
 
 namespace Lestaly;
@@ -58,6 +59,8 @@ public class FileRoughScrambler
     /// <param name="value">スクランブルするオブジェクト</param>
     /// <param name="options">ファイルストリームを開くオプション。Access プロパティは無視する。</param>
     /// <param name="ignoreErr">保存エラーを無視するか否か</param>
+    [RequiresUnreferencedCode("This uses JsonSerializer.")]
+    [RequiresDynamicCode("This uses JsonSerializer.")]
     public void ScrambleObject<T>(T value, FileStreamOptions? options = null, bool ignoreErr = false)
         => this.Scrambler.ScrambleObjectToFile(this.File, value, options, ignoreErr);
 
@@ -76,6 +79,8 @@ public class FileRoughScrambler
     /// <param name="options">ファイルストリームを開くオプション。Access プロパティは無視する。</param>
     /// <param name="ignoreErr">保存エラーを無視するか否か</param>
     /// <param name="cancelToken">キャンセルトークン</param>
+    [RequiresUnreferencedCode("This uses JsonSerializer.")]
+    [RequiresDynamicCode("This uses JsonSerializer.")]
     public ValueTask ScrambleObjectAsync<T>(T value, FileStreamOptions? options = null, bool ignoreErr = false, CancellationToken cancelToken = default)
         => this.Scrambler.ScrambleObjectToFileAsync(this.File, value, options, ignoreErr, cancelToken);
 
@@ -105,6 +110,8 @@ public class FileRoughScrambler
     /// <summary>ファイルから読み込んでJSONデシリアライズを介してオブジェクトのスクランブル解除を行う</summary>
     /// <typeparam name="T">対象オブジェクト型</typeparam>
     /// <returns>スクランブル解除したオブジェクト。失敗時はnullを返却。</returns>
+    [RequiresUnreferencedCode("This uses JsonSerializer.")]
+    [RequiresDynamicCode("This uses JsonSerializer.")]
     public T? DescrambleObject<T>()
         => this.Scrambler.DescrambleObjectFromFile<T>(this.File);
 
@@ -119,6 +126,8 @@ public class FileRoughScrambler
     /// <typeparam name="T">対象オブジェクト型</typeparam>
     /// <param name="cancelToken">キャンセルトークン</param>
     /// <returns>スクランブル解除したオブジェクト。失敗時はnullを返却。</returns>
+    [RequiresUnreferencedCode("This uses JsonSerializer.")]
+    [RequiresDynamicCode("This uses JsonSerializer.")]
     public ValueTask<T?> DescrambleObjectAsync<T>(CancellationToken cancelToken = default)
         => this.Scrambler.DescrambleObjectFromFileAsync<T>(this.File, cancelToken);
 

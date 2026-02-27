@@ -10,6 +10,7 @@ public static class FormUrlEncoded
     /// <typeparam name="T">オブジェクト型</typeparam>
     /// <param name="value">オブジェクトインスタンス</param>
     /// <returns>構築された FormUrlEncodedContent</returns>
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)]
     public static FormUrlEncodedContent CreateContent<T>(T value)
     {
         static IEnumerable<KeyValuePair<string, string>> enumerateMembers(T obj)
