@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace Lestaly;
@@ -20,7 +21,18 @@ public static class FormUrlEncoded
                 var dispAttr = prop.GetCustomAttribute<DisplayAttribute>();
                 var name = dispAttr?.Name ?? prop.Name;
                 var value = prop.GetValue(obj);
-                yield return new(name, $"{value}");
+                if (value is not string && value is System.Collections.IEnumerable collection)
+                {
+                    var arrayName = $"{name}[]";
+                    foreach (var elem in collection)
+                    {
+                        yield return new(arrayName, $"{elem}");
+                    }
+                }
+                else
+                {
+                    yield return new(name, $"{value}");
+                }
             }
         }
 

@@ -15,9 +15,21 @@ public class FormUrlEncodedTests
     [TestMethod()]
     public async Task CreateContent()
     {
-        var value = new DerivedItem("abc", 123);
-        var content = FormUrlEncoded.CreateContent(value);
-        var contentString = await content.ReadAsStringAsync();
-        contentString.Should().Contain("Text=abc").And.Contain("Value=123");
+        {
+            var value = new DerivedItem("abc", 123);
+            var content = FormUrlEncoded.CreateContent(value);
+            var contentString = await content.ReadAsStringAsync();
+            contentString.Should().Contain("Text=abc").And.Contain("Value=123");
+        }
+        {
+            var value = new { text = "xyz", num = 987, array = new[] { 3, 4, 5, }, };
+            var content = FormUrlEncoded.CreateContent(value);
+            var contentString = await content.ReadAsStringAsync();
+            contentString.Should().Contain("text=xyz")
+                .And.Contain("num=987")
+                .And.Contain("array%5B%5D=3")
+                .And.Contain("array%5B%5D=4")
+                .And.Contain("array%5B%5D=5");
+        }
     }
 }
