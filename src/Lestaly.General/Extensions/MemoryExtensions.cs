@@ -1,5 +1,7 @@
 ﻿using System.Buffers.Binary;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
+using System.Text.RegularExpressions;
 
 namespace Lestaly;
 
@@ -262,6 +264,20 @@ public static class MemoryExtensions
     }
     #endregion
 
+    #region Utility
+    /// <summary>スパンを指定の数を最大長としてスライスする</summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="self">対象スパン</param>
+    /// <param name="count">最大数</param>
+    /// <returns>指定した最大長以下ならばそのまま、最大長より大きければその長さに切り出したスパン</returns>
+    public static ReadOnlySpan<T> Cap<T>(this ReadOnlySpan<T> self, int count)
+    {
+        if (self.Length < count) return self;
+        if (count <= 0) return self[..0];
+        return self[..count];
+    }
+    #endregion
+
     #region Count
 #if NET10_0_OR_GREATER
     /// <summary>シーケンスに含まれるパターンの数をカウントする</summary>
@@ -285,4 +301,51 @@ public static class MemoryExtensions
 #endif
     #endregion
 
+    #region string
+    /// <summary>文字列スパンの先頭からパターンに一致する要素を取り除く</summary>
+    /// <param name="self">文字列スパン</param>
+    /// <param name="pattern">正規表現パターン</param>
+    /// <param name="options">正規表現オプション</param>
+    /// <returns>一致要素が取り除かれたスパン</returns>
+    public static ReadOnlySpan<string> TrimStartPattern(this ReadOnlySpan<string> self, [StringSyntax(StringSyntaxAttribute.Regex, nameof(options))] string pattern, RegexOptions options = default)
+        => self.TrimStartPattern(new Regex(pattern, options));
+
+    /// <summary>文字列スパンの先頭からパターンに一致する要素を取り除く</summary>
+    /// <param name="self">文字列スパン</param>
+    /// <param name="pattern">正規表現</param>
+    /// <returns>一致要素が取り除かれたスパン</returns>
+    public static ReadOnlySpan<string> TrimStartPattern(this ReadOnlySpan<string> self, Regex pattern)
+    {
+        var contents = self;
+        while (!contents.IsEmpty)
+        {
+            if (!pattern.IsMatch(contents[0])) break;
+            contents = contents[1..];
+        }
+        return contents;
+    }
+
+    /// <summary>文字列スパンの末尾からパターンに一致する要素を取り除く</summary>
+    /// <param name="self">文字列スパン</param>
+    /// <param name="pattern">正規表現パターン</param>
+    /// <param name="options">正規表現オプション</param>
+    /// <returns>一致要素が取り除かれたスパン</returns>
+    public static ReadOnlySpan<string> TrimEndPattern(this ReadOnlySpan<string> self, [StringSyntax(StringSyntaxAttribute.Regex, nameof(options))] string pattern, RegexOptions options = default)
+        => self.TrimEndPattern(new Regex(pattern, options));
+
+    /// <summary>文字列スパンの末尾からパターンに一致する要素を取り除く</summary>
+    /// <param name="self">文字列スパン</param>
+    /// <param name="pattern">正規表現</param>
+    /// <returns>一致要素が取り除かれたスパン</returns>
+    public static ReadOnlySpan<string> TrimEndPattern(this ReadOnlySpan<string> self, Regex pattern)
+    {
+        var contents = self;
+        while (!contents.IsEmpty)
+        {
+            if (!pattern.IsMatch(contents[^1])) break;
+            contents = contents[..^1];
+        }
+        return contents;
+    }
+    #endregion
 }

@@ -206,8 +206,19 @@ public class MemoryExtensionsTests
         buffer.Should().Equal([0x12, 0x34, 0x56, 0x23, 0x45, 0xC5, 0xC5, 0xC5]);
     }
 
-#if NET10_0_OR_GREATER
+    [TestMethod()]
+    public void Cap()
+    {
+        var source = "abcdef";
 
+        source.AsSpan().Cap(10).ToString().Should().Be("abcdef");
+        source.AsSpan().Cap(5).ToString().Should().Be("abcde");
+        source.AsSpan().Cap(1).ToString().Should().Be("a");
+        source.AsSpan().Cap(0).ToString().Should().BeEmpty();
+        source.AsSpan().Cap(-1).ToString().Should().BeEmpty();
+    }
+
+#if NET10_0_OR_GREATER
     [TestMethod()]
     public void CountPattern()
     {
@@ -225,5 +236,67 @@ public class MemoryExtensionsTests
         data.AsSpan().CountPattern<byte>([0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x12]).Should().Be(1);
     }
 #endif
+
+    [TestMethod()]
+    public void TrimStartPattern()
+    {
+        var source = new[]
+        {
+            "abc",
+            "abcd",
+            "bcd",
+            "bcde",
+            "cde",
+            "cdef",
+        };
+
+        {
+            source.TrimStartPattern(@"^a").ToArray().Should().Equal([
+                "bcd",
+                "bcde",
+                "cde",
+                "cdef",
+            ]);
+            source.TrimStartPattern(@"^b").ToArray().Should().Equal([
+                "abc",
+                "abcd",
+                "bcd",
+                "bcde",
+                "cde",
+                "cdef",
+            ]);
+        }
+    }
+
+    [TestMethod()]
+    public void TrimEndPattern()
+    {
+        var source = new[]
+        {
+            "abc",
+            "abcd",
+            "bcd",
+            "bcde",
+            "cde",
+            "cdef",
+        };
+
+        {
+            source.TrimEndPattern(@"^c").ToArray().Should().Equal([
+                "abc",
+                "abcd",
+                "bcd",
+                "bcde",
+            ]);
+            source.TrimEndPattern(@"^b").ToArray().Should().Equal([
+                "abc",
+                "abcd",
+                "bcd",
+                "bcde",
+                "cde",
+                "cdef",
+            ]);
+        }
+    }
 
 }
