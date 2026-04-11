@@ -215,7 +215,7 @@ public static class CmdProc
         }
 
         // コマンドを実行
-        var proc = Process.Start(target) ?? throw new CmdProcException("Cannot execute command.");
+        using var proc = Process.Start(target) ?? throw new CmdProcException("Cannot execute command.");
 
         // 出力ストリームのリダイレクトタスクを生成するローカル関数
         static async Task redirectProcStream(TextReader reader, TextWriter writer, CancellationToken breaker, bool terminate = false)

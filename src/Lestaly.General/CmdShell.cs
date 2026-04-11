@@ -30,7 +30,7 @@ public static class CmdShell
         target.UseShellExecute = true;
 
         // コマンドを実行
-        var proc = Process.Start(target);
+        using var proc = Process.Start(target);
 
         // プロセスが起動されない場合は null が返る
         if (proc == null) return null;

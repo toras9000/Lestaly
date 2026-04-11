@@ -23,7 +23,7 @@ public class FixedFieldBuilder<T>
 {
     // 構築
     #region コンストラクタ
-    /// <summary></summary>
+    /// <summary>データソースと幅算出処理を指定するコンストラクタ</summary>
     /// <param name="source">文字列構築のデータソース</param>
     /// <param name="widthEvaluater">
     /// 文字列幅評価処理。省略時は単に文字列の Length を利用する。
