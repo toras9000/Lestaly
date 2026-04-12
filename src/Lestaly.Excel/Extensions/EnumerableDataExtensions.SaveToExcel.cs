@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Reflection;
+﻿using System.Reflection;
 using ClosedXML.Excel;
 
 namespace Lestaly;
@@ -131,6 +130,7 @@ public static partial class EnumerableDataExtensions
 
         // ヘッダ出力
         var headerCell = baseCell;
+        var dataColumns = new List<(IXLColumn xl, TypeColumn<TSource> type)>();
         var offset = 0;
         for (var i = 0; i < exporters.Length; i++)
         {
@@ -138,7 +138,9 @@ public static partial class EnumerableDataExtensions
             for (var a = 0; a < column.Span; a++)
             {
                 var caption = column.Captions[a];
-                headerCell.CellRight(offset).Value = caption;
+                var captionCell = headerCell.CellRight(offset);
+                captionCell.Value = caption;
+                dataColumns.Add((captionCell.WorksheetColumn(), column));
                 offset++;
             }
         }
@@ -180,12 +182,27 @@ public static partial class EnumerableDataExtensions
                 dataRange.SetAutoFilter();
             }
 
-            // カラムサイズ調整
-            if (options.AdjustToContents)
+            // カラムの設定
+            foreach (var column in dataColumns)
             {
-                foreach (var column in dataRange.Columns())
+                // カラムサイズ調整
+                if (options.AdjustToContents)
                 {
-                    column.WorksheetColumn().AdjustToContents();
+                    // 自動調整。最大幅設定があれば制限する
+                    if (1 < column.type.ExAttr?.MaxWidth)
+                    {
+                        column.xl.AdjustToContents(minWidth: 1, maxWidth: column.type.ExAttr.MaxWidth);
+                    }
+                    else
+                    {
+                        column.xl.AdjustToContents();
+                    }
+                }
+
+                // テキストの折り返し
+                if (column.type.ExAttr?.WrapText == true)
+                {
+                    column.xl.Style.Alignment.WrapText = true;
                 }
             }
         }
@@ -374,8 +391,9 @@ public static partial class EnumerableDataExtensions
     /// <param name="Getter">メンバからの値取得デリゲート</param>
     /// <param name="Span">メンバが利用するカラム数</param>
     /// <param name="Captions">カラムキャプション</param>
-    /// <param name="Order">カラムの順序</param>
-    private record TypeColumn<TSource>(MemberInfo Member, Type MemberType, Func<TSource, object?> Getter, int Span, string[] Captions, int Order)
+    /// <param name="Attribute">カラムの属性</param>
+    /// <param name="ExAttr">追加のカラムの属性</param>
+    private record TypeColumn<TSource>(MemberInfo Member, Type MemberType, Func<TSource, object?> Getter, int Span, string[] Captions, TypeColumnAttribute? Attribute, ExcelTypeColumnAttribute? ExAttr)
     {
         /// <summary>代表キャプション</summary>
         public string Caption => this.Captions?.FirstOrDefault() ?? this.Member.Name;
@@ -407,18 +425,18 @@ public static partial class EnumerableDataExtensions
                     returnType = propInfo.PropertyType;
                 }
 
-                // カラム数取得の属性利用が指定されていれば、その情報を取得する。
+                // メンバに設定された属性を取得
+                var columnAttr = options.UseColumnAttribute ? member.GetCustomAttribute<TypeColumnAttribute>() : default;
+                var excelAttr = columnAttr as ExcelTypeColumnAttribute;
+
+                // 属性利用が指定されていれば、その列結合情報を取得する。
                 var span = 1;
-                if (options.UseColumnSpanAttribute)
+                if (columnAttr != null && 1 < columnAttr.ColumnSpan)
                 {
-                    var maxLenAttr = member.GetCustomAttribute<MaxLengthAttribute>();
-                    if (maxLenAttr != null && 1 < maxLenAttr.Length)
-                    {
-                        span = maxLenAttr.Length;
-                    }
+                    span = columnAttr.ColumnSpan;
                 }
 
-                // デリゲートによるカラム数取得。こちらが指定されたら優先する。
+                // デリゲートによるカラム数取得。こちらが指定されていればそれを優先として上書きする。
                 if (options.ColumnSpanSelector?.Invoke(member) is int selectedSpan && 1 < selectedSpan)
                 {
                     span = selectedSpan;
@@ -428,51 +446,37 @@ public static partial class EnumerableDataExtensions
                 // とりあえずカラムに出力するメンバ名からデフォルトの名称を作成。
                 var captions = (span <= 1) ? new[] { member.Name, } : Enumerable.Range(0, span).Select(i => $"{member.Name}[{i}]").ToArray();
 
-                // キャプション取得の属性利用が指定されていれば、その情報を取得する。
-                var order = default(int);
-                if (options.UseCaptionAttribute)
+                // 属性利用が指定されていれば、カラム名情報を取得する。
+                if (columnAttr != null && columnAttr.Caption != null)
                 {
-                    // Display 属性の取得を試みる
-                    var display = member.GetCustomAttribute<DisplayAttribute>();
-                    if (display != null)
+                    if (span <= 1)
                     {
-                        // 属性から順序を取得
-                        order = display.GetOrder() ?? 0;
-
-                        // 名前が指定されていれば、カラム名に採用する
-                        if (!string.IsNullOrWhiteSpace(display.Name))
+                        // 単独カラムの場合はそのままカラム名にする
+                        captions[0] = columnAttr.Caption;
+                    }
+                    else if (columnAttr.Separator.IsNotEmpty())
+                    {
+                        // Separator プロパティに文字列が指定されていればそのセパレータで分割した文字列をカラム名にする。
+                        var names = columnAttr.Caption.Split(columnAttr.Separator);
+                        for (var i = 0; i < names.Length && i < captions.Length; i++)
                         {
-                            if (span <= 1)
+                            if (names[i].IsNotEmpty())
                             {
-                                // 単独カラムの場合はそのままカラム名にする
-                                captions[0] = display.Name;
+                                captions[i] = names[i];
                             }
-                            else if (display.GroupName is var separator && !string.IsNullOrEmpty(separator))
-                            {
-                                // GroupName プロパティに文字列が指定されていればそれをセパレータとみなし、分割した文字列をカラム名にする。
-                                var names = (display.Name ?? "").Split(separator);
-                                for (var i = 0; i < names.Length && i < captions.Length; i++)
-                                {
-                                    if (names[i] is var name && !string.IsNullOrWhiteSpace(name))
-                                    {
-                                        // カラム位置に対応する有効な名前があればカラム名に採用
-                                        captions[i] = name;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                // セパレータ無しの場合は名前に添え時付きのカラム名とする
-                                for (var i = 0; i < captions.Length; i++)
-                                {
-                                    captions[i] = $"{display.Name}[{i}]";
-                                }
-                            }
+                        }
+                    }
+                    else
+                    {
+                        // セパレータ無しの場合は名前に添え時付きのカラム名とする
+                        for (var i = 0; i < captions.Length; i++)
+                        {
+                            captions[i] = $"{columnAttr.Caption}[{i}]";
                         }
                     }
                 }
 
-                // デリゲートによるキャプション名取得。こちらが指定されたら優先する。
+                // デリゲートによるキャプション名取得。こちらが指定されていればそれを優先として上書きする。
                 if (options.CaptionSelector != null)
                 {
                     for (var i = 0; i < captions.Length; i++)
@@ -486,9 +490,9 @@ public static partial class EnumerableDataExtensions
                 }
 
                 // カラム情報を作る
-                return new TypeColumn<TSource>(member, returnType, getter, span, captions, order);
+                return new TypeColumn<TSource>(member, returnType, getter, span, captions, columnAttr, excelAttr);
             })
-            .OrderBy(c => options.UseCaptionAttribute ? c.Order : 0)    // 属性利用時はその Order プロパティを最優先。
+            .OrderBy(c => c.Attribute?.Order ?? 0)                      // 属性で指定された順序があればそれでソート
             .ThenBy(c => options.SortCaption ? c.Caption : "")          // キャンプションソートが指定されていればそのソート
             .ThenBy(c => options.SortMemberName ? c.Member.Name : "")   // メンバ名ソートが指定されていればそのソート。両方指定されていたらキャプションよりも後(同一キャプションの場合の順序)
             .ToArray();

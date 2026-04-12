@@ -362,11 +362,11 @@ public class EnumerableDataExtensions_SaveToCsv_Tests
 
     class ColOrderItem
     {
-        [Display(Order = 5)] public string? Prop1 { get; set; }
-        [Display()] public int Prop2 { get; set; }
+        [TypeColumn(Order = 5)] public string? Prop1 { get; set; }
+        [TypeColumn()] public int Prop2 { get; set; }
         public int Prop3 { get; set; }
-        [Display(Order = -2)] public string? Field1;
-        [Display(Order = 1)] public int Field2;
+        [TypeColumn(Order = -2)] public string? Field1;
+        [TypeColumn(Order = 1)] public int Field2;
     }
 
     [TestMethod]
@@ -391,7 +391,7 @@ public class EnumerableDataExtensions_SaveToCsv_Tests
         var options = new SaveToCsvOptions()
         {
             IncludeFields = true,
-            UseCaptionAttribute = true,
+            UseColumnAttribute = true,
         };
 
         // テスト対象実行
@@ -408,11 +408,11 @@ public class EnumerableDataExtensions_SaveToCsv_Tests
 
     class ColNameItem
     {
-        [Display(Name = "Omega")] public string? Prop1 { get; set; }
-        [Display(Name = "Alpha")] public int Prop2 { get; set; }
+        [TypeColumn(Caption = "Omega")] public string? Prop1 { get; set; }
+        [TypeColumn(Caption = "Alpha")] public int Prop2 { get; set; }
         public int Prop3 { get; set; }
-        [Display()] public string? Field1;
-        [Display(Name = "Beta")] public int Field2;
+        [TypeColumn()] public string? Field1;
+        [TypeColumn(Caption = "Beta")] public int Field2;
     }
 
     [TestMethod]
@@ -437,7 +437,7 @@ public class EnumerableDataExtensions_SaveToCsv_Tests
         var options = new SaveToCsvOptions()
         {
             IncludeFields = true,
-            UseCaptionAttribute = true,
+            UseColumnAttribute = true,
         };
 
         // テスト対象実行
@@ -473,7 +473,7 @@ public class EnumerableDataExtensions_SaveToCsv_Tests
         var options = new SaveToCsvOptions()
         {
             IncludeFields = true,
-            UseCaptionAttribute = false,
+            UseColumnAttribute = false,
             SortCaption = true,
             CaptionSelector = (m, i) => m.Name switch
             {
@@ -500,11 +500,11 @@ public class EnumerableDataExtensions_SaveToCsv_Tests
 
     class FieldNameItem
     {
-        [Display(Name = "Group1")] public string? Echo { get; set; }
-        [Display(Name = "Group1")] public int Alpha { get; set; }
-        [Display(Name = "Group2")] public int Charlie { get; set; }
-        [Display(Name = "Group2")] public string? Delta;
-        [Display(Name = "Group3")] public int Bravo;
+        [TypeColumn(Caption = "Group1")] public string? Echo { get; set; }
+        [TypeColumn(Caption = "Group1")] public int Alpha { get; set; }
+        [TypeColumn(Caption = "Group2")] public int Charlie { get; set; }
+        [TypeColumn(Caption = "Group2")] public string? Delta;
+        [TypeColumn(Caption = "Group3")] public int Bravo;
     }
 
     [TestMethod]
@@ -528,7 +528,7 @@ public class EnumerableDataExtensions_SaveToCsv_Tests
         var options = new SaveToCsvOptions()
         {
             IncludeFields = true,
-            UseCaptionAttribute = false,
+            UseColumnAttribute = false,
             SortCaption = false,
             SortMemberName = true,
         };
@@ -567,7 +567,7 @@ public class EnumerableDataExtensions_SaveToCsv_Tests
         var options = new SaveToCsvOptions()
         {
             IncludeFields = true,
-            UseCaptionAttribute = true,
+            UseColumnAttribute = true,
             SortCaption = true,
             SortMemberName = true,
         };

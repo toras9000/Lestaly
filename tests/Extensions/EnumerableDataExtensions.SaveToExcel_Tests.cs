@@ -284,7 +284,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
     class ExpandItem
     {
         public int Number { get; set; }
-        [MaxLength(3)] public ExcelExpand? ExpandAttr { get; set; }
+        [TypeColumn(ColumnSpan = 3)] public ExcelExpand? ExpandAttr { get; set; }
         public ExcelExpand? ExpandNoSpan { get; set; }
         public string? Text { get; set; }
         public ExcelExpand? ExpandDelegate { get; set; }
@@ -329,7 +329,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         var options = new SaveToExcelOptions()
         {
             ColumnSpanSelector = m => m.Name == nameof(ExpandItem.ExpandDelegate) ? 4 : null,
-            UseColumnSpanAttribute = true,
+            UseColumnAttribute = true,
         };
 
         // テスト対象実行
@@ -525,24 +525,19 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
 
     class ExpandCaptionItem
     {
-        [MaxLength(4)]
-        [Display(Name = "aaa|bbb|ccc|ddd", GroupName = "|")]
+        [TypeColumn(Caption = "aaa|bbb|ccc|ddd", Separator = "|", ColumnSpan = 4)]
         public ExcelExpand? All { get; set; }
 
-        [MaxLength(4)]
-        [Display(Name = "eee|||hhh", GroupName = "|")]
+        [TypeColumn(Caption = "eee|||hhh", Separator = "|", ColumnSpan = 4)]
         public ExcelExpand? Side { get; set; }
 
-        [MaxLength(7)]
-        [Display(Name = "||iii|jjj||", GroupName = "|")]
+        [TypeColumn(Caption = "||iii|jjj||", Separator = "|", ColumnSpan = 7)]
         public ExcelExpand? Middle { get; set; }
 
-        [MaxLength(3)]
-        [Display(Name = "asd|qwe")]
+        [TypeColumn(Caption = "asd|qwe", ColumnSpan = 3)]
         public ExcelExpand? Single { get; set; }
 
-        [MaxLength(2)]
-        [Display()]
+        [TypeColumn(ColumnSpan = 2)]
         public ExcelExpand? NoName { get; set; }
     }
 
@@ -571,8 +566,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         // テスト対象実行
         data.SaveToExcel(tempFile.FullName, new SaveToExcelOptions()
         {
-            UseColumnSpanAttribute = true,
-            UseCaptionAttribute = true,
+            UseColumnAttribute = true,
         });
 
         // 検証
@@ -613,8 +607,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         // テスト対象実行
         data.SaveToExcel(tempFile.FullName, new SaveToExcelOptions()
         {
-            UseColumnSpanAttribute = true,
-            UseCaptionAttribute = true,
+            UseColumnAttribute = true,
             CaptionSelector = (m, i) => m.Name switch
             {
                 nameof(ExpandCaptionItem.All) => i switch { 2 => "zzz", _ => null, },
@@ -1048,11 +1041,11 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
 
     class ColOrderItem
     {
-        [Display(Order = 5)] public string? Prop1 { get; set; }
-        [Display()] public int Prop2 { get; set; }
+        [ExcelTypeColumn(Order = 5)] public string? Prop1 { get; set; }
+        [ExcelTypeColumn()] public int Prop2 { get; set; }
         public int Prop3 { get; set; }
-        [Display(Order = -2)] public string? Field1;
-        [Display(Order = 1)] public int Field2;
+        [ExcelTypeColumn(Order = -2)] public string? Field1;
+        [ExcelTypeColumn(Order = 1)] public int Field2;
     }
 
     [TestMethod]
@@ -1077,7 +1070,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         var options = new SaveToExcelOptions()
         {
             IncludeFields = true,
-            UseCaptionAttribute = true,
+            UseColumnAttribute = true,
         };
 
         // テスト対象実行
@@ -1095,11 +1088,11 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
 
     class ColNameItem
     {
-        [Display(Name = "Omega")] public string? Prop1 { get; set; }
-        [Display(Name = "Alpha")] public int Prop2 { get; set; }
+        [ExcelTypeColumn(Caption = "Omega")] public string? Prop1 { get; set; }
+        [ExcelTypeColumn(Caption = "Alpha")] public int Prop2 { get; set; }
         public int Prop3 { get; set; }
-        [Display()] public string? Field1;
-        [Display(Name = "Beta")] public int Field2;
+        [ExcelTypeColumn()] public string? Field1;
+        [ExcelTypeColumn(Caption = "Beta")] public int Field2;
     }
 
     [TestMethod]
@@ -1124,7 +1117,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         var options = new SaveToExcelOptions()
         {
             IncludeFields = true,
-            UseCaptionAttribute = true,
+            UseColumnAttribute = true,
         };
 
         // テスト対象実行
@@ -1161,7 +1154,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         var options = new SaveToExcelOptions()
         {
             IncludeFields = true,
-            UseCaptionAttribute = false,
+            UseColumnAttribute = false,
             SortCaption = true,
             CaptionSelector = (m, i) => m.Name switch
             {
@@ -1189,11 +1182,11 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
 
     class FieldNameItem
     {
-        [Display(Name = "Group1")] public string? Echo { get; set; }
-        [Display(Name = "Group1")] public int Alpha { get; set; }
-        [Display(Name = "Group2")] public int Charlie { get; set; }
-        [Display(Name = "Group2")] public string? Delta;
-        [Display(Name = "Group3")] public int Bravo;
+        [ExcelTypeColumn(Caption = "Group1")] public string? Echo { get; set; }
+        [ExcelTypeColumn(Caption = "Group1")] public int Alpha { get; set; }
+        [ExcelTypeColumn(Caption = "Group2")] public int Charlie { get; set; }
+        [ExcelTypeColumn(Caption = "Group2")] public string? Delta;
+        [ExcelTypeColumn(Caption = "Group3")] public int Bravo;
     }
 
     [TestMethod]
@@ -1217,7 +1210,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         var options = new SaveToExcelOptions()
         {
             IncludeFields = true,
-            UseCaptionAttribute = false,
+            UseColumnAttribute = false,
             SortCaption = false,
             SortMemberName = true,
         };
@@ -1293,4 +1286,50 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         expand.ToString().Should().Be("aaa|100|bbb|200");
     }
 
+
+    class ColumnAttrTest
+    {
+        [ExcelTypeColumn(MaxWidth = 30, WrapText = true)] public string? Text1 { get; set; }
+        [ExcelTypeColumn(MaxWidth = 25, WrapText = true)] public string? Text2 { get; set; }
+    }
+
+    [TestMethod]
+    public void SaveToExcel_ColumnAttr()
+    {
+        using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
+
+        // テスト用に一時ディレクトリ
+        using var tempDir = new TempDir();
+
+        // テストファイル
+        var target = new FileInfo(@"D:\temp\test.xlsx");
+
+        // 保存データ
+        var data = new[]
+        {
+            new ColumnAttrTest{ Text1 = "aaa", Text2 = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", },
+            new ColumnAttrTest{ Text1 = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", Text2 = "bb", },
+        };
+
+        // 実行オプション
+        var options = new SaveToExcelOptions()
+        {
+            IncludeFields = true,
+            UseColumnAttribute = true,
+        };
+
+        // テスト対象実行
+        data.SaveToExcel(target.FullName, options);
+
+        // 検証
+        using var book = new XLWorkbook(target.FullName);
+        var sheet = book.Worksheets.First();
+        var col1 = sheet.Column(1);
+        var col2 = sheet.Column(2);
+        col1.Width.Should().Be(30);
+        col1.Style.Alignment.WrapText.Should().Be(true);
+        col2.Width.Should().Be(25);
+        col2.Style.Alignment.WrapText.Should().Be(true);
+
+    }
 }

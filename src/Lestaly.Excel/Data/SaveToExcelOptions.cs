@@ -1,8 +1,16 @@
 ﻿namespace Lestaly;
 
-/// <summary>
-/// Excelテキスト保存オプション
-/// </summary>
+/// <summary>型のカラムに対する補足情報属性</summary>
+public class ExcelTypeColumnAttribute : TypeColumnAttribute
+{
+    /// <summary>カラム幅自動調整時の最大幅</summary>
+    public double MaxWidth { get; set; }
+
+    /// <summary>テキストの折り返しを有効にするか否か</summary>
+    public bool WrapText { get; set; }
+}
+
+/// <summary>Excelテキスト保存オプション</summary>
 public class SaveToExcelOptions : TypeColumnOptions
 {
     /// <summary>フォント名</summary>
@@ -49,7 +57,7 @@ public record ExcelHyperlink(string Target, string? Display = null, string? Tool
 
 /// <summary>式を表すデータ型</summary>
 /// <param name="Expression">式</param>
-/// <param name="IsR1C1">式</param>
+/// <param name="IsR1C1">R1C1形式であるか</param>
 public record ExcelFormula(string Expression, bool IsR1C1 = false)
 {
     /// <inheritdoc />
