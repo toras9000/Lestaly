@@ -8,6 +8,9 @@ public class ExcelTypeColumnAttribute : TypeColumnAttribute
 
     /// <summary>テキストの折り返しを有効にするか否か</summary>
     public bool WrapText { get; set; }
+
+    /// <summary>テキストの縮小表示を有効にするか否か</summary>
+    public bool ShrinkToFit { get; set; }
 }
 
 /// <summary>Excelテキスト保存オプション</summary>
@@ -36,6 +39,10 @@ public class SaveToExcelOptions : TypeColumnOptions
 
     /// <summary>出力範囲のカラム幅を調整するか否か</summary>
     public bool AdjustToContents { get; set; } = true;
+
+    /// <summary>カラム幅自動調整時の最大幅</summary>
+    /// <remarks><see cref="TypeColumnOptions.UseColumnAttribute"/> が有効で属性から最大幅が得られる場合はそちらが優先される。</remarks>
+    public double? MaxWidth { get; set; } = null;
 
     /// <summary>型による自動リンク設定を有効とするか否か。trueの場合UriおよびFileInfo/DirectoryInfo型の列をリンク設定する。</summary>
     public bool AutoLink { get; set; } = false;

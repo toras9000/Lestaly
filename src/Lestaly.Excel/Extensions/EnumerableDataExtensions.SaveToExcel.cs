@@ -189,9 +189,10 @@ public static partial class EnumerableDataExtensions
                 if (options.AdjustToContents)
                 {
                     // 自動調整。最大幅設定があれば制限する
-                    if (1 < column.type.ExAttr?.MaxWidth)
+                    var maxWidth = column.type.ExAttr?.MaxWidth ?? options.MaxWidth;
+                    if (1 < maxWidth)
                     {
-                        column.xl.AdjustToContents(minWidth: 1, maxWidth: column.type.ExAttr.MaxWidth);
+                        column.xl.AdjustToContents(minWidth: 1, maxWidth: maxWidth.Value);
                     }
                     else
                     {
@@ -203,6 +204,12 @@ public static partial class EnumerableDataExtensions
                 if (column.type.ExAttr?.WrapText == true)
                 {
                     column.xl.Style.Alignment.WrapText = true;
+                }
+
+                // テキストの縮小表示
+                if (column.type.ExAttr?.ShrinkToFit == true)
+                {
+                    column.xl.Style.Alignment.ShrinkToFit = true;
                 }
             }
         }
