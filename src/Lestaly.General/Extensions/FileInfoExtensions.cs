@@ -106,7 +106,7 @@ public static class FileInfoExtensions
         => (self?.Directory)!.RelativeDirectory(relativePath);
     #endregion
 
-    #region Read
+    #region Read bytes
     /// <summary>ファイル内容の全バイト列を読み出す。</summary>
     /// <param name="self">対象ファイルのFileInfo</param>
     /// <returns>ファイルから読みだしたバイト列</returns>
@@ -126,6 +126,18 @@ public static class FileInfoExtensions
         catch { return default; }
     }
 
+    /// <summary>ファイル内容の全バイト列を読み出す。</summary>
+    /// <param name="self">対象ファイルのFileInfo</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>ファイルから読みだしたバイト列</returns>
+    public static Task<byte[]> ReadAllBytesAsync(this FileInfo self, CancellationToken cancelToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(self);
+        return File.ReadAllBytesAsync(self.FullName, cancelToken);
+    }
+    #endregion
+
+    #region Read text
     /// <summary>ファイル内容の全テキストを読み出す。</summary>
     /// <param name="self">対象ファイルのFileInfo</param>
     /// <returns>ファイルから読みだした全テキスト</returns>
@@ -156,6 +168,29 @@ public static class FileInfoExtensions
         catch { return default; }
     }
 
+    /// <summary>ファイル内容の全テキストを読み出す。</summary>
+    /// <param name="self">対象ファイルのFileInfo</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>ファイルから読みだした全テキスト</returns>
+    public static Task<string> ReadAllTextAsync(this FileInfo self, CancellationToken cancelToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(self);
+        return File.ReadAllTextAsync(self.FullName, cancelToken);
+    }
+
+    /// <summary>ファイル内容の全テキストを読み出す。</summary>
+    /// <param name="self">対象ファイルのFileInfo</param>
+    /// <param name="encoding">ファイル内容をデコードするテキストエンコーディング</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>ファイルから読みだした全テキスト</returns>
+    public static Task<string> ReadAllTextAsync(this FileInfo self, Encoding encoding, CancellationToken cancelToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(self);
+        return File.ReadAllTextAsync(self.FullName, encoding, cancelToken);
+    }
+    #endregion
+
+    #region Read lines
     /// <summary>ファイル内容の全テキスト行を読み出す。</summary>
     /// <param name="self">対象ファイルのFileInfo</param>
     /// <returns>ファイルから読みだした全テキスト行</returns>
@@ -194,37 +229,6 @@ public static class FileInfoExtensions
         return File.ReadLines(self.FullName, encoding);
     }
 
-    /// <summary>ファイル内容の全バイト列を読み出す。</summary>
-    /// <param name="self">対象ファイルのFileInfo</param>
-    /// <param name="cancelToken">キャンセルトークン</param>
-    /// <returns>ファイルから読みだしたバイト列</returns>
-    public static Task<byte[]> ReadAllBytesAsync(this FileInfo self, CancellationToken cancelToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(self);
-        return File.ReadAllBytesAsync(self.FullName, cancelToken);
-    }
-
-    /// <summary>ファイル内容の全テキストを読み出す。</summary>
-    /// <param name="self">対象ファイルのFileInfo</param>
-    /// <param name="cancelToken">キャンセルトークン</param>
-    /// <returns>ファイルから読みだした全テキスト</returns>
-    public static Task<string> ReadAllTextAsync(this FileInfo self, CancellationToken cancelToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(self);
-        return File.ReadAllTextAsync(self.FullName, cancelToken);
-    }
-
-    /// <summary>ファイル内容の全テキストを読み出す。</summary>
-    /// <param name="self">対象ファイルのFileInfo</param>
-    /// <param name="encoding">ファイル内容をデコードするテキストエンコーディング</param>
-    /// <param name="cancelToken">キャンセルトークン</param>
-    /// <returns>ファイルから読みだした全テキスト</returns>
-    public static Task<string> ReadAllTextAsync(this FileInfo self, Encoding encoding, CancellationToken cancelToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(self);
-        return File.ReadAllTextAsync(self.FullName, encoding, cancelToken);
-    }
-
     /// <summary>ファイル内容の全テキスト行を読み出す。</summary>
     /// <param name="self">対象ファイルのFileInfo</param>
     /// <param name="cancelToken">キャンセルトークン</param>
@@ -245,7 +249,9 @@ public static class FileInfoExtensions
         ArgumentNullException.ThrowIfNull(self);
         return File.ReadAllLinesAsync(self.FullName, encoding, cancelToken);
     }
+    #endregion
 
+    #region Read stream
     /// <summary>ファイル内容をテキストで読み取るリーダーを生成する。</summary>
     /// <param name="self">対象ファイルのFileInfo</param>
     /// <param name="encoding">ファイル内容をデコードするテキストエンコーディング</param>
@@ -259,22 +265,25 @@ public static class FileInfoExtensions
     }
     #endregion
 
-    #region Write
+    #region Write bytes
     /// <summary>ファイル内容が指定のバイト列となるように書き込む。</summary>
     /// <param name="self">対象ファイルのFileInfo</param>
     /// <param name="bytes">書き込むバイト列</param>
-    public static void WriteAllBytes(this FileInfo self, byte[] bytes)
+    /// <returns>レシーバ自身</returns>
+    public static FileInfo WriteAllBytes(this FileInfo self, byte[] bytes)
     {
         ArgumentNullException.ThrowIfNull(self);
         File.WriteAllBytes(self.FullName, bytes);
         self.Refresh();
+        return self;
     }
 
     /// <summary>ファイル内容が指定のバイト列となるように書き込む。</summary>
     /// <param name="self">対象ファイルのFileInfo</param>
     /// <param name="bytes">書き込むバイト列</param>
     /// <param name="options">ファイルストリームを開くオプション。Access プロパティは無視する。</param>
-    public static void WriteAllBytes(this FileInfo self, ReadOnlySpan<byte> bytes, FileStreamOptions? options = null)
+    /// <returns>レシーバ自身</returns>
+    public static FileInfo WriteAllBytes(this FileInfo self, ReadOnlySpan<byte> bytes, FileStreamOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(self);
         using (var stream = self.CreateWrite(options))
@@ -282,13 +291,15 @@ public static class FileInfoExtensions
             stream.Write(bytes);
         }
         self.Refresh();
+        return self;
     }
 
     /// <summary>ファイル内容に指定のストリーム内容を書き込む。</summary>
     /// <param name="self">対象ファイルのFileInfo</param>
     /// <param name="stream">書き込みデータを読み出すストリーム</param>
     /// <param name="options">ファイルストリームを開くオプション。Access プロパティは無視する。</param>
-    public static void WriteAllBytes(this FileInfo self, Stream stream, FileStreamOptions? options = null)
+    /// <returns>レシーバ自身</returns>
+    public static FileInfo WriteAllBytes(this FileInfo self, Stream stream, FileStreamOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(self);
         using (var fileStream = self.CreateWrite(options))
@@ -296,27 +307,81 @@ public static class FileInfoExtensions
             stream.CopyTo(fileStream);
         }
         self.Refresh();
+        return self;
     }
 
+    /// <summary>ファイル内容が指定のバイト列となるように書き込む。</summary>
+    /// <param name="self">対象ファイルのFileInfo</param>
+    /// <param name="bytes">書き込むバイト列</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>書き込みを行いレシーバ自身を返すタスク</returns>
+    public static async ValueTask<FileInfo> WriteAllBytesAsync(this FileInfo self, byte[] bytes, CancellationToken cancelToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(self);
+        await File.WriteAllBytesAsync(self.FullName, bytes, cancelToken).ConfigureAwait(false);
+        self.Refresh();
+        return self;
+    }
+
+    /// <summary>ファイル内容が指定のバイト列となるように書き込む。</summary>
+    /// <param name="self">対象ファイルのFileInfo</param>
+    /// <param name="bytes">書き込むバイト列</param>
+    /// <param name="options">ファイルストリームを開くオプション。Access プロパティは無視する。</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>書き込みを行いレシーバ自身を返すタスク</returns>
+    public static async ValueTask<FileInfo> WriteAllBytesAsync(this FileInfo self, ReadOnlyMemory<byte> bytes, FileStreamOptions? options = null, CancellationToken cancelToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(self);
+        using (var stream = self.CreateWrite(options))
+        {
+            await stream.WriteAsync(bytes, cancelToken).ConfigureAwait(false);
+        }
+        self.Refresh();
+        return self;
+    }
+
+    /// <summary>ファイル内容が指定のバイト列となるように書き込む。</summary>
+    /// <param name="self">対象ファイルのFileInfo</param>
+    /// <param name="stream">書き込みデータを読み出すストリーム</param>
+    /// <param name="options">ファイルストリームを開くオプション。Access プロパティは無視する。</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>書き込みを行いレシーバ自身を返すタスク</returns>
+    public static async ValueTask<FileInfo> WriteAllBytesAsync(this FileInfo self, Stream stream, FileStreamOptions? options = null, CancellationToken cancelToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(self);
+        using (var fileStream = self.CreateWrite(options))
+        {
+            await stream.CopyToAsync(fileStream, cancelToken).ConfigureAwait(false);
+        }
+        self.Refresh();
+        return self;
+    }
+    #endregion
+
+    #region Write text
     /// <summary>ファイル内容が指定のテキストとなるように書き込む。</summary>
     /// <param name="self">対象ファイルのFileInfo</param>
     /// <param name="contents">書き込むテキスト</param>
-    public static void WriteAllText(this FileInfo self, string contents)
+    /// <returns>レシーバ自身</returns>
+    public static FileInfo WriteAllText(this FileInfo self, string contents)
     {
         ArgumentNullException.ThrowIfNull(self);
         File.WriteAllText(self.FullName, contents);
         self.Refresh();
+        return self;
     }
 
     /// <summary>ファイル内容が指定のテキストとなるように書き込む。</summary>
     /// <param name="self">対象ファイルのFileInfo</param>
     /// <param name="contents">書き込むテキスト</param>
     /// <param name="encoding">書き込むテキストをエンコードするテキストエンコーディング</param>
-    public static void WriteAllText(this FileInfo self, string contents, Encoding encoding)
+    /// <returns>レシーバ自身</returns>
+    public static FileInfo WriteAllText(this FileInfo self, string contents, Encoding encoding)
     {
         ArgumentNullException.ThrowIfNull(self);
         File.WriteAllText(self.FullName, contents, encoding);
         self.Refresh();
+        return self;
     }
 
     /// <summary>ファイル内容が指定のテキストとなるように書き込む。</summary>
@@ -324,7 +389,8 @@ public static class FileInfoExtensions
     /// <param name="contents">書き込むテキスト</param>
     /// <param name="options">ファイルストリームを開くオプション。Access プロパティは無視する。</param>
     /// <param name="encoding">書き込むテキストをエンコードするテキストエンコーディング</param>
-    public static void WriteAllText(this FileInfo self, ReadOnlySpan<char> contents, FileStreamOptions? options = null, Encoding? encoding = null)
+    /// <returns>レシーバ自身</returns>
+    public static FileInfo WriteAllText(this FileInfo self, ReadOnlySpan<char> contents, FileStreamOptions? options = null, Encoding? encoding = null)
     {
         ArgumentNullException.ThrowIfNull(self);
         using (var writer = self.CreateTextWriter(createStreamWriteOptions(options), encoding))
@@ -332,53 +398,32 @@ public static class FileInfoExtensions
             writer.Write(contents);
         }
         self.Refresh();
+        return self;
     }
 
-    /// <summary>ファイル内容が指定のテキスト行となるように書き込む。</summary>
+    /// <summary>ファイル内容が指定のテキストとなるように書き込む。</summary>
     /// <param name="self">対象ファイルのFileInfo</param>
-    /// <param name="contents">書き込むテキスト行</param>
-    public static void WriteAllLines(this FileInfo self, IEnumerable<string> contents)
-    {
-        ArgumentNullException.ThrowIfNull(self);
-        File.WriteAllLines(self.FullName, contents);
-        self.Refresh();
-    }
-
-    /// <summary>ファイル内容が指定のテキスト行となるように書き込む。</summary>
-    /// <param name="self">対象ファイルのFileInfo</param>
-    /// <param name="contents">書き込むテキスト行</param>
+    /// <param name="contents">書き込むテキスト</param>
+    /// <param name="options">ファイルストリームを開くオプション。Access プロパティは無視する。</param>
     /// <param name="encoding">書き込むテキストをエンコードするテキストエンコーディング</param>
-    public static void WriteAllLines(this FileInfo self, IEnumerable<string> contents, Encoding encoding)
+    /// <returns>レシーバ自身</returns>
+    public static FileInfo WriteAllText(this FileInfo self, StringBuilder contents, FileStreamOptions? options = null, Encoding? encoding = null)
     {
         ArgumentNullException.ThrowIfNull(self);
-        File.WriteAllLines(self.FullName, contents, encoding);
-        self.Refresh();
-    }
-
-    /// <summary>ファイル内容が指定のテキスト行となるように書き込む。</summary>
-    /// <param name="self">対象ファイルのFileInfo</param>
-    /// <param name="contents">書き込むテキスト行</param>
-    /// <param name="lineBreak">改行文字</param>
-    /// <param name="encoding">書き込むテキストをエンコードするテキストエンコーディング。省略時は UTF-8</param>
-    public static void WriteAllLines(this FileInfo self, IEnumerable<string> contents, string lineBreak, Encoding? encoding = default)
-    {
-        ArgumentNullException.ThrowIfNull(self);
-        using (var writer = self.CreateTextWriter(append: false, encoding: encoding ?? Encoding.UTF8))
+        using (var writer = self.CreateTextWriter(createStreamWriteOptions(options), encoding))
         {
-            writer.NewLine = lineBreak;
-            foreach (var line in contents)
-            {
-                writer.WriteLine(line);
-            }
+            writer.Write(contents);
         }
         self.Refresh();
+        return self;
     }
 
     /// <summary>ファイルに行末文字を正規化した複数行テキストを書き込む。</summary>
     /// <param name="self">対象ファイルのFileInfo</param>
     /// <param name="lineBreak">行末文字</param>
     /// <param name="multiline">書き込む複数行テキスト</param>
-    public static void WriteMultilineText(this FileInfo self, ReadOnlySpan<char> lineBreak, ReadOnlySpan<char> multiline)
+    /// <returns>レシーバ自身</returns>
+    public static FileInfo WriteMultilineText(this FileInfo self, ReadOnlySpan<char> lineBreak, ReadOnlySpan<char> multiline)
         => self.WriteMultilineText(multiline, options: default, encoding: default, lineBreak);
 
     /// <summary>ファイルに行末文字を正規化した複数行テキストを書き込む。</summary>
@@ -386,7 +431,8 @@ public static class FileInfoExtensions
     /// <param name="lineBreak">行末文字</param>
     /// <param name="encoding">書き込むテキストをエンコードするテキストエンコーディング</param>
     /// <param name="multiline">書き込む複数行テキスト</param>
-    public static void WriteMultilineText(this FileInfo self, ReadOnlySpan<char> lineBreak, Encoding encoding, ReadOnlySpan<char> multiline)
+    /// <returns>レシーバ自身</returns>
+    public static FileInfo WriteMultilineText(this FileInfo self, ReadOnlySpan<char> lineBreak, Encoding encoding, ReadOnlySpan<char> multiline)
         => self.WriteMultilineText(multiline, options: default, encoding, lineBreak);
 
     /// <summary>ファイルに行末文字を正規化した複数行テキストを書き込む。</summary>
@@ -395,7 +441,8 @@ public static class FileInfoExtensions
     /// <param name="lineBreak">行末文字</param>
     /// <param name="options">ファイルストリームを開くオプション。Access プロパティは無視する。</param>
     /// <param name="encoding">書き込むテキストをエンコードするテキストエンコーディング</param>
-    public static void WriteMultilineText(this FileInfo self, ReadOnlySpan<char> multiline, FileStreamOptions? options = null, Encoding? encoding = null, ReadOnlySpan<char> lineBreak = default)
+    /// <returns>レシーバ自身</returns>
+    public static FileInfo WriteMultilineText(this FileInfo self, ReadOnlySpan<char> multiline, FileStreamOptions? options = null, Encoding? encoding = null, ReadOnlySpan<char> lineBreak = default)
     {
         ArgumentNullException.ThrowIfNull(self);
         var breaker = lineBreak;
@@ -411,58 +458,20 @@ public static class FileInfoExtensions
             }
         }
         self.Refresh();
-    }
-
-    /// <summary>ファイル内容が指定のバイト列となるように書き込む。</summary>
-    /// <param name="self">対象ファイルのFileInfo</param>
-    /// <param name="bytes">書き込むバイト列</param>
-    /// <param name="cancelToken">キャンセルトークン</param>
-    public static async ValueTask WriteAllBytesAsync(this FileInfo self, byte[] bytes, CancellationToken cancelToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(self);
-        await File.WriteAllBytesAsync(self.FullName, bytes, cancelToken).ConfigureAwait(false);
-        self.Refresh();
-    }
-
-    /// <summary>ファイル内容が指定のバイト列となるように書き込む。</summary>
-    /// <param name="self">対象ファイルのFileInfo</param>
-    /// <param name="bytes">書き込むバイト列</param>
-    /// <param name="options">ファイルストリームを開くオプション。Access プロパティは無視する。</param>
-    /// <param name="cancelToken">キャンセルトークン</param>
-    public static async ValueTask WriteAllBytesAsync(this FileInfo self, ReadOnlyMemory<byte> bytes, FileStreamOptions? options = null, CancellationToken cancelToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(self);
-        using (var stream = self.CreateWrite(options))
-        {
-            await stream.WriteAsync(bytes, cancelToken).ConfigureAwait(false);
-        }
-        self.Refresh();
-    }
-
-    /// <summary>ファイル内容が指定のバイト列となるように書き込む。</summary>
-    /// <param name="self">対象ファイルのFileInfo</param>
-    /// <param name="stream">書き込みデータを読み出すストリーム</param>
-    /// <param name="options">ファイルストリームを開くオプション。Access プロパティは無視する。</param>
-    /// <param name="cancelToken">キャンセルトークン</param>
-    public static async ValueTask WriteAllBytesAsync(this FileInfo self, Stream stream, FileStreamOptions? options = null, CancellationToken cancelToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(self);
-        using (var fileStream = self.CreateWrite(options))
-        {
-            await stream.CopyToAsync(fileStream, cancelToken).ConfigureAwait(false);
-        }
-        self.Refresh();
+        return self;
     }
 
     /// <summary>ファイル内容が指定のテキストとなるように書き込む。</summary>
     /// <param name="self">対象ファイルのFileInfo</param>
     /// <param name="contents">書き込むテキスト</param>
     /// <param name="cancelToken">キャンセルトークン</param>
-    public static async ValueTask WriteAllTextAsync(this FileInfo self, string contents, CancellationToken cancelToken = default)
+    /// <returns>書き込みを行いレシーバ自身を返すタスク</returns>
+    public static async ValueTask<FileInfo> WriteAllTextAsync(this FileInfo self, string contents, CancellationToken cancelToken = default)
     {
         ArgumentNullException.ThrowIfNull(self);
         await File.WriteAllTextAsync(self.FullName, contents, cancelToken).ConfigureAwait(false);
         self.Refresh();
+        return self;
     }
 
     /// <summary>ファイル内容が指定のテキストとなるように書き込む。</summary>
@@ -470,11 +479,13 @@ public static class FileInfoExtensions
     /// <param name="contents">書き込むテキスト</param>
     /// <param name="encoding">書き込むテキストをエンコードするテキストエンコーディング</param>
     /// <param name="cancelToken">キャンセルトークン</param>
-    public static async ValueTask WriteAllTextAsync(this FileInfo self, string contents, Encoding encoding, CancellationToken cancelToken = default)
+    /// <returns>書き込みを行いレシーバ自身を返すタスク</returns>
+    public static async ValueTask<FileInfo> WriteAllTextAsync(this FileInfo self, string contents, Encoding encoding, CancellationToken cancelToken = default)
     {
         ArgumentNullException.ThrowIfNull(self);
         await File.WriteAllTextAsync(self.FullName, contents, encoding, cancelToken).ConfigureAwait(false);
         self.Refresh();
+        return self;
     }
 
     /// <summary>ファイル内容が指定のバイト列となるように書き込む。</summary>
@@ -483,7 +494,8 @@ public static class FileInfoExtensions
     /// <param name="options">ファイルストリームを開くオプション。Access プロパティは無視する。</param>
     /// <param name="encoding">書き込むテキストをエンコードするテキストエンコーディング</param>
     /// <param name="cancelToken">キャンセルトークン</param>
-    public static async ValueTask WriteAllTextAsync(this FileInfo self, ReadOnlyMemory<char> contents, FileStreamOptions? options = null, Encoding? encoding = null, CancellationToken cancelToken = default)
+    /// <returns>書き込みを行いレシーバ自身を返すタスク</returns>
+    public static async ValueTask<FileInfo> WriteAllTextAsync(this FileInfo self, ReadOnlyMemory<char> contents, FileStreamOptions? options = null, Encoding? encoding = null, CancellationToken cancelToken = default)
     {
         ArgumentNullException.ThrowIfNull(self);
         using (var writer = self.CreateTextWriter(createStreamWriteOptions(options), encoding))
@@ -491,49 +503,25 @@ public static class FileInfoExtensions
             await writer.WriteAsync(contents, cancelToken).ConfigureAwait(false);
         }
         self.Refresh();
+        return self;
     }
 
-    /// <summary>ファイル内容が指定のテキスト行となるように書き込む。</summary>
+    /// <summary>ファイル内容が指定のバイト列となるように書き込む。</summary>
     /// <param name="self">対象ファイルのFileInfo</param>
-    /// <param name="contents">書き込むテキスト行</param>
-    /// <param name="cancelToken">キャンセルトークン</param>
-    public static async ValueTask WriteAllLinesAsync(this FileInfo self, IEnumerable<string> contents, CancellationToken cancelToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(self);
-        await File.WriteAllLinesAsync(self.FullName, contents, cancelToken).ConfigureAwait(false);
-        self.Refresh();
-    }
-
-    /// <summary>ファイル内容が指定のテキスト行となるように書き込む。</summary>
-    /// <param name="self">対象ファイルのFileInfo</param>
-    /// <param name="contents">書き込むテキスト行</param>
+    /// <param name="contents">書き込むテキスト</param>
+    /// <param name="options">ファイルストリームを開くオプション。Access プロパティは無視する。</param>
     /// <param name="encoding">書き込むテキストをエンコードするテキストエンコーディング</param>
     /// <param name="cancelToken">キャンセルトークン</param>
-    public static async ValueTask WriteAllLinesAsync(this FileInfo self, IEnumerable<string> contents, Encoding encoding, CancellationToken cancelToken = default)
+    /// <returns>書き込みを行いレシーバ自身を返すタスク</returns>
+    public static async ValueTask<FileInfo> WriteAllTextAsync(this FileInfo self, StringBuilder contents, FileStreamOptions? options = null, Encoding? encoding = null, CancellationToken cancelToken = default)
     {
         ArgumentNullException.ThrowIfNull(self);
-        await File.WriteAllLinesAsync(self.FullName, contents, encoding, cancelToken).ConfigureAwait(false);
-        self.Refresh();
-    }
-
-    /// <summary>ファイル内容が指定のテキスト行となるように書き込む。</summary>
-    /// <param name="self">対象ファイルのFileInfo</param>
-    /// <param name="contents">書き込むテキスト行</param>
-    /// <param name="lineBreak">行末文字</param>
-    /// <param name="encoding">書き込むテキストをエンコードするテキストエンコーディング</param>
-    /// <param name="cancelToken">キャンセルトークン</param>
-    public static async ValueTask WriteAllLinesAsync(this FileInfo self, IEnumerable<string> contents, string lineBreak, Encoding? encoding = default, CancellationToken cancelToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(self);
-        using (var writer = self.CreateTextWriter(append: false, encoding: encoding ?? Encoding.UTF8))
+        using (var writer = self.CreateTextWriter(createStreamWriteOptions(options), encoding))
         {
-            writer.NewLine = lineBreak;
-            foreach (var line in contents)
-            {
-                await writer.WriteLineAsync(line.AsMemory(), cancelToken).ConfigureAwait(false);
-            }
+            await writer.WriteAsync(contents, cancelToken).ConfigureAwait(false);
         }
         self.Refresh();
+        return self;
     }
 
     /// <summary>ファイルに行末文字を正規化した複数行テキストを書き込む。</summary>
@@ -541,7 +529,8 @@ public static class FileInfoExtensions
     /// <param name="lineBreak">行末文字</param>
     /// <param name="multiline">書き込む複数行テキスト</param>
     /// <param name="cancelToken">キャンセルトークン</param>
-    public static ValueTask WriteMultilineTextAsync(this FileInfo self, string? lineBreak, ReadOnlyMemory<char> multiline, CancellationToken cancelToken = default)
+    /// <returns>書き込みを行いレシーバ自身を返すタスク</returns>
+    public static ValueTask<FileInfo> WriteMultilineTextAsync(this FileInfo self, string? lineBreak, ReadOnlyMemory<char> multiline, CancellationToken cancelToken = default)
         => self.WriteMultilineTextAsync(multiline, options: default, encoding: default, lineBreak, cancelToken);
 
     /// <summary>ファイルに行末文字を正規化した複数行テキストを書き込む。</summary>
@@ -550,7 +539,8 @@ public static class FileInfoExtensions
     /// <param name="encoding">書き込むテキストをエンコードするテキストエンコーディング</param>
     /// <param name="multiline">書き込む複数行テキスト</param>
     /// <param name="cancelToken">キャンセルトークン</param>
-    public static ValueTask WriteMultilineTextAsync(this FileInfo self, string? lineBreak, Encoding? encoding, ReadOnlyMemory<char> multiline, CancellationToken cancelToken = default)
+    /// <returns>書き込みを行いレシーバ自身を返すタスク</returns>
+    public static ValueTask<FileInfo> WriteMultilineTextAsync(this FileInfo self, string? lineBreak, Encoding? encoding, ReadOnlyMemory<char> multiline, CancellationToken cancelToken = default)
         => self.WriteMultilineTextAsync(multiline, options: default, encoding, lineBreak, cancelToken);
 
     /// <summary>ファイルに行末文字を正規化した複数行テキストを書き込む。</summary>
@@ -560,7 +550,8 @@ public static class FileInfoExtensions
     /// <param name="options">ファイルストリームを開くオプション。Access プロパティは無視する。</param>
     /// <param name="encoding">書き込むテキストをエンコードするテキストエンコーディング</param>
     /// <param name="cancelToken">キャンセルトークン</param>
-    public static async ValueTask WriteMultilineTextAsync(this FileInfo self, ReadOnlyMemory<char> multiline, FileStreamOptions? options = null, Encoding? encoding = null, string? lineBreak = default, CancellationToken cancelToken = default)
+    /// <returns>書き込みを行いレシーバ自身を返すタスク</returns>
+    public static async ValueTask<FileInfo> WriteMultilineTextAsync(this FileInfo self, ReadOnlyMemory<char> multiline, FileStreamOptions? options = null, Encoding? encoding = null, string? lineBreak = default, CancellationToken cancelToken = default)
     {
         ArgumentNullException.ThrowIfNull(self);
 
@@ -595,8 +586,108 @@ public static class FileInfoExtensions
             }
         }
         self.Refresh();
+        return self;
+    }
+    #endregion
+
+    #region Write lines
+    /// <summary>ファイル内容が指定のテキスト行となるように書き込む。</summary>
+    /// <param name="self">対象ファイルのFileInfo</param>
+    /// <param name="contents">書き込むテキスト行</param>
+    /// <returns>レシーバ自身</returns>
+    public static FileInfo WriteAllLines(this FileInfo self, IEnumerable<string> contents)
+    {
+        ArgumentNullException.ThrowIfNull(self);
+        File.WriteAllLines(self.FullName, contents);
+        self.Refresh();
+        return self;
     }
 
+    /// <summary>ファイル内容が指定のテキスト行となるように書き込む。</summary>
+    /// <param name="self">対象ファイルのFileInfo</param>
+    /// <param name="contents">書き込むテキスト行</param>
+    /// <param name="encoding">書き込むテキストをエンコードするテキストエンコーディング</param>
+    /// <returns>レシーバ自身</returns>
+    public static FileInfo WriteAllLines(this FileInfo self, IEnumerable<string> contents, Encoding encoding)
+    {
+        ArgumentNullException.ThrowIfNull(self);
+        File.WriteAllLines(self.FullName, contents, encoding);
+        self.Refresh();
+        return self;
+    }
+
+    /// <summary>ファイル内容が指定のテキスト行となるように書き込む。</summary>
+    /// <param name="self">対象ファイルのFileInfo</param>
+    /// <param name="contents">書き込むテキスト行</param>
+    /// <param name="lineBreak">改行文字</param>
+    /// <param name="encoding">書き込むテキストをエンコードするテキストエンコーディング。省略時は UTF-8</param>
+    /// <returns>レシーバ自身</returns>
+    public static FileInfo WriteAllLines(this FileInfo self, IEnumerable<string> contents, string lineBreak, Encoding? encoding = default)
+    {
+        ArgumentNullException.ThrowIfNull(self);
+        using (var writer = self.CreateTextWriter(append: false, encoding: encoding ?? Encoding.UTF8))
+        {
+            writer.NewLine = lineBreak;
+            foreach (var line in contents)
+            {
+                writer.WriteLine(line);
+            }
+        }
+        self.Refresh();
+        return self;
+    }
+
+    /// <summary>ファイル内容が指定のテキスト行となるように書き込む。</summary>
+    /// <param name="self">対象ファイルのFileInfo</param>
+    /// <param name="contents">書き込むテキスト行</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>書き込みを行いレシーバ自身を返すタスク</returns>
+    public static async ValueTask<FileInfo> WriteAllLinesAsync(this FileInfo self, IEnumerable<string> contents, CancellationToken cancelToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(self);
+        await File.WriteAllLinesAsync(self.FullName, contents, cancelToken).ConfigureAwait(false);
+        self.Refresh();
+        return self;
+    }
+
+    /// <summary>ファイル内容が指定のテキスト行となるように書き込む。</summary>
+    /// <param name="self">対象ファイルのFileInfo</param>
+    /// <param name="contents">書き込むテキスト行</param>
+    /// <param name="encoding">書き込むテキストをエンコードするテキストエンコーディング</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>書き込みを行いレシーバ自身を返すタスク</returns>
+    public static async ValueTask<FileInfo> WriteAllLinesAsync(this FileInfo self, IEnumerable<string> contents, Encoding encoding, CancellationToken cancelToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(self);
+        await File.WriteAllLinesAsync(self.FullName, contents, encoding, cancelToken).ConfigureAwait(false);
+        self.Refresh();
+        return self;
+    }
+
+    /// <summary>ファイル内容が指定のテキスト行となるように書き込む。</summary>
+    /// <param name="self">対象ファイルのFileInfo</param>
+    /// <param name="contents">書き込むテキスト行</param>
+    /// <param name="lineBreak">行末文字</param>
+    /// <param name="encoding">書き込むテキストをエンコードするテキストエンコーディング</param>
+    /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>書き込みを行いレシーバ自身を返すタスク</returns>
+    public static async ValueTask<FileInfo> WriteAllLinesAsync(this FileInfo self, IEnumerable<string> contents, string lineBreak, Encoding? encoding = default, CancellationToken cancelToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(self);
+        using (var writer = self.CreateTextWriter(append: false, encoding: encoding ?? Encoding.UTF8))
+        {
+            writer.NewLine = lineBreak;
+            foreach (var line in contents)
+            {
+                await writer.WriteLineAsync(line.AsMemory(), cancelToken).ConfigureAwait(false);
+            }
+        }
+        self.Refresh();
+        return self;
+    }
+    #endregion
+
+    #region Write stream
     /// <summary>新しいファイルの作成モードで書き込み用のストリームを開く</summary>
     /// <param name="self">対象ファイルのFileInfo</param>
     /// <param name="options">ファイルストリームを開くオプション。Access プロパティは無視する。</param>
@@ -639,7 +730,8 @@ public static class FileInfoExtensions
     /// <param name="updater">行更新デリゲート</param>
     /// <param name="lineBreak">行末文字。</param>
     /// <param name="encoding">読み書きテキストエンコーディング</param>
-    public static void UpdateAllLines(this FileInfo self, LineUpdater updater, ReadOnlySpan<char> lineBreak = default, Encoding? encoding = default)
+    /// <returns>レシーバ自身</returns>
+    public static FileInfo UpdateAllLines(this FileInfo self, LineUpdater updater, ReadOnlySpan<char> lineBreak = default, Encoding? encoding = default)
     {
         ArgumentNullException.ThrowIfNull(self);
 
@@ -706,6 +798,7 @@ public static class FileInfoExtensions
         }
 
         self.Refresh();
+        return self;
     }
 
     /// <summary>ファイルを行ごとに更新する</summary>
@@ -714,7 +807,8 @@ public static class FileInfoExtensions
     /// <param name="lineBreak">行末文字。</param>
     /// <param name="encoding">読み書きテキストエンコーディング</param>
     /// <param name="cancelToken">キャンセルトークン</param>
-    public static async Task UpdateAllLinesAsync(this FileInfo self, LineUpdater updater, string? lineBreak = default, Encoding? encoding = default, CancellationToken cancelToken = default)
+    /// <returns>書き込みを行いレシーバ自身を返すタスク</returns>
+    public static async Task<FileInfo> UpdateAllLinesAsync(this FileInfo self, LineUpdater updater, string? lineBreak = default, Encoding? encoding = default, CancellationToken cancelToken = default)
     {
         ArgumentNullException.ThrowIfNull(self);
 
@@ -781,6 +875,7 @@ public static class FileInfoExtensions
         }
 
         self.Refresh();
+        return self;
     }
     #endregion
 
@@ -874,9 +969,10 @@ public static class FileInfoExtensions
     /// <param name="self">保存先ファイル</param>
     /// <param name="value">保存するオブジェクト</param>
     /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>書き込みを行いレシーバ自身を返すタスク</returns>
     [RequiresUnreferencedCode("This uses JsonSerializer.")]
     [RequiresDynamicCode("This uses JsonSerializer.")]
-    public static ValueTask WriteJsonAsync<TObject>(this FileInfo self, TObject value, CancellationToken cancelToken)
+    public static ValueTask<FileInfo> WriteJsonAsync<TObject>(this FileInfo self, TObject value, CancellationToken cancelToken)
         => self.WriteJsonAsync(value, options: default, cancelToken);
 
     /// <summary>オブジェクトをJSON形式でファイルに保存する</summary>
@@ -885,10 +981,12 @@ public static class FileInfoExtensions
     /// <param name="value">保存するオブジェクト</param>
     /// <param name="typeInfo">変換メタデータ</param>
     /// <param name="cancelToken">キャンセルトークン</param>
-    public static async ValueTask WriteJsonAsync<TObject>(this FileInfo self, TObject value, JsonTypeInfo<TObject> typeInfo, CancellationToken cancelToken = default)
+    /// <returns>書き込みを行いレシーバ自身を返すタスク</returns>
+    public static async ValueTask<FileInfo> WriteJsonAsync<TObject>(this FileInfo self, TObject value, JsonTypeInfo<TObject> typeInfo, CancellationToken cancelToken = default)
     {
         using var stream = self.CreateWrite();
         await JsonSerializer.SerializeAsync(stream, value, typeInfo, cancelToken).ConfigureAwait(false);
+        return self;
     }
 
     /// <summary>オブジェクトをJSON形式でファイルに保存する</summary>
@@ -897,12 +995,14 @@ public static class FileInfoExtensions
     /// <param name="value">保存するオブジェクト</param>
     /// <param name="options">シリアライズオプション</param>
     /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>書き込みを行いレシーバ自身を返すタスク</returns>
     [RequiresUnreferencedCode("This uses JsonSerializer.")]
     [RequiresDynamicCode("This uses JsonSerializer.")]
-    public static async ValueTask WriteJsonAsync<TObject>(this FileInfo self, TObject value, JsonSerializerOptions? options = null, CancellationToken cancelToken = default)
+    public static async ValueTask<FileInfo> WriteJsonAsync<TObject>(this FileInfo self, TObject value, JsonSerializerOptions? options = null, CancellationToken cancelToken = default)
     {
         using var stream = self.CreateWrite();
         await JsonSerializer.SerializeAsync(stream, value, options, cancelToken).ConfigureAwait(false);
+        return self;
     }
 
     /// <summary>オブジェクトを整形したJSON形式でファイルに保存する</summary>
@@ -910,9 +1010,10 @@ public static class FileInfoExtensions
     /// <param name="self">保存先ファイル</param>
     /// <param name="value">保存するオブジェクト</param>
     /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>書き込みを行いレシーバ自身を返すタスク</returns>
     [RequiresUnreferencedCode("This uses JsonSerializer.")]
     [RequiresDynamicCode("This uses JsonSerializer.")]
-    public static ValueTask WritePrettyJsonAsync<TObject>(this FileInfo self, TObject value, CancellationToken cancelToken = default)
+    public static ValueTask<FileInfo> WritePrettyJsonAsync<TObject>(this FileInfo self, TObject value, CancellationToken cancelToken = default)
         => self.WriteJsonAsync(value, JsonPrettyWriteOptions, cancelToken);
 
     /// <summary>オブジェクトを整形したJSON形式でファイルに保存する</summary>
@@ -921,9 +1022,10 @@ public static class FileInfoExtensions
     /// <param name="value">保存するオブジェクト</param>
     /// <param name="ignoreNulls">nullプロパティを無視するか否か</param>
     /// <param name="cancelToken">キャンセルトークン</param>
+    /// <returns>書き込みを行いレシーバ自身を返すタスク</returns>
     [RequiresUnreferencedCode("This uses JsonSerializer.")]
     [RequiresDynamicCode("This uses JsonSerializer.")]
-    public static ValueTask WritePrettyJsonAsync<TObject>(this FileInfo self, TObject value, bool ignoreNulls, CancellationToken cancelToken = default)
+    public static ValueTask<FileInfo> WritePrettyJsonAsync<TObject>(this FileInfo self, TObject value, bool ignoreNulls, CancellationToken cancelToken = default)
         => self.WriteJsonAsync(value, ignoreNulls ? JsonPrettyNullIgnoreWriteOptions : JsonPrettyWriteOptions, cancelToken);
     #endregion
 

@@ -9,8 +9,8 @@ public static partial class EnumerableDataExtensions
     /// <param name="self">保存対象シーケンス</param>
     /// <param name="file">保存ファイル</param>
     /// <param name="cancelToken">キャンセルトークン</param>
-    /// <returns>書き込み処理タスク</returns>
-    public static ValueTask WriteAllLinesAsync(this IEnumerable<string> self, FileInfo file, CancellationToken cancelToken = default)
+    /// <returns>書き込みを行いレシーバ自身を返すタスク</returns>
+    public static ValueTask<FileInfo> WriteAllLinesAsync(this IEnumerable<string> self, FileInfo file, CancellationToken cancelToken = default)
     {
         return file.WriteAllLinesAsync(self, cancelToken);
     }

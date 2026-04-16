@@ -630,10 +630,11 @@ public class FileExtensionsTests
         var target = tempDir.Info.RelativeFile("test.txt");
 
         // テスト対象実行
-        target.WriteAllBytes(data);
+        var written = target.WriteAllBytes(data);
 
         // 検証
         File.ReadAllBytes(target.FullName).Should().Equal(data);
+        written.Should().Be(target);
     }
 
     [TestMethod]
@@ -649,10 +650,11 @@ public class FileExtensionsTests
         var target = tempDir.Info.RelativeFile("test.txt");
 
         // テスト対象実行
-        target.WriteAllBytes(data.AsSpan(), options: new() { Mode = FileMode.Create, BufferSize = 1, });
+        var written = target.WriteAllBytes(data.AsSpan(), options: new() { Mode = FileMode.Create, BufferSize = 1, });
 
         // 検証
         File.ReadAllBytes(target.FullName).Should().Equal(data);
+        written.Should().Be(target);
     }
 
     [TestMethod]
@@ -671,10 +673,11 @@ public class FileExtensionsTests
         File.WriteAllBytes(target.FullName, new byte[data.Length * 2]);
 
         // テスト対象実行
-        target.WriteAllBytes(data.AsSpan(), options: new() { Mode = FileMode.Create, BufferSize = 1, });
+        var written = target.WriteAllBytes(data.AsSpan(), options: new() { Mode = FileMode.Create, BufferSize = 1, });
 
         // 検証
         File.ReadAllBytes(target.FullName).Should().Equal(data);
+        written.Should().Be(target);
     }
 
     [TestMethod]
@@ -692,10 +695,11 @@ public class FileExtensionsTests
 
         // テスト対象実行
         stream.Position = 10;
-        target.WriteAllBytes(stream, options: new() { Mode = FileMode.Create, BufferSize = 1, });
+        var written = target.WriteAllBytes(stream, options: new() { Mode = FileMode.Create, BufferSize = 1, });
 
         // 検証
         File.ReadAllBytes(target.FullName).Should().Equal(data[10..]);
+        written.Should().Be(target);
     }
 
     [TestMethod]
@@ -711,10 +715,11 @@ public class FileExtensionsTests
         var target = tempDir.Info.RelativeFile("test.txt");
 
         // テスト対象実行
-        target.WriteAllText(text);
+        var written = target.WriteAllText(text);
 
         // 検証
         File.ReadAllText(target.FullName).Should().Be(text);
+        written.Should().Be(target);
     }
 
     [TestMethod]
@@ -731,10 +736,11 @@ public class FileExtensionsTests
         var target = tempDir.Info.RelativeFile("test.txt");
 
         // テスト対象実行
-        target.WriteAllText(text, enc);
+        var written = target.WriteAllText(text, enc);
 
         // 検証
         File.ReadAllText(target.FullName, enc).Should().Be(text);
+        written.Should().Be(target);
     }
 
     [TestMethod]
@@ -751,10 +757,33 @@ public class FileExtensionsTests
         var target = tempDir.Info.RelativeFile("test.txt");
 
         // テスト対象実行
-        target.WriteAllText(text.AsSpan(), encoding: enc, options: new() { Mode = FileMode.Create, BufferSize = 1, });
+        var written = target.WriteAllText(text.AsSpan(), encoding: enc, options: new() { Mode = FileMode.Create, BufferSize = 1, });
 
         // 検証
         File.ReadAllText(target.FullName, enc).Should().Be(text);
+        written.Should().Be(target);
+    }
+
+    [TestMethod]
+    public void WriteAllText_builder()
+    {
+        // テスト用に一時ディレクトリ
+        using var tempDir = new TempDir();
+
+        // テストデータ
+        var enc = Encoding.GetEncoding("euc-jp");   // BOMのような判別方法がないもの
+        var builder = new StringBuilder();
+        builder.Append("あいう\nえおか");
+
+        // テストファイル
+        var target = tempDir.Info.RelativeFile("test.txt");
+
+        // テスト対象実行
+        var written = target.WriteAllText(builder, encoding: enc, options: new() { Mode = FileMode.Create, BufferSize = 1, });
+
+        // 検証
+        File.ReadAllText(target.FullName, enc).Should().Be(builder.ToString());
+        written.Should().Be(target);
     }
 
     [TestMethod]
@@ -775,10 +804,11 @@ public class FileExtensionsTests
         var target = tempDir.Info.RelativeFile("test.txt");
 
         // テスト対象実行
-        target.WriteAllLines(texts);
+        var written = target.WriteAllLines(texts);
 
         // 検証
         File.ReadAllLines(target.FullName).Should().Equal(texts);
+        written.Should().Be(target);
     }
 
     [TestMethod]
@@ -800,10 +830,11 @@ public class FileExtensionsTests
         var target = tempDir.Info.RelativeFile("test.txt");
 
         // テスト対象実行
-        target.WriteAllLines(texts, enc);
+        var written = target.WriteAllLines(texts, enc);
 
         // 検証
         File.ReadAllLines(target.FullName, enc).Should().Equal(texts);
+        written.Should().Be(target);
     }
 
     [TestMethod]
@@ -820,10 +851,11 @@ public class FileExtensionsTests
         var target = tempDir.Info.RelativeFile("test.txt");
 
         // テスト対象実行
-        target.WriteMultilineText(['\r', '\n'], encoding, multiline);
+        var written = target.WriteMultilineText(['\r', '\n'], encoding, multiline);
 
         // 検証
         File.ReadAllBytes(target.FullName).Should().Equal("abc\r\ndef\r\nghi\r\njkl"u8.ToArray());
+        written.Should().Be(target);
     }
 
     [TestMethod]
@@ -839,10 +871,11 @@ public class FileExtensionsTests
         var target = tempDir.Info.RelativeFile("test.txt");
 
         // テスト対象実行
-        await target.WriteAllBytesAsync(data);
+        var written = await target.WriteAllBytesAsync(data);
 
         // 検証
         File.ReadAllBytes(target.FullName).Should().Equal(data);
+        written.Should().Be(target);
     }
 
     [TestMethod]
@@ -858,10 +891,11 @@ public class FileExtensionsTests
         var target = tempDir.Info.RelativeFile("test.txt");
 
         // テスト対象実行
-        await target.WriteAllBytesAsync(data, options: new() { Mode = FileMode.Create, BufferSize = 1, });
+        var written = await target.WriteAllBytesAsync(data, options: new() { Mode = FileMode.Create, BufferSize = 1, });
 
         // 検証
         File.ReadAllBytes(target.FullName).Should().Equal(data);
+        written.Should().Be(target);
     }
 
     [TestMethod]
@@ -879,10 +913,11 @@ public class FileExtensionsTests
 
         // テスト対象実行
         stream.Position = 10;
-        await target.WriteAllBytesAsync(stream, options: new() { Mode = FileMode.Create, BufferSize = 1, });
+        var written = await target.WriteAllBytesAsync(stream, options: new() { Mode = FileMode.Create, BufferSize = 1, });
 
         // 検証
         File.ReadAllBytes(target.FullName).Should().Equal(data[10..]);
+        written.Should().Be(target);
     }
 
     [TestMethod]
@@ -898,10 +933,11 @@ public class FileExtensionsTests
         var target = tempDir.Info.RelativeFile("test.txt");
 
         // テスト対象実行
-        await target.WriteAllTextAsync(text);
+        var written = await target.WriteAllTextAsync(text);
 
         // 検証
         File.ReadAllText(target.FullName).Should().Be(text);
+        written.Should().Be(target);
     }
 
     [TestMethod]
@@ -918,10 +954,11 @@ public class FileExtensionsTests
         var target = tempDir.Info.RelativeFile("test.txt");
 
         // テスト対象実行
-        await target.WriteAllTextAsync(text, enc);
+        var written = await target.WriteAllTextAsync(text, enc);
 
         // 検証
         File.ReadAllText(target.FullName, enc).Should().Be(text);
+        written.Should().Be(target);
     }
 
     [TestMethod]
@@ -942,10 +979,11 @@ public class FileExtensionsTests
         var target = tempDir.Info.RelativeFile("test.txt");
 
         // テスト対象実行
-        await target.WriteAllLinesAsync(texts);
+        var written = await target.WriteAllLinesAsync(texts);
 
         // 検証
         File.ReadAllLines(target.FullName).Should().Equal(texts);
+        written.Should().Be(target);
     }
 
     [TestMethod]
@@ -967,10 +1005,11 @@ public class FileExtensionsTests
         var target = tempDir.Info.RelativeFile("test.txt");
 
         // テスト対象実行
-        await target.WriteAllLinesAsync(texts, enc);
+        var written = await target.WriteAllLinesAsync(texts, enc);
 
         // 検証
         File.ReadAllLines(target.FullName, enc).Should().Equal(texts);
+        written.Should().Be(target);
     }
 
     [TestMethod]
@@ -992,10 +1031,11 @@ public class FileExtensionsTests
         var target = tempDir.Info.RelativeFile("test.txt");
 
         // テスト対象実行
-        await target.WriteAllLinesAsync(texts, enc);
+        var written = await target.WriteAllLinesAsync(texts, enc);
 
         // 検証
         File.ReadAllLines(target.FullName, enc).Should().Equal(texts);
+        written.Should().Be(target);
     }
 
     [TestMethod]
@@ -1012,10 +1052,11 @@ public class FileExtensionsTests
         var target = tempDir.Info.RelativeFile("test.txt");
 
         // テスト対象実行
-        await target.WriteMultilineTextAsync("\r\n", encoding, multiline.AsMemory());
+        var written = await target.WriteMultilineTextAsync("\r\n", encoding, multiline.AsMemory());
 
         // 検証
         File.ReadAllBytes(target.FullName).Should().Equal("abc\r\ndef\r\nghi\r\njkl"u8.ToArray());
+        written.Should().Be(target);
     }
 
     [TestMethod]
@@ -1080,7 +1121,7 @@ public class FileExtensionsTests
         target.WriteAllText(text);
 
         // テスト対象実行
-        target.UpdateAllLines((line, writer) =>
+        var written = target.UpdateAllLines((line, writer) =>
         {
             if (0 < line.Length)
             {
@@ -1092,6 +1133,7 @@ public class FileExtensionsTests
         // 検証
         var expect = "[aaa]\n[bbb]\r[ccc]\r\n[ddd]\n\r[eee]\n";
         File.ReadAllText(target.FullName).Should().Be(expect);
+        written.Should().Be(target);
     }
 
     [TestMethod]
@@ -1108,7 +1150,7 @@ public class FileExtensionsTests
         target.WriteAllText(text);
 
         // テスト対象実行
-        target.UpdateAllLines(lineBreak: "\r\n", updater: (line, writer) =>
+        var written = target.UpdateAllLines(lineBreak: "\r\n", updater: (line, writer) =>
         {
             if (0 < line.Length)
             {
@@ -1120,6 +1162,7 @@ public class FileExtensionsTests
         // 検証
         var expect = "[aaa]\r\n[bbb]\r\n[ccc]\r\n[ddd]\r\n\r\n[eee]\r\n";
         File.ReadAllText(target.FullName).Should().Be(expect);
+        written.Should().Be(target);
     }
 
     [TestMethod]
@@ -1136,7 +1179,7 @@ public class FileExtensionsTests
         target.WriteAllText(text);
 
         // テスト対象実行
-        target.UpdateAllLines(updater: (line, writer) =>
+        var written = target.UpdateAllLines(updater: (line, writer) =>
         {
             if (line is ['c', ..]) return false;
             if (0 < line.Length)
@@ -1149,6 +1192,7 @@ public class FileExtensionsTests
         // 検証
         var expect = "[aaa]\n[bbb]\r[ddd]\n\r[eee]\n";
         File.ReadAllText(target.FullName).Should().Be(expect);
+        written.Should().Be(target);
     }
 
     [TestMethod]
@@ -1166,7 +1210,7 @@ public class FileExtensionsTests
         target.WriteAllText(text, encoding: sjis);
 
         // テスト対象実行
-        target.UpdateAllLines(encoding: sjis, updater: (line, writer) =>
+        var written = target.UpdateAllLines(encoding: sjis, updater: (line, writer) =>
         {
             writer.Append(line);
             return true;
@@ -1176,6 +1220,7 @@ public class FileExtensionsTests
         var expect = sjis.GetBytes(text);
         var result = File.ReadAllBytes(target.FullName);
         result.Should().Equal(expect);
+        written.Should().Be(target);
     }
 
     [TestMethod]
@@ -1192,7 +1237,7 @@ public class FileExtensionsTests
         target.WriteAllText(text);
 
         // テスト対象実行
-        await target.UpdateAllLinesAsync((line, writer) =>
+        var written = await target.UpdateAllLinesAsync((line, writer) =>
         {
             if (0 < line.Length)
             {
@@ -1204,6 +1249,7 @@ public class FileExtensionsTests
         // 検証
         var expect = "[aaa]\n[bbb]\r[ccc]\r\n[ddd]\n\r[eee]\n";
         File.ReadAllText(target.FullName).Should().Be(expect);
+        written.Should().Be(target);
     }
 
     [TestMethod]
@@ -1220,7 +1266,7 @@ public class FileExtensionsTests
         target.WriteAllText(text);
 
         // テスト対象実行
-        await target.UpdateAllLinesAsync(lineBreak: "\r\n", updater: (line, writer) =>
+        var written = await target.UpdateAllLinesAsync(lineBreak: "\r\n", updater: (line, writer) =>
         {
             if (0 < line.Length)
             {
@@ -1232,6 +1278,7 @@ public class FileExtensionsTests
         // 検証
         var expect = "[aaa]\r\n[bbb]\r\n[ccc]\r\n[ddd]\r\n\r\n[eee]\r\n";
         File.ReadAllText(target.FullName).Should().Be(expect);
+        written.Should().Be(target);
     }
 
     [TestMethod]
@@ -1248,7 +1295,7 @@ public class FileExtensionsTests
         target.WriteAllText(text);
 
         // テスト対象実行
-        await target.UpdateAllLinesAsync(updater: (line, writer) =>
+        var written = await target.UpdateAllLinesAsync(updater: (line, writer) =>
         {
             if (line is ['c', ..]) return false;
             if (0 < line.Length)
@@ -1261,6 +1308,7 @@ public class FileExtensionsTests
         // 検証
         var expect = "[aaa]\n[bbb]\r[ddd]\n\r[eee]\n";
         File.ReadAllText(target.FullName).Should().Be(expect);
+        written.Should().Be(target);
     }
 
     [TestMethod]
@@ -1278,7 +1326,7 @@ public class FileExtensionsTests
         target.WriteAllText(text, encoding: sjis);
 
         // テスト対象実行
-        await target.UpdateAllLinesAsync(encoding: sjis, updater: (line, writer) =>
+        var written = await target.UpdateAllLinesAsync(encoding: sjis, updater: (line, writer) =>
         {
             writer.Append(line);
             return true;
@@ -1288,6 +1336,7 @@ public class FileExtensionsTests
         var expect = sjis.GetBytes(text);
         var result = File.ReadAllBytes(target.FullName);
         result.Should().Equal(expect);
+        written.Should().Be(target);
     }
 
     #endregion
