@@ -25,7 +25,7 @@ public static class AppBaseDir
 
     /// <summary>アプリケーションディレクトリからの相対パスで示されるディレクトリ情報を取得する。</summary>
     /// <param name="relativePath">相対パス</param>
-    /// <returns>対象ディレクトリパスの DirectoryInfo。相対パスが空や空白の場合は基準ディレクトリを返却。</returns>
+    /// <returns>対象ディレクトリパスの DirectoryInfo。相対パスが空や空白の場合はアプリケーションディレクトリを返却。</returns>
     public static DirectoryInfo RelativeDirectory(string? relativePath)
         => new(Path.Combine(AppContext.BaseDirectory, relativePath ?? ""));
 }
