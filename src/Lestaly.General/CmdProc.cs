@@ -130,7 +130,7 @@ public static class CmdProc
         // 実行完了した場合は終了コードが正常を示すか検証。正常でない場合は例外を送出。
         if (!validCodes.Contains(exit.Code))
         {
-            throw ex?.Invoke(exit.Code) ?? new CmdProcExitCodeException(exit.Code, "", message: $"Faild. ExitCode={exit.Code}");
+            throw ex?.Invoke(exit.Code) ?? new CmdProcExitCodeException(exit.Code, "", message: $"Failed. ExitCode={exit.Code}");
         }
 
         return exit.Code;
@@ -153,7 +153,7 @@ public static class CmdProc
         // 実行完了した場合は終了コードが正常を示すか検証。正常でない場合は例外を送出。
         if (!validCodes.Contains(result.ExitCode))
         {
-            throw ex?.Invoke(result.ExitCode) ?? new CmdProcExitCodeException(result.ExitCode, result.Output, message: $"Faild. ExitCode={result.ExitCode}");
+            throw ex?.Invoke(result.ExitCode) ?? new CmdProcExitCodeException(result.ExitCode, result.Output, message: $"Failed. ExitCode={result.ExitCode}");
         }
 
         return result;
@@ -355,7 +355,7 @@ public static class CmdProc
         // 実行完了した場合は終了コードが正常を示すか検証。正常でない場合は例外を送出。
         if (!validCodes.Contains(result.ExitCode))
         {
-            throw new CmdProcExitCodeException(result.ExitCode, result.Output, message: $"Faild. ExitCode={result.ExitCode}");
+            throw new CmdProcExitCodeException(result.ExitCode, result.Output, message: $"Failed. ExitCode={result.ExitCode}");
         }
 
         return result.Output;

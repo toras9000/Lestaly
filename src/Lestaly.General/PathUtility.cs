@@ -17,7 +17,7 @@ public static class PathUtility
     /// <summary>文字列が相対パスとして有効であるかを判定する</summary>
     /// <remarks>空や空白文字のみは無効とみなす。</remarks>
     /// <param name="text">対象文字列</param>
-    /// <returns>ファイル名として有効であるか否か</returns>
+    /// <returns>相対パスとして有効であるか否か</returns>
     public static bool IsValidRelativePath(string text)
         => !text.AsSpan().Trim().IsEmpty && text.IndexOfAny(InvalidRelativePathCharsCache) < 0;
 
@@ -80,7 +80,7 @@ public static class PathUtility
     {
         // 前後空白トリムした部分を用いる
         var name = text.AsSpan().Trim();
-        if (name.IsEmpty) throw new ArgumentException($"Invlid name.");
+        if (name.IsEmpty) throw new ArgumentException($"Invalid name.");
 
         // エスケープが必要だった場合に
         var builder = default(StringBuilder);

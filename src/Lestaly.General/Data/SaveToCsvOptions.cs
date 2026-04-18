@@ -1,7 +1,7 @@
 ﻿namespace Lestaly;
 
 /// <summary>
-/// CSV(Charactor Separated Field)テキスト保存オプション
+/// CSV(Character Separated Field)テキスト保存オプション
 /// </summary>
 public class SaveToCsvOptions : TypeColumnOptions
 {
