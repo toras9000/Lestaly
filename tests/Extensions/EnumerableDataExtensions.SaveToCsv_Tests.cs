@@ -159,6 +159,7 @@ public class EnumerableDataExtensions_SaveToCsv_Tests
             new { Text ="a,bc",  Decimal = 0.12, },
             new { Text ="de,f",  Decimal = 3.45, },
             new { Text =",ghi,", Decimal = 6.78, },
+            new { Text ="j\rkl\nm", Decimal = 9.01, },
         };
 
         // テスト対象実行
@@ -170,6 +171,7 @@ public class EnumerableDataExtensions_SaveToCsv_Tests
         expect += "\"a,bc\",0.12" + Environment.NewLine;
         expect += "\"de,f\",3.45" + Environment.NewLine;
         expect += "\",ghi,\",6.78" + Environment.NewLine;
+        expect += "\"j\rkl\nm\",9.01" + Environment.NewLine;
 
         // 検証
         File.ReadAllText(target.FullName).Should().Be(expect);

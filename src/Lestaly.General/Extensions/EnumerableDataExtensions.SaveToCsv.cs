@@ -174,6 +174,9 @@ public static partial class EnumerableDataExtensions
         {
             buffer!.Clear();
 
+            // クォート対象キャラクタ
+            var quoteChars = (stackalloc char[] { options.Separator, '\r', '\n', });
+
             // 各フィールドを
             var col = 0;
             foreach (var field in fields)
@@ -187,24 +190,25 @@ public static partial class EnumerableDataExtensions
                     continue;
                 }
 
-                // フィールドがセパレータキャラクタを含むかを判定
-                var pos = field.IndexOf(options.Separator);
-                if (pos < 0)
+                // フィールドがクォート対象キャラクタを含むかを判定
+                var pos = field.AsSpan().IndexOfAny(quoteChars);
+                if (0 <= pos)
                 {
-                    // 含まなければそのままをフィールドとして追加
+                    // クォートする
+                    buffer.Append(options.Quote);
+                    foreach (var c in field)
+                    {
+                        // クォートキャラクタ自信を含む場合は2個並べてエスケープする
+                        if (c == options.Quote) buffer.Append(options.Quote);
+                        buffer.Append(c);
+                    }
+                    buffer.Append(options.Quote);
+                }
+                else
+                {
+                    // クォートが必要ない場合はそのままをフィールドとして追加
                     buffer.Append(field);
-                    continue;
                 }
-
-                // セパレータを含む場合はクォートする
-                buffer.Append(options.Quote);
-                foreach (var c in field)
-                {
-                    // クォートキャラクタ自信を含む場合は2個並べてエスケープする
-                    if (c == options.Quote) buffer.Append(options.Quote);
-                    buffer.Append(c);
-                }
-                buffer.Append(options.Quote);
             }
 
             return buffer.ToString();
