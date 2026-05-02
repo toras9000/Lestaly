@@ -529,6 +529,129 @@ public class DirectoryInfoExtensionsTests
 
     #region Search
     [TestMethod]
+    public async Task EnumerateFilesByExtensions_recurse_false()
+    {
+        var testFiles = new[]
+        {
+            @"aaa.txt",
+            @"bbb.log",
+            @"ccc.md",
+            @"ddd.text",
+            @"abc/eee.txt",
+            @"def/fff.log",
+            @"ghi/ggg.text",
+        };
+
+        using var testDir = new TempDir();
+        foreach (var path in testFiles)
+        {
+            await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
+        }
+
+        var found = testDir.Info.EnumerateFilesByExtensions(["TXT", ".log"], recurse: false).Select(f => f.ReadAllText()).ToArray();
+        found.Should().BeEquivalentTo(new[]
+        {
+            @"aaa.txt",
+            @"bbb.log",
+        });
+    }
+
+    [TestMethod]
+    public async Task EnumerateFilesByExtensions_recurse_true()
+    {
+        var testFiles = new[]
+        {
+            @"aaa.txt",
+            @"bbb.log",
+            @"ccc.md",
+            @"ddd.text",
+            @"abc/eee.txt",
+            @"def/fff.log",
+            @"ghi/ggg.text",
+        };
+
+        using var testDir = new TempDir();
+        foreach (var path in testFiles)
+        {
+            await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
+        }
+
+        var found = testDir.Info.EnumerateFilesByExtensions(["TXT", ".log"], recurse: true).Select(f => f.ReadAllText()).ToArray();
+        found.Should().BeEquivalentTo(new[]
+        {
+            @"aaa.txt",
+            @"bbb.log",
+            @"abc/eee.txt",
+            @"def/fff.log",
+        });
+    }
+
+    [TestMethod]
+    public async Task EnumerateFilesByExtensions_options_none()
+    {
+        var testFiles = new[]
+        {
+            @"aaa.txt",
+            @"bbb.log",
+            @"ccc.md",
+            @"ddd.text",
+            @"abc/eee.txt",
+            @"def/fff.log",
+            @"ghi/ggg.text",
+        };
+
+        using var testDir = new TempDir();
+        foreach (var path in testFiles)
+        {
+            await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
+        }
+
+        var options = new EnumerationOptions();
+        options.MatchCasing = MatchCasing.CaseSensitive;
+        options.MatchType = MatchType.Simple;
+        options.RecurseSubdirectories = true;
+        options.ReturnSpecialDirectories = false;
+        options.AttributesToSkip = FileAttributes.None;
+
+        var found = testDir.Info.EnumerateFilesByExtensions(["TXT", ".log"], options).Select(f => f.ReadAllText()).ToArray();
+        found.Should().BeEquivalentTo(new[]
+        {
+            @"bbb.log",
+            @"def/fff.log",
+        });
+    }
+
+    [TestMethod]
+    public async Task EnumerateFilesByExtensions_options_casing()
+    {
+        var testFiles = new[]
+        {
+            @"aaa.txt",
+            @"bbb.log",
+            @"ccc.md",
+            @"ddd.text",
+            @"abc/eee.txt",
+            @"def/fff.log",
+            @"ghi/ggg.text",
+        };
+
+        using var testDir = new TempDir();
+        foreach (var path in testFiles)
+        {
+            await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
+        }
+
+        var found = testDir.Info.EnumerateFilesByExtensions(["TXT", ".log"], recurse: true).Select(f => f.ReadAllText()).ToArray();
+        found.Should().BeEquivalentTo(new[]
+        {
+            @"aaa.txt",
+            @"bbb.log",
+            @"abc/eee.txt",
+            @"def/fff.log",
+        });
+    }
+
+    [TestMethod]
     public async Task VisitFiles_TopOnly()
     {
         // 再帰フラグOFFでのファイル列挙処理

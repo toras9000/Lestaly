@@ -430,6 +430,63 @@ public static class DirectoryInfoExtensions
     #endregion
 
     #region Search
+    /// <summary>全ファイルを列挙し、指定の拡張子でフィルタする</summary>
+    /// <remarks>
+    /// このメソッドでは以下の検索条件を用いる。
+    /// <list>
+    /// <item>拡張子の大文字・小文字を区別しない</item>
+    /// <item>すべての属性のファイルを列挙する</item>
+    /// <item>特殊ディレクトリを列挙しない</item>
+    /// </list>
+    /// </remarks>
+    /// <param name="self">起点ディレクトリ</param>
+    /// <param name="extensions">列挙対象拡張子リスト</param>
+    /// <param name="recurse">再帰列挙を行うか否か</param>
+    /// <returns>ファイル列挙シーケンス</returns>
+    public static IEnumerable<FileInfo> EnumerateFilesByExtensions(this DirectoryInfo self, IEnumerable<string> extensions, bool recurse)
+    {
+        var options = new EnumerationOptions();
+        options.MatchCasing = MatchCasing.CaseInsensitive;
+        options.MatchType = MatchType.Simple;
+        options.RecurseSubdirectories = recurse;
+        options.ReturnSpecialDirectories = false;
+        options.AttributesToSkip = FileAttributes.None;
+
+        return self.EnumerateFilesByExtensions(extensions, options);
+    }
+
+    /// <summary>全ファイルを列挙し、指定の拡張子でフィルタする</summary>
+    /// <param name="self">起点ディレクトリ</param>
+    /// <param name="extensions">列挙対象拡張子リスト</param>
+    /// <param name="options">検索オプション</param>
+    /// <returns>ファイル列挙シーケンス</returns>
+    public static IEnumerable<FileInfo> EnumerateFilesByExtensions(this DirectoryInfo self, IEnumerable<string> extensions, EnumerationOptions? options = null)
+    {
+        ArgumentNullException.ThrowIfNull(self);
+        ArgumentNullException.ThrowIfNull(extensions);
+
+        // 拡張子のキャラクタケーシングを選択
+        var extComparer = StringComparer.OrdinalIgnoreCase;
+        if (options != null)
+        {
+            extComparer = options.MatchCasing switch
+            {
+                MatchCasing.CaseSensitive => StringComparer.Ordinal,
+                MatchCasing.CaseInsensitive => StringComparer.OrdinalIgnoreCase,
+                _ => OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal,
+            };
+        }
+
+        // 拡張子の判定ハッシュ生成
+        var targetExts = extensions.Select(e => e.EnsureStarts(".")).ToHashSet(extComparer);
+
+        // ファイル列挙シーケンス作成
+        var enumFiles = options == null ? self.EnumerateFiles("*") : self.EnumerateFiles("*", enumerationOptions: options);
+
+        // 拡張子フィルタしたシーケンスを返却
+        return enumFiles.Where(f => targetExts.Contains(f.Extension));
+    }
+
     /// <summary>ディレクトリ配下のファイル/ディレクトリを検索して変換処理を行う</summary>
     /// <remarks>
     /// ディレクトリ内を列挙する際は最初にファイルを列挙し、オプションで指定されていれば次にサブディレクトリを列挙する。
