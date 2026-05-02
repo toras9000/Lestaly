@@ -2,29 +2,27 @@
 
 namespace Lestaly.Cx;
 
-/// <summary>
-/// コマンドをシンプルに実行するための拡張メソッド
-/// </summary>
+/// <summary>コマンドをシンプルに実行するための拡張メソッド</summary>
 [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:命名スタイル", Justification = "このクラスでは意図的に小文字メソッドを使っている")]
 public static class CmdFileInfoExtensions
 {
-    // コンパイラのバグ？により、拡張メンバ書式だと nullable 警告が出てしまうので旧形式の記述をしている。
-    /// <summary>ファイルを実行ファイルとみなして指定の引数でプロセス実行準備を行う</summary>
+    /// <summary>ファイル情報に対する拡張メンバ</summary>
     /// <param name="self">コマンド実行結果を得るファイル</param>
-    /// <param name="arguments">引数リスト</param>
-    /// <returns>コマンド実行準備インスタンス</returns>
-    public static CmdCx args(this FileInfo self, params ArgCx[] arguments)
-        => new(self.FullName, arguments);
-
-    /// <summary>ファイルを実行ファイルとみなしてプロセスを実行し、指定の終了コードを正常とする検証を行う</summary>
-    /// <param name="self">コマンド実行結果を得るファイル</param>
-    /// <param name="codes">正常とみなす終了コード。指定しない場合はゼロのみを正常とみなす。正常以外の終了コードの場合は例外を送出する。</param>
-    /// <returns>コマンドの実行結果(出力と終了コード)を得るタスク。正常終了コードの場合のみ結果を得られる。</returns>
-    public static Task<CmdResult> success(this FileInfo self, params int[] codes)
-        => new CmdCx(self.FullName, []).result().success(codes);
-
     extension(FileInfo self)
     {
+        // コンパイラのバグ？により、拡張メンバ書式だと nullable 警告が出てしまうので旧形式の記述をしている。
+        /// <summary>ファイルを実行ファイルとみなして指定の引数でプロセス実行準備を行う</summary>
+        /// <param name="arguments">引数リスト</param>
+        /// <returns>コマンド実行準備インスタンス</returns>
+        public CmdCx args(params ArgCx[] arguments)
+            => new(self.FullName, arguments);
+
+        /// <summary>ファイルを実行ファイルとみなしてプロセスを実行し、指定の終了コードを正常とする検証を行う</summary>
+        /// <param name="codes">正常とみなす終了コード。指定しない場合はゼロのみを正常とみなす。正常以外の終了コードの場合は例外を送出する。</param>
+        /// <returns>コマンドの実行結果(出力と終了コード)を得るタスク。正常終了コードの場合のみ結果を得られる。</returns>
+        public Task<CmdResult> success(params int[] codes)
+            => new CmdCx(self.FullName, []).result().success(codes);
+
         /// <summary>ファイルを実行ファイルとみなしてプロセスを実行する</summary>
         /// <returns>コマンドの実行結果(出力と終了コード)を得るタスク。終了コードは検証されない。</returns>
         public Task<CmdResult> launch()
