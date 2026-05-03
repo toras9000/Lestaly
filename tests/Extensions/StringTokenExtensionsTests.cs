@@ -39,6 +39,26 @@ public class StringTokenExtensionsTests
     }
 
     [TestMethod]
+    public void TakeLineRaw()
+    {
+        "abcdef".TakeLineRaw().ToString().Should().Be("abcdef");
+        "abc\ndef".TakeLineRaw().ToString().Should().Be("abc\n");
+        "aaa\rbbb".TakeLineRaw().ToString().Should().Be("aaa\r");
+        "xyz\r\nabc".TakeLineRaw().ToString().Should().Be("xyz\r\n");
+        "".TakeLineRaw().ToString().Should().BeEmpty();
+        default(string).TakeLineRaw().ToString().Should().BeEmpty();
+        "aaa\rbbb\nccc".AsSpan().TakeLineRaw().ToString().Should().Be("aaa\r");
+
+        "\n".TakeLineRaw().ToString().Should().Be("\n");
+        "abc\n".TakeLineRaw().ToString().Should().Be("abc\n");
+        "abc\r".TakeLineRaw().ToString().Should().Be("abc\r");
+        "abc\r\n".TakeLineRaw().ToString().Should().Be("abc\r\n");
+        "\nabc".TakeLineRaw().ToString().Should().Be("\n");
+        "\rabc".TakeLineRaw().ToString().Should().Be("\r");
+        "\r\nabc".TakeLineRaw().ToString().Should().Be("\r\n");
+    }
+
+    [TestMethod]
     public void TakeLastLine()
     {
         "abc\ndef".TakeLastLine(trim: true).ToString().Should().Be("def");
@@ -154,6 +174,36 @@ public class StringTokenExtensionsTests
             var line = "\nabc\n\ndef\n\nghi".AsMemory().TakeSkipLine(out var next, trim: true);
             line.ToString().Should().Be("abc");
             next.ToString().Should().Be("def\n\nghi");
+        }
+    }
+
+    [TestMethod]
+    public void TakeSkipLineRaw()
+    {
+        {
+            var line = "\nabc\n\ndef\n\nghi".TakeSkipLineRaw(out var next);
+            line.ToString().Should().Be("\n");
+            next.ToString().Should().Be("abc\n\ndef\n\nghi");
+        }
+        {
+            var line = "\r\nabc\r\n\n\rdef\r\nghi".TakeSkipLineRaw(out var next);
+            line.ToString().Should().Be("\r\n");
+            next.ToString().Should().Be("abc\r\n\n\rdef\r\nghi");
+        }
+        {
+            var line = "\r\n\r\n".TakeSkipLineRaw(out var next);
+            line.ToString().Should().Be("\r\n");
+            next.ToString().Should().Be("\r\n");
+        }
+        {
+            var line = "".TakeSkipLineRaw(out var next);
+            line.ToString().Should().Be("");
+            next.ToString().Should().Be("");
+        }
+        {
+            var line = "\nabc\n\ndef\n\nghi".AsSpan().TakeSkipLineRaw(out var next);
+            line.ToString().Should().Be("\n");
+            next.ToString().Should().Be("abc\n\ndef\n\nghi");
         }
     }
 

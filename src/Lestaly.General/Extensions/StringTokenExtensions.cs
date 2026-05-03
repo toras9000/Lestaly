@@ -64,6 +64,36 @@ public static class StringTokenExtensions
 
         return body;
     }
+
+    /// <summary>文字列の最初の行を改行込みで取得する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <returns>最初の行文字列</returns>
+    public static ReadOnlySpan<char> TakeLineRaw(this string? self)
+    => self.AsSpan().TakeLineRaw();
+
+    /// <summary>文字列の最初の行を改行込みで取得する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <returns>最初の行文字列</returns>
+    public static ReadOnlySpan<char> TakeLineRaw(this ReadOnlySpan<char> self)
+    {
+        var body = self;
+
+        // 空でない場合のみ取り出しを行う
+        if (!body.IsEmpty)
+        {
+            // 最初の改行位置を検索
+            var breakIdx = body.IndexOfAny(LineBreakChars);
+            if (0 <= breakIdx)
+            {
+                // 改行前までの Span を取得
+                var breakLen = body[breakIdx..] is ['\r', '\n', ..] ? 2 : 1;
+                body = body[..(breakIdx + breakLen)];
+            }
+        }
+
+        return body;
+    }
+
     #endregion
 
     #region TakeLastLine
@@ -301,6 +331,52 @@ public static class StringTokenExtensions
 
                 // 改行前までの Span を取得
                 body = body[..breakIdx];
+            }
+        }
+
+        return body;
+    }
+
+    /// <summary>>文字列の最初の行(改行込み)とその後方を取得する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="next">最初の行の後ろの文字列</param>
+    /// <returns>最初の行文字列</returns>
+    public static ReadOnlySpan<char> TakeSkipLineRaw(this string? self, out ReadOnlySpan<char> next)
+        => self.AsSpan().TakeSkipLineRaw(out next);
+
+    /// <summary>>文字列の最初の行(改行込み)とその後方を取得する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <param name="next">最初の行の後ろの文字列</param>
+    /// <returns>最初の行文字列</returns>
+    public static ReadOnlySpan<char> TakeSkipLineRaw(this ReadOnlySpan<char> self, out ReadOnlySpan<char> next)
+    {
+        var body = self;
+
+        // 空であるか
+        if (body.IsEmpty)
+        {
+            // 後方文字列も同じにしておく
+            next = body;
+        }
+        else
+        {
+            // 最初の改行位置を検索
+            var breakIdx = body.IndexOfAny(LineBreakChars);
+            if (breakIdx < 0)
+            {
+                next = body[body.Length..];
+            }
+            else
+            {
+                // 改行キャラクタ長の判別
+                var breakLen = body[breakIdx..] is ['\r', '\n', ..] ? 2 : 1;
+
+                // 改行の後ろの Span を取得
+                var takeLen = breakIdx + breakLen;
+                next = body[takeLen..];
+
+                // 改行までの Span を取得
+                body = body[..takeLen];
             }
         }
 
