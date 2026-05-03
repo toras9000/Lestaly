@@ -4,12 +4,11 @@ using System.Text.Json.Nodes;
 
 namespace Lestaly;
 
-
-/// <summary>
-/// Json 関連の拡張メソッド
-/// </summary>
+/// <summary>Json 関連の拡張メソッド</summary>
 public static class JsonExtensions
 {
+    /// <summary>JsonNode に対する拡張メソッド</summary>
+    /// <param name="self">対象の JsonNode</param>
     extension(JsonNode self)
     {
         /// <summary>オブジェクトプロパティをソートした複製を生成する</summary>
@@ -179,6 +178,8 @@ public static class JsonExtensions
         #endregion
     }
 
+    /// <summary>JsonArray に対する拡張メソッド</summary>
+    /// <param name="self">対象の JsonArray</param>
     extension(JsonArray self)
     {
         /// <summary>オブジェクトプロパティをソートした複製を生成する</summary>
@@ -187,6 +188,8 @@ public static class JsonExtensions
             => new JsonArray(self.Select(e => e?.ToSorted()).ToArray());
     }
 
+    /// <summary>JsonObject に対する拡張メソッド</summary>
+    /// <param name="self">対象の JsonObject</param>
     extension(JsonObject self)
     {
         /// <summary>オブジェクトプロパティをソートした複製を生成する</summary>
@@ -195,6 +198,8 @@ public static class JsonExtensions
             => new JsonObject(self.OrderBy(p => p.Key).Select(p => KeyValuePair.Create(p.Key, p.Value?.ToSorted())).ToArray());
     }
 
+    /// <summary>JsonElement に対する拡張メソッド</summary>
+    /// <param name="self">対象の JsonElement</param>
     extension(JsonElement self)
     {
         /// <summary>オブジェクトプロパティをソートしたJsonNodeを生成する</summary>

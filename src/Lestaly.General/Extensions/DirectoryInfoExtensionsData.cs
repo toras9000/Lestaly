@@ -40,9 +40,7 @@ public record VisitFilesHandling(bool File = true, bool Directory = false)
     public static readonly VisitFilesHandling OnlyDirectory = new(File: false, Directory: true);
 }
 
-/// <summary>
-/// 列挙処理でのファイル/ディレクトリに対する処理情報
-/// </summary>
+/// <summary>列挙処理でのファイル/ディレクトリに対する処理情報</summary>
 /// <remarks>
 /// この情報はファイル列挙処理にて、ファイルまたはディレクトリに対する処理デリゲートのパラメータとして渡される。
 /// 処理デリゲートではこのオブジェクトに対してフラグを設定することで列挙動作の中断を指示することができる。
@@ -71,9 +69,7 @@ public interface IVisitFilesContext
     bool IsFile => this.File != null;
 }
 
-/// <summary>
-/// 列挙処理でのファイル/ディレクトリに対する処理情報と結果設定
-/// </summary>
+/// <summary>列挙処理でのファイル/ディレクトリに対する処理情報と結果設定</summary>
 public interface IVisitFilesContext<TResult> : IVisitFilesContext
 {
     /// <summary>列挙対象のファイル/ディレクトリに対する処理結果を設定する。</summary>

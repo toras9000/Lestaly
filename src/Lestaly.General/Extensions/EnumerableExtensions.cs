@@ -1,257 +1,245 @@
 ﻿namespace Lestaly;
 
-/// <summary>
-/// IEnumerable{T} に対する拡張メソッド
-/// </summary>
+/// <summary>IEnumerable{T} に対する拡張メソッド</summary>
 public static class EnumerableExtensions
 {
-    /// <summary>シーケンス要素型のデフォルト値を取得する。</summary>
+    /// <summary>IEnumerable{T} に対する拡張メソッド</summary>
     /// <typeparam name="TSource">シーケンスの要素型</typeparam>
     /// <param name="self">対象シーケンス</param>
-    /// <returns>要素型のデフォルト値</returns>
-    public static TSource? ElementDefault<TSource>(this IEnumerable<TSource> self)
-        => default;
-
-    /// <summary>シーケンスのフィルタと条件に適合しない場合のアクションを指定するオペレータ。</summary>
-    /// <typeparam name="TSource">シーケンスの要素型</typeparam>
-    /// <param name="self">対象シーケンス</param>
-    /// <param name="predicate">要素の通過判定処理</param>
-    /// <param name="skipped">要素が通過しない場合に呼び出される処理</param>
-    /// <returns>フィルタされたシーケンス</returns>
-    public static IEnumerable<TSource> WhereElse<TSource>(this IEnumerable<TSource> self, Func<TSource, bool> predicate, Action<TSource> skipped)
+    extension<TSource>(IEnumerable<TSource> self)
     {
-        foreach (var item in self)
+        /// <summary>シーケンス要素型のデフォルト値を取得する。</summary>
+        /// <returns>要素型のデフォルト値</returns>
+        public TSource? ElementDefault()
+            => default;
+
+        /// <summary>シーケンスのフィルタと条件に適合しない場合のアクションを指定するオペレータ。</summary>
+        /// <param name="predicate">要素の通過判定処理</param>
+        /// <param name="skipped">要素が通過しない場合に呼び出される処理</param>
+        /// <returns>フィルタされたシーケンス</returns>
+        public IEnumerable<TSource> WhereElse(Func<TSource, bool> predicate, Action<TSource> skipped)
         {
-            if (predicate(item))
+            foreach (var item in self)
             {
-                yield return item;
-            }
-            else
-            {
-                skipped(item);
-            }
-        }
-    }
-
-    /// <summary>シーケンスインスタンスがnullならば空のシーケンスを代替とする</summary>
-    /// <typeparam name="TSource">シーケンスの要素型</typeparam>
-    /// <param name="self">対象シーケンス</param>
-    /// <returns>元のシーケンスまたは空のシーケンス</returns>
-    public static IEnumerable<TSource> CoalesceEmpty<TSource>(this IEnumerable<TSource>? self)
-    {
-        return self ?? Enumerable.Empty<TSource>();
-    }
-
-    /// <summary>シーケンスが空の場合にエラー(例外発行)とする</summary>
-    /// <typeparam name="TSource">シーケンスの要素型</typeparam>
-    /// <param name="self">対象シーケンス</param>
-    /// <param name="errorGenerator">空の場合のエラー(例外)インスタンス生成デリゲート</param>
-    /// <returns>エラーの無い場合は元と同じシーケンス</returns>
-    public static IEnumerable<TSource> ErrorIfEmpty<TSource>(this IEnumerable<TSource>? self, Func<Exception>? errorGenerator = null)
-    {
-        var exists = false;
-        if (self != null)
-        {
-            foreach (var elem in self)
-            {
-                yield return elem;
-                exists = true;
-            }
-        }
-        if (!exists)
-        {
-            throw errorGenerator?.Invoke() ?? new InvalidDataException();
-        }
-    }
-
-    /// <summary>シーケンス要素が条件を満たさない場合にエラー(例外発行)とする</summary>
-    /// <typeparam name="TSource"></typeparam>
-    /// <param name="self">シーケンスの要素型</param>
-    /// <param name="predicator">条件を満たすかを判定するデリゲート</param>
-    /// <param name="errorGenerator">条件を満たさない場合のエラー(例外)インスタンス生成デリゲート</param>
-    /// <returns>エラーの無い場合は元と同じシーケンス</returns>
-    public static IEnumerable<TSource> Must<TSource>(this IEnumerable<TSource> self, Func<TSource, bool> predicator, Func<Exception>? errorGenerator = null)
-    {
-        ArgumentNullException.ThrowIfNull(self);
-        ArgumentNullException.ThrowIfNull(predicator);
-
-        IEnumerable<TSource> mustEnumerator()
-        {
-            foreach (var elem in self)
-            {
-                if (!predicator(elem))
-                {
-                    throw errorGenerator?.Invoke() ?? new InvalidDataException();
-                }
-                yield return elem;
-            }
-        }
-        return mustEnumerator();
-    }
-
-    /// <summary>配列内容を繰り返した新しいシーケンスを生成する</summary>
-    /// <typeparam name="TSource">要素型</typeparam>
-    /// <param name="self">元にするシーケンス</param>
-    /// <param name="count">繰り返し回数</param>
-    /// <returns>元の配列内容が繰り返された配列</returns>
-    public static IEnumerable<TSource> Repetition<TSource>(this IEnumerable<TSource> self, int count)
-    {
-        if (count < 0) throw new ArgumentException($"Invalid {nameof(count)}");
-
-        static IEnumerable<T> repeated<T>(IEnumerable<T> source, int repeat)
-        {
-            for (var i = 0; i < repeat; i++)
-            {
-                foreach (var item in source)
+                if (predicate(item))
                 {
                     yield return item;
                 }
+                else
+                {
+                    skipped(item);
+                }
             }
         }
 
-        return repeated(self, count);
-    }
-
-    /// <summary>シーケンス要素に対して処理を呼び出す。</summary>
-    /// <remarks>IxのDo()などと同じもの。</remarks>
-    /// <param name="self">文字列のシーケンス</param>
-    /// <param name="visit">呼び出す処理</param>
-    /// <returns>元のシーケンスそのまま</returns>
-    public static IEnumerable<TSource> Alley<TSource>(this IEnumerable<TSource> self, Action<TSource> visit)
-    {
-        foreach (var item in self)
+        /// <summary>シーケンス要素が条件を満たさない場合にエラー(例外発行)とする</summary>
+        /// <param name="predicator">条件を満たすかを判定するデリゲート</param>
+        /// <param name="errorGenerator">条件を満たさない場合のエラー(例外)インスタンス生成デリゲート</param>
+        /// <returns>エラーの無い場合は元と同じシーケンス</returns>
+        public IEnumerable<TSource> Must(Func<TSource, bool> predicator, Func<Exception>? errorGenerator = null)
         {
-            visit(item);
-            yield return item;
-        }
-    }
+            ArgumentNullException.ThrowIfNull(self);
+            ArgumentNullException.ThrowIfNull(predicator);
 
-    /// <summary>行文字列のシーケンスを分割行によって分割する</summary>
-    /// <param name="self">行文字列のシーケンス</param>
-    /// <param name="separator">セパレータ行判定処理</param>
-    /// <returns>分割された行のあつまりのシーケンス</returns>
-    public static IEnumerable<string[]> Divide(this IEnumerable<string> self, Func<string, bool> separator)
-    {
-        var list = new List<string>();
-        foreach (var item in self)
-        {
-            if (separator(item))
+            IEnumerable<TSource> mustEnumerator()
             {
-                if (0 < list.Count) yield return list.ToArray();
-                list.Clear();
-                continue;
+                foreach (var elem in self)
+                {
+                    if (!predicator(elem))
+                    {
+                        throw errorGenerator?.Invoke() ?? new InvalidDataException();
+                    }
+                    yield return elem;
+                }
+            }
+            return mustEnumerator();
+        }
+
+        /// <summary>配列内容を繰り返した新しいシーケンスを生成する</summary>
+        /// <param name="count">繰り返し回数</param>
+        /// <returns>元の配列内容が繰り返された配列</returns>
+        public IEnumerable<TSource> Repetition(int count)
+        {
+            if (count < 0) throw new ArgumentException($"Invalid {nameof(count)}");
+
+            static IEnumerable<T> repeated<T>(IEnumerable<T> source, int repeat)
+            {
+                for (var i = 0; i < repeat; i++)
+                {
+                    foreach (var item in source)
+                    {
+                        yield return item;
+                    }
+                }
             }
 
-            list.Add(item);
+            return repeated(self, count);
         }
-        yield return list.ToArray();
+
+        /// <summary>シーケンス要素に対して処理を呼び出す。</summary>
+        /// <remarks>IxのDo()などと同じもの。</remarks>
+        /// <param name="visit">呼び出す処理</param>
+        /// <returns>元のシーケンスそのまま</returns>
+        public IEnumerable<TSource> Alley(Action<TSource> visit)
+        {
+            foreach (var item in self)
+            {
+                visit(item);
+                yield return item;
+            }
+        }
+
+        /// <summary>シーケンスを非同期シーケンス型に変換する</summary>
+        /// <remarks>型は IAsyncEnumerable となるが、列挙は同期的であるため型合わせだけの意味の変換となる。</remarks>
+        /// <returns>非同期シーケンス</returns>
+        public IAsyncEnumerable<TSource> ToPseudoAsyncEnumerable()
+        {
+            ArgumentNullException.ThrowIfNull(self);
+
+            static async IAsyncEnumerable<T> enumerateAsync<T>(IEnumerable<T> source)
+            {
+                foreach (var item in source)
+                {
+                    yield return await Task.FromResult(item).ConfigureAwait(false);
+                }
+            }
+
+            return enumerateAsync(self);
+        }
     }
 
-    /// <summary>前後空白や大文字/小文字の区別なく文字列が含まれているかを判定する。</summary>
-    /// <param name="self">文字列のシーケンス</param>
-    /// <param name="text">判定する文字列</param>
-    /// <returns>含まれているか否か</returns>
-    public static bool RoughContains(this IEnumerable<string> self, string text)
-    {
-        var core = text.AsMemory().Trim();
-        return self.Any(e => core.Span.Equals(e.AsSpan().Trim(), StringComparison.OrdinalIgnoreCase));
-    }
-
-    /// <summary>前後空白や大文字/小文字の区別なく文字列が含まれているかを判定する。</summary>
-    /// <param name="self">文字列のシーケンス</param>
-    /// <param name="texts">判定する文字列のリスト</param>
-    /// <returns>含まれているか否か</returns>
-    public static bool RoughContainsAny(this IEnumerable<string> self, IEnumerable<string> texts)
-    {
-        return self.Any(t => t.RoughAny(texts));
-    }
-
-    /// <summary>シーケンスの先頭から要素を分解する</summary>
-    /// <typeparam name="TSource">要素の型</typeparam>
-    /// <param name="self">対象シーケンス</param>
-    /// <param name="value1">シーケンス要素1</param>
-    /// <param name="value2">シーケンス要素2</param>
-    public static void Deconstruct<TSource>(this IEnumerable<TSource>? self, out TSource? value1, out TSource? value2)
-    {
-        ArgumentNullException.ThrowIfNull(self);
-
-        using var enumerator = self.GetEnumerator();
-        value1 = enumerator.MoveNext() ? enumerator.Current : default;
-        value2 = enumerator.MoveNext() ? enumerator.Current : default;
-    }
-
-    /// <summary>シーケンスの先頭から要素を分解する</summary>
-    /// <typeparam name="TSource">要素の型</typeparam>
-    /// <param name="self">対象シーケンス</param>
-    /// <param name="value1">シーケンス要素1</param>
-    /// <param name="value2">シーケンス要素2</param>
-    /// <param name="value3">シーケンス要素3</param>
-    public static void Deconstruct<TSource>(this IEnumerable<TSource>? self, out TSource? value1, out TSource? value2, out TSource? value3)
-    {
-        ArgumentNullException.ThrowIfNull(self);
-
-        using var enumerator = self.GetEnumerator();
-        value1 = enumerator.MoveNext() ? enumerator.Current : default;
-        value2 = enumerator.MoveNext() ? enumerator.Current : default;
-        value3 = enumerator.MoveNext() ? enumerator.Current : default;
-    }
-
-    /// <summary>シーケンスの先頭から要素を分解する</summary>
-    /// <typeparam name="TSource">要素の型</typeparam>
-    /// <param name="self">対象シーケンス</param>
-    /// <param name="value1">シーケンス要素1</param>
-    /// <param name="value2">シーケンス要素2</param>
-    /// <param name="value3">シーケンス要素3</param>
-    /// <param name="value4">シーケンス要素4</param>
-    public static void Deconstruct<TSource>(this IEnumerable<TSource>? self, out TSource? value1, out TSource? value2, out TSource? value3, out TSource? value4)
-    {
-        ArgumentNullException.ThrowIfNull(self);
-
-        using var enumerator = self.GetEnumerator();
-        value1 = enumerator.MoveNext() ? enumerator.Current : default;
-        value2 = enumerator.MoveNext() ? enumerator.Current : default;
-        value3 = enumerator.MoveNext() ? enumerator.Current : default;
-        value4 = enumerator.MoveNext() ? enumerator.Current : default;
-    }
-
-    /// <summary>シーケンスの先頭から要素を分解する</summary>
-    /// <typeparam name="TSource">要素の型</typeparam>
-    /// <param name="self">対象シーケンス</param>
-    /// <param name="value1">シーケンス要素1</param>
-    /// <param name="value2">シーケンス要素2</param>
-    /// <param name="value3">シーケンス要素3</param>
-    /// <param name="value4">シーケンス要素4</param>
-    /// <param name="value5">シーケンス要素5</param>
-    public static void Deconstruct<TSource>(this IEnumerable<TSource>? self, out TSource? value1, out TSource? value2, out TSource? value3, out TSource? value4, out TSource? value5)
-    {
-        ArgumentNullException.ThrowIfNull(self);
-
-        using var enumerator = self.GetEnumerator();
-        value1 = enumerator.MoveNext() ? enumerator.Current : default;
-        value2 = enumerator.MoveNext() ? enumerator.Current : default;
-        value3 = enumerator.MoveNext() ? enumerator.Current : default;
-        value4 = enumerator.MoveNext() ? enumerator.Current : default;
-        value5 = enumerator.MoveNext() ? enumerator.Current : default;
-    }
-
-    /// <summary>シーケンスを非同期シーケンス型に変換する</summary>
-    /// <remarks>型は IAsyncEnumerable となるが、列挙は同期的であるため型合わせだけの意味の変換となる。</remarks>
+    /// <summary>IEnumerable{T} に対する拡張メソッド</summary>
     /// <typeparam name="TSource">シーケンスの要素型</typeparam>
-    /// <param name="self">元になるシーケンス</param>
-    /// <returns>非同期シーケンス</returns>
-    public static IAsyncEnumerable<TSource> ToPseudoAsyncEnumerable<TSource>(this IEnumerable<TSource> self)
+    /// <param name="self">対象シーケンス</param>
+    extension<TSource>(IEnumerable<TSource>? self)
     {
-        ArgumentNullException.ThrowIfNull(self);
-
-        static async IAsyncEnumerable<T> enumerateAsync<T>(IEnumerable<T> source)
+        /// <summary>シーケンスインスタンスがnullならば空のシーケンスを代替とする</summary>
+        /// <returns>元のシーケンスまたは空のシーケンス</returns>
+        public IEnumerable<TSource> CoalesceEmpty()
         {
-            foreach (var item in source)
+            return self ?? Enumerable.Empty<TSource>();
+        }
+
+        /// <summary>シーケンスが空の場合にエラー(例外発行)とする</summary>
+        /// <param name="errorGenerator">空の場合のエラー(例外)インスタンス生成デリゲート</param>
+        /// <returns>エラーの無い場合は元と同じシーケンス</returns>
+        public IEnumerable<TSource> ErrorIfEmpty(Func<Exception>? errorGenerator = null)
+        {
+            var exists = false;
+            if (self != null)
             {
-                yield return await Task.FromResult(item).ConfigureAwait(false);
+                foreach (var elem in self)
+                {
+                    yield return elem;
+                    exists = true;
+                }
+            }
+            if (!exists)
+            {
+                throw errorGenerator?.Invoke() ?? new InvalidDataException();
             }
         }
 
-        return enumerateAsync(self);
+        /// <summary>シーケンスの先頭から要素を分解する</summary>
+        /// <param name="value1">シーケンス要素1</param>
+        /// <param name="value2">シーケンス要素2</param>
+        public void Deconstruct(out TSource? value1, out TSource? value2)
+        {
+            ArgumentNullException.ThrowIfNull(self);
+
+            using var enumerator = self.GetEnumerator();
+            value1 = enumerator.MoveNext() ? enumerator.Current : default;
+            value2 = enumerator.MoveNext() ? enumerator.Current : default;
+        }
+
+        /// <summary>シーケンスの先頭から要素を分解する</summary>
+        /// <param name="value1">シーケンス要素1</param>
+        /// <param name="value2">シーケンス要素2</param>
+        /// <param name="value3">シーケンス要素3</param>
+        public void Deconstruct(out TSource? value1, out TSource? value2, out TSource? value3)
+        {
+            ArgumentNullException.ThrowIfNull(self);
+
+            using var enumerator = self.GetEnumerator();
+            value1 = enumerator.MoveNext() ? enumerator.Current : default;
+            value2 = enumerator.MoveNext() ? enumerator.Current : default;
+            value3 = enumerator.MoveNext() ? enumerator.Current : default;
+        }
+
+        /// <summary>シーケンスの先頭から要素を分解する</summary>
+        /// <param name="value1">シーケンス要素1</param>
+        /// <param name="value2">シーケンス要素2</param>
+        /// <param name="value3">シーケンス要素3</param>
+        /// <param name="value4">シーケンス要素4</param>
+        public void Deconstruct(out TSource? value1, out TSource? value2, out TSource? value3, out TSource? value4)
+        {
+            ArgumentNullException.ThrowIfNull(self);
+
+            using var enumerator = self.GetEnumerator();
+            value1 = enumerator.MoveNext() ? enumerator.Current : default;
+            value2 = enumerator.MoveNext() ? enumerator.Current : default;
+            value3 = enumerator.MoveNext() ? enumerator.Current : default;
+            value4 = enumerator.MoveNext() ? enumerator.Current : default;
+        }
+
+        /// <summary>シーケンスの先頭から要素を分解する</summary>
+        /// <param name="value1">シーケンス要素1</param>
+        /// <param name="value2">シーケンス要素2</param>
+        /// <param name="value3">シーケンス要素3</param>
+        /// <param name="value4">シーケンス要素4</param>
+        /// <param name="value5">シーケンス要素5</param>
+        public void Deconstruct(out TSource? value1, out TSource? value2, out TSource? value3, out TSource? value4, out TSource? value5)
+        {
+            ArgumentNullException.ThrowIfNull(self);
+
+            using var enumerator = self.GetEnumerator();
+            value1 = enumerator.MoveNext() ? enumerator.Current : default;
+            value2 = enumerator.MoveNext() ? enumerator.Current : default;
+            value3 = enumerator.MoveNext() ? enumerator.Current : default;
+            value4 = enumerator.MoveNext() ? enumerator.Current : default;
+            value5 = enumerator.MoveNext() ? enumerator.Current : default;
+        }
     }
 
+    /// <summary>IEnumerable{string} に対する拡張メソッド</summary>
+    /// <param name="self">対象シーケンス</param>
+    extension(IEnumerable<string> self)
+    {
+        /// <summary>行文字列のシーケンスを分割行によって分割する</summary>
+        /// <param name="separator">セパレータ行判定処理</param>
+        /// <returns>分割された行のあつまりのシーケンス</returns>
+        public IEnumerable<string[]> Divide(Func<string, bool> separator)
+        {
+            var list = new List<string>();
+            foreach (var item in self)
+            {
+                if (separator(item))
+                {
+                    if (0 < list.Count) yield return list.ToArray();
+                    list.Clear();
+                    continue;
+                }
+
+                list.Add(item);
+            }
+            yield return list.ToArray();
+        }
+
+        /// <summary>前後空白や大文字/小文字の区別なく文字列が含まれているかを判定する。</summary>
+        /// <param name="text">判定する文字列</param>
+        /// <returns>含まれているか否か</returns>
+        public bool RoughContains(string text)
+        {
+            var core = text.AsMemory().Trim();
+            return self.Any(e => core.Span.Equals(e.AsSpan().Trim(), StringComparison.OrdinalIgnoreCase));
+        }
+
+        /// <summary>前後空白や大文字/小文字の区別なく文字列が含まれているかを判定する。</summary>
+        /// <param name="texts">判定する文字列のリスト</param>
+        /// <returns>含まれているか否か</returns>
+        public bool RoughContainsAny(IEnumerable<string> texts)
+        {
+            return self.Any(t => t.RoughAny(texts));
+        }
+    }
 }

@@ -5,7 +5,8 @@
 /// </summary>
 public static class EnvironmentExtensions
 {
-    // 特殊フォルダ関連の拡張メソッド
+    /// <summary>特殊フォルダ関連の拡張メソッド</summary>
+    /// <param name="self">特殊フォルダ種別</param>
     extension(Environment.SpecialFolder self)
     {
         /// <summary>指定の種別の特殊ディレクトリ情報を取得する。</summary>

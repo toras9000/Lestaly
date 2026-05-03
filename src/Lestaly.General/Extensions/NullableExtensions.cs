@@ -2,9 +2,7 @@
 
 namespace Lestaly;
 
-/// <summary>
-/// Nullable に対する拡張メソッド
-/// </summary>
+/// <summary>Nullable に対する拡張メソッド</summary>
 public static class NullableExtensions
 {
     /// <summary>Nullable{T} で有効値を優先した加算を行う。</summary>

@@ -4,9 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace Lestaly;
 
-/// <summary>
-/// コンソール に関する拡張メソッド
-/// </summary>
+/// <summary>コンソール に関する拡張メソッド</summary>
 public static class ConsoleExtensions
 {
     extension(Console)

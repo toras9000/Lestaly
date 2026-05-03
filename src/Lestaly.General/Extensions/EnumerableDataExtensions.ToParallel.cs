@@ -3,9 +3,7 @@ using System.Threading.Tasks.Dataflow;
 
 namespace Lestaly;
 
-/// <summary>
-/// IEnumerable{T} に対するデータ処理拡張メソッド
-/// </summary>
+/// <summary>IEnumerable{T} に対するデータ処理拡張メソッド</summary>
 public static partial class EnumerableDataExtensions
 {
     /// <summary>シーケンス要素を並列に処理する非同期シーケンスに変換する</summary>

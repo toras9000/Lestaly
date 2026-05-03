@@ -4,9 +4,7 @@ using System.Numerics;
 
 namespace Lestaly;
 
-/// <summary>
-/// 数値に対する拡張メソッド
-/// </summary>
+/// <summary>数値に対する拡張メソッド</summary>
 public static class NumberExtensions
 {
     /// <summary>数値を補助単位付き表記で文字列化する。</summary>

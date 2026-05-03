@@ -3,274 +3,331 @@ using System.Text;
 
 namespace Lestaly;
 
-/// <summary>
-/// DirectoryInfo に対する拡張メソッド
-/// </summary>
+/// <summary>DirectoryInfo に対する拡張メソッド</summary>
 public static class DirectoryInfoExtensions
 {
-    #region FileSystemInfo
-    /// <summary>ディレクトリからの相対パス位置に対する FileInfo を取得する。</summary>
+    #region Relative
+    /// <summary>相対パス関係のメソッド</summary>
     /// <param name="self">基準となるディレクトリの DirectoryInfo</param>
-    /// <param name="relativePath">基準ディレクトリからのパス。もし絶対パスの場合は基準ディレクトリは無関係にこの絶対パスが利用される。</param>
-    /// <returns>対象ファイルパスの FileInfo。相対パスが空や空白の場合は null を返却。</returns>
-    public static FileInfo? RelativeFileAt(this DirectoryInfo self, string? relativePath)
+    extension(DirectoryInfo self)
     {
-        ArgumentNullException.ThrowIfNull(self);
-        if (string.IsNullOrWhiteSpace(relativePath)) return default;
-        return new FileInfo(Path.Combine(self.FullName, relativePath));
-    }
+        /// <summary>ディレクトリからの相対パス位置に対する FileInfo を取得する。</summary>
+        /// <param name="relativePath">基準ディレクトリからのパス。もし絶対パスの場合は基準ディレクトリは無関係にこの絶対パスが利用される。</param>
+        /// <returns>対象ファイルパスの FileInfo。相対パスが空や空白の場合は null を返却。</returns>
+        public FileInfo? RelativeFileAt(string? relativePath)
+        {
+            ArgumentNullException.ThrowIfNull(self);
+            if (string.IsNullOrWhiteSpace(relativePath)) return default;
+            return new FileInfo(Path.Combine(self.FullName, relativePath));
+        }
 
-    /// <summary>ディレクトリからの相対パス位置に対する FileInfo を取得する。</summary>
-    /// <param name="self">基準となるディレクトリの DirectoryInfo</param>
-    /// <param name="relativePath">基準ディレクトリからのパス。もし絶対パスの場合は基準ディレクトリは無関係にこの絶対パスが利用される。</param>
-    /// <returns>対象ファイルパスの FileInfo。</returns>
-    public static FileInfo RelativeFile(this DirectoryInfo self, string relativePath)
-    {
-        ArgumentNullException.ThrowIfNull(self);
-        if (string.IsNullOrWhiteSpace(relativePath)) throw new ArgumentException($"Invalid relative path.");
-        return new FileInfo(Path.Combine(self.FullName, relativePath));
-    }
+        /// <summary>ディレクトリからの相対パス位置に対する FileInfo を取得する。</summary>
+        /// <param name="relativePath">基準ディレクトリからのパス。もし絶対パスの場合は基準ディレクトリは無関係にこの絶対パスが利用される。</param>
+        /// <returns>対象ファイルパスの FileInfo。</returns>
+        public FileInfo RelativeFile(string relativePath)
+        {
+            ArgumentNullException.ThrowIfNull(self);
+            if (string.IsNullOrWhiteSpace(relativePath)) throw new ArgumentException($"Invalid relative path.");
+            return new FileInfo(Path.Combine(self.FullName, relativePath));
+        }
 
-    /// <summary>ディレクトリからの相対パス位置に対する DirectoryInfo を取得する。</summary>
-    /// <param name="self">基準となるディレクトリのDirectoryInfo</param>
-    /// <param name="relativePath">基準ディレクトリからのパス。もし絶対パスの場合は基準ディレクトリは無関係にこの絶対パスが利用される。</param>
-    /// <returns>対象ディレクトリパスの DirectoryInfo。相対パスが空や空白の場合は null を返却。</returns>
-    public static DirectoryInfo? RelativeDirectoryAt(this DirectoryInfo self, string? relativePath)
-    {
-        ArgumentNullException.ThrowIfNull(self);
-        if (string.IsNullOrWhiteSpace(relativePath)) return default;
-        return new DirectoryInfo(Path.Combine(self.FullName, relativePath));
-    }
+        /// <summary>ディレクトリからの相対パス位置に対する DirectoryInfo を取得する。</summary>
+        /// <param name="relativePath">基準ディレクトリからのパス。もし絶対パスの場合は基準ディレクトリは無関係にこの絶対パスが利用される。</param>
+        /// <returns>対象ディレクトリパスの DirectoryInfo。相対パスが空や空白の場合は null を返却。</returns>
+        public DirectoryInfo? RelativeDirectoryAt(string? relativePath)
+        {
+            ArgumentNullException.ThrowIfNull(self);
+            if (string.IsNullOrWhiteSpace(relativePath)) return default;
+            return new DirectoryInfo(Path.Combine(self.FullName, relativePath));
+        }
 
-    /// <summary>ディレクトリからの相対パス位置に対する DirectoryInfo を取得する。</summary>
-    /// <param name="self">基準となるディレクトリのDirectoryInfo</param>
-    /// <param name="relativePath">基準ディレクトリからのパス。もし絶対パスの場合は基準ディレクトリは無関係にこの絶対パスが利用される。</param>
-    /// <returns>対象ディレクトリパスの DirectoryInfo。相対パスが空や空白の場合は基準ディレクトリを返却。</returns>
-    public static DirectoryInfo RelativeDirectory(this DirectoryInfo self, string? relativePath)
-    {
-        ArgumentNullException.ThrowIfNull(self);
-        if (string.IsNullOrWhiteSpace(relativePath)) return self;
-        return new DirectoryInfo(Path.Combine(self.FullName, relativePath));
+        /// <summary>ディレクトリからの相対パス位置に対する DirectoryInfo を取得する。</summary>
+        /// <param name="relativePath">基準ディレクトリからのパス。もし絶対パスの場合は基準ディレクトリは無関係にこの絶対パスが利用される。</param>
+        /// <returns>対象ディレクトリパスの DirectoryInfo。相対パスが空や空白の場合は基準ディレクトリを返却。</returns>
+        public DirectoryInfo RelativeDirectory(string? relativePath)
+        {
+            ArgumentNullException.ThrowIfNull(self);
+            if (string.IsNullOrWhiteSpace(relativePath)) return self;
+            return new DirectoryInfo(Path.Combine(self.FullName, relativePath));
+        }
     }
     #endregion
 
     #region FileSystem
-    /// <summary>ディレクトリを作成する。</summary>
-    /// <param name="self">対象ディレクトリ情報</param>
-    /// <returns>元のディレクトリ情報</returns>
-    public static DirectoryInfo WithCreate(this DirectoryInfo self)
+    /// <summary>ファイルシステム関連のメソッド</summary>
+    /// <param name="self">基準となるディレクトリの DirectoryInfo</param>
+    extension(DirectoryInfo self)
     {
-        ArgumentNullException.ThrowIfNull(self);
-        self.Create();
-        return self;
+        /// <summary>ディレクトリを作成する。</summary>
+        /// <returns>元のディレクトリ情報</returns>
+        public DirectoryInfo WithCreate()
+        {
+            ArgumentNullException.ThrowIfNull(self);
+            self.Create();
+            return self;
+        }
+
+        /// <summary>ディレクトリ配下のファイルをコピーする</summary>
+        /// <param name="dest">コピー先ディレクトリ</param>
+        /// <param name="overwrite">上書きするか否か</param>
+        /// <param name="options">ファイル列挙オプション</param>
+        /// <param name="predicator">ファイルコピー判定デリゲート</param>
+        public void CopyFilesTo(DirectoryInfo dest, bool overwrite = false, EnumerationOptions? options = null, Func<FileInfo, bool>? predicator = null)
+        {
+            // オプション指定が無ければデフォルト設定
+            var enumOptions = options ?? new EnumerationOptions()
+            {
+                AttributesToSkip = FileAttributes.None,
+                RecurseSubdirectories = true,
+                MatchType = MatchType.Simple,
+            };
+
+            // 全ファイルをコピー
+            foreach (var file in self.EnumerateFiles("*", enumOptions))
+            {
+                // コピー先ファイルパス作成
+                var relPath = file.RelativePathFrom(self);
+                var destFile = dest.RelativeFile(relPath);
+
+                // デリゲートが指定されていればコピー判定
+                var doCopy = predicator?.Invoke(destFile) ?? true;
+                if (!doCopy) continue;
+
+                // コピー実施
+                file.CopyTo(destFile.WithDirectoryCreate().FullName, overwrite);
+            }
+        }
+
+        /// <summary>ディレクトリをリネームする</summary>
+        /// <param name="name">新しい名前。元の場所を基準とした名前。</param>
+        /// <returns>リネームした対象ディレクトリ情報。元のインスタンスと同一。</returns>
+        public DirectoryInfo Rename(string name)
+        {
+            if (self.Parent == null) throw new InvalidOperationException();
+            var newPath = Path.Combine(self.Parent.FullName, name);
+            self.MoveTo(newPath);
+            return self;
+        }
+
+        /// <summary>ディレクトリを再帰的に削除する</summary>
+        public void DeleteRecurse()
+        {
+            // 存在しないならばすることはない
+            if (self == null || !self.Exists) return;
+
+            // 配下のファイル/ディレクトリに読み取り専用属性が付いていれば削除する。
+            // ただ、これだけが削除を阻害する要因ではないので気休め程度ではある。
+            var options = new VisitFilesOptions(Recurse: true, new(File: true, Directory: true), Sort: false, Buffered: false);
+            self.DoFiles(w => w.Item.SetReadOnly(false), options);
+
+            // 再帰的に削除する
+            self.Delete(recursive: true);
+        }
     }
     #endregion
 
     #region Find
-    /// <summary>ディレクトリ配下の指定のパターンにマッチする単一のファイルを取得する。</summary>
-    /// <param name="self">基準となるディレクトリ</param>
-    /// <param name="pattern">検索パターン。パターン解釈は MatchType.Simple による。パスが階層状の場合、途中のパスはプラットフォーム依存のマッチングのようなので注意。</param>
-    /// <param name="casing">キャラクタ照合方法</param>
-    /// <param name="first">複数ファイルが見つかった場合に最初のファイルを返すか否か</param>
-    /// <returns>
-    /// 検索結果が単一の場合はそのファイル情報。見つからない場合は null を返却。
-    /// 検索結果が複数の場合、first 引数が真であれば最初のファイル情報を、そうでなければ null を返却。
-    /// </returns>
-    public static FileInfo? FindFile(this DirectoryInfo self, string pattern, MatchCasing casing = MatchCasing.PlatformDefault, bool first = false)
+    /// <summary>検索系メソッド</summary>
+    /// <param name="self">基準となるディレクトリの DirectoryInfo</param>
+    extension(DirectoryInfo self)
     {
-        ArgumentNullException.ThrowIfNull(self);
-        ArgumentException.ThrowIfNullOrWhiteSpace(pattern);
-
-        // 検索オプション
-        var options = new EnumerationOptions();
-        options.MatchCasing = casing;
-        options.MatchType = MatchType.Simple;
-        options.IgnoreInaccessible = true;
-        options.AttributesToSkip = FileAttributes.None;
-        options.ReturnSpecialDirectories = false;
-        options.RecurseSubdirectories = false;
-
-        // 指定のファイルを検索
-        var found = default(FileInfo);
-        foreach (var file in self.EnumerateFiles(pattern, options))
+        /// <summary>ディレクトリ配下の指定のパターンにマッチする単一のファイルを取得する。</summary>
+        /// <param name="pattern">検索パターン。パターン解釈は MatchType.Simple による。パスが階層状の場合、途中のパスはプラットフォーム依存のマッチングのようなので注意。</param>
+        /// <param name="casing">キャラクタ照合方法</param>
+        /// <param name="first">複数ファイルが見つかった場合に最初のファイルを返すか否か</param>
+        /// <returns>
+        /// 検索結果が単一の場合はそのファイル情報。見つからない場合は null を返却。
+        /// 検索結果が複数の場合、first 引数が真であれば最初のファイル情報を、そうでなければ null を返却。
+        /// </returns>
+        public FileInfo? FindFile(string pattern, MatchCasing casing = MatchCasing.PlatformDefault, bool first = false)
         {
-            // 2つ以上見つかった場合は未確定として結果無しにする
-            if (found != null)
-            {
-                if (!first) found = null;
-                break;
-            }
-            // 見つかったファイルを保持
-            found = file;
-        }
-        return found;
-    }
+            ArgumentNullException.ThrowIfNull(self);
+            ArgumentException.ThrowIfNullOrWhiteSpace(pattern);
 
-    /// <summary>ディレクトリ配下の指定のパターンにマッチする単一のファイルを取得する。</summary>
-    /// <param name="self">基準となるディレクトリ</param>
-    /// <param name="path">検索するパス階層リスト。パス区切り文字を含まない1階層分のエントリのリストであるべき。</param>
-    /// <param name="casing">キャラクタ照合方法</param>
-    /// <param name="first">途中のパスとファイルで複数項目が見つかった場合に最初の項目を採用するか否か</param>
-    /// <returns>
-    /// 検索結果が一意に特定できる場合はそのファイル情報。見つからない場合は null を返却。
-    /// 経路および結果が複数の場合、first 引数が真であれば最初のファイル情報を、そうでなければ null を返却。
-    /// </returns>
-    public static FileInfo? FindPathFile(this DirectoryInfo self, Span<string> path, MatchCasing casing = MatchCasing.PlatformDefault, bool first = false)
-    {
-        ArgumentNullException.ThrowIfNull(self);
-        ArgumentOutOfRangeException.ThrowIfZero(path.Length);
+            // 検索オプション
+            var options = new EnumerationOptions();
+            options.MatchCasing = casing;
+            options.MatchType = MatchType.Simple;
+            options.IgnoreInaccessible = true;
+            options.AttributesToSkip = FileAttributes.None;
+            options.ReturnSpecialDirectories = false;
+            options.RecurseSubdirectories = false;
 
-        // ファイルの検索基準ディレクトリ
-        var place = self;
-        if (1 < path.Length)
-        {
-            // 途中のディレクトリ階層を検索
-            place = self.FindPathDirectory(path[..^1], casing, first);
-            if (place == null) return null;
-        }
-
-        // 基準ディレクトリでのファイル検索
-        return place.FindFile(path[^1], casing, first);
-    }
-
-    /// <summary>ディレクトリ配下の指定のパターンにマッチする単一のファイルを取得する。</summary>
-    /// <param name="self">基準となるディレクトリ</param>
-    /// <param name="path">検索するパス階層リスト。パス区切り文字を含まない1階層分のエントリのリストであるべき。</param>
-    /// <param name="fuzzy">キャラクタケーシングを無視するか否か</param>
-    /// <param name="first">途中のパスとファイルで複数項目が見つかった場合に最初の項目を採用するか否か</param>
-    /// <returns>
-    /// 検索結果が一意に特定できる場合はそのファイル情報。見つからない場合は null を返却。
-    /// 経路および結果が複数の場合、first 引数が真であれば最初のファイル情報を、そうでなければ null を返却。
-    /// </returns>
-    public static FileInfo? FindPathFile(this DirectoryInfo self, Span<string> path, bool fuzzy, bool first = false)
-        => self.FindPathFile(path, fuzzy ? MatchCasing.CaseInsensitive : MatchCasing.CaseSensitive, first);
-
-    /// <summary>ディレクトリ配下の指定のパターンにマッチする単一のディレクトリを取得する。</summary>
-    /// <param name="self">基準となるディレクトリ</param>
-    /// <param name="pattern">検索パターン。パターン解釈は MatchType.Simple による。パスが階層状の場合、途中のパスはプラットフォーム依存のマッチングのようなので注意。</param>
-    /// <param name="casing">キャラクタ照合方法</param>
-    /// <param name="first">複数ディレクトリが見つかった場合に最初のディレクトリを返すか否か</param>
-    /// <returns>
-    /// 検索結果が単一の場合はそのディレクトリ情報。見つからない場合は null を返却。
-    /// 検索結果が複数の場合、first 引数が真であれば最初のディレクトリ情報を、そうでなければ null を返却。
-    /// </returns>
-    public static DirectoryInfo? FindDirectory(this DirectoryInfo self, string pattern, MatchCasing casing = MatchCasing.PlatformDefault, bool first = false)
-    {
-        ArgumentNullException.ThrowIfNull(self);
-        ArgumentException.ThrowIfNullOrWhiteSpace(pattern);
-
-        // 検索オプション
-        var options = new EnumerationOptions();
-        options.MatchCasing = casing;
-        options.MatchType = MatchType.Simple;
-        options.IgnoreInaccessible = true;
-        options.AttributesToSkip = FileAttributes.None;
-        options.ReturnSpecialDirectories = false;
-        options.RecurseSubdirectories = false;
-
-        // 指定のディレクトリを検索
-        var found = default(DirectoryInfo);
-        foreach (var dir in self.EnumerateDirectories(pattern, options))
-        {
-            // 2つ以上見つかった場合は未確定として結果無しにする
-            if (found != null)
-            {
-                if (!first) found = null;
-                break;
-            }
-            // 見つかったディレクトリを保持
-            found = dir;
-        }
-        return found;
-    }
-
-    /// <summary>ディレクトリ配下の指定のパスマッチする単一のディレクトリを取得する。</summary>
-    /// <param name="self">基準となるディレクトリ</param>
-    /// <param name="path">検索するパス階層リスト。パス区切り文字を含まない1階層分のエントリのリストであるべき。</param>
-    /// <param name="casing">キャラクタ照合方法</param>
-    /// <param name="first">途中のパスを含めたディレクトリが複数項目が見つかった場合に最初の項目を採用するか否か</param>
-    /// <returns>
-    /// 検索結果が一意に特定できる場合はそのディレクトリ情報。見つからない場合は null を返却。
-    /// 経路およびが複数の場合、first 引数が真であれば最初のディレクトリ情報を、そうでなければ null を返却。
-    /// </returns>
-    public static DirectoryInfo? FindPathDirectory(this DirectoryInfo self, Span<string> path, MatchCasing casing = MatchCasing.PlatformDefault, bool first = false)
-    {
-        ArgumentNullException.ThrowIfNull(self);
-        ArgumentOutOfRangeException.ThrowIfZero(path.Length);
-
-        // 検索オプション
-        var options = new EnumerationOptions();
-        options.MatchCasing = casing;
-        options.MatchType = MatchType.Simple;
-        options.IgnoreInaccessible = true;
-        options.AttributesToSkip = FileAttributes.None;
-        options.ReturnSpecialDirectories = false;
-        options.RecurseSubdirectories = false;
-
-        // 指定のディレクトリを順次検索
-        var place = self;
-        for (var i = 0; i < path.Length; i++)
-        {
-            var item = path[i];
-            var next = default(DirectoryInfo);
-            foreach (var dir in place.EnumerateDirectories(item, options))
+            // 指定のファイルを検索
+            var found = default(FileInfo);
+            foreach (var file in self.EnumerateFiles(pattern, options))
             {
                 // 2つ以上見つかった場合は未確定として結果無しにする
-                if (next != null)
+                if (found != null)
                 {
-                    if (!first) return null;
+                    if (!first) found = null;
                     break;
                 }
                 // 見つかったファイルを保持
-                next = dir;
+                found = file;
+            }
+            return found;
+        }
+
+        /// <summary>ディレクトリ配下の指定のパターンにマッチする単一のファイルを取得する。</summary>
+        /// <param name="path">検索するパス階層リスト。パス区切り文字を含まない1階層分のエントリのリストであるべき。</param>
+        /// <param name="casing">キャラクタ照合方法</param>
+        /// <param name="first">途中のパスとファイルで複数項目が見つかった場合に最初の項目を採用するか否か</param>
+        /// <returns>
+        /// 検索結果が一意に特定できる場合はそのファイル情報。見つからない場合は null を返却。
+        /// 経路および結果が複数の場合、first 引数が真であれば最初のファイル情報を、そうでなければ null を返却。
+        /// </returns>
+        public FileInfo? FindPathFile(Span<string> path, MatchCasing casing = MatchCasing.PlatformDefault, bool first = false)
+        {
+            ArgumentNullException.ThrowIfNull(self);
+            ArgumentOutOfRangeException.ThrowIfZero(path.Length);
+
+            // ファイルの検索基準ディレクトリ
+            var place = self;
+            if (1 < path.Length)
+            {
+                // 途中のディレクトリ階層を検索
+                place = self.FindPathDirectory(path[..^1], casing, first);
+                if (place == null) return null;
             }
 
-            // 見つからなければ結果なし
-            if (next == null) return null;
-
-            // 次の階層へ
-            place = next;
+            // 基準ディレクトリでのファイル検索
+            return place.FindFile(path[^1], casing, first);
         }
 
-        return place;
-    }
+        /// <summary>ディレクトリ配下の指定のパターンにマッチする単一のファイルを取得する。</summary>
+        /// <param name="path">検索するパス階層リスト。パス区切り文字を含まない1階層分のエントリのリストであるべき。</param>
+        /// <param name="fuzzy">キャラクタケーシングを無視するか否か</param>
+        /// <param name="first">途中のパスとファイルで複数項目が見つかった場合に最初の項目を採用するか否か</param>
+        /// <returns>
+        /// 検索結果が一意に特定できる場合はそのファイル情報。見つからない場合は null を返却。
+        /// 経路および結果が複数の場合、first 引数が真であれば最初のファイル情報を、そうでなければ null を返却。
+        /// </returns>
+        public FileInfo? FindPathFile(Span<string> path, bool fuzzy, bool first = false)
+            => self.FindPathFile(path, fuzzy ? MatchCasing.CaseInsensitive : MatchCasing.CaseSensitive, first);
 
-    /// <summary>ディレクトリ配下の指定のパスマッチする単一のディレクトリを取得する。</summary>
-    /// <param name="self">基準となるディレクトリ</param>
-    /// <param name="path">検索するパス階層リスト。パス区切り文字を含まない1階層分のエントリのリストであるべき。</param>
-    /// <param name="fuzzy">キャラクタケーシングを無視するか否か</param>
-    /// <param name="first">途中のパスを含めたディレクトリが複数項目が見つかった場合に最初の項目を採用するか否か</param>
-    /// <returns>
-    /// 検索結果が一意に特定できる場合はそのディレクトリ情報。見つからない場合は null を返却。
-    /// 経路およびが複数の場合、first 引数が真であれば最初のディレクトリ情報を、そうでなければ null を返却。
-    /// </returns>
-    public static DirectoryInfo? FindPathDirectory(this DirectoryInfo self, Span<string> path, bool fuzzy, bool first = false)
-        => self.FindPathDirectory(path, fuzzy ? MatchCasing.CaseInsensitive : MatchCasing.CaseSensitive, first);
-
-    /// <summary>指定の名前の祖先ディレクトリを探す</summary>
-    /// <param name="self">基準となるディレクトリ</param>
-    /// <param name="name">ディレクトリ名</param>
-    /// <param name="ignoreCase">大文字と小文字を同一視するか否か</param>
-    /// <returns>条件にマッチしたディレクトリ。見つからない場合は null</returns>
-    public static DirectoryInfo? FindAncestor(this DirectoryInfo self, string name, bool? ignoreCase = default)
-    {
-        var matchRule = (ignoreCase ?? RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
-        return self.FindAncestor(dir => string.Equals(dir.Name, name, matchRule));
-    }
-
-    /// <summary>指定の条件にマッチする祖先ディレクトリを探す</summary>
-    /// <param name="self">基準となるディレクトリ</param>
-    /// <param name="finder">条件にマッチするかを判定するデリゲート</param>
-    /// <returns>条件にマッチしたディレクトリ。見つからない場合は null</returns>
-    public static DirectoryInfo? FindAncestor(this DirectoryInfo self, Func<DirectoryInfo, bool> finder)
-    {
-        var scan = self.Parent;
-        while (scan != null)
+        /// <summary>ディレクトリ配下の指定のパターンにマッチする単一のディレクトリを取得する。</summary>
+        /// <param name="pattern">検索パターン。パターン解釈は MatchType.Simple による。パスが階層状の場合、途中のパスはプラットフォーム依存のマッチングのようなので注意。</param>
+        /// <param name="casing">キャラクタ照合方法</param>
+        /// <param name="first">複数ディレクトリが見つかった場合に最初のディレクトリを返すか否か</param>
+        /// <returns>
+        /// 検索結果が単一の場合はそのディレクトリ情報。見つからない場合は null を返却。
+        /// 検索結果が複数の場合、first 引数が真であれば最初のディレクトリ情報を、そうでなければ null を返却。
+        /// </returns>
+        public DirectoryInfo? FindDirectory(string pattern, MatchCasing casing = MatchCasing.PlatformDefault, bool first = false)
         {
-            if (finder(scan)) break;
-            scan = scan.Parent;
+            ArgumentNullException.ThrowIfNull(self);
+            ArgumentException.ThrowIfNullOrWhiteSpace(pattern);
+
+            // 検索オプション
+            var options = new EnumerationOptions();
+            options.MatchCasing = casing;
+            options.MatchType = MatchType.Simple;
+            options.IgnoreInaccessible = true;
+            options.AttributesToSkip = FileAttributes.None;
+            options.ReturnSpecialDirectories = false;
+            options.RecurseSubdirectories = false;
+
+            // 指定のディレクトリを検索
+            var found = default(DirectoryInfo);
+            foreach (var dir in self.EnumerateDirectories(pattern, options))
+            {
+                // 2つ以上見つかった場合は未確定として結果無しにする
+                if (found != null)
+                {
+                    if (!first) found = null;
+                    break;
+                }
+                // 見つかったディレクトリを保持
+                found = dir;
+            }
+            return found;
         }
-        return scan;
+
+        /// <summary>ディレクトリ配下の指定のパスマッチする単一のディレクトリを取得する。</summary>
+        /// <param name="path">検索するパス階層リスト。パス区切り文字を含まない1階層分のエントリのリストであるべき。</param>
+        /// <param name="casing">キャラクタ照合方法</param>
+        /// <param name="first">途中のパスを含めたディレクトリが複数項目が見つかった場合に最初の項目を採用するか否か</param>
+        /// <returns>
+        /// 検索結果が一意に特定できる場合はそのディレクトリ情報。見つからない場合は null を返却。
+        /// 経路およびが複数の場合、first 引数が真であれば最初のディレクトリ情報を、そうでなければ null を返却。
+        /// </returns>
+        public DirectoryInfo? FindPathDirectory(Span<string> path, MatchCasing casing = MatchCasing.PlatformDefault, bool first = false)
+        {
+            ArgumentNullException.ThrowIfNull(self);
+            ArgumentOutOfRangeException.ThrowIfZero(path.Length);
+
+            // 検索オプション
+            var options = new EnumerationOptions();
+            options.MatchCasing = casing;
+            options.MatchType = MatchType.Simple;
+            options.IgnoreInaccessible = true;
+            options.AttributesToSkip = FileAttributes.None;
+            options.ReturnSpecialDirectories = false;
+            options.RecurseSubdirectories = false;
+
+            // 指定のディレクトリを順次検索
+            var place = self;
+            for (var i = 0; i < path.Length; i++)
+            {
+                var item = path[i];
+                var next = default(DirectoryInfo);
+                foreach (var dir in place.EnumerateDirectories(item, options))
+                {
+                    // 2つ以上見つかった場合は未確定として結果無しにする
+                    if (next != null)
+                    {
+                        if (!first) return null;
+                        break;
+                    }
+                    // 見つかったファイルを保持
+                    next = dir;
+                }
+
+                // 見つからなければ結果なし
+                if (next == null) return null;
+
+                // 次の階層へ
+                place = next;
+            }
+
+            return place;
+        }
+
+        /// <summary>ディレクトリ配下の指定のパスマッチする単一のディレクトリを取得する。</summary>
+        /// <param name="path">検索するパス階層リスト。パス区切り文字を含まない1階層分のエントリのリストであるべき。</param>
+        /// <param name="fuzzy">キャラクタケーシングを無視するか否か</param>
+        /// <param name="first">途中のパスを含めたディレクトリが複数項目が見つかった場合に最初の項目を採用するか否か</param>
+        /// <returns>
+        /// 検索結果が一意に特定できる場合はそのディレクトリ情報。見つからない場合は null を返却。
+        /// 経路およびが複数の場合、first 引数が真であれば最初のディレクトリ情報を、そうでなければ null を返却。
+        /// </returns>
+        public DirectoryInfo? FindPathDirectory(Span<string> path, bool fuzzy, bool first = false)
+            => self.FindPathDirectory(path, fuzzy ? MatchCasing.CaseInsensitive : MatchCasing.CaseSensitive, first);
+
+        /// <summary>指定の名前の祖先ディレクトリを探す</summary>
+        /// <param name="name">ディレクトリ名</param>
+        /// <param name="ignoreCase">大文字と小文字を同一視するか否か</param>
+        /// <returns>条件にマッチしたディレクトリ。見つからない場合は null</returns>
+        public DirectoryInfo? FindAncestor(string name, bool? ignoreCase = default)
+        {
+            var matchRule = (ignoreCase ?? RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+            return self.FindAncestor(dir => string.Equals(dir.Name, name, matchRule));
+        }
+
+        /// <summary>指定の条件にマッチする祖先ディレクトリを探す</summary>
+        /// <param name="finder">条件にマッチするかを判定するデリゲート</param>
+        /// <returns>条件にマッチしたディレクトリ。見つからない場合は null</returns>
+        public DirectoryInfo? FindAncestor(Func<DirectoryInfo, bool> finder)
+        {
+            var scan = self.Parent;
+            while (scan != null)
+            {
+                if (finder(scan)) break;
+                scan = scan.Parent;
+            }
+            return scan;
+        }
     }
     #endregion
 
@@ -895,66 +952,4 @@ public static class DirectoryInfoExtensions
     }
     #endregion
 
-    #region Utility
-    /// <summary>ディレクトリ配下のファイルをコピーする</summary>
-    /// <param name="self">コピー元ディレクトリ</param>
-    /// <param name="dest">コピー先ディレクトリ</param>
-    /// <param name="overwrite">上書きするか否か</param>
-    /// <param name="options">ファイル列挙オプション</param>
-    /// <param name="predicator">ファイルコピー判定デリゲート</param>
-    public static void CopyFilesTo(this DirectoryInfo self, DirectoryInfo dest, bool overwrite = false, EnumerationOptions? options = null, Func<FileInfo, bool>? predicator = null)
-    {
-        // オプション指定が無ければデフォルト設定
-        var enumOptions = options ?? new EnumerationOptions()
-        {
-            AttributesToSkip = FileAttributes.None,
-            RecurseSubdirectories = true,
-            MatchType = MatchType.Simple,
-        };
-
-        // 全ファイルをコピー
-        foreach (var file in self.EnumerateFiles("*", enumOptions))
-        {
-            // コピー先ファイルパス作成
-            var relPath = file.RelativePathFrom(self);
-            var destFile = dest.RelativeFile(relPath);
-
-            // デリゲートが指定されていればコピー判定
-            var doCopy = predicator?.Invoke(destFile) ?? true;
-            if (!doCopy) continue;
-
-            // コピー実施
-            file.CopyTo(destFile.WithDirectoryCreate().FullName, overwrite);
-        }
-    }
-
-    /// <summary>ディレクトリをリネームする</summary>
-    /// <param name="self">対象ディレクトリ</param>
-    /// <param name="name">新しい名前。元の場所を基準とした名前。</param>
-    /// <returns>リネームした対象ディレクトリ情報。元のインスタンスと同一。</returns>
-    public static DirectoryInfo Rename(this DirectoryInfo self, string name)
-    {
-        if (self.Parent == null) throw new InvalidOperationException();
-        var newPath = Path.Combine(self.Parent.FullName, name);
-        self.MoveTo(newPath);
-        return self;
-    }
-
-    /// <summary>ディレクトリを再帰的に削除する</summary>
-    /// <remarks></remarks>
-    /// <param name="self">削除対象ディレクトリ</param>
-    public static void DeleteRecurse(this DirectoryInfo self)
-    {
-        // 存在しないならばすることはない
-        if (self == null || !self.Exists) return;
-
-        // 配下のファイル/ディレクトリに読み取り専用属性が付いていれば削除する。
-        // ただ、これだけが削除を阻害する要因ではないので気休め程度ではある。
-        var options = new VisitFilesOptions(Recurse: true, new(File: true, Directory: true), Sort: false, Buffered: false);
-        self.DoFiles(w => w.Item.SetReadOnly(false), options);
-
-        // 再帰的に削除する
-        self.Delete(recursive: true);
-    }
-    #endregion
 }
