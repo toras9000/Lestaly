@@ -90,7 +90,7 @@ public static class StringTokenExtensions
         {
             // 最終改行位置を検索
             var breakIdx = body.LastIndexOfAny(LineBreakChars);
-            if (-0 <= breakIdx)
+            if (0 <= breakIdx)
             {
                 // 改行後の Span を取得
                 body = body[(breakIdx + 1)..];
@@ -571,7 +571,7 @@ public static class StringTokenExtensions
     public static ReadOnlySpan<char> TakeLastToken(this ReadOnlySpan<char> self, char delimiter = ' ')
     {
         var idx = self.LastIndexOf(delimiter);
-        if (idx <= 0) return self;
+        if (idx < 0) return self;
         return self[(idx + 1)..];
     }
 
@@ -582,7 +582,7 @@ public static class StringTokenExtensions
     public static ReadOnlyMemory<char> TakeLastToken(this ReadOnlyMemory<char> self, char delimiter = ' ')
     {
         var idx = self.Span.LastIndexOf(delimiter);
-        if (idx <= 0) return self;
+        if (idx < 0) return self;
         return self[(idx + 1)..];
     }
     #endregion
