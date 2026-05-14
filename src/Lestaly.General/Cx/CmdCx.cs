@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Net;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -26,6 +27,74 @@ public readonly struct ArgCx
     /// <summary>URIから ArgCx への暗黙変換オペレータ</summary>
     /// <param name="uri">URI。絶対URIとして評価される</param>
     public static implicit operator ArgCx(Uri uri) => new ArgCx(uri.AbsoluteUri);
+
+    /// <summary>IPアドレスから ArgCx への暗黙変換オペレータ</summary>
+    /// <param name="ip">IPアドレス</param>
+    public static implicit operator ArgCx(IPAddress ip) => new ArgCx(ip.ToString());
+
+    /// <summary>IPエンドポイントから ArgCx への暗黙変換オペレータ</summary>
+    /// <param name="ep">IPエンドポイント</param>
+    public static implicit operator ArgCx(IPEndPoint ep) => new ArgCx(ep.ToString());
+
+    /// <summary>GUIDから ArgCx への暗黙変換オペレータ</summary>
+    /// <param name="id">GUID</param>
+    public static implicit operator ArgCx(Guid id) => new ArgCx(id.ToString());
+
+    /// <summary>数値から ArgCx への暗黙変換オペレータ</summary>
+    /// <param name="num">数値</param>
+    public static implicit operator ArgCx(SByte num) => new ArgCx(num.ToString());
+
+    /// <summary>数値から ArgCx への暗黙変換オペレータ</summary>
+    /// <param name="num">数値</param>
+    public static implicit operator ArgCx(Int16 num) => new ArgCx(num.ToString());
+
+    /// <summary>数値から ArgCx への暗黙変換オペレータ</summary>
+    /// <param name="num">数値</param>
+    public static implicit operator ArgCx(Int32 num) => new ArgCx(num.ToString());
+
+    /// <summary>数値から ArgCx への暗黙変換オペレータ</summary>
+    /// <param name="num">数値</param>
+    public static implicit operator ArgCx(Int64 num) => new ArgCx(num.ToString());
+
+    /// <summary>数値から ArgCx への暗黙変換オペレータ</summary>
+    /// <param name="num">数値</param>
+    public static implicit operator ArgCx(Int128 num) => new ArgCx(num.ToString());
+
+    /// <summary>数値から ArgCx への暗黙変換オペレータ</summary>
+    /// <param name="num">数値</param>
+    public static implicit operator ArgCx(Byte num) => new ArgCx(num.ToString());
+
+    /// <summary>数値から ArgCx への暗黙変換オペレータ</summary>
+    /// <param name="num">数値</param>
+    public static implicit operator ArgCx(UInt16 num) => new ArgCx(num.ToString());
+
+    /// <summary>数値から ArgCx への暗黙変換オペレータ</summary>
+    /// <param name="num">数値</param>
+    public static implicit operator ArgCx(UInt32 num) => new ArgCx(num.ToString());
+
+    /// <summary>数値から ArgCx への暗黙変換オペレータ</summary>
+    /// <param name="num">数値</param>
+    public static implicit operator ArgCx(UInt64 num) => new ArgCx(num.ToString());
+
+    /// <summary>数値から ArgCx への暗黙変換オペレータ</summary>
+    /// <param name="num">数値</param>
+    public static implicit operator ArgCx(UInt128 num) => new ArgCx(num.ToString());
+
+    /// <summary>数値から ArgCx への暗黙変換オペレータ</summary>
+    /// <param name="num">数値</param>
+    public static implicit operator ArgCx(Half num) => new ArgCx(num.ToString());
+
+    /// <summary>数値から ArgCx への暗黙変換オペレータ</summary>
+    /// <param name="num">数値</param>
+    public static implicit operator ArgCx(Single num) => new ArgCx(num.ToString());
+
+    /// <summary>数値から ArgCx への暗黙変換オペレータ</summary>
+    /// <param name="num">数値</param>
+    public static implicit operator ArgCx(Double num) => new ArgCx(num.ToString());
+
+    /// <summary>数値から ArgCx への暗黙変換オペレータ</summary>
+    /// <param name="num">数値</param>
+    public static implicit operator ArgCx(Decimal num) => new ArgCx(num.ToString());
 
     /// <summary>引数値</summary>
     public string Value { get; }
