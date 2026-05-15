@@ -787,6 +787,36 @@ public class FileExtensionsTests
     }
 
     [TestMethod]
+    public void WriteText()
+    {
+        // テスト用に一時ディレクトリ
+        using var tempDir = new TempDir();
+
+        // テストファイル
+        var target1 = tempDir.Info.RelativeFile("file1.txt").WriteAllText("ABC");
+        var target2 = tempDir.Info.RelativeFile("file2.txt").WriteAllText("ABC");
+
+        // テスト対象実行
+        target1.WriteText("XYZ", append: true).ReadAllText().Should().Be("ABCXYZ");
+        target2.WriteText("XYZ", append: false).ReadAllText().Should().Be("XYZ");
+    }
+
+    [TestMethod]
+    public void WriteTextLine()
+    {
+        // テスト用に一時ディレクトリ
+        using var tempDir = new TempDir();
+
+        // テストファイル
+        var target1 = tempDir.Info.RelativeFile("file1.txt").WriteAllText("ABC");
+        var target2 = tempDir.Info.RelativeFile("file2.txt").WriteAllText("ABC");
+
+        // テスト対象実行
+        target1.WriteTextLine("XYZ", append: true).ReadAllText().Should().Be($"ABCXYZ{Environment.NewLine}");
+        target1.WriteTextLine("XYZ", append: false).ReadAllText().Should().Be($"XYZ{Environment.NewLine}");
+    }
+
+    [TestMethod]
     public void WriteAllLines()
     {
         // テスト用に一時ディレクトリ
@@ -835,6 +865,21 @@ public class FileExtensionsTests
         // 検証
         File.ReadAllLines(target.FullName, enc).Should().Equal(texts);
         written.Should().Be(target);
+    }
+
+    [TestMethod]
+    public void WriteLines()
+    {
+        // テスト用に一時ディレクトリ
+        using var tempDir = new TempDir();
+
+        // テストファイル
+        var target1 = tempDir.Info.RelativeFile("file1.txt").WriteAllText("ABC");
+        var target2 = tempDir.Info.RelativeFile("file2.txt").WriteAllText("ABC");
+
+        // テスト対象実行
+        target1.WriteLines(["XXX", "YYY", "ZZZ"], append: true, lineBreak: "\n").ReadAllText().Should().Be("ABCXXX\nYYY\nZZZ\n");
+        target2.WriteLines(["XXX", "YYY", "ZZZ"], append: false, lineBreak: "\n").ReadAllText().Should().Be("XXX\nYYY\nZZZ\n");
     }
 
     [TestMethod]
@@ -1036,6 +1081,21 @@ public class FileExtensionsTests
         // 検証
         File.ReadAllLines(target.FullName, enc).Should().Equal(texts);
         written.Should().Be(target);
+    }
+
+    [TestMethod]
+    public async Task WriteLinesAsync()
+    {
+        // テスト用に一時ディレクトリ
+        using var tempDir = new TempDir();
+
+        // テストファイル
+        var target1 = tempDir.Info.RelativeFile("file1.txt").WriteAllText("ABC");
+        var target2 = tempDir.Info.RelativeFile("file2.txt").WriteAllText("ABC");
+
+        // テスト対象実行
+        (await target1.WriteLinesAsync(["XXX", "YYY", "ZZZ"], append: true, lineBreak: "\n")).ReadAllText().Should().Be("ABCXXX\nYYY\nZZZ\n");
+        (await target1.WriteLinesAsync(["XXX", "YYY", "ZZZ"], append: false, lineBreak: "\n")).ReadAllText().Should().Be("XXX\nYYY\nZZZ\n");
     }
 
     [TestMethod]

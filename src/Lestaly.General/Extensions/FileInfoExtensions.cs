@@ -421,6 +421,39 @@ public static class FileInfoExtensions
             return self;
         }
 
+        /// <summary>ファイルにテキストを書き込む。</summary>
+        /// <param name="contents">書き込むテキスト</param>
+        /// <param name="append">追加書き込みするか否か</param>
+        /// <param name="encoding">書き込むテキストをエンコードするテキストエンコーディング</param>
+        /// <returns>レシーバ自身</returns>
+        public FileInfo WriteText(string contents, bool append = false, Encoding? encoding = default)
+        {
+
+            ArgumentNullException.ThrowIfNull(self);
+            using (var writer = self.CreateTextWriter(append, encoding))
+            {
+                writer.Write(contents);
+            }
+            self.Refresh();
+            return self;
+        }
+
+        /// <summary>ファイルにテキスト行を書き込む。</summary>
+        /// <param name="contents">書き込むテキスト</param>
+        /// <param name="append">追加書き込みするか否か</param>
+        /// <param name="encoding">書き込むテキストをエンコードするテキストエンコーディング</param>
+        /// <returns>レシーバ自身</returns>
+        public FileInfo WriteTextLine(string contents, bool append = false, Encoding? encoding = default)
+        {
+            ArgumentNullException.ThrowIfNull(self);
+            using (var writer = self.CreateTextWriter(append, encoding))
+            {
+                writer.WriteLine(contents);
+            }
+            self.Refresh();
+            return self;
+        }
+
         /// <summary>ファイルに行末文字を正規化した複数行テキストを書き込む。</summary>
         /// <param name="lineBreak">行末文字</param>
         /// <param name="multiline">書き込む複数行テキスト</param>
@@ -618,9 +651,18 @@ public static class FileInfoExtensions
         /// <param name="encoding">書き込むテキストをエンコードするテキストエンコーディング。省略時は UTF-8</param>
         /// <returns>レシーバ自身</returns>
         public FileInfo WriteAllLines(IEnumerable<string> contents, string lineBreak, Encoding? encoding = default)
+            => self.WriteLines(contents, append: false, lineBreak, encoding);
+
+        /// <summary>ファイル内容に指定のテキスト行を追加する。</summary>
+        /// <param name="contents">書き込むテキスト行</param>
+        /// <param name="append">追加書き込みするか否か</param>
+        /// <param name="lineBreak">改行文字</param>
+        /// <param name="encoding">書き込むテキストをエンコードするテキストエンコーディング。省略時は UTF-8</param>
+        /// <returns>レシーバ自身</returns>
+        public FileInfo WriteLines(IEnumerable<string> contents, bool append = false, string? lineBreak = default, Encoding? encoding = default)
         {
             ArgumentNullException.ThrowIfNull(self);
-            using (var writer = self.CreateTextWriter(append: false, encoding: encoding ?? Encoding.UTF8))
+            using (var writer = self.CreateTextWriter(append, encoding: encoding ?? Encoding.UTF8))
             {
                 writer.NewLine = lineBreak;
                 foreach (var line in contents)
@@ -663,10 +705,20 @@ public static class FileInfoExtensions
         /// <param name="encoding">書き込むテキストをエンコードするテキストエンコーディング</param>
         /// <param name="cancelToken">キャンセルトークン</param>
         /// <returns>書き込みを行いレシーバ自身を返すタスク</returns>
-        public async ValueTask<FileInfo> WriteAllLinesAsync(IEnumerable<string> contents, string lineBreak, Encoding? encoding = default, CancellationToken cancelToken = default)
+        public ValueTask<FileInfo> WriteAllLinesAsync(IEnumerable<string> contents, string lineBreak, Encoding? encoding = default, CancellationToken cancelToken = default)
+            => self.WriteLinesAsync(contents, append: false, lineBreak, encoding, cancelToken);
+
+        /// <summary>ファイルに指定のテキスト行とを書き込む。</summary>
+        /// <param name="contents">書き込むテキスト行</param>
+        /// <param name="append">追加書き込みするか否か</param>
+        /// <param name="lineBreak">行末文字</param>
+        /// <param name="encoding">書き込むテキストをエンコードするテキストエンコーディング</param>
+        /// <param name="cancelToken">キャンセルトークン</param>
+        /// <returns>書き込みを行いレシーバ自身を返すタスク</returns>
+        public async ValueTask<FileInfo> WriteLinesAsync(IEnumerable<string> contents, bool append = false, string? lineBreak = default, Encoding? encoding = default, CancellationToken cancelToken = default)
         {
             ArgumentNullException.ThrowIfNull(self);
-            using (var writer = self.CreateTextWriter(append: false, encoding: encoding ?? Encoding.UTF8))
+            using (var writer = self.CreateTextWriter(append, encoding: encoding ?? Encoding.UTF8))
             {
                 writer.NewLine = lineBreak;
                 foreach (var line in contents)
@@ -1198,11 +1250,12 @@ public static class FileInfoExtensions
     #region Helper
     /// <summary>Write向けのストリームオプションを生成する。</summary>
     /// <param name="options">元にするオプション。nullの場合はデフォルトの値とする。</param>
+    /// <param name="append">追記モードか否か。</param>
     /// <returns>生成したオプション</returns>
-    private static FileStreamOptions createStreamWriteOptions(FileStreamOptions? options = null)
+    private static FileStreamOptions createStreamWriteOptions(FileStreamOptions? options = null, bool append = false)
     {
         var writeOpt = new FileStreamOptions();
-        writeOpt.Mode = FileMode.Create;
+        writeOpt.Mode = append ? FileMode.Append : FileMode.Create;
         writeOpt.Access = FileAccess.Write;
         writeOpt.Share = FileShare.Read;
         if (options != null)
