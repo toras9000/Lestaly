@@ -179,4 +179,20 @@ public class EnumerableExtensionsTests
         actual.Should().Equal(data);
     }
 
+    [TestMethod()]
+    public void SkipNull_class()
+    {
+        var source = new[] { "a", "b", null, "c", "d", };
+        var filtered = source.SkipNull();
+        filtered.Should().Equal(["a", "b", "c", "d"]);
+    }
+
+    [TestMethod()]
+    public void SkipNull_struct()
+    {
+            var source = new[] { 1, 2, default(int?), 3, 4, };
+            var filtered = source.SkipNull();
+            filtered.Should().Equal([1, 2, 3, 4]);
+    }
+
 }

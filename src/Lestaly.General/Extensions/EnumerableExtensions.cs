@@ -108,6 +108,38 @@ public static class EnumerableExtensions
         }
     }
 
+    /// <summary>IEnumerable{T} (参照型要素) に対する拡張メソッド</summary>
+    /// <typeparam name="TSource">シーケンスの要素型</typeparam>
+    /// <param name="self">対象シーケンス</param>
+    extension<TSource>(IEnumerable<TSource?> self) where TSource : class
+    {
+        /// <summary>シーケンス要素の null をスキップする。</summary>
+        /// <returns>null を除いたシーケンス</returns>
+        public IEnumerable<TSource> SkipNull()
+        {
+            foreach (var item in self)
+            {
+                if (item != null) yield return item;
+            }
+        }
+    }
+
+    /// <summary>IEnumerable{T} (Nullable) に対する拡張メソッド</summary>
+    /// <typeparam name="TSource">シーケンスの要素型</typeparam>
+    /// <param name="self">対象シーケンス</param>
+    extension<TSource>(IEnumerable<TSource?> self) where TSource : struct
+    {
+        /// <summary>シーケンス要素の null をスキップする。</summary>
+        /// <returns>null を除いたシーケンス</returns>
+        public IEnumerable<TSource> SkipNull()
+        {
+            foreach (var item in self)
+            {
+                if (item.HasValue) yield return item.Value;
+            }
+        }
+    }
+
     /// <summary>IEnumerable{T} に対する拡張メソッド</summary>
     /// <typeparam name="TSource">シーケンスの要素型</typeparam>
     /// <param name="self">対象シーケンス</param>
