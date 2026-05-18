@@ -9,8 +9,8 @@ namespace Lestaly;
 /// <param name="Buffered">検索結果をバッファリングしてから列挙するか否か</param>
 /// <param name="SkipInaccessible">アクセスできないファイル/ディレクトリをスキップするか否か</param>
 /// <param name="SkipAttributes">スキップ対象のファイル属性</param>
-/// <param name="FileFilter">ファイル列挙フィルタ</param>
-/// <param name="DirectoryFilter">ディレクトリ列挙フィルタ</param>
+/// <param name="FileFilter">ファイル列挙通過フィルタ</param>
+/// <param name="DirectoryFilter">ディレクトリ列挙通過フィルタ</param>
 public record VisitFilesOptions(
     bool Recurse = true,
     VisitFilesHandling? Handling = null,

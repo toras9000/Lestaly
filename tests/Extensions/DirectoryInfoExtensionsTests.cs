@@ -1174,6 +1174,39 @@ public class DirectoryInfoExtensionsTests
     }
 
     [TestMethod]
+    public async Task ScanFiles()
+    {
+        var testFiles = new[]
+        {
+            @"abc/aaa.txt",
+            @"def/ghi/bbb.png",
+            @"ccc.jpg",
+            @"abc/ddd.txt",
+            @"eee.png",
+            @"abc/fff.jpg",
+            @"asd/qwe/ggg.txt",
+            @"hhh.txt",
+        };
+
+        using var testDir = new TempDir();
+        foreach (var path in testFiles)
+        {
+            await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
+        }
+
+        {
+            var expect = testDir.Info.EnumerateFiles("*.txt", SearchOption.AllDirectories).ToArray();
+            var actual = testDir.Info.ScanFiles(["txt"]).ToArray();
+            actual.Should().BeEquivalentTo(expect, config => config.Including(o => o.FullName));
+        }
+        {
+            var expect = testDir.Info.EnumerateFiles("*", SearchOption.AllDirectories).Where(f => !f.GetPathSegments().Contains("abc")).ToArray();
+            var actual = testDir.Info.ScanFiles(skipDirs: [new(@"abc")]).ToArray();
+            actual.Should().BeEquivalentTo(expect, config => config.Including(o => o.FullName));
+        }
+    }
+
+    [TestMethod]
     public async Task VisitFilesAsync_TopOnly()
     {
         var testFiles = new[]
@@ -1705,6 +1738,40 @@ public class DirectoryInfoExtensionsTests
 
         (await testDir.Info.SelectFilesAsync(async w => await w.File!.ReadAllTextAsync(), options: testOpt).ToArrayAsync())
             .Should().BeEquivalentTo(testExpects);
+    }
+
+
+    [TestMethod]
+    public async Task ScanFilesAsync()
+    {
+        var testFiles = new[]
+        {
+            @"abc/aaa.txt",
+            @"def/ghi/bbb.png",
+            @"ccc.jpg",
+            @"abc/ddd.txt",
+            @"eee.png",
+            @"abc/fff.jpg",
+            @"asd/qwe/ggg.txt",
+            @"hhh.txt",
+        };
+
+        using var testDir = new TempDir();
+        foreach (var path in testFiles)
+        {
+            await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
+        }
+
+        {
+            var expect = testDir.Info.EnumerateFiles("*.txt", SearchOption.AllDirectories).ToArray();
+            var actual = await testDir.Info.ScanFilesAsync(["txt"]).ToArrayAsync();
+            actual.Should().BeEquivalentTo(expect, config => config.Including(o => o.FullName));
+        }
+        {
+            var expect = testDir.Info.EnumerateFiles("*", SearchOption.AllDirectories).Where(f => !f.GetPathSegments().Contains("abc")).ToArray();
+            var actual = await testDir.Info.ScanFilesAsync(skipDirs: [new(@"abc")]).ToArrayAsync();
+            actual.Should().BeEquivalentTo(expect, config => config.Including(o => o.FullName));
+        }
     }
 
     [TestMethod]
