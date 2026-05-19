@@ -1200,8 +1200,18 @@ public class DirectoryInfoExtensionsTests
             actual.Should().BeEquivalentTo(expect, config => config.Including(o => o.FullName));
         }
         {
+            var expect = testDir.Info.EnumerateFiles("*.txt", SearchOption.AllDirectories).Where(f => !f.GetPathSegments().Contains("abc")).ToArray();
+            var actual = testDir.Info.ScanFiles(["txt"], skipDir: dir => dir.Name == "abc").ToArray();
+            actual.Should().BeEquivalentTo(expect, config => config.Including(o => o.FullName));
+        }
+        {
             var expect = testDir.Info.EnumerateFiles("*", SearchOption.AllDirectories).Where(f => !f.GetPathSegments().Contains("abc")).ToArray();
-            var actual = testDir.Info.ScanFiles(skipDirs: [new(@"abc")]).ToArray();
+            var actual = testDir.Info.ScanFiles(skipDir: dir => dir.Name == "abc").ToArray();
+            actual.Should().BeEquivalentTo(expect, config => config.Including(o => o.FullName));
+        }
+        {
+            var expect = testDir.Info.EnumerateFiles("*", SearchOption.AllDirectories).Where(f => f.Name.StartsWith("a") || f.Name.StartsWith("f")).ToArray();
+            var actual = testDir.Info.ScanFiles(skipFile: f => !(f.Name.StartsWith("a") || f.Name.StartsWith("f"))).ToArray();
             actual.Should().BeEquivalentTo(expect, config => config.Including(o => o.FullName));
         }
     }
@@ -1740,7 +1750,6 @@ public class DirectoryInfoExtensionsTests
             .Should().BeEquivalentTo(testExpects);
     }
 
-
     [TestMethod]
     public async Task ScanFilesAsync()
     {
@@ -1768,8 +1777,18 @@ public class DirectoryInfoExtensionsTests
             actual.Should().BeEquivalentTo(expect, config => config.Including(o => o.FullName));
         }
         {
+            var expect = testDir.Info.EnumerateFiles("*.txt", SearchOption.AllDirectories).Where(f => !f.GetPathSegments().Contains("abc")).ToArray();
+            var actual = await testDir.Info.ScanFilesAsync(["txt"], skipDir: dir => dir.Name == "abc").ToArrayAsync();
+            actual.Should().BeEquivalentTo(expect, config => config.Including(o => o.FullName));
+        }
+        {
             var expect = testDir.Info.EnumerateFiles("*", SearchOption.AllDirectories).Where(f => !f.GetPathSegments().Contains("abc")).ToArray();
-            var actual = await testDir.Info.ScanFilesAsync(skipDirs: [new(@"abc")]).ToArrayAsync();
+            var actual = await testDir.Info.ScanFilesAsync(skipDir: dir => dir.Name == "abc").ToArrayAsync();
+            actual.Should().BeEquivalentTo(expect, config => config.Including(o => o.FullName));
+        }
+        {
+            var expect = testDir.Info.EnumerateFiles("*", SearchOption.AllDirectories).Where(f => f.Name.StartsWith("a") || f.Name.StartsWith("f")).ToArray();
+            var actual = await testDir.Info.ScanFilesAsync(skipFile: f => !(f.Name.StartsWith("a") || f.Name.StartsWith("f"))).ToArrayAsync();
             actual.Should().BeEquivalentTo(expect, config => config.Including(o => o.FullName));
         }
     }

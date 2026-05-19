@@ -862,14 +862,39 @@ public static class DirectoryInfoExtensions
     /// </remarks>
     /// <param name="self">検索の起点ディレクトリ</param>
     /// <param name="extensions">列挙対象ファイル拡張子(大文字・小文字の区別なし)</param>
-    /// <param name="skipDirs">列挙から除外するディレクトリ名のパターン</param>
+    /// <param name="skipFile">ファイルに対する列挙除外判定デリゲート。true を返却すると列挙をスキップする。</param>
+    /// <param name="skipDir">ディレクトリに対する列挙除外判定デリゲート。true を返却すると列挙をスキップする。</param>
     /// <param name="recurse">ディレクトリを再帰検索するか否か</param>
     /// <returns>ファイル情報のシーケンス</returns>
-    public static IEnumerable<FileInfo> ScanFiles(this DirectoryInfo self, IEnumerable<string>? extensions = default, IEnumerable<Regex>? skipDirs = default, bool recurse = true)
+    public static IEnumerable<FileInfo> ScanFiles(this DirectoryInfo self, IEnumerable<string> extensions, Func<FileInfo, bool>? skipFile = default, Func<DirectoryInfo, bool>? skipDir = default, bool recurse = true)
     {
         // 拡張子の判定セット生成
         var targetExts = extensions?.Select(e => e.EnsureStarts(".")).ToHashSet(StringComparer.OrdinalIgnoreCase);
 
+        return self.ScanFiles(
+            skipFile: file =>
+            {
+                if (targetExts != null && !targetExts.Contains(file.Extension)) return true;
+                return skipFile != null && skipFile.Invoke(file);
+            },
+            skipDir: skipDir,
+            recurse: recurse
+        );
+    }
+
+    /// <summary>ディレクトリ配下のファイルを列挙する</summary>
+    /// <remarks>
+    /// ディレクトリ内を列挙する際は最初にファイルを列挙し、オプションで指定されていれば次にサブディレクトリを列挙する。
+    /// このメソッドではサブディレクトリ配下の検索に再帰呼び出しを利用する。
+    /// ディレクトリ構成によってはスタックを大量に消費する可能性があることに注意。
+    /// </remarks>
+    /// <param name="self">検索の起点ディレクトリ</param>
+    /// <param name="skipFile">ファイルに対する列挙除外判定デリゲート。true を返却すると列挙をスキップする。</param>
+    /// <param name="skipDir">ディレクトリに対する列挙除外判定デリゲート。true を返却すると列挙をスキップする。</param>
+    /// <param name="recurse">ディレクトリを再帰検索するか否か</param>
+    /// <returns>ファイル情報のシーケンス</returns>
+    public static IEnumerable<FileInfo> ScanFiles(this DirectoryInfo self, Func<FileInfo, bool>? skipFile = default, Func<DirectoryInfo, bool>? skipDir = default, bool recurse = true)
+    {
         // メソッド目的に合う走査オプションを作成
         var options = new VisitFilesOptions(
             Recurse: recurse,
@@ -878,8 +903,8 @@ public static class DirectoryInfoExtensions
             Buffered: false,
             SkipInaccessible: true,
             SkipAttributes: FileAttributes.None,
-            FileFilter: file => targetExts == null || targetExts.Contains(file.Extension),
-            DirectoryFilter: dir => skipDirs == null || !skipDirs.Any(re => re.IsMatch(dir.Name))
+            FileFilter: file => skipFile == null || !skipFile(file),
+            DirectoryFilter: dir => skipDir == null || !skipDir(dir)
         );
 
         return self.VisitFiles<FileInfo>(c => c.SetResult(c.File!), options);
@@ -893,14 +918,39 @@ public static class DirectoryInfoExtensions
     /// </remarks>
     /// <param name="self">検索の起点ディレクトリ</param>
     /// <param name="extensions">列挙対象ファイル拡張子(大文字・小文字の区別なし)</param>
-    /// <param name="skipDirs">列挙から除外するディレクトリ名のパターン</param>
+    /// <param name="skipFile">ファイルに対する列挙除外判定デリゲート。true を返却すると列挙をスキップする。</param>
+    /// <param name="skipDir">ディレクトリに対する列挙除外判定デリゲート。true を返却すると列挙をスキップする。</param>
     /// <param name="recurse">ディレクトリを再帰検索するか否か</param>
     /// <returns>ファイル情報のシーケンス</returns>
-    public static IAsyncEnumerable<FileInfo> ScanFilesAsync(this DirectoryInfo self, IEnumerable<string>? extensions = default, IEnumerable<Regex>? skipDirs = default, bool recurse = true)
+    public static IAsyncEnumerable<FileInfo> ScanFilesAsync(this DirectoryInfo self, IEnumerable<string> extensions, Func<FileInfo, bool>? skipFile = default, Func<DirectoryInfo, bool>? skipDir = default, bool recurse = true)
     {
         // 拡張子の判定セット生成
         var targetExts = extensions?.Select(e => e.EnsureStarts(".")).ToHashSet(StringComparer.OrdinalIgnoreCase);
 
+        return self.ScanFilesAsync(
+            skipFile: file =>
+            {
+                if (targetExts != null && !targetExts.Contains(file.Extension)) return true;
+                return skipFile != null && skipFile.Invoke(file);
+            },
+            skipDir: skipDir,
+            recurse: recurse
+        );
+    }
+
+    /// <summary>ディレクトリ配下のファイルを列挙する</summary>
+    /// <remarks>
+    /// ディレクトリ内を列挙する際は最初にファイルを列挙し、オプションで指定されていれば次にサブディレクトリを列挙する。
+    /// このメソッドではサブディレクトリ配下の検索に再帰呼び出しを利用する。
+    /// ディレクトリ構成によってはスタックを大量に消費する可能性があることに注意。
+    /// </remarks>
+    /// <param name="self">検索の起点ディレクトリ</param>
+    /// <param name="skipFile">ファイルに対する列挙除外判定デリゲート。true を返却すると列挙をスキップする。</param>
+    /// <param name="skipDir">ディレクトリに対する列挙除外判定デリゲート。true を返却すると列挙をスキップする。</param>
+    /// <param name="recurse">ディレクトリを再帰検索するか否か</param>
+    /// <returns>ファイル情報のシーケンス</returns>
+    public static IAsyncEnumerable<FileInfo> ScanFilesAsync(this DirectoryInfo self, Func<FileInfo, bool>? skipFile = default, Func<DirectoryInfo, bool>? skipDir = default, bool recurse = true)
+    {
         // メソッド目的に合う走査オプションを作成
         var options = new VisitFilesOptions(
             Recurse: recurse,
@@ -909,8 +959,8 @@ public static class DirectoryInfoExtensions
             Buffered: false,
             SkipInaccessible: true,
             SkipAttributes: FileAttributes.None,
-            FileFilter: file => targetExts == null || targetExts.Contains(file.Extension),
-            DirectoryFilter: dir => skipDirs == null || !skipDirs.Any(re => re.IsMatch(dir.Name))
+            FileFilter: file => skipFile == null || !skipFile(file),
+            DirectoryFilter: dir => skipDir == null || !skipDir(dir)
         );
 
         return self.VisitFilesAsync<FileInfo>(async c => c.SetResult(c.File!), options);
