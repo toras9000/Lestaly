@@ -58,7 +58,7 @@ public class EmbedStringBuilder
             if (scan[0] == '$')
             {
                 scan = scan[1..];
-                if (scan[0] == '$')
+                if (scan is ['$', ..])
                 {
                     buffer.Append('$');
                     scan = scan[1..];

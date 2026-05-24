@@ -84,6 +84,20 @@ public class EmbedStringBuilderTests
     }
 
     [TestMethod]
+    public void Write_Abnormal()
+    {
+        var buffer = new StringBuilder();
+        var builder = new EmbedStringBuilder();
+
+        builder.Default = "***";
+        builder.Variables["abc"] = "value1";
+        builder.Variables["def"] = "value2";
+
+        builder.Write("abc$", buffer);
+        buffer.ToString().Should().Be("abc");
+    }
+
+    [TestMethod]
     public void Build()
     {
         var builder = new EmbedStringBuilder();
