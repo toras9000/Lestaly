@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Runtime.Serialization;
 
 namespace Lestaly;
 
@@ -16,10 +17,16 @@ public static class FormUrlEncoded
     {
         static IEnumerable<KeyValuePair<string, string>> enumerateMembers(T obj)
         {
+            if (obj == null) yield break;
+
             foreach (var prop in typeof(T).GetProperties())
             {
+                var ignoreAttr = prop.GetCustomAttribute<IgnoreDataMemberAttribute>();
+                if (ignoreAttr != null) continue;
+
                 var dispAttr = prop.GetCustomAttribute<DisplayAttribute>();
                 var name = dispAttr?.Name ?? prop.Name;
+
                 var value = prop.GetValue(obj);
                 if (value is not string && value is System.Collections.IEnumerable collection)
                 {
