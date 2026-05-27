@@ -59,77 +59,23 @@ public static class Try
 
     /// <summary>処理を実行して結果値を得る</summary>
     /// <typeparam name="TResult">戻り値型</typeparam>
-    /// <param name="action">値を得る処理</param>
-    /// <param name="alternate">処理で値を得られなかった場合の代替値</param>
-    /// <returns>処理結果値または代替値、および例外発生時はその例外オブジェクト(未発生の場合はnull)。</returns>
-    public static (TResult? value, Exception?) Func<TResult>(Func<TResult?> action, TResult? alternate = default)
-    {
-        if (action != null)
-        {
-            try { return (action(), null); }
-            catch (Exception ex) { return (alternate, ex); }
-        }
-        return (alternate, null);
-    }
-
-    /// <summary>処理を実行して結果値を得る</summary>
-    /// <typeparam name="TResult">戻り値型</typeparam>
-    /// <param name="action">値を得る処理</param>
-    /// <param name="alternater">例外発生時の代替処理</param>
-    /// <returns>処理結果値または代替値。</returns>
-    public static TResult? Func<TResult>(Func<TResult?> action, Func<Exception, TResult?> alternater)
-    {
-        if (action != null)
-        {
-            try { return action(); }
-            catch (Exception ex) { if (alternater != null) try { return alternater(ex); } catch { } }
-        }
-        return default;
-    }
-
-    /// <summary>処理を実行して結果値を得る</summary>
-    /// <typeparam name="TResult">戻り値型</typeparam>
-    /// <param name="action">値を得る処理</param>
+    /// <param name="getter">値を得る処理</param>
     /// <returns>処理結果値または型のデフォルト値。</returns>
-    public static TResult? FuncOrDefault<TResult>(Func<TResult?> action)
-        => Func(action, _ => default);
-
-    /// <summary>非同期処理を実行して結果値を得る</summary>
-    /// <typeparam name="TResult">戻り値型</typeparam>
-    /// <param name="action">値を得る処理</param>
-    /// <param name="alternate">処理で値を得られなかった場合の代替値</param>
-    /// <returns>例外なく実行されたら処理の結果値。例外発生時は代替値。</returns>
-    public static async Task<(TResult? value, Exception? error)> FuncAsync<TResult>(Func<Task<TResult?>> action, TResult? alternate = default)
+    public static TResult? Take<TResult>(Func<TResult?> getter)
     {
-        if (action != null)
-        {
-            try { return (await action().ConfigureAwait(false), null); }
-            catch (Exception ex) { return (alternate, ex); }
-        }
-        return (alternate, null);
+        try { return getter(); }
+        catch { return default(TResult?); }
     }
 
     /// <summary>非同期処理を実行して結果値を得る</summary>
     /// <typeparam name="TResult">戻り値型</typeparam>
-    /// <param name="action">値を得る処理</param>
-    /// <param name="alternater">例外発生時の代替処理</param>
-    /// <returns>例外なく実行されたら処理の結果値。例外発生時は代替値。</returns>
-    public static async Task<TResult?> FuncAsync<TResult>(Func<Task<TResult?>> action, Func<Exception, Task<TResult?>> alternater)
+    /// <param name="getter">値を得る処理</param>
+    /// <returns>例外なく実行されたら処理の結果値。例外発生時はnull。</returns>
+    public static async ValueTask<TResult?> TakeAsync<TResult>(Func<Task<TResult?>> getter)
     {
-        if (action != null)
-        {
-            try { return await action().ConfigureAwait(false); }
-            catch (Exception ex) { if (alternater != null) try { return await alternater(ex); } catch { } }
-        }
-        return default;
+        try { return await getter(); }
+        catch { return default(TResult?); }
     }
-
-    /// <summary>非同期処理を実行して結果値を得る</summary>
-    /// <typeparam name="TResult">戻り値型</typeparam>
-    /// <param name="action">値を得る処理</param>
-    /// <returns>例外なく実行されたら処理の結果値。例外発生時は型のデフォルト値。</returns>
-    public static Task<TResult?> FuncOrDefaultAsync<TResult>(Func<Task<TResult?>> action)
-        => FuncAsync(action, _ => Task.FromResult<TResult?>(default));
 
     /// <summary>処理のエラー時に再試行を行い結果値を得る</summary>
     /// <typeparam name="TResult">戻り値型</typeparam>
