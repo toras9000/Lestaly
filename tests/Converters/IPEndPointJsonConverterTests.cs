@@ -1,46 +1,42 @@
+using System.Net;
 using System.Text.Json.Serialization;
-using System.Text.RegularExpressions;
 using Lestaly.Converters;
 
 namespace LestalyTest;
 
 [TestClass]
-public class RegexJsonConverterTests
+public class IPEndPointJsonConverterTests
 {
-    private record TestData([property: JsonConverter(typeof(RegexJsonConverter))] Regex Regex);
+    private record TestData([property: JsonConverter(typeof(IPEndPointJsonConverter))] IPEndPoint Endpoint);
 
     [TestMethod]
-    public async Task ConvertAsync()
+    public async Task ConvertV4Async()
     {
         var tempDir = new TempDir();
         var testFile = tempDir.Info.RelativeFile("test.json");
 
-        var data = new TestData(new(@"^a", RegexOptions.IgnoreCase | RegexOptions.Singleline, TimeSpan.FromSeconds(1)));
+        var data = new TestData(new(IPAddress.Parse("192.168.12.34"), 6543));
         await testFile.WritePrettyJsonAsync(data);
 
         var restore = await testFile.ReadRoughJsonAsync<TestData>();
 
         restore.Should().NotBeNull();
-        restore.Regex.ToString().Should().Be(data.Regex.ToString());
-        restore.Regex.Options.Should().Be(data.Regex.Options);
-        restore.Regex.MatchTimeout.Should().Be(data.Regex.MatchTimeout);
+        restore.Endpoint.Should().Be(data.Endpoint);
     }
 
     [TestMethod]
-    public async Task ConvertDefaulAsync()
+    public async Task ConvertV6Async()
     {
         var tempDir = new TempDir();
         var testFile = tempDir.Info.RelativeFile("test.json");
 
-        var data = new TestData(new(@"^a$"));
+        var data = new TestData(new(IPAddress.Parse("[fe80::1]"), 6543));
         await testFile.WritePrettyJsonAsync(data);
 
         var restore = await testFile.ReadRoughJsonAsync<TestData>();
 
         restore.Should().NotBeNull();
-        restore.Regex.ToString().Should().Be(data.Regex.ToString());
-        restore.Regex.Options.Should().Be(data.Regex.Options);
-        restore.Regex.MatchTimeout.Should().Be(data.Regex.MatchTimeout);
+        restore.Endpoint.Should().Be(data.Endpoint);
     }
 
     [TestMethod]
@@ -55,6 +51,6 @@ public class RegexJsonConverterTests
         var restore = await testFile.ReadRoughJsonAsync<TestData>();
 
         restore.Should().NotBeNull();
-        restore.Regex.Should().BeNull();
+        restore.Endpoint.Should().BeNull();
     }
 }

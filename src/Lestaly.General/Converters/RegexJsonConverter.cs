@@ -56,6 +56,10 @@ public class RegexJsonConverter : JsonConverter<Regex>
         {
             writer.WriteNullValue();
         }
+        else if (value.Options == RegexOptions.None && value.MatchTimeout.Equals(Regex.InfiniteMatchTimeout))
+        {
+            writer.WriteStringValue(value.ToString());
+        }
         else
         {
             writer.WriteStartObject();
@@ -63,8 +67,11 @@ public class RegexJsonConverter : JsonConverter<Regex>
             writer.WriteStringValue(value.ToString());
             writer.WritePropertyName("Options");
             writer.WriteNumberValue((int)value.Options);
-            writer.WritePropertyName("Timeout");
-            writer.WriteNumberValue((long)value.MatchTimeout.Ticks);
+            if (!value.MatchTimeout.Equals(Regex.InfiniteMatchTimeout))
+            {
+                writer.WritePropertyName("Timeout");
+                writer.WriteNumberValue((long)value.MatchTimeout.Ticks);
+            }
             writer.WriteEndObject();
         }
     }
