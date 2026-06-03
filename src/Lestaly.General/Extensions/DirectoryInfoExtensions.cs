@@ -140,7 +140,7 @@ public static class DirectoryInfoExtensions
         /// 検索結果が単一の場合はそのファイル情報。見つからない場合は null を返却。
         /// 検索結果が複数の場合、first 引数が真であれば最初のファイル情報を、そうでなければ null を返却。
         /// </returns>
-        public FileInfo? FindFile(string pattern, MatchCasing casing = MatchCasing.PlatformDefault, bool first = false)
+        public FileInfo? PickFile(string pattern, MatchCasing casing = MatchCasing.PlatformDefault, bool first = false)
         {
             ArgumentNullException.ThrowIfNull(self);
             ArgumentException.ThrowIfNullOrWhiteSpace(pattern);
@@ -161,51 +161,17 @@ public static class DirectoryInfoExtensions
                 // 2つ以上見つかった場合は未確定として結果無しにする
                 if (found != null)
                 {
-                    if (!first) found = null;
+                    found = null;
                     break;
                 }
                 // 見つかったファイルを保持
                 found = file;
+                // 最初に見つけたものを返す動作の場合は1つ目で終える
+                if (first) break;
+
             }
             return found;
         }
-
-        /// <summary>ディレクトリ配下の指定のパターンにマッチする単一のファイルを取得する。</summary>
-        /// <param name="path">検索するパス階層リスト。パス区切り文字を含まない1階層分のエントリのリストであるべき。</param>
-        /// <param name="casing">キャラクタ照合方法</param>
-        /// <param name="first">途中のパスとファイルで複数項目が見つかった場合に最初の項目を採用するか否か</param>
-        /// <returns>
-        /// 検索結果が一意に特定できる場合はそのファイル情報。見つからない場合は null を返却。
-        /// 経路および結果が複数の場合、first 引数が真であれば最初のファイル情報を、そうでなければ null を返却。
-        /// </returns>
-        public FileInfo? FindPathFile(Span<string> path, MatchCasing casing = MatchCasing.PlatformDefault, bool first = false)
-        {
-            ArgumentNullException.ThrowIfNull(self);
-            ArgumentOutOfRangeException.ThrowIfZero(path.Length);
-
-            // ファイルの検索基準ディレクトリ
-            var place = self;
-            if (1 < path.Length)
-            {
-                // 途中のディレクトリ階層を検索
-                place = self.FindPathDirectory(path[..^1], casing, first);
-                if (place == null) return null;
-            }
-
-            // 基準ディレクトリでのファイル検索
-            return place.FindFile(path[^1], casing, first);
-        }
-
-        /// <summary>ディレクトリ配下の指定のパターンにマッチする単一のファイルを取得する。</summary>
-        /// <param name="path">検索するパス階層リスト。パス区切り文字を含まない1階層分のエントリのリストであるべき。</param>
-        /// <param name="fuzzy">キャラクタケーシングを無視するか否か</param>
-        /// <param name="first">途中のパスとファイルで複数項目が見つかった場合に最初の項目を採用するか否か</param>
-        /// <returns>
-        /// 検索結果が一意に特定できる場合はそのファイル情報。見つからない場合は null を返却。
-        /// 経路および結果が複数の場合、first 引数が真であれば最初のファイル情報を、そうでなければ null を返却。
-        /// </returns>
-        public FileInfo? FindPathFile(Span<string> path, bool fuzzy, bool first = false)
-            => self.FindPathFile(path, fuzzy ? MatchCasing.CaseInsensitive : MatchCasing.CaseSensitive, first);
 
         /// <summary>ディレクトリ配下の指定のパターンにマッチする単一のディレクトリを取得する。</summary>
         /// <param name="pattern">検索パターン。パターン解釈は MatchType.Simple による。パスが階層状の場合、途中のパスはプラットフォーム依存のマッチングのようなので注意。</param>
@@ -215,7 +181,7 @@ public static class DirectoryInfoExtensions
         /// 検索結果が単一の場合はそのディレクトリ情報。見つからない場合は null を返却。
         /// 検索結果が複数の場合、first 引数が真であれば最初のディレクトリ情報を、そうでなければ null を返却。
         /// </returns>
-        public DirectoryInfo? FindDirectory(string pattern, MatchCasing casing = MatchCasing.PlatformDefault, bool first = false)
+        public DirectoryInfo? PickDirectory(string pattern, MatchCasing casing = MatchCasing.PlatformDefault, bool first = false)
         {
             ArgumentNullException.ThrowIfNull(self);
             ArgumentException.ThrowIfNullOrWhiteSpace(pattern);
@@ -236,75 +202,30 @@ public static class DirectoryInfoExtensions
                 // 2つ以上見つかった場合は未確定として結果無しにする
                 if (found != null)
                 {
-                    if (!first) found = null;
+                    found = null;
                     break;
                 }
                 // 見つかったディレクトリを保持
                 found = dir;
+                // 最初に見つけたものを返す動作の場合は1つ目で終える
+                if (first) break;
             }
             return found;
         }
 
-        /// <summary>ディレクトリ配下の指定のパスマッチする単一のディレクトリを取得する。</summary>
-        /// <param name="path">検索するパス階層リスト。パス区切り文字を含まない1階層分のエントリのリストであるべき。</param>
+        /// <summary>ディレクトリ配下の指定のパターンにマッチする最初のファイルを取得する。</summary>
+        /// <param name="pattern">検索パターン。パターン解釈は MatchType.Simple による。パスが階層状の場合、途中のパスはプラットフォーム依存のマッチングのようなので注意。</param>
         /// <param name="casing">キャラクタ照合方法</param>
-        /// <param name="first">途中のパスを含めたディレクトリが複数項目が見つかった場合に最初の項目を採用するか否か</param>
-        /// <returns>
-        /// 検索結果が一意に特定できる場合はそのディレクトリ情報。見つからない場合は null を返却。
-        /// 経路およびが複数の場合、first 引数が真であれば最初のディレクトリ情報を、そうでなければ null を返却。
-        /// </returns>
-        public DirectoryInfo? FindPathDirectory(Span<string> path, MatchCasing casing = MatchCasing.PlatformDefault, bool first = false)
-        {
-            ArgumentNullException.ThrowIfNull(self);
-            ArgumentOutOfRangeException.ThrowIfZero(path.Length);
+        /// <returns>見つかった最初のファイル</returns>
+        public FileInfo? FindFile(string pattern, MatchCasing casing = MatchCasing.PlatformDefault)
+            => self.PickFile(pattern, casing, first: true);
 
-            // 検索オプション
-            var options = new EnumerationOptions();
-            options.MatchCasing = casing;
-            options.MatchType = MatchType.Simple;
-            options.IgnoreInaccessible = true;
-            options.AttributesToSkip = FileAttributes.None;
-            options.ReturnSpecialDirectories = false;
-            options.RecurseSubdirectories = false;
-
-            // 指定のディレクトリを順次検索
-            var place = self;
-            for (var i = 0; i < path.Length; i++)
-            {
-                var item = path[i];
-                var next = default(DirectoryInfo);
-                foreach (var dir in place.EnumerateDirectories(item, options))
-                {
-                    // 2つ以上見つかった場合は未確定として結果無しにする
-                    if (next != null)
-                    {
-                        if (!first) return null;
-                        break;
-                    }
-                    // 見つかったファイルを保持
-                    next = dir;
-                }
-
-                // 見つからなければ結果なし
-                if (next == null) return null;
-
-                // 次の階層へ
-                place = next;
-            }
-
-            return place;
-        }
-
-        /// <summary>ディレクトリ配下の指定のパスマッチする単一のディレクトリを取得する。</summary>
-        /// <param name="path">検索するパス階層リスト。パス区切り文字を含まない1階層分のエントリのリストであるべき。</param>
-        /// <param name="fuzzy">キャラクタケーシングを無視するか否か</param>
-        /// <param name="first">途中のパスを含めたディレクトリが複数項目が見つかった場合に最初の項目を採用するか否か</param>
-        /// <returns>
-        /// 検索結果が一意に特定できる場合はそのディレクトリ情報。見つからない場合は null を返却。
-        /// 経路およびが複数の場合、first 引数が真であれば最初のディレクトリ情報を、そうでなければ null を返却。
-        /// </returns>
-        public DirectoryInfo? FindPathDirectory(Span<string> path, bool fuzzy, bool first = false)
-            => self.FindPathDirectory(path, fuzzy ? MatchCasing.CaseInsensitive : MatchCasing.CaseSensitive, first);
+        /// <summary>ディレクトリ配下の指定のパターンにマッチする最初のディレクトリを取得する。</summary>
+        /// <param name="pattern">検索パターン。パターン解釈は MatchType.Simple による。パスが階層状の場合、途中のパスはプラットフォーム依存のマッチングのようなので注意。</param>
+        /// <param name="casing">キャラクタ照合方法</param>
+        /// <returns>見つかった最初のディレクトリ</returns>
+        public DirectoryInfo? FindDirectory(string pattern, MatchCasing casing = MatchCasing.PlatformDefault)
+            => self.PickDirectory(pattern, casing, first: true);
 
         /// <summary>指定の名前の祖先ディレクトリを探す</summary>
         /// <param name="name">ディレクトリ名</param>
@@ -329,6 +250,18 @@ public static class DirectoryInfoExtensions
             }
             return scan;
         }
+    }
+
+    /// <summary>検索系メソッド</summary>
+    /// <param name="self">DirectoryInfoコレクション</param>
+    extension(IEnumerable<DirectoryInfo> self)
+    {
+        /// <summary>ディレクトリを順位検索して配下の指定のパターンにマッチする最初のファイルを取得する。</summary>
+        /// <param name="pattern">検索パターン。パターン解釈は MatchType.Simple による。パスが階層状の場合、途中のパスはプラットフォーム依存のマッチングのようなので注意。</param>
+        /// <param name="casing">キャラクタ照合方法</param>
+        /// <returns>見つかった最初のファイル</returns>
+        public FileInfo? FindFile(string pattern, MatchCasing casing = MatchCasing.PlatformDefault)
+            => self.Select(dir => dir.FindFile(pattern, casing)).FirstOrDefault(f => f != null);
     }
     #endregion
 
