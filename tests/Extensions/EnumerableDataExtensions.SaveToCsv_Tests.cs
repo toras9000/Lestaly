@@ -628,4 +628,47 @@ public class EnumerableDataExtensions_SaveToCsv_Tests
         // 検証
         File.ReadAllText(target.FullName).Should().Be(expect);
     }
+
+    class MemberIgnoreItem
+    {
+        [TypeColumn(Ignore = false)] public int Alpha { get; set; }
+        [TypeColumn(Ignore = true)] public int Bravo { get; set; }
+        [TypeColumn(Ignore = false)] public int Charlie { get; set; }
+    }
+
+    [TestMethod]
+    public async Task SaveToCsvAsync_IgnoreMember()
+    {
+        using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
+
+        // テスト用に一時ディレクトリ
+        using var tempDir = new TempDir();
+
+        // テストファイル
+        var target = tempDir.Info.RelativeFile("test.txt");
+
+        // 保存データ
+        var data = new[]
+        {
+            new MemberIgnoreItem{ Alpha = 1, Bravo = 2, Charlie = 3, },
+        };
+
+        // 実行オプション
+        var options = new SaveToCsvOptions()
+        {
+            UseColumnAttribute = true,
+        };
+
+        // テスト対象実行
+        await data.SaveToCsvAsync(target.FullName, options);
+
+        // 期待値
+        var expect = "";
+        expect += "Alpha,Charlie" + Environment.NewLine;
+        expect += "1,3" + Environment.NewLine;
+
+        // 検証
+        File.ReadAllText(target.FullName).Should().Be(expect);
+    }
+
 }

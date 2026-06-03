@@ -417,6 +417,13 @@ public static partial class EnumerableDataExtensions
         var columns = typeof(TSource).FindMembers(kinds, flags, (m, c) => options.MemberFilter?.Invoke(m) ?? true, null)
             .Select(member =>
             {
+                // メンバに設定された属性を取得
+                var columnAttr = options.UseColumnAttribute ? member.GetCustomAttribute<TypeColumnAttribute>() : default;
+                var excelAttr = columnAttr as ExcelTypeColumnAttribute;
+
+                // 無視が指定されている場合は対象外
+                if (columnAttr?.Ignore == true) return null;
+
                 // メンバのゲッターを作成
                 var getter = default(Func<TSource, object?>);
                 var returnType = default(Type);
@@ -431,10 +438,6 @@ public static partial class EnumerableDataExtensions
                     getter = options.UseCompiledGetter ? MemberAccessor.CompilePropertyGetter<TSource>(propInfo, nonPublic: false) : MemberAccessor.CreatePropertyGetter<TSource>(propInfo, nonPublic: false);
                     returnType = propInfo.PropertyType;
                 }
-
-                // メンバに設定された属性を取得
-                var columnAttr = options.UseColumnAttribute ? member.GetCustomAttribute<TypeColumnAttribute>() : default;
-                var excelAttr = columnAttr as ExcelTypeColumnAttribute;
 
                 // 属性利用が指定されていれば、その列結合情報を取得する。
                 var span = 1;
@@ -499,6 +502,7 @@ public static partial class EnumerableDataExtensions
                 // カラム情報を作る
                 return new TypeColumn<TSource>(member, returnType, getter, span, captions, columnAttr, excelAttr);
             })
+            .SkipNull()
             .OrderBy(c => c.Attribute?.Order ?? 0)                      // 属性で指定された順序があればそれでソート
             .ThenBy(c => options.SortCaption ? c.Caption : "")          // キャンプションソートが指定されていればそのソート
             .ThenBy(c => options.SortMemberName ? c.Member.Name : "")   // メンバ名ソートが指定されていればそのソート。両方指定されていたらキャプションよりも後(同一キャプションの場合の順序)

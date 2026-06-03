@@ -6,6 +6,9 @@ namespace Lestaly;
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
 public class TypeColumnAttribute : Attribute
 {
+    /// <summary>カラム(メンバー)を無視するか否か</summary>
+    public bool Ignore { get; set; }
+
     /// <summary>カラムのキャプション</summary>
     public string? Caption { get; set; }
 

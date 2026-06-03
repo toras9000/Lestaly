@@ -1332,4 +1332,45 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         col2.Style.Alignment.WrapText.Should().Be(true);
 
     }
+
+    class MemberIgnoreItem
+    {
+        [ExcelTypeColumn(Ignore = false)] public int Alpha { get; set; }
+        [ExcelTypeColumn(Ignore = true)] public int Bravo { get; set; }
+        [ExcelTypeColumn(Ignore = false)] public int Charlie { get; set; }
+    }
+
+    [TestMethod]
+    public async Task SaveToExcel_IgnoreMember()
+    {
+        using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
+
+        // テスト用に一時ディレクトリ
+        using var tempDir = new TempDir();
+
+        // テストファイル
+        var target = new FileInfo(@"D:\temp\test.xlsx");
+
+        // 保存データ
+        var data = new[]
+        {
+            new MemberIgnoreItem{ Alpha = 1, Bravo = 2, Charlie = 3, },
+        };
+
+        // 実行オプション
+        var options = new SaveToExcelOptions()
+        {
+            UseColumnAttribute = true,
+        };
+
+        // テスト対象実行
+        data.SaveToExcel(target.FullName, options);
+
+        // 検証
+        using var book = new XLWorkbook(target.FullName);
+        var sheet = book.Worksheets.First();
+        sheet.Cell("A1").Value.GetText().Should().Be(nameof(MemberIgnoreItem.Alpha));
+        sheet.Cell("B1").Value.GetText().Should().Be(nameof(MemberIgnoreItem.Charlie));
+    }
+
 }
