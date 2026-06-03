@@ -1,4 +1,4 @@
-﻿using System.Reactive.Disposables;
+﻿using LestalyTest._Test;
 
 namespace LestalyTest.Extensions;
 
@@ -17,7 +17,7 @@ public class EnumerableDataExtensions_ToParallel_Tests
                 actives.Add(n);
                 history!.Add(actives.Count);
             }
-            return Disposable.Create(() =>
+            return new ResourceItem(() =>
             {
                 lock (actives)
                 {
