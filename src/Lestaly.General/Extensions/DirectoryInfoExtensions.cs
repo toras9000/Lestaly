@@ -254,14 +254,19 @@ public static class DirectoryInfoExtensions
 
     /// <summary>検索系メソッド</summary>
     /// <param name="self">DirectoryInfoコレクション</param>
-    extension(IEnumerable<DirectoryInfo> self)
+    extension(IEnumerable<DirectoryInfo?> self)
     {
+        /// <summary>ディレクトリのシーケンスを存在するものだけに絞り込む</summary>
+        /// <returns>存在するディレクトリのシーケンス</returns>
+        public IEnumerable<DirectoryInfo> Exists()
+            => self.Where(dir => dir?.Exists == true).Select(dir => dir!);
+
         /// <summary>ディレクトリを順位検索して配下の指定のパターンにマッチする最初のファイルを取得する。</summary>
         /// <param name="pattern">検索パターン。パターン解釈は MatchType.Simple による。パスが階層状の場合、途中のパスはプラットフォーム依存のマッチングのようなので注意。</param>
         /// <param name="casing">キャラクタ照合方法</param>
         /// <returns>見つかった最初のファイル</returns>
         public FileInfo? FindFile(string pattern, MatchCasing casing = MatchCasing.PlatformDefault)
-            => self.Select(dir => dir.FindFile(pattern, casing)).FirstOrDefault(f => f != null);
+            => self.Exists().Select(dir => dir.FindFile(pattern, casing)).FirstOrDefault(f => f != null);
     }
     #endregion
 

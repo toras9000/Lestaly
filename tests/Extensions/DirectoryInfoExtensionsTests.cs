@@ -386,9 +386,8 @@ public class DirectoryInfoExtensionsTests
     #endregion
 
     #region Find (dir)
-
     [TestMethod]
-    public void FindFile_Dirs()
+    public void Dirs_Exists()
     {
         var paths = new[]
         {
@@ -404,6 +403,35 @@ public class DirectoryInfoExtensionsTests
         {
             var dirs = new[]
             {
+                tempDir.Info.RelativeDirectory("ABC"),
+                tempDir.Info.RelativeDirectory("XXX"),
+                default(DirectoryInfo),
+                tempDir.Info.RelativeDirectory("YYY"),
+            };
+
+            dirs.Exists().Select(d => d.Name).Should().BeEquivalentTo("XXX", "YYY");
+        }
+    }
+
+    [TestMethod]
+    public void Dirs_FindFile()
+    {
+        var paths = new[]
+        {
+            "XXX/abc",
+            "XXX/def",
+            "YYY/abc",
+            "YYY/abc",
+        };
+
+        var tempDir = new TempDir();
+        foreach (var path in paths) tempDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllText(path);
+
+        {
+            var dirs = new[]
+            {
+                tempDir.Info.RelativeDirectory("ABC"),
+                default(DirectoryInfo),
                 tempDir.Info.RelativeDirectory("XXX"),
                 tempDir.Info.RelativeDirectory("YYY"),
             };
@@ -415,6 +443,8 @@ public class DirectoryInfoExtensionsTests
         {
             var dirs = new[]
             {
+                tempDir.Info.RelativeDirectory("ABC"),
+                default(DirectoryInfo),
                 tempDir.Info.RelativeDirectory("YYY"),
                 tempDir.Info.RelativeDirectory("XXX"),
             };
