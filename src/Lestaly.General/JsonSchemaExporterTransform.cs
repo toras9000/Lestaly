@@ -87,7 +87,7 @@ public static class JsonSchemaExporterTransform
             collectAttribute(context.PropertyInfo.AttributeProvider);
 
             // プロパティ型が enum かを判定
-            if (context.PropertyInfo.PropertyType.IsEnum)
+            if (schemaAttr?.QuietEnum != true && context.PropertyInfo.PropertyType.IsEnum)
             {
                 enumType = context.PropertyInfo.PropertyType;
             }
@@ -101,7 +101,7 @@ public static class JsonSchemaExporterTransform
             if (description != null) objectSchema.Insert(0, "description", description);
 
             // enum型であれば列挙値を設定
-            if (schemaAttr?.QuietEnum != true && enumType != null)
+            if (enumType != null)
             {
                 if (schemaAttr?.ValueType == JsonSchemaValueType.Number)
                 {
@@ -123,6 +123,7 @@ public static class JsonSchemaExporterTransform
                     JsonSchemaValueType.Boolean => "boolean",
                     JsonSchemaValueType.Object => "object",
                     JsonSchemaValueType.Array => "object",
+                    JsonSchemaValueType.Unknown => enumType == null ? null : "string",
                     _ => null,
                 };
                 if (jsonType != null) objectSchema["type"] = jsonType;

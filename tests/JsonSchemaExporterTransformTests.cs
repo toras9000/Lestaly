@@ -154,7 +154,9 @@ public class JsonSchemaExporterTransformTests
         };
         public record Contaier(
             [property: JsonSchema(ValueType = JsonSchemaValueType.Number)] Kind EnumNumbers,
-            [property: JsonSchema(ValueType = JsonSchemaValueType.String)] Kind EnumStrings
+            [property: JsonSchema(ValueType = JsonSchemaValueType.String)] Kind EnumStrings,
+            [property: JsonSchema(QuietEnum = false)] Kind TreatEnum,
+            [property: JsonSchema(QuietEnum = true)] Kind QuietEnum
         );
     }
 
@@ -171,6 +173,8 @@ public class JsonSchemaExporterTransformTests
         var schema = typeof(JsonSchema_EnumValues.Contaier).GetJsonSchemaAsNode(new() { TransformSchemaNode = JsonSchemaExporterTransform.WithMetadata, });
         schema["properties"]!["EnumNumbers"]!["enum"]!.AsArray().GetValues<int>().Should().BeEquivalentTo([0, 1, 2]);
         schema["properties"]!["EnumStrings"]!["enum"]!.AsArray().GetValues<string>().Should().BeEquivalentTo(["Alpha", "Bravo", "Charlie"]);
+        schema["properties"]!["TreatEnum"]!["type"]!.GetValue<string>().Should().Be("string");
+        schema["properties"]!["QuietEnum"]!["enum"].Should().BeNull();
     }
 }
 #endif
