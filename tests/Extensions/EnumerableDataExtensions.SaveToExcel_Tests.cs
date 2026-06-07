@@ -142,7 +142,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
     }
 
     [TestMethod]
-    public void SaveToExcel_Fomula()
+    public void SaveToExcel_Formula()
     {
         using var localized = new CulturePeriod(CultureInfo.InvariantCulture);
 
@@ -155,9 +155,9 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         // 保存データ
         var data = new[]
         {
-            new { Value = 12, Fomula = (ExcelFormula?)new ExcelFormula("A2", IsR1C1: false), },
-            new { Value = 34, Fomula = (ExcelFormula?)null,    },
-            new { Value = 56, Fomula = (ExcelFormula?)new ExcelFormula("R4C1", IsR1C1: true), },
+            new { Value = 12, Formula = (ExcelFormula?)new ExcelFormula("A2", IsR1C1: false), },
+            new { Value = 34, Formula = (ExcelFormula?)null,    },
+            new { Value = 56, Formula = (ExcelFormula?)new ExcelFormula("R4C1", IsR1C1: true), },
         };
 
         // テスト対象実行

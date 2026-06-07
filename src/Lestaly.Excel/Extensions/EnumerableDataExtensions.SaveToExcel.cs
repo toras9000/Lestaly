@@ -12,7 +12,6 @@ public static partial class EnumerableDataExtensions
     /// <typeparam name="TSource">シーケンスの要素型</typeparam>
     /// <param name="self">保存対象シーケンス</param>
     /// <param name="file">保存ファイル</param>
-    /// <returns>書き込み処理タスク</returns>
     public static void SaveToExcel<TSource>(this IEnumerable<TSource> self, FileInfo file)
     {
         ArgumentNullException.ThrowIfNull(file);
@@ -24,7 +23,6 @@ public static partial class EnumerableDataExtensions
     /// <param name="self">保存対象シーケンス</param>
     /// <param name="file">保存ファイル</param>
     /// <param name="options">保存オプション</param>
-    /// <returns>書き込み処理タスク</returns>
     public static void SaveToExcel<TSource>(this IEnumerable<TSource> self, FileInfo file, SaveToExcelOptions options)
     {
         ArgumentNullException.ThrowIfNull(file);
@@ -35,7 +33,6 @@ public static partial class EnumerableDataExtensions
     /// <typeparam name="TSource">シーケンスの要素型</typeparam>
     /// <param name="self">保存対象シーケンス</param>
     /// <param name="filePath">保存ファイルパス</param>
-    /// <returns>書き込み処理タスク</returns>
     public static void SaveToExcel<TSource>(this IEnumerable<TSource> self, string filePath)
     {
         self.SaveToExcel(filePath, new SaveToExcelOptions());
@@ -46,13 +43,12 @@ public static partial class EnumerableDataExtensions
     /// <param name="self">保存対象シーケンス</param>
     /// <param name="filePath">保存ファイルパス</param>
     /// <param name="options">保存オプション</param>
-    /// <returns>書き込み処理タスク</returns>
     public static void SaveToExcel<TSource>(this IEnumerable<TSource> self, string filePath, SaveToExcelOptions options)
     {
         self.ToPseudoAsyncEnumerable().SaveToExcelAsync(filePath, options).GetAwaiter().GetResult();
     }
 
-    /// <summary>シーケンスデータをCSV(Charactor Separated Field)として保存する。</summary>
+    /// <summary>シーケンスデータをExcelファイルとして保存する。</summary>
     /// <typeparam name="TSource">シーケンスの要素型</typeparam>
     /// <param name="self">保存対象シーケンス</param>
     /// <param name="file">保存ファイル</param>
@@ -77,7 +73,7 @@ public static partial class EnumerableDataExtensions
         return self.SaveToExcelAsync(file.FullName, options, cancelToken);
     }
 
-    /// <summary>シーケンスデータをCSV(Charactor Separated Field)として保存する。</summary>
+    /// <summary>シーケンスデータをExcelファイルとして保存する。</summary>
     /// <typeparam name="TSource">シーケンスの要素型</typeparam>
     /// <param name="self">保存対象シーケンス</param>
     /// <param name="filePath">保存ファイルパス</param>
@@ -325,9 +321,9 @@ public static partial class EnumerableDataExtensions
             ,
             var t when t.IsAssignableTo(typeof(ExcelFormula)) => (cell, value) =>
             {
-                var fomula = (ExcelFormula)value;
-                if (fomula.IsR1C1) cell.FormulaR1C1 = fomula.Expression;
-                else cell.FormulaA1 = fomula.Expression;
+                var formula = (ExcelFormula)value;
+                if (formula.IsR1C1) cell.FormulaR1C1 = formula.Expression;
+                else cell.FormulaA1 = formula.Expression;
             }
             ,
             var t when t.IsAssignableTo(typeof(ExcelStyle)) => (cell, value) =>
