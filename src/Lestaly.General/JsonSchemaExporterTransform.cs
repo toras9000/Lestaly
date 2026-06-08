@@ -118,7 +118,7 @@ public static class JsonSchemaExporterTransform
             // enum型であれば列挙値を設定
             if (enumType != null)
             {
-                if (schemaAttr?.ValueType == JsonSchemaValueType.Number)
+                if (schemaAttr?.ValueType is JsonSchemaValueType.Number or JsonSchemaValueType.Integer)
                 {
                     objectSchema.Add("enum", JsonSerializer.SerializeToNode(enumType.GetEnumValues()));
                 }
