@@ -16,6 +16,8 @@ public enum JsonSchemaValueType
     String,
     /// <summary>数値</summary>
     Number,
+    /// <summary>数値</summary>
+    Integer,
     /// <summary>真偽値</summary>
     Boolean,
     /// <summary>オブジェクト</summary>
@@ -51,6 +53,7 @@ public static class JsonSchemaExporterTransform
     {
         var descAttr = default(DescriptionAttribute);
         var schemaAttr = default(JsonSchemaAttribute);
+        var nullableType = default(Type);
         var enumType = default(Type);
 
         // 属性収集ローカルメソッド
@@ -79,6 +82,8 @@ public static class JsonSchemaExporterTransform
             // 型の属性を取得
             collectAttribute(context.TypeInfo.Type);
 
+            // Nullable だった場合の対象型を取得
+            nullableType = Nullable.GetUnderlyingType(context.TypeInfo.Type);
         }
         else
         {
@@ -86,10 +91,20 @@ public static class JsonSchemaExporterTransform
             // プロパティの属性を取得
             collectAttribute(context.PropertyInfo.AttributeProvider);
 
+            // Nullable だった場合の対象型を取得
+            nullableType = Nullable.GetUnderlyingType(context.PropertyInfo.PropertyType);
+
             // プロパティ型が enum かを判定
-            if (schemaAttr?.QuietEnum != true && context.PropertyInfo.PropertyType.IsEnum)
+            if (schemaAttr?.QuietEnum != true)
             {
-                enumType = context.PropertyInfo.PropertyType;
+                if (context.PropertyInfo.PropertyType.IsEnum)
+                {
+                    enumType = context.PropertyInfo.PropertyType;
+                }
+                else if (nullableType?.IsEnum == true)
+                {
+                    enumType = nullableType;
+                }
             }
         }
 
@@ -120,13 +135,24 @@ public static class JsonSchemaExporterTransform
                 {
                     JsonSchemaValueType.String => "string",
                     JsonSchemaValueType.Number => "number",
+                    JsonSchemaValueType.Integer => "integer",
                     JsonSchemaValueType.Boolean => "boolean",
                     JsonSchemaValueType.Object => "object",
                     JsonSchemaValueType.Array => "object",
                     JsonSchemaValueType.Unknown => enumType == null ? null : "string",
                     _ => null,
                 };
-                if (jsonType != null) objectSchema["type"] = jsonType;
+                if (jsonType != null)
+                {
+                    if (nullableType == null)
+                    {
+                        objectSchema["type"] = jsonType;
+                    }
+                    else
+                    {
+                        objectSchema["type"] = JsonSerializer.SerializeToNode(new[] { jsonType, "null" });
+                    }
+                }
             }
         }
 

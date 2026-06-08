@@ -152,16 +152,22 @@ public class JsonSchemaExporterTransformTests
             Bravo,
             Charlie,
         };
-        public record Contaier(
+        public record ValueTypeTest(
             [property: JsonSchema(ValueType = JsonSchemaValueType.Number)] Kind EnumNumbers,
-            [property: JsonSchema(ValueType = JsonSchemaValueType.String)] Kind EnumStrings,
+            [property: JsonSchema(ValueType = JsonSchemaValueType.String)] Kind EnumStrings
+        );
+        public record NullableTest(
+            [property: JsonSchema(ValueType = JsonSchemaValueType.Number)] Kind? EnumNumbers,
+            [property: JsonSchema(ValueType = JsonSchemaValueType.String)] Kind? EnumStrings
+        );
+        public record QuietTest(
             [property: JsonSchema(QuietEnum = false)] Kind TreatEnum,
             [property: JsonSchema(QuietEnum = true)] Kind QuietEnum
         );
     }
 
     [TestMethod()]
-    public void TransformWithMetadata_JsonSchemaAttribute_Enum()
+    public void TransformWithMetadata_JsonSchemaAttribute_Enum_ValueType()
     {
         var options = new JsonSerializerOptions();
         options.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
@@ -170,10 +176,44 @@ public class JsonSchemaExporterTransformTests
         options.TypeInfoResolver = new DefaultJsonTypeInfoResolver();
         options.MakeReadOnly();
 
-        var schema = typeof(JsonSchema_EnumValues.Contaier).GetJsonSchemaAsNode(new() { TransformSchemaNode = JsonSchemaExporterTransform.WithMetadata, });
+        var schema = typeof(JsonSchema_EnumValues.ValueTypeTest).GetJsonSchemaAsNode(new() { TransformSchemaNode = JsonSchemaExporterTransform.WithMetadata, });
         schema["properties"]!["EnumNumbers"]!["enum"]!.AsArray().GetValues<int>().Should().BeEquivalentTo([0, 1, 2]);
+        schema["properties"]!["EnumNumbers"]!["type"]!.GetValue<string>().Should().BeEquivalentTo("number");
         schema["properties"]!["EnumStrings"]!["enum"]!.AsArray().GetValues<string>().Should().BeEquivalentTo(["Alpha", "Bravo", "Charlie"]);
+        schema["properties"]!["EnumStrings"]!["type"]!.GetValue<string>().Should().BeEquivalentTo("string");
+    }
+
+    [TestMethod()]
+    public void TransformWithMetadata_JsonSchemaAttribute_Enum_Nullable()
+    {
+        var options = new JsonSerializerOptions();
+        options.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
+        options.WriteIndented = true;
+        options.DefaultIgnoreCondition = JsonIgnoreCondition.Never;
+        options.TypeInfoResolver = new DefaultJsonTypeInfoResolver();
+        options.MakeReadOnly();
+
+        var schema = typeof(JsonSchema_EnumValues.NullableTest).GetJsonSchemaAsNode(new() { TransformSchemaNode = JsonSchemaExporterTransform.WithMetadata, });
+        schema["properties"]!["EnumNumbers"]!["enum"]!.AsArray().GetValues<int>().Should().BeEquivalentTo([0, 1, 2]);
+        schema["properties"]!["EnumNumbers"]!["type"]!.AsArray().GetValues<string>().Should().BeEquivalentTo(["number", "null"]);
+        schema["properties"]!["EnumStrings"]!["enum"]!.AsArray().GetValues<string>().Should().BeEquivalentTo(["Alpha", "Bravo", "Charlie"]);
+        schema["properties"]!["EnumStrings"]!["type"]!.AsArray().GetValues<string>().Should().BeEquivalentTo(["string", "null"]);
+    }
+
+    [TestMethod()]
+    public void TransformWithMetadata_JsonSchemaAttribute_Enum_Quiet()
+    {
+        var options = new JsonSerializerOptions();
+        options.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
+        options.WriteIndented = true;
+        options.DefaultIgnoreCondition = JsonIgnoreCondition.Never;
+        options.TypeInfoResolver = new DefaultJsonTypeInfoResolver();
+        options.MakeReadOnly();
+
+        var schema = typeof(JsonSchema_EnumValues.QuietTest).GetJsonSchemaAsNode(new() { TransformSchemaNode = JsonSchemaExporterTransform.WithMetadata, });
         schema["properties"]!["TreatEnum"]!["type"]!.GetValue<string>().Should().Be("string");
+        schema["properties"]!["TreatEnum"]!["enum"].Should().NotBeNull();
+        schema["properties"]!["QuietEnum"]!["type"]!.GetValue<string>().Should().Be("integer");
         schema["properties"]!["QuietEnum"]!["enum"].Should().BeNull();
     }
 }
