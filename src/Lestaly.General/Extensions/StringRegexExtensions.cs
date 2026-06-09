@@ -214,7 +214,7 @@ public static class StringRegexExtensions
     /// <summary>文字列が指定のパターンで始まっている場合に除去した文字列を取得する。</summary>
     /// <param name="self">対象文字列</param>
     /// <param name="pattern">除去するパターン</param>
-    /// <returns>指定したパターンで始まっていれば除去した文字列。そうでなければ元の文字列。</returns>
+    /// <returns>先頭の指定パターンが除去された文字列。パターンが無かった場合は元の文字列。</returns>
     public static ReadOnlySpan<char> TrimStartPattern(this string? self, [StringSyntax(StringSyntaxAttribute.Regex)] string pattern)
         => self.AsSpan().TrimStartPattern(pattern, default);
 
@@ -222,14 +222,14 @@ public static class StringRegexExtensions
     /// <param name="self">対象文字列</param>
     /// <param name="pattern">除去するパターン</param>
     /// <param name="options">マッチオプション</param>
-    /// <returns>指定したパターンで始まっていれば除去した文字列。そうでなければ元の文字列。</returns>
+    /// <returns>先頭の指定パターンが除去された文字列。パターンが無かった場合は元の文字列。</returns>
     public static ReadOnlySpan<char> TrimStartPattern(this string? self, [StringSyntax(StringSyntaxAttribute.Regex, nameof(options))] string pattern, RegexOptions options)
         => self.AsSpan().TrimStartPattern(pattern, options);
 
     /// <summary>文字列が指定のパターンで始まっている場合に除去した文字列を取得する。</summary>
     /// <param name="self">対象文字列</param>
     /// <param name="pattern">除去するパターン</param>
-    /// <returns>指定したパターンで始まっていれば除去した文字列。そうでなければ元の文字列。</returns>
+    /// <returns>先頭の指定パターンが除去された文字列。パターンが無かった場合は元の文字列。</returns>
     public static ReadOnlySpan<char> TrimStartPattern(this ReadOnlySpan<char> self, [StringSyntax(StringSyntaxAttribute.Regex)] string pattern)
         => self.TrimStartPattern(pattern, default);
 
@@ -237,7 +237,7 @@ public static class StringRegexExtensions
     /// <param name="self">対象文字列</param>
     /// <param name="pattern">除去するパターン</param>
     /// <param name="options">マッチオプション</param>
-    /// <returns>指定したパターンで始まっていれば除去した文字列。そうでなければ元の文字列。</returns>
+    /// <returns>先頭の指定パターンが除去された文字列。パターンが無かった場合は元の文字列。</returns>
     public static ReadOnlySpan<char> TrimStartPattern(this ReadOnlySpan<char> self, [StringSyntax(StringSyntaxAttribute.Regex, nameof(options))] string pattern, RegexOptions options)
     {
         var matches = Regex.EnumerateMatches(self, pattern, options);
@@ -249,7 +249,7 @@ public static class StringRegexExtensions
     /// <summary>文字列が指定のパターンで終わっている場合に除去した文字列を取得する。</summary>
     /// <param name="self">対象文字列</param>
     /// <param name="pattern">除去するパターン</param>
-    /// <returns>指定したパターンで始まっていれば除去した文字列。そうでなければ元の文字列。</returns>
+    /// <returns>末尾の指定パターンが除去された文字列。パターンが無かった場合は元の文字列。</returns>
     public static ReadOnlySpan<char> TrimEndPattern(this string? self, [StringSyntax(StringSyntaxAttribute.Regex)] string pattern)
         => self.AsSpan().TrimEndPattern(pattern, default);
 
@@ -257,14 +257,14 @@ public static class StringRegexExtensions
     /// <param name="self">対象文字列</param>
     /// <param name="pattern">除去するパターン</param>
     /// <param name="options">マッチオプション</param>
-    /// <returns>指定したパターンで始まっていれば除去した文字列。そうでなければ元の文字列。</returns>
+    /// <returns>末尾の指定パターンが除去された文字列。パターンが無かった場合は元の文字列。</returns>
     public static ReadOnlySpan<char> TrimEndPattern(this string? self, [StringSyntax(StringSyntaxAttribute.Regex, nameof(options))] string pattern, RegexOptions options)
         => self.AsSpan().TrimEndPattern(pattern, options);
 
     /// <summary>文字列が指定のパターンで終わっている場合に除去した文字列を取得する。</summary>
     /// <param name="self">対象文字列</param>
     /// <param name="pattern">除去するパターン</param>
-    /// <returns>指定したパターンで始まっていれば除去した文字列。そうでなければ元の文字列。</returns>
+    /// <returns>末尾の指定パターンが除去された文字列。パターンが無かった場合は元の文字列。</returns>
     public static ReadOnlySpan<char> TrimEndPattern(this ReadOnlySpan<char> self, [StringSyntax(StringSyntaxAttribute.Regex)] string pattern)
         => self.TrimEndPattern(pattern, default);
 
@@ -272,7 +272,7 @@ public static class StringRegexExtensions
     /// <param name="self">対象文字列</param>
     /// <param name="pattern">除去するパターン</param>
     /// <param name="options">マッチオプション</param>
-    /// <returns>指定したパターンで始まっていれば除去した文字列。そうでなければ元の文字列。</returns>
+    /// <returns>末尾の指定パターンが除去された文字列。パターンが無かった場合は元の文字列。</returns>
     public static ReadOnlySpan<char> TrimEndPattern(this ReadOnlySpan<char> self, [StringSyntax(StringSyntaxAttribute.Regex, nameof(options))] string pattern, RegexOptions options)
     {
         var matches = Regex.EnumerateMatches(self, pattern, options);

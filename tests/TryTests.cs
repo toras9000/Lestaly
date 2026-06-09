@@ -19,13 +19,13 @@ public class TryTests
     public void Action_Alt()
     {
         var err = new InvalidDataException("aaa");
-        var alternater = new Mock<Action<Exception>>();
+        var alternator = new Mock<Action<Exception>>();
 
-        FluentActions.Invoking(() => Try.Action(() => { }, alternater.Object)).Should().NotThrow();
-        alternater.Verify(m => m(It.IsAny<Exception>()), Times.Never());
+        FluentActions.Invoking(() => Try.Action(() => { }, alternator.Object)).Should().NotThrow();
+        alternator.Verify(m => m(It.IsAny<Exception>()), Times.Never());
 
-        FluentActions.Invoking(() => Try.Action(() => throw err, alternater.Object)).Should().NotThrow();
-        alternater.Verify(m => m(It.IsAny<InvalidDataException>()), Moq.Times.Once());
+        FluentActions.Invoking(() => Try.Action(() => throw err, alternator.Object)).Should().NotThrow();
+        alternator.Verify(m => m(It.IsAny<InvalidDataException>()), Moq.Times.Once());
 
         FluentActions.Invoking(() => Try.Action(() => throw err, ex => throw err)).Should().NotThrow();
     }
@@ -46,13 +46,13 @@ public class TryTests
     public async Task ActionAsync_Alt()
     {
         var err = new InvalidDataException("aaa");
-        var alternater = new Mock<Func<Exception, Task>>();
+        var alternator = new Mock<Func<Exception, Task>>();
 
-        await FluentActions.Awaiting(() => Try.ActionAsync(() => Task.CompletedTask, alternater.Object)).Should().NotThrowAsync();
-        alternater.Verify(m => m(It.IsAny<Exception>()), Moq.Times.Never());
+        await FluentActions.Awaiting(() => Try.ActionAsync(() => Task.CompletedTask, alternator.Object)).Should().NotThrowAsync();
+        alternator.Verify(m => m(It.IsAny<Exception>()), Moq.Times.Never());
 
-        await FluentActions.Awaiting(() => Try.ActionAsync(() => throw err, alternater.Object)).Should().NotThrowAsync();
-        alternater.Verify(m => m(It.IsAny<InvalidDataException>()), Moq.Times.Once());
+        await FluentActions.Awaiting(() => Try.ActionAsync(() => throw err, alternator.Object)).Should().NotThrowAsync();
+        alternator.Verify(m => m(It.IsAny<InvalidDataException>()), Moq.Times.Once());
 
         await FluentActions.Awaiting(() => Try.ActionAsync(() => throw err, ex => throw err)).Should().NotThrowAsync();
     }

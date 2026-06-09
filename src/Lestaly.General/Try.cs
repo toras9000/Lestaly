@@ -22,13 +22,13 @@ public static class Try
 
     /// <summary>処理を実行する</summary>
     /// <param name="action">何らかの処理</param>
-    /// <param name="alternater">例外発生時の代替処理</param>
-    public static void Action(Action action, Action<Exception> alternater)
+    /// <param name="alternator">例外発生時の代替処理</param>
+    public static void Action(Action action, Action<Exception> alternator)
     {
         if (action != null)
         {
             try { action.Invoke(); }
-            catch (Exception ex) { if (alternater != null) try { alternater(ex); } catch { } }
+            catch (Exception ex) { if (alternator != null) try { alternator(ex); } catch { } }
         }
     }
 
@@ -47,13 +47,13 @@ public static class Try
 
     /// <summary>非同期処理を実行する</summary>
     /// <param name="action">何らかの処理</param>
-    /// <param name="alternater">例外発生時の代替処理</param>
-    public static async Task ActionAsync(Func<Task> action, Func<Exception, Task> alternater)
+    /// <param name="alternator">例外発生時の代替処理</param>
+    public static async Task ActionAsync(Func<Task> action, Func<Exception, Task> alternator)
     {
         if (action != null)
         {
             try { await action().ConfigureAwait(false); }
-            catch (Exception ex) { if (alternater != null) try { await alternater(ex); } catch { } }
+            catch (Exception ex) { if (alternator != null) try { await alternator(ex); } catch { } }
         }
     }
 

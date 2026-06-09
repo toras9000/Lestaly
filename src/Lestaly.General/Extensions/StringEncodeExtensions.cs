@@ -146,25 +146,25 @@ public static class StringEncodeExtensions
 
     /// <summary>文字列のUTF8バイト列をHEX文字列にエンコードする。</summary>
     /// <param name="self">文字列。nullは空文字列と同じ扱い。</param>
-    /// <returns>エンコードしたBase64文字列</returns>
+    /// <returns>エンコードしたHEX文字列</returns>
     public static string EncodeUtf8Hex(this string? self)
         => EncodeUtf8Hex(self.AsSpan());
 
     /// <summary>文字列のUTF8バイト列をHEX文字列にエンコードする。</summary>
     /// <param name="self">文字列。nullは空文字列と同じ扱い。</param>
-    /// <returns>エンコードしたBase64文字列</returns>
+    /// <returns>エンコードしたHEX文字列</returns>
     public static string EncodeUtf8Hex(this char[]? self)
         => EncodeUtf8Hex(self.AsSpan());
 
     /// <summary>文字列のUTF8バイト列をHEX文字列にエンコードする。</summary>
     /// <param name="self">文字列</param>
-    /// <returns>エンコードしたBase64文字列</returns>
+    /// <returns>エンコードしたHEX文字列</returns>
     public static string EncodeUtf8Hex(this Span<char> self)
         => EncodeUtf8Hex(self.AsReadOnly());
 
     /// <summary>文字列のUTF8バイト列をHEX文字列にエンコードする。</summary>
     /// <param name="self">文字列</param>
-    /// <returns>エンコードしたBase64文字列</returns>
+    /// <returns>エンコードしたHEX文字列</returns>
     public static string EncodeUtf8Hex(this ReadOnlySpan<char> self)
     {
         var writer = new ArrayBufferWriter<byte>(self.Length / 4 + self.Length);

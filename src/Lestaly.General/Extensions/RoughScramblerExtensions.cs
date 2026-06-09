@@ -23,7 +23,7 @@ public static class RoughScramblerExtensions
         return self.Scramble(bin);
     }
 
-    /// <summary>オブジェクトをJSONシリアライズを介してスクランブルする。</summary>
+    /// <summary>オブジェクトをJSONシリアライズしてからスクランブルする。</summary>
     /// <remarks>このメソッドでスクランブルされたデータは <see cref="DescrambleObject(RoughScrambler, ReadOnlySpan{byte})"/> で解除することを想定している。</remarks>
     /// <typeparam name="T">対象オブジェクト型</typeparam>
     /// <param name="self">利用するスクランブル化処理インスタンス</param>
@@ -37,7 +37,7 @@ public static class RoughScramblerExtensions
         return self.ScrambleText(json);
     }
 
-    /// <summary>オブジェクトをJSONシリアライズを介してスクランブルする。</summary>
+    /// <summary>オブジェクトをJSONシリアライズしてからスクランブルする。</summary>
     /// <remarks>このメソッドでスクランブルされたデータは <see cref="DescrambleObject{T}(RoughScrambler, ReadOnlySpan{byte}, JsonTypeInfo{T})"/> で解除することを想定している。</remarks>
     /// <typeparam name="T">対象オブジェクト型</typeparam>
     /// <param name="self">利用するスクランブル化処理インスタンス</param>
@@ -52,7 +52,7 @@ public static class RoughScramblerExtensions
     #endregion 
 
     #region スクランブル解除
-    /// <summary>テキストのスクランブル解除を行う</summary>
+    /// <summary>テキストとしてスクランブル解除を行う</summary>
     /// <remarks>このメソッドは <see cref="ScrambleText(RoughScrambler, string)"/> でスクランブルされたデータを元に戻す目的のものとなる。</remarks>
     /// <param name="self">利用するスクランブル化処理インスタンス</param>
     /// <param name="bin">スクランブルされたデータ</param>
@@ -70,7 +70,7 @@ public static class RoughScramblerExtensions
         }
     }
 
-    /// <summary>オブジェクトをJSONデシリアライズを介してスクランブル解除を行う</summary>
+    /// <summary>JSONとしてスクランブル解除してオブジェクトにデシリアライズする</summary>
     /// <remarks>このメソッドは <see cref="ScrambleObject{T}(RoughScrambler, T)"/> でスクランブルされたデータを元に戻す目的のものとなる。</remarks>
     /// <typeparam name="T">対象オブジェクト型</typeparam>
     /// <param name="self">利用するスクランブル化処理インスタンス</param>
@@ -92,7 +92,7 @@ public static class RoughScramblerExtensions
         }
     }
 
-    /// <summary>オブジェクトをJSONデシリアライズを介してスクランブル解除を行う</summary>
+    /// <summary>JSONとしてスクランブル解除してオブジェクトにデシリアライズする</summary>
     /// <remarks>このメソッドは <see cref="ScrambleObject{T}(RoughScrambler, T)"/> でスクランブルされたデータを元に戻す目的のものとなる。</remarks>
     /// <typeparam name="T">対象オブジェクト型</typeparam>
     /// <param name="self">利用するスクランブル化処理インスタンス</param>
@@ -150,7 +150,7 @@ public static class RoughScramblerExtensions
         catch when (ignoreErr) { }
     }
 
-    /// <summary>オブジェクトをJSONシリアライズを介してスクランブルしファイルに保存する。</summary>
+    /// <summary>オブジェクトをJSONシリアライズしてからスクランブルしファイルに保存する。</summary>
     /// <typeparam name="T">対象オブジェクト型</typeparam>
     /// <param name="self">利用するスクランブル化処理インスタンス</param>
     /// <param name="file">保存先ファイル情報</param>
@@ -170,7 +170,7 @@ public static class RoughScramblerExtensions
         catch when (ignoreErr) { }
     }
 
-    /// <summary>オブジェクトをJSONシリアライズを介してスクランブルしファイルに保存する。</summary>
+    /// <summary>オブジェクトをJSONシリアライズしてからスクランブルしファイルに保存する。</summary>
     /// <typeparam name="T">対象オブジェクト型</typeparam>
     /// <param name="self">利用するスクランブル化処理インスタンス</param>
     /// <param name="file">保存先ファイル情報</param>
@@ -189,7 +189,7 @@ public static class RoughScramblerExtensions
         catch when (ignoreErr) { }
     }
 
-    /// <summary>オブジェクトをJSONシリアライズを介してスクランブルしファイルに保存する。</summary>
+    /// <summary>オブジェクトをJSONシリアライズしてからスクランブルしファイルに保存する。</summary>
     /// <typeparam name="T">対象オブジェクト型</typeparam>
     /// <param name="self">利用するスクランブル化処理インスタンス</param>
     /// <param name="file">保存先ファイル情報</param>
@@ -210,7 +210,7 @@ public static class RoughScramblerExtensions
         catch when (ignoreErr) { }
     }
 
-    /// <summary>オブジェクトをJSONシリアライズを介してスクランブルしファイルに保存する。</summary>
+    /// <summary>オブジェクトをJSONシリアライズしてからスクランブルしファイルに保存する。</summary>
     /// <typeparam name="T">対象オブジェクト型</typeparam>
     /// <param name="self">利用するスクランブル化処理インスタンス</param>
     /// <param name="file">保存先ファイル情報</param>
@@ -271,7 +271,7 @@ public static class RoughScramblerExtensions
         }
     }
 
-    /// <summary>ファイルから読み込んでJSONデシリアライズを介してオブジェクトのスクランブル解除を行う</summary>
+    /// <summary>ファイル内容をJSONとしてスクランブル解除してオブジェクトにデシリアライズする</summary>
     /// <typeparam name="T">対象オブジェクト型</typeparam>
     /// <param name="self">利用するスクランブル化処理インスタンス</param>
     /// <param name="file">読込元ファイル情報</param>
@@ -293,7 +293,7 @@ public static class RoughScramblerExtensions
         }
     }
 
-    /// <summary>ファイルから読み込んでJSONデシリアライズを介してオブジェクトのスクランブル解除を行う</summary>
+    /// <summary>ファイル内容をJSONとしてスクランブル解除してオブジェクトにデシリアライズする</summary>
     /// <typeparam name="T">対象オブジェクト型</typeparam>
     /// <param name="self">利用するスクランブル化処理インスタンス</param>
     /// <param name="file">読込元ファイル情報</param>
@@ -314,7 +314,7 @@ public static class RoughScramblerExtensions
         }
     }
 
-    /// <summary>ファイルから読み込んでJSONデシリアライズを介してオブジェクトのスクランブル解除を行う</summary>
+    /// <summary>ファイル内容をJSONとしてスクランブル解除してオブジェクトにデシリアライズする</summary>
     /// <typeparam name="T">対象オブジェクト型</typeparam>
     /// <param name="self">利用するスクランブル化処理インスタンス</param>
     /// <param name="file">読込元ファイル情報</param>
@@ -337,7 +337,7 @@ public static class RoughScramblerExtensions
         }
     }
 
-    /// <summary>ファイルから読み込んでJSONデシリアライズを介してオブジェクトのスクランブル解除を行う</summary>
+    /// <summary>ファイル内容をJSONとしてスクランブル解除してオブジェクトにデシリアライズする</summary>
     /// <typeparam name="T">対象オブジェクト型</typeparam>
     /// <param name="self">利用するスクランブル化処理インスタンス</param>
     /// <param name="file">読込元ファイル情報</param>

@@ -115,16 +115,16 @@ public class SemanticVersion : IEquatable<SemanticVersion>, IComparable<Semantic
     {
         if (object.ReferenceEquals(other, null)) return 1;
 
-        if (this.Major != other.Major) return this.Major - other.Major;
+        if (this.Major != other.Major) return this.Major.CompareTo(other.Major);
 
         if (this.Minor.HasValue != other.Minor.HasValue) return this.Minor.HasValue ? 1 : -1;
-        if (this.Minor.HasValue && other.Minor.HasValue && this.Minor.Value != other.Minor.Value) return this.Minor.Value - other.Minor.Value;
+        if (this.Minor.HasValue && other.Minor.HasValue && this.Minor.Value != other.Minor.Value) return this.Minor.Value.CompareTo(other.Minor.Value);
 
         if (this.Patch.HasValue != other.Patch.HasValue) return this.Patch.HasValue ? 1 : -1;
-        if (this.Patch.HasValue && other.Patch.HasValue && this.Patch.Value != other.Patch.Value) return this.Patch.Value - other.Patch.Value;
+        if (this.Patch.HasValue && other.Patch.HasValue && this.Patch.Value != other.Patch.Value) return this.Patch.Value.CompareTo(other.Patch.Value);
 
         if (this.Filum.HasValue != other.Filum.HasValue) return this.Filum.HasValue ? 1 : -1;
-        if (this.Filum.HasValue && other.Filum.HasValue && this.Filum.Value != other.Filum.Value) return this.Filum.Value - other.Filum.Value;
+        if (this.Filum.HasValue && other.Filum.HasValue && this.Filum.Value != other.Filum.Value) return this.Filum.Value.CompareTo(other.Filum.Value);
 
         if (string.CompareOrdinal(this.PreRelease, other.PreRelease) is var c1 && c1 != 0) return c1;
         if (string.CompareOrdinal(this.Build, other.Build) is var c2 && c2 != 0) return c2;
@@ -140,7 +140,7 @@ public class SemanticVersion : IEquatable<SemanticVersion>, IComparable<Semantic
 
     /// <inheritdoc />
     public override bool Equals(object? obj)
-        => base.Equals(obj as SemanticVersion);
+        => this.Equals(obj as SemanticVersion);
 
     /// <inheritdoc />
     public bool Equals(SemanticVersion? other)

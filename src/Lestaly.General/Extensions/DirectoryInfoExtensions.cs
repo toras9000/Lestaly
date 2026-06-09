@@ -86,13 +86,13 @@ public static class DirectoryInfoExtensions
             // 全ファイルをコピー
             foreach (var file in self.EnumerateFiles("*", enumOptions))
             {
+                // デリゲートが指定されていればコピー判定
+                var doCopy = predicator?.Invoke(file) ?? true;
+                if (!doCopy) continue;
+
                 // コピー先ファイルパス作成
                 var relPath = file.RelativePathFrom(self);
                 var destFile = dest.RelativeFile(relPath);
-
-                // デリゲートが指定されていればコピー判定
-                var doCopy = predicator?.Invoke(destFile) ?? true;
-                if (!doCopy) continue;
 
                 // コピー実施
                 file.CopyTo(destFile.WithDirectoryCreate().FullName, overwrite);
@@ -349,7 +349,7 @@ public static class DirectoryInfoExtensions
         ArgumentNullException.ThrowIfNull(self);
         ArgumentNullException.ThrowIfNull(baseDir);
 
-        return SegmentsToReletivePath(self.GetPathSegments(), baseDir, ignoreCase);
+        return SegmentsToRelativePath(self.GetPathSegments(), baseDir, ignoreCase);
     }
 
     /// <summary>パスセグメントから指定のディレクトリを起点とした相対パスを取得する。</summary>
@@ -357,7 +357,7 @@ public static class DirectoryInfoExtensions
     /// <param name="baseDir">基準ディレクトリのDirectoryInfo</param>
     /// <param name="ignoreCase">大文字と小文字を同一視するか否か</param>
     /// <returns>相対パス</returns>
-    internal static string SegmentsToReletivePath(IList<string> segments, DirectoryInfo baseDir, bool? ignoreCase)
+    internal static string SegmentsToRelativePath(IList<string> segments, DirectoryInfo baseDir, bool? ignoreCase)
     {
         // パスセグメント長をチェック
         if (segments.Count <= 0)

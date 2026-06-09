@@ -153,7 +153,7 @@ public static partial class EnumerableDataExtensions
                 if (column.Span <= 0) continue;
 
                 var value = column.Getter(data);
-                if (value != null && 0 < column.Span)
+                if (value != null)
                 {
                     var cell = dataCell.CellRight(offset);
                     var writer = exporters[i].writer;

@@ -51,7 +51,7 @@ public class TempDir : IDisposable
     #endregion
 
     #region 状態情報
-    /// <summary>一時ディレクト入りのDirectoryInfo</summary>
+    /// <summary>一時ディレクトリのDirectoryInfo</summary>
     public DirectoryInfo Info { get; }
     #endregion
 

@@ -100,7 +100,7 @@ public static class EnumerableExtensions
             {
                 foreach (var item in source)
                 {
-                    yield return await Task.FromResult(item).ConfigureAwait(false);
+                    yield return item;
                 }
             }
 

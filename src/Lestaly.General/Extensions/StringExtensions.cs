@@ -996,7 +996,7 @@ public static class StringExtensions
         // マーカーが指定の長さを超えている場合は矛盾するのでパラメータ指定が正しくない。
         // 省略されずマーカーが使用されない場合もあり得るが、パラメータ length と marker の関係性が正しくないのであれば揺れなく異常検出できようにしている。
         var markerLen = marker?.Length ?? 0;
-        if (length < markerLen) throw new ArgumentException($"{nameof(marker)} is grator than {nameof(length)}");
+        if (length < markerLen) throw new ArgumentException($"{nameof(marker)} is greater than {nameof(length)}");
 
         // 元の文字列が指定の長さに収まる場合はそのまま返却
         if (self.Length <= length)
@@ -1047,7 +1047,7 @@ public static class StringExtensions
         // マーカーが指定の長さを超えている場合は矛盾するのでパラメータ指定が正しくない。
         // 省略されずマーカーが使用されない場合もあり得るが、パラメータ width と marker の関係性が正しくないのであれば揺れなく異常検出できようにしている。
         var markerCount = marker?.TextElementCount() ?? 0;
-        if (count < markerCount) throw new ArgumentException($"{nameof(marker)} is grator than {nameof(count)}");
+        if (count < markerCount) throw new ArgumentException($"{nameof(marker)} is greater than {nameof(count)}");
 
         // 明かな状況を処理
         if (string.IsNullOrEmpty(self)) return self;
@@ -1116,7 +1116,7 @@ public static class StringExtensions
     /// <param name="generator">例外オブジェクト生成デリゲート</param>
     /// <returns>対象文字列</returns>
     public static ReadOnlySpan<char> ThrowIfWhite(this ReadOnlySpan<char> self, Func<Exception>? generator = null)
-        => self.IsEmpty ? throw generator?.Invoke() ?? new InvalidDataException() : self;
+        => self.IsWhiteSpace() ? throw generator?.Invoke() ?? new InvalidDataException() : self;
 
     /// <summary>文字列がnullや空であればキャンセル例外を送出する。</summary>
     /// <param name="self">対象文字列</param>

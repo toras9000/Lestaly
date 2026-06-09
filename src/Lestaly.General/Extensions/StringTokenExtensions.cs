@@ -146,7 +146,7 @@ public static class StringTokenExtensions
         {
             // 最終改行位置を検索
             var breakIdx = body.Span.LastIndexOfAny(LineBreakChars);
-            if (-0 <= breakIdx)
+            if (0 <= breakIdx)
             {
                 // 改行後の Span を取得
                 body = body[(breakIdx + 1)..];
@@ -337,14 +337,14 @@ public static class StringTokenExtensions
         return body;
     }
 
-    /// <summary>>文字列の最初の行(改行込み)とその後方を取得する。</summary>
+    /// <summary>文字列の最初の行(改行込み)とその後方を取得する。</summary>
     /// <param name="self">対象文字列</param>
     /// <param name="next">最初の行の後ろの文字列</param>
     /// <returns>最初の行文字列</returns>
     public static ReadOnlySpan<char> TakeSkipLineRaw(this string? self, out ReadOnlySpan<char> next)
         => self.AsSpan().TakeSkipLineRaw(out next);
 
-    /// <summary>>文字列の最初の行(改行込み)とその後方を取得する。</summary>
+    /// <summary>文字列の最初の行(改行込み)とその後方を取得する。</summary>
     /// <param name="self">対象文字列</param>
     /// <param name="next">最初の行の後ろの文字列</param>
     /// <returns>最初の行文字列</returns>

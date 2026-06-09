@@ -1215,7 +1215,7 @@ public static class FileInfoExtensions
             ArgumentNullException.ThrowIfNull(self);
             ArgumentNullException.ThrowIfNull(baseDir);
 
-            return DirectoryInfoExtensions.SegmentsToReletivePath(self.GetPathSegments(), baseDir, ignoreCase);
+            return DirectoryInfoExtensions.SegmentsToRelativePath(self.GetPathSegments(), baseDir, ignoreCase);
         }
     }
     #endregion
