@@ -1008,7 +1008,7 @@ public static class FileInfoExtensions
         [RequiresUnreferencedCode("This uses JsonSerializer.")]
         [RequiresDynamicCode("This uses JsonSerializer.")]
         public ValueTask<TObject?> ReadRoughJsonAsync<TObject>(CancellationToken cancelToken = default)
-            => self.ReadJsonAsync<TObject>(JsonRoughReadOptions, cancelToken);
+            => self.ReadJsonAsync<TObject>(RoughJson.Options, cancelToken);
     }
     #endregion
 
@@ -1063,18 +1063,17 @@ public static class FileInfoExtensions
         [RequiresUnreferencedCode("This uses JsonSerializer.")]
         [RequiresDynamicCode("This uses JsonSerializer.")]
         public ValueTask<FileInfo> WritePrettyJsonAsync<TObject>(TObject value, CancellationToken cancelToken = default)
-            => self.WriteJsonAsync(value, JsonPrettyWriteOptions, cancelToken);
+            => self.WriteJsonAsync(value, RoughJson.PrettyOptions, cancelToken);
 
-        /// <summary>オブジェクトを整形したJSON形式でファイルに保存する</summary>
+        /// <summary>オブジェクトを定義済みの変換を有効にした整形したJSON形式でファイルに保存する</summary>
         /// <typeparam name="TObject">JSONにデシリアライズする型</typeparam>
         /// <param name="value">保存するオブジェクト</param>
-        /// <param name="ignoreNulls">nullプロパティを無視するか否か</param>
         /// <param name="cancelToken">キャンセルトークン</param>
         /// <returns>書き込みを行いレシーバ自身を返すタスク</returns>
         [RequiresUnreferencedCode("This uses JsonSerializer.")]
         [RequiresDynamicCode("This uses JsonSerializer.")]
-        public ValueTask<FileInfo> WritePrettyJsonAsync<TObject>(TObject value, bool ignoreNulls, CancellationToken cancelToken = default)
-            => self.WriteJsonAsync(value, ignoreNulls ? JsonPrettyNullIgnoreWriteOptions : JsonPrettyWriteOptions, cancelToken);
+        public ValueTask<FileInfo> WriteRoughJsonAsync<TObject>(TObject value, CancellationToken cancelToken = default)
+            => self.WriteJsonAsync(value, RoughJson.Options, cancelToken);
     }
     #endregion
 
@@ -1219,32 +1218,6 @@ public static class FileInfoExtensions
             return DirectoryInfoExtensions.SegmentsToRelativePath(self.GetPathSegments(), baseDir, ignoreCase);
         }
     }
-    #endregion
-
-    // 非公開フィールド
-    #region Fixed Values
-    /// <summary>整形保存用オプション</summary>
-    private static readonly JsonSerializerOptions JsonPrettyWriteOptions = new JsonSerializerOptions
-    {
-        WriteIndented = true,
-        Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-    };
-
-    /// <summary>整形保存(null無視)用オプション</summary>
-    private static readonly JsonSerializerOptions JsonPrettyNullIgnoreWriteOptions = new JsonSerializerOptions
-    {
-        WriteIndented = true,
-        Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-        DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
-    };
-
-    /// <summary>大雑把な読み取り用オプション</summary>
-    private static readonly JsonSerializerOptions JsonRoughReadOptions = new JsonSerializerOptions
-    {
-        AllowTrailingCommas = true,
-        ReadCommentHandling = JsonCommentHandling.Skip,
-        NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString,
-    };
     #endregion
 
     // 非公開メソッド

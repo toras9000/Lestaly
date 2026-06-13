@@ -1518,7 +1518,7 @@ public class FileExtensionsTests
     }
 
     [TestMethod()]
-    public async Task WritePrettyJsonAsync_IgnoreNull()
+    public async Task WriteRoughJsonAsync()
     {
         using var tempDir = new TempDir();
 
@@ -1528,7 +1528,7 @@ public class FileExtensionsTests
             Text = default(string),
             Number = 123,
         };
-        await file.WritePrettyJsonAsync(data, ignoreNulls: true);
+        await file.WriteRoughJsonAsync(data);
 
         var json = await file.ReadAllTextAsync();
         json.Should().NotContain("Text");

@@ -136,12 +136,12 @@ public class JsonSchemaExporterTransformTests
         schema["properties"]!["Text2"]!["type"]!.GetValue<string>().Should().Be("number");
         schema["properties"]!["Text3"]!["type"]!.GetValue<string>().Should().Be("boolean");
         schema["properties"]!["Text4"]!["type"]!.GetValue<string>().Should().Be("object");
-        schema["properties"]!["Text5"]!["type"]!.GetValue<string>().Should().Be("object");
+        schema["properties"]!["Text5"]!["type"]!.GetValue<string>().Should().Be("array");
         schema["properties"]!["Enum1"]!["type"]!.GetValue<string>().Should().Be("string");
         schema["properties"]!["Enum2"]!["type"]!.GetValue<string>().Should().Be("number");
         schema["properties"]!["Enum3"]!["type"]!.GetValue<string>().Should().Be("boolean");
         schema["properties"]!["Enum4"]!["type"]!.GetValue<string>().Should().Be("object");
-        schema["properties"]!["Enum5"]!["type"]!.GetValue<string>().Should().Be("object");
+        schema["properties"]!["Enum5"]!["type"]!.GetValue<string>().Should().Be("array");
     }
 
     private class JsonSchema_EnumValues
