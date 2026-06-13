@@ -193,7 +193,9 @@ public sealed class PoolArrayBufferConsumer<T> : IBufferConsumer<T>, IDisposable
                 length: validSize
             );
             newArray.AsSpan(validSize).Clear();
+            var oldArray = this.buffer;
             this.buffer = newArray;
+            this.bufferPool.Return(oldArray);
         }
 
         // 有効領域情報更新

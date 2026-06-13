@@ -678,7 +678,7 @@ public static class StringTokenExtensions
     public static ReadOnlySpan<char> TakeLastTokenAny(this ReadOnlySpan<char> self, ReadOnlySpan<char> delimiters)
     {
         var idx = self.LastIndexOfAny(delimiters);
-        if (idx <= 0) return self;
+        if (idx < 0) return self;
         return self[(idx + 1)..];
     }
 
@@ -689,7 +689,7 @@ public static class StringTokenExtensions
     public static ReadOnlyMemory<char> TakeLastTokenAny(this ReadOnlyMemory<char> self, ReadOnlySpan<char> delimiters)
     {
         var idx = self.Span.LastIndexOfAny(delimiters);
-        if (idx <= 0) return self;
+        if (idx < 0) return self;
         return self[(idx + 1)..];
     }
     #endregion

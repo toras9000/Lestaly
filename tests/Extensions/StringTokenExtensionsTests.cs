@@ -436,9 +436,14 @@ public class StringTokenExtensionsTests
 
         "ab cd ef".TakeLastToken().ToString().Should().Be("ef");
         "  ab cd,ef  ".TakeLastToken(',').ToString().Should().Be("ef  ");
+        "  ab cd,ef  ,".TakeLastToken(',').ToString().Should().Be("");
+        ", a b c".TakeLastToken(',').ToString().Should().Be(" a b c");
 
         "ab cd ef".AsMemory().TakeLastToken().ToString().Should().Be("ef");
         "  ab cd,ef  ".AsMemory().TakeLastToken(',').ToString().Should().Be("ef  ");
+        "  ab cd,ef  ,".AsMemory().TakeLastToken(',').ToString().Should().Be("");
+        ", a b c".AsMemory().TakeLastToken(',').ToString().Should().Be(" a b c");
+
     }
 
     [TestMethod]
@@ -446,6 +451,7 @@ public class StringTokenExtensionsTests
     {
         "ab c,d ef".AsSpan().TakeLastTokenAny([' ']).ToString().Should().Be("ef");
         "ab c,d ef".AsSpan().TakeLastTokenAny([',']).ToString().Should().Be("d ef");
+        ",ab cd ef".AsSpan().TakeLastTokenAny([',']).ToString().Should().Be("ab cd ef");
         "ab c,d ef".AsSpan().TakeLastTokenAny([',', ' ']).ToString().Should().Be("ef");
         "ab c,d ef ,".AsSpan().TakeLastTokenAny([',', ' ']).ToString().Should().Be("");
         "ab c,d ef ,".AsSpan().TakeLastTokenAny(['#', '@']).ToString().Should().Be("ab c,d ef ,");

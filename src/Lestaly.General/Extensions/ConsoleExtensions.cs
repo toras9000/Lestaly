@@ -206,7 +206,7 @@ public static class ConsoleExtensions
         /// <param name="cancelToken">キャンセルトークン</param>
         /// <returns>押下されたキー情報</returns>
         public static Task<ConsoleKeyInfo?> WaitKeyAsync(bool intercept, int timeout, CancellationToken cancelToken = default)
-            => WaitKeyAsync(intercept, TimeSpan.FromMicroseconds(timeout), cancelToken);
+            => WaitKeyAsync(intercept, TimeSpan.FromMilliseconds(timeout), cancelToken);
 
         /// <summary>バッファ内のキー入力をスキップする。</summary>
         /// <param name="maxCount">最大スキップ数。継続的に入力される場合や</param>
