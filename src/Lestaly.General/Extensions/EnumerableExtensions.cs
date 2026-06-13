@@ -242,19 +242,26 @@ public static class EnumerableExtensions
         /// <returns>分割された行のあつまりのシーケンス</returns>
         public IEnumerable<string[]> Divide(Func<string, bool> separator)
         {
-            var list = new List<string>();
+            var list = default(List<string>);
             foreach (var item in self)
             {
                 if (separator(item))
                 {
-                    if (0 < list.Count) yield return list.ToArray();
-                    list.Clear();
+                    if (list != null)
+                    {
+                        if (0 < list.Count) yield return list.ToArray();
+                        list.Clear();
+                    }
                     continue;
                 }
 
+                list ??= new();
                 list.Add(item);
             }
-            yield return list.ToArray();
+            if (list != null)
+            {
+                yield return list.ToArray();
+            }
         }
 
         /// <summary>前後空白や大文字/小文字の区別なく文字列が含まれているかを判定する。</summary>

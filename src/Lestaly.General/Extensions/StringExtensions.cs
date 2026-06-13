@@ -830,7 +830,7 @@ public static class StringExtensions
             buffer.Append(quoteChar);
 
             // 次の位置からエスケープ表現を検索
-            scan = scan[(escIdx + 2)..];
+            scan = scan[(escIdx + escaped.Length)..];
             escIdx = scan.IndexOf(escaped);
         }
         while (0 <= escIdx);

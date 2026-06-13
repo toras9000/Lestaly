@@ -7,7 +7,7 @@ namespace Lestaly;
 /// <param name="Code">終了コード</param>
 public record struct CmdExit(int Code)
 {
-    /// <summary>終了コードを整数値に暗黙変換演算子オーバーロード</summary>
+    /// <summary>終了コード整数値への暗黙変換演算子オーバーロード</summary>
     /// <param name="exit">終了コード値表現型</param>
     public static implicit operator int(CmdExit exit) => exit.Code;
 }

@@ -20,7 +20,7 @@ public class TempDir : IDisposable
     /// <param name="autoDelete">インスタンスの破棄時に一時ディレクトリを自動削除するか否か</param>
     public TempDir(string tempDir, bool autoDelete = true)
     {
-        if (!Directory.Exists(tempDir)) throw new ArgumentException($"'{tempDir}' is not exists.");
+        if (!Directory.Exists(tempDir)) throw new ArgumentException($"'{tempDir}' does not exists.");
 
         // 設定保持
         this.AutoDelete = autoDelete;

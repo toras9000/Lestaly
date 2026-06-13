@@ -536,7 +536,7 @@ public class CmdCx
         catch (OperationCanceledException ex) when (ex.CancellationToken == this.cancelToken)
         {
             // キャンセルされたらプロセスをキル
-            proc.Kill();
+            proc.Kill(entireProcessTree: true);
             killed = true;
         }
         finally

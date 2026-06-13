@@ -18,6 +18,31 @@ public static class FileSystemInfoExtensions
         public DirectoryInfo AsDirectoryInfo()
             => new DirectoryInfo(self);
     }
+
+    /// <summary>変換メソッド</summary>
+    /// <param name="self">MatchCasing 列挙子</param>
+    extension(MatchCasing self)
+    {
+        /// <summary>文字列比較処理に変換する</summary>
+        /// <returns>StringComparer インスタンス</returns>
+        public StringComparer ToStringComparer()
+            => self switch
+            {
+                MatchCasing.CaseSensitive => StringComparer.Ordinal,
+                MatchCasing.CaseInsensitive => StringComparer.OrdinalIgnoreCase,
+                _ => OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal,
+            };
+
+        /// <summary>文字列比較種別に変換する</summary>
+        /// <returns>Comparison 列挙子</returns>
+        public StringComparison ToStringComparison()
+            => self switch
+            {
+                MatchCasing.CaseSensitive => StringComparison.Ordinal,
+                MatchCasing.CaseInsensitive => StringComparison.OrdinalIgnoreCase,
+                _ => OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal,
+            };
+    }
     #endregion
 
     #region FileSystem

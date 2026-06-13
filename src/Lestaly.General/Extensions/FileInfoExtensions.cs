@@ -1177,10 +1177,10 @@ public static class FileInfoExtensions
         }
 
         /// <summary>ファイルが指定のディレクトリの子孫であるかを判定する。</summary>
-        /// <remarks></remarks>
         /// <param name="other">比較するディレクトリ</param>
+        /// <param name="casing">キャラクタ照合方法</param>
         /// <returns>指定ディレクトリの子孫であるか否か</returns>
-        public bool IsDescendantOf(DirectoryInfo other)
+        public bool IsDescendantOf(DirectoryInfo other, MatchCasing casing = MatchCasing.PlatformDefault)
         {
             ArgumentNullException.ThrowIfNull(self);
             ArgumentNullException.ThrowIfNull(other);
@@ -1194,9 +1194,10 @@ public static class FileInfoExtensions
             if (selfDirSegs.Count < otherSegs.Count) return false;
 
             // 比較対象が対象ファイルのディレクトリを全て含んでいるかを判定
+            var comparison = casing.ToStringComparison();
             for (var i = 0; i < otherSegs.Count; i++)
             {
-                if (!string.Equals(selfDirSegs[i], otherSegs[i], StringComparison.OrdinalIgnoreCase)) return false;
+                if (!string.Equals(selfDirSegs[i], otherSegs[i], comparison)) return false;
             }
 
             return true;

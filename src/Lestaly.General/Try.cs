@@ -113,9 +113,8 @@ public static class Try
             if (interval.Ticks != 0) Thread.Sleep(interval);
         }
 
-        if (error == null) throw new Exception("Illegal state");
-        ExceptionDispatchInfo.Capture(error).Throw();
-        return default;
+        if (error != null) ExceptionDispatchInfo.Capture(error).Throw();
+        throw new Exception("Illegal state");
     }
 
     /// <summary>処理のエラー時に再試行を行い結果値を得る</summary>

@@ -105,29 +105,29 @@ public static class StringRegexExtensions
         return Regex.Split(self, pattern, options);
     }
 
-    /// <summary>正規表現にマッチした個所を文字列置き換えする</summary>
+    /// <summary>正規表現のマッチ結果を射影する</summary>
     /// <param name="self">対象文字列</param>
     /// <param name="pattern">正規表現パターン</param>
-    /// <param name="selector">マッチ結果を文字列に変換するセレクタ</param>
-    /// <param name="alt">マッチしなかった場合の代替文字列</param>
-    /// <returns>マッチした場合はセレクタの結果。マッチしない場合は null </returns>
+    /// <param name="selector">マッチ結果の変換処理</param>
+    /// <param name="alt">マッチしなかった場合の代替値</param>
+    /// <returns>マッチした場合はセレクタの結果。マッチしない場合は alt に指定の値 </returns>
     [return: NotNullIfNotNull(nameof(alt))]
-    public static string? MatchSelect(this string self, [StringSyntax(StringSyntaxAttribute.Regex)] string pattern, Func<Match, string> selector, string? alt = default)
+    public static TResult? MatchSelect<TResult>(this string self, [StringSyntax(StringSyntaxAttribute.Regex)] string pattern, Func<Match, TResult> selector, TResult? alt = default)
     {
         var match = Regex.Match(self, pattern);
         if (match.Success) return selector(match);
         return alt;
     }
 
-    /// <summary>正規表現にマッチした個所を文字列置き換えする</summary>
+    /// <summary>正規表現のマッチ結果を射影する</summary>
     /// <param name="self">対象文字列</param>
     /// <param name="pattern">正規表現パターン</param>
     /// <param name="options">正規表現オプション</param>
-    /// <param name="selector">マッチ結果を文字列に変換するセレクタ</param>
-    /// <param name="alt">マッチしなかった場合の代替文字列</param>
-    /// <returns>マッチした場合はセレクタの結果。マッチしない場合は null </returns>
+    /// <param name="selector">マッチ結果の変換処理</param>
+    /// <param name="alt">マッチしなかった場合の代替値</param>
+    /// <returns>マッチした場合はセレクタの結果。マッチしない場合は alt に指定の値</returns>
     [return: NotNullIfNotNull(nameof(alt))]
-    public static string? MatchSelect(this string self, [StringSyntax(StringSyntaxAttribute.Regex, nameof(options))] string pattern, RegexOptions options, Func<Match, string> selector, string? alt = default)
+    public static TResult? MatchSelect<TResult>(this string self, [StringSyntax(StringSyntaxAttribute.Regex, nameof(options))] string pattern, RegexOptions options, Func<Match, TResult> selector, TResult? alt = default)
     {
         var match = Regex.Match(self, pattern, options);
         if (match.Success) return selector(match);
@@ -198,17 +198,13 @@ public static class StringRegexExtensions
     public static bool EndsWithPattern(this ReadOnlySpan<char> self, [StringSyntax(StringSyntaxAttribute.Regex, nameof(options))] string pattern, RegexOptions options)
     {
         var matches = Regex.EnumerateMatches(self, pattern, options);
-        if (!matches.MoveNext()) return false;
-
-        var index = matches.Current.Index;
-        var length = matches.Current.Length;
         while (matches.MoveNext())
         {
-            index = matches.Current.Index;
-            length = matches.Current.Length;
+            var endPos = matches.Current.Index + matches.Current.Length;
+            if (endPos == self.Length) return true;
         }
 
-        return ((index + length) == self.Length);
+        return false;
     }
 
     /// <summary>文字列が指定のパターンで始まっている場合に除去した文字列を取得する。</summary>
@@ -263,29 +259,26 @@ public static class StringRegexExtensions
 
     /// <summary>文字列が指定のパターンで終わっている場合に除去した文字列を取得する。</summary>
     /// <param name="self">対象文字列</param>
-    /// <param name="pattern">除去するパターン</param>
+    /// <param name="pattern">除去する文字列のパターン</param>
     /// <returns>末尾の指定パターンが除去された文字列。パターンが無かった場合は元の文字列。</returns>
     public static ReadOnlySpan<char> TrimEndPattern(this ReadOnlySpan<char> self, [StringSyntax(StringSyntaxAttribute.Regex)] string pattern)
         => self.TrimEndPattern(pattern, default);
 
     /// <summary>文字列が指定のパターンで終わっている場合に除去した文字列を取得する。</summary>
     /// <param name="self">対象文字列</param>
-    /// <param name="pattern">除去するパターン</param>
+    /// <param name="pattern">除去する文字列のパターン</param>
     /// <param name="options">マッチオプション</param>
     /// <returns>末尾の指定パターンが除去された文字列。パターンが無かった場合は元の文字列。</returns>
     public static ReadOnlySpan<char> TrimEndPattern(this ReadOnlySpan<char> self, [StringSyntax(StringSyntaxAttribute.Regex, nameof(options))] string pattern, RegexOptions options)
     {
         var matches = Regex.EnumerateMatches(self, pattern, options);
-        if (!matches.MoveNext()) return self;
-
-        var index = matches.Current.Index;
-        var length = matches.Current.Length;
         while (matches.MoveNext())
         {
-            index = matches.Current.Index;
-            length = matches.Current.Length;
+            var index = matches.Current.Index;
+            var length = matches.Current.Length;
+            var endPos = index + length;
+            if (endPos == self.Length) return self[..index];
         }
-        if ((index + length) != self.Length) return self;
-        return self[..index];
+        return self;
     }
 }

@@ -152,8 +152,9 @@ public class TeeWriter : TextWriter, ITeeWriter, IDisposable
         {
             foreach (var writer in this.companions)
             {
-                writer.NewLine = base.NewLine = value;
+                writer.NewLine = value;
             }
+            base.NewLine = value;
         }
     }
     #endregion

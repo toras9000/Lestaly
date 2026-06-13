@@ -10,7 +10,7 @@ namespace Lestaly.Data;
 /// 用途としては以下のような想定。
 /// <list>
 /// <item>テキストの断片を <see cref="Append(char)"/> して蓄積</item>
-/// <item>テキストが1つのフィールドとして分蓄積出来た時点で <see cref="Fetch"/> してフィールド化</item>
+/// <item>テキストが1つのフィールドとして蓄積出来た時点で <see cref="Fetch"/> してフィールド化</item>
 /// <item>フィールドの集まりが1まとまりの区切りになったら <see cref="Consume"/> にて消費。</item>
 /// <item>消費するとインスタンス状態は初期状態となるので、上記を繰り返す。</item>
 /// </list>

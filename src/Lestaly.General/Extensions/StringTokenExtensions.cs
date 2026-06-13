@@ -93,7 +93,6 @@ public static class StringTokenExtensions
 
         return body;
     }
-
     #endregion
 
     #region TakeLastLine
@@ -158,14 +157,14 @@ public static class StringTokenExtensions
     #endregion
 
     #region SkipLine
-    /// <summary>>文字列の最初の行をスキップしてその後方を取得する。</summary>
+    /// <summary>文字列の最初の行をスキップしてその後方を取得する。</summary>
     /// <param name="self">対象文字列</param>
     /// <param name="trim">空行をトリムするか否か</param>
     /// <returns>最初の行をスキップ後の文字列</returns>
     public static ReadOnlySpan<char> SkipLine(this string? self, bool trim = true)
         => self.AsSpan().SkipLine(trim);
 
-    /// <summary>>文字列の最初の行をスキップしてその後方を取得する。</summary>
+    /// <summary>文字列の最初の行をスキップしてその後方を取得する。</summary>
     /// <param name="self">対象文字列</param>
     /// <param name="trim">空行をトリムするか否か</param>
     /// <returns>最初の行をスキップ後の文字列</returns>
@@ -201,7 +200,7 @@ public static class StringTokenExtensions
         return body;
     }
 
-    /// <summary>>文字列の最初の行をスキップしてその後方を取得する。</summary>
+    /// <summary>文字列の最初の行をスキップしてその後方を取得する。</summary>
     /// <param name="self">対象文字列</param>
     /// <param name="trim">空行をトリムするか否か</param>
     /// <returns>最初の行をスキップ後の文字列</returns>
@@ -239,7 +238,7 @@ public static class StringTokenExtensions
     #endregion
 
     #region TakeSkipLine
-    /// <summary>>文字列の最初の行とその後方を取得する。</summary>
+    /// <summary>文字列の最初の行とその後方を取得する。</summary>
     /// <param name="self">対象文字列</param>
     /// <param name="trim">空行をトリムするか否か</param>
     /// <param name="next">最初の行の後ろの文字列</param>
@@ -247,7 +246,7 @@ public static class StringTokenExtensions
     public static ReadOnlySpan<char> TakeSkipLine(this string? self, out ReadOnlySpan<char> next, bool trim = true)
         => self.AsSpan().TakeSkipLine(out next, trim);
 
-    /// <summary>>文字列の最初の行とその後方を取得する。</summary>
+    /// <summary>文字列の最初の行とその後方を取得する。</summary>
     /// <param name="self">対象文字列</param>
     /// <param name="trim">空行をトリムするか否か</param>
     /// <param name="next">最初の行の後ろの文字列</param>

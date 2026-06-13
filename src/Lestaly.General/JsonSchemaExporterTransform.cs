@@ -138,7 +138,7 @@ public static class JsonSchemaExporterTransform
                     JsonSchemaValueType.Integer => "integer",
                     JsonSchemaValueType.Boolean => "boolean",
                     JsonSchemaValueType.Object => "object",
-                    JsonSchemaValueType.Array => "object",
+                    JsonSchemaValueType.Array => "array",
                     JsonSchemaValueType.Unknown => enumType == null ? null : "string",
                     _ => null,
                 };

@@ -68,7 +68,7 @@ public static class HttpClientExtensions
             return body;
         }
 
-        /// <summary>GET要求の応答が正常HTTPステータスの場合にボディテキストを取得する。</summary>
+        /// <summary>GET要求に対するHTTPステータスコードを取得する。</summary>
         /// <param name="resource">要求URI</param>
         /// <param name="cancelToken">キャンセルトークン</param>
         /// <returns>HTTP応答ステータスコード。アクセス不可/異常ステータスの場合はnull</returns>
@@ -87,7 +87,7 @@ public static class HttpClientExtensions
             return status;
         }
 
-        /// <summary>GET要求の応答が正常HTTPステータスの場合にボディテキストを取得する。</summary>
+        /// <summary>GET要求に対する応答が正常ステータスであるかを判定する。</summary>
         /// <param name="resource">要求URI</param>
         /// <param name="cancelToken">キャンセルトークン</param>
         /// <returns>HTTP応答ステータスコード。アクセス不可/異常ステータスの場合はnull</returns>

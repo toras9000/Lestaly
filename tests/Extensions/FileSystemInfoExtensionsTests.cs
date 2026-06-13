@@ -3,6 +3,22 @@
 [TestClass()]
 public class FileSystemInfoExtensionsTests
 {
+    #region Convert
+    public void ToStringComparer()
+    {
+        MatchCasing.CaseSensitive.ToStringComparer().Equals("abc", "aBc").Should().Be(false);
+        MatchCasing.CaseInsensitive.ToStringComparer().Equals("abc", "aBc").Should().Be(true);
+        MatchCasing.PlatformDefault.ToStringComparer().Equals("abc", "aBc").Should().Be(OperatingSystem.IsWindows() ? true : false);
+    }
+
+    public void ToStringComparison()
+    {
+        string.Equals("abc", "aBc", MatchCasing.CaseSensitive.ToStringComparison()).Should().Be(false);
+        string.Equals("abc", "aBc", MatchCasing.CaseInsensitive.ToStringComparison()).Should().Be(true);
+        string.Equals("abc", "aBc", MatchCasing.PlatformDefault.ToStringComparison()).Should().Be(OperatingSystem.IsWindows() ? true : false);
+    }
+    #endregion
+
     #region FileSystem
     [TestMethod()]
     public void GetReadOnly_File()

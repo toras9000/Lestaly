@@ -297,8 +297,9 @@ public static class DirectoryInfoExtensions
     /// <param name="self">対象ディレクトリ</param>
     /// <param name="other">比較するディレクトリ</param>
     /// <param name="sameIs">同一階層を真とするか否か</param>
+    /// <param name="casing">キャラクタ照合方法</param>
     /// <returns>指定ディレクトリの子孫であるか否か</returns>
-    public static bool IsDescendantOf(this DirectoryInfo self, DirectoryInfo other, bool sameIs = true)
+    public static bool IsDescendantOf(this DirectoryInfo self, DirectoryInfo other, bool sameIs = true, MatchCasing casing = MatchCasing.PlatformDefault)
     {
         ArgumentNullException.ThrowIfNull(self);
         ArgumentNullException.ThrowIfNull(other);
@@ -311,9 +312,10 @@ public static class DirectoryInfoExtensions
         if (selfSegs.Count < otherSegs.Count) return false;
 
         // 対象ディレクトリが比較対象を全て含んでいるかを判定
+        var comparison = casing.ToStringComparison();
         for (var i = 0; i < otherSegs.Count; i++)
         {
-            if (!string.Equals(selfSegs[i], otherSegs[i], StringComparison.OrdinalIgnoreCase)) return false;
+            if (!string.Equals(selfSegs[i], otherSegs[i], comparison)) return false;
         }
 
         // 両者の階層が同じ場合はパラメータで指定された結果とする。
@@ -462,16 +464,7 @@ public static class DirectoryInfoExtensions
         ArgumentNullException.ThrowIfNull(extensions);
 
         // 拡張子のキャラクタケーシングを選択
-        var extComparer = StringComparer.OrdinalIgnoreCase;
-        if (options != null)
-        {
-            extComparer = options.MatchCasing switch
-            {
-                MatchCasing.CaseSensitive => StringComparer.Ordinal,
-                MatchCasing.CaseInsensitive => StringComparer.OrdinalIgnoreCase,
-                _ => OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal,
-            };
-        }
+        var extComparer = options?.MatchCasing.ToStringComparer() ?? StringComparer.OrdinalIgnoreCase;
 
         // 拡張子の判定セット生成
         var targetExts = extensions.Select(e => e.EnsureStarts(".")).ToHashSet(extComparer);

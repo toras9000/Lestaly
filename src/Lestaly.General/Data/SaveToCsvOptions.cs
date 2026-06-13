@@ -5,9 +5,9 @@
 /// </summary>
 public class SaveToCsvOptions : TypeColumnOptions
 {
-    /// <summary>セパレートキャラクタ</summary>
+    /// <summary>区切り文字</summary>
     public char Separator { get; set; } = ',';
 
-    /// <summary>クォートキャラクタ</summary>
+    /// <summary>クォート文字</summary>
     public char Quote { get; set; } = '"';
 }

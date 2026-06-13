@@ -59,7 +59,7 @@ public static class TextStreamExtensions
         while (true)
         {
             // ライターのバッファを取得
-            var buffer = writer.GetMemory();
+            var buffer = writer.GetMemory(512);
             try
             {
                 // アイドル時間後にキャンセルを行うキャンセルソースを生成

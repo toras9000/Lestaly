@@ -166,7 +166,7 @@ public sealed class ArrayBufferConsumer<T> : IBufferConsumer<T>
         }
 
         // 有効領域情報更新
-        this.written -= this.consumed;
+        this.written = validSize;
         this.consumed = 0;
     }
     #endregion

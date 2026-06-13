@@ -181,7 +181,7 @@ public sealed class PoolArrayBufferConsumer<T> : IBufferConsumer<T>, IDisposable
         else
         {
             // 詰めても収まらない場合はバッファ再確保
-            var needNewSize = checked(this.buffer.Length - spaceSize + needSize);
+            var needNewSize = checked(validSize + needSize);
             var doubleSize = (int.MaxValue / 2) < this.buffer.Length ? int.MaxValue : this.buffer.Length * 2;
             var newSize = Math.Max(needNewSize, doubleSize);
             var newArray = this.bufferPool.Rent(newSize);
@@ -199,7 +199,7 @@ public sealed class PoolArrayBufferConsumer<T> : IBufferConsumer<T>, IDisposable
         }
 
         // 有効領域情報更新
-        this.written -= this.consumed;
+        this.written = validSize;
         this.consumed = 0;
     }
     #endregion
