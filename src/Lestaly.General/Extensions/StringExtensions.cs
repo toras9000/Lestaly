@@ -841,27 +841,6 @@ public static class StringExtensions
         return buffer.ToString();
     }
 
-    /// <summary>カラム状の出力を想定してセパレータと桁揃えキャラクタを付与した文字列を作る</summary>
-    /// <param name="self">フィールド文字列</param>
-    /// <param name="separator">区切り文字列</param>
-    /// <param name="width">カラム幅(区切り文字列含まず)</param>
-    /// <param name="pad">桁揃えキャラクタ</param>
-    /// <returns>作成された文字列</returns>
-    public static string PadColumn(this string? self, ReadOnlySpan<char> separator, int width, char pad = ' ')
-        => self.AsSpan().PadColumn(separator, width, pad);
-
-    /// <summary>カラム状の出力を想定してセパレータと桁揃えキャラクタを付与した文字列を作る</summary>
-    /// <param name="self">フィールド文字列</param>
-    /// <param name="separator">区切り文字列</param>
-    /// <param name="width">カラム幅(区切り文字列含まず)</param>
-    /// <param name="pad">桁揃えキャラクタ</param>
-    /// <returns>作成された文字列</returns>
-    public static string PadColumn(this ReadOnlySpan<char> self, ReadOnlySpan<char> separator, int width, char pad = ' ')
-    {
-        var padLen = width < self.Length ? 0 : width - self.Length;
-        return $"{self}{separator}{new string(pad, padLen)}";
-    }
-
     /// <summary>文字列のテキスト要素を列挙する。</summary>
     /// <param name="self">対象文字列</param>
     /// <returns>テキスト要素シーケンス</returns>

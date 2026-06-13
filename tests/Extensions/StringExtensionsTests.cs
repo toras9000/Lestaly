@@ -661,15 +661,6 @@ public class StringExtensionsTests
     }
 
     [TestMethod]
-    public void PadColumn()
-    {
-        "abc".PadColumn(",", 10).Should().Be("abc,       ");
-        "abc".PadColumn(",", 10, '_').Should().Be("abc,_______");
-        "abc".PadColumn("//", 8).Should().Be("abc//     ");
-        "abc".PadColumn("//", 2).Should().Be("abc//");
-    }
-
-    [TestMethod]
     public void AsTextElements()
     {
         "".AsTextElements().Should().BeEmpty();
