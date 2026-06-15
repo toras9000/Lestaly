@@ -291,13 +291,6 @@ public static class StringEncodeExtensions
     /// <param name="self">バイト列</param>
     /// <param name="delimiter">区切り文字列</param>
     /// <returns>HEX文字列</returns>
-    public static string ToHexString(this ReadOnlyMemory<byte> self, string? delimiter = default)
-        => self.Span.ToHexString(delimiter);
-
-    /// <summary>バイト列をHEX文字列化する</summary>
-    /// <param name="self">バイト列</param>
-    /// <param name="delimiter">区切り文字列</param>
-    /// <returns>HEX文字列</returns>
     public static string ToHexString(this ReadOnlySpan<byte> self, string? delimiter = default)
     {
         var builder = new StringBuilder();
