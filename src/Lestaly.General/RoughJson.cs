@@ -31,6 +31,7 @@ public static class RoughJson
         Options.Converters.Add(new DirectoryInfoJsonConverter());
         Options.Converters.Add(new IPAddressJsonConverter());
         Options.Converters.Add(new IPEndPointJsonConverter());
+        Options.Converters.Add(new JsonStringEnumConverter());
         Options.TypeInfoResolver = new DefaultJsonTypeInfoResolver();
         Options.MakeReadOnly();
 
@@ -43,6 +44,7 @@ public static class RoughJson
         PrettyOptions.Converters.Add(new DirectoryInfoJsonConverter());
         PrettyOptions.Converters.Add(new IPAddressJsonConverter());
         PrettyOptions.Converters.Add(new IPEndPointJsonConverter());
+        PrettyOptions.Converters.Add(new JsonStringEnumConverter());
         PrettyOptions.TypeInfoResolver = new DefaultJsonTypeInfoResolver();
         PrettyOptions.MakeReadOnly();
     }
