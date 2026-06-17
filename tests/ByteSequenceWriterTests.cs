@@ -85,32 +85,32 @@ public class ByteSequenceWriterTests
         var data = new byte[16];
         var reader = new ByteSequenceWriter(data);
 
-        reader.WriteData([0x12, 0x34, 0x56, 0x78]);
+        reader.WriteBytes([0x12, 0x34, 0x56, 0x78]);
         reader.Buffer.Length.Should().Be(data.Length);
         reader.Written.Should().Be(4);
         reader.Remaining.Should().Be(data.Length - 4);
         data[0..reader.Written].Should().Equal([0x12, 0x34, 0x56, 0x78]);
 
-        reader.WriteData([]);
+        reader.WriteBytes([]);
         reader.Buffer.Length.Should().Be(data.Length);
         reader.Written.Should().Be(4);
         reader.Remaining.Should().Be(data.Length - 4);
         data[0..reader.Written].Should().Equal([0x12, 0x34, 0x56, 0x78]);
 
-        reader.WriteData([0x9A, 0xBC, 0xDE, 0xF0, 0x11, 0x22]);
+        reader.WriteBytes([0x9A, 0xBC, 0xDE, 0xF0, 0x11, 0x22]);
         reader.Buffer.Length.Should().Be(data.Length);
         reader.Written.Should().Be(10);
         reader.Remaining.Should().Be(data.Length - 10);
         data[0..reader.Written].Should().Equal([0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0, 0x11, 0x22]);
 
-        reader.WriteData([0x33]);
+        reader.WriteBytes([0x33]);
         reader.Buffer.Length.Should().Be(data.Length);
         reader.Written.Should().Be(11);
         reader.Remaining.Should().Be(data.Length - 11);
         data[0..reader.Written].Should().Equal([0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0, 0x11, 0x22, 0x33]);
 
         var err = default(Exception);
-        try { reader.WriteData([0x44, 0x55, 0x66, 0x77, 0x88, 0x99]); } catch (Exception ex) { err = ex; }
+        try { reader.WriteBytes([0x44, 0x55, 0x66, 0x77, 0x88, 0x99]); } catch (Exception ex) { err = ex; }
         err.Should().NotBeNull();
     }
 

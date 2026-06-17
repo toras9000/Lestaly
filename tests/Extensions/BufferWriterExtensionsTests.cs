@@ -10,13 +10,19 @@ public class BufferWriterExtensionsTests
     {
         var buffer = new ArrayBufferWriter<byte>();
         buffer.WriteLittleEndian<uint>(0x12345678);
+        buffer.WriteLittleEndian<uint>(1);
         buffer.WriteLittleEndian<byte>(0x99);
         buffer.WriteLittleEndian<ushort>(0xABCD);
+        buffer.WriteLittleEndian<ushort>(1);
+        buffer.WriteLittleEndian<ulong>(1);
 
         buffer.WrittenSpan.ToArray().Should().Equal([
             0x78, 0x56, 0x34, 0x12,
+            0x01, 0x00, 0x00, 0x00,
             0x99,
             0xCD, 0xAB,
+            0x01, 0x00,
+            0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         ]);
     }
 
@@ -25,13 +31,19 @@ public class BufferWriterExtensionsTests
     {
         var buffer = new ArrayBufferWriter<byte>();
         buffer.WriteBigEndian<uint>(0x12345678);
+        buffer.WriteBigEndian<uint>(1);
         buffer.WriteBigEndian<byte>(0x99);
         buffer.WriteBigEndian<ushort>(0xABCD);
+        buffer.WriteBigEndian<ushort>(1);
+        buffer.WriteBigEndian<ulong>(1);
 
         buffer.WrittenSpan.ToArray().Should().Equal([
             0x12, 0x34, 0x56, 0x78,
+            0x00, 0x00, 0x00, 0x01,
             0x99,
             0xAB, 0xCD,
+            0x00, 0x01,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,
         ]);
     }
 }
