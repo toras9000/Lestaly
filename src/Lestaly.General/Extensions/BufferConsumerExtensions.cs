@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
+using System.Runtime.CompilerServices;
 
-namespace Lestaly.Extensions;
+namespace Lestaly;
 
 /// <summary>IBufferConsumer に対する拡張メソッド</summary>
 public static class BufferConsumerExtensions
@@ -14,7 +15,7 @@ public static class BufferConsumerExtensions
         /// <returns>読み取った値</returns>
         public TValue ConsumeLittleEndian<TValue>() where TValue : struct, IBinaryInteger<TValue>, IMinMaxValue<TValue>
         {
-            var size = default(TValue).GetByteCount();
+            var size = Unsafe.SizeOf<TValue>();
             var value = TValue.ReadLittleEndian(self.WrittenSpan[..size], 0 <= TValue.Sign(TValue.MinValue));
             self.Consume(size);
             return value;
@@ -25,7 +26,7 @@ public static class BufferConsumerExtensions
         /// <returns>読み取った値</returns>
         public TValue ConsumeBigEndian<TValue>() where TValue : struct, IBinaryInteger<TValue>, IMinMaxValue<TValue>
         {
-            var size = default(TValue).GetByteCount();
+            var size = Unsafe.SizeOf<TValue>();
             var value = TValue.ReadBigEndian(self.WrittenSpan[..size], 0 <= TValue.Sign(TValue.MinValue));
             self.Consume(size);
             return value;

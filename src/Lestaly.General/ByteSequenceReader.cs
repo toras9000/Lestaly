@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace Lestaly;
 
@@ -37,7 +38,7 @@ public ref struct ByteSequenceReader
     /// <returns>読み取った値</returns>
     public TValue ReadLittleEndian<TValue>() where TValue : struct, IBinaryInteger<TValue>, IMinMaxValue<TValue>
     {
-        var count = default(TValue).GetByteCount();
+        var count = Unsafe.SizeOf<TValue>();
         var value = TValue.ReadLittleEndian(this.probe[..count], 0 <= TValue.Sign(TValue.MinValue));
         this.probe = this.probe[count..];
         return value;
@@ -48,7 +49,7 @@ public ref struct ByteSequenceReader
     /// <returns>読み取った値</returns>
     public TValue ReadBigEndian<TValue>() where TValue : struct, IBinaryInteger<TValue>, IMinMaxValue<TValue>
     {
-        var count = default(TValue).GetByteCount();
+        var count = Unsafe.SizeOf<TValue>();
         var value = TValue.ReadBigEndian(this.probe[..count], 0 <= TValue.Sign(TValue.MinValue));
         this.probe = this.probe[count..];
         return value;
