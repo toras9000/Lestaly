@@ -568,7 +568,6 @@ public static class StringExtensions
     /// <returns>テキスト行シーケンス</returns>
     public static IEnumerable<string> AsTextLines(this string self)
     {
-        // パラメータチェック
         ArgumentNullException.ThrowIfNull(self);
 
         // テキスト行を列挙
@@ -582,12 +581,38 @@ public static class StringExtensions
             // 行を列挙
             yield return self[idx..pos];
 
-            // 次の位置へ。CRLFの場合は1つの改行として扱う
-            idx = pos + 1;
-            if (idx < self.Length && self[idx - 1] == '\r' && self[idx] == '\n')
-            {
-                idx++;
-            }
+            // 改行の次の位置へ。
+            idx = pos;
+            idx += self[idx..] is ['\r', '\n', ..] ? 2 : 1;
+        }
+
+        // 最期の部分を列挙
+        yield return self[idx..];
+    }
+
+    /// <summary>文字列の改行を含めた行を列挙する。</summary>
+    /// <param name="self">対象文字列</param>
+    /// <returns>テキスト行シーケンス</returns>
+    public static IEnumerable<string> AsTextRawLines(this string self)
+    {
+        ArgumentNullException.ThrowIfNull(self);
+
+        // テキスト行を列挙
+        var idx = 0;
+        while (idx < self.Length)
+        {
+            // 改行を検索
+            var pos = self.IndexOfAny(LineBreakChars, idx);
+            if (pos < 0) break;
+
+            // 改行種別を判別
+            var termLen = self[pos..] is ['\r', '\n', ..] ? 2 : 1;
+
+            // 改行を含めて行を列挙
+            yield return self[idx..(pos + termLen)];
+
+            // 改行の次の位置へ。
+            idx = pos + termLen;
         }
 
         // 最期の部分を列挙
@@ -597,8 +622,20 @@ public static class StringExtensions
     /// <summary>文字列の行範囲を列挙する</summary>
     /// <param name="self">対象文字列</param>
     /// <returns>行範囲列挙子</returns>
-    public static StringLineSpanEnumerator AsTextLineRanges(this ReadOnlySpan<char> self)
-        => new StringLineSpanEnumerator(self);
+    public static StringLineRangeEnumerator AsTextLineRanges(this ReadOnlySpan<char> self)
+        => new StringLineRangeEnumerator(self, raw: false);
+
+    /// <summary>文字列の改行を含めた行範囲を列挙する</summary>
+    /// <param name="self">対象文字列</param>
+    /// <returns>行範囲列挙子</returns>
+    public static StringLineRangeEnumerator AsTextRawLineRanges(this ReadOnlySpan<char> self)
+        => new StringLineRangeEnumerator(self, raw: true);
+
+    /// <summary>文字列の改行を含めた行を列挙する</summary>
+    /// <param name="self">対象文字列</param>
+    /// <returns>行列挙子</returns>
+    public static StringLineSpanEnumerator EnumerateRawLines(this ReadOnlySpan<char> self)
+        => new StringLineSpanEnumerator(self, raw: true);
 
     /// <summary>文字列のシーケンスからnull/空を取り除く。</summary>
     /// <param name="self">文字列のシーケンス</param>

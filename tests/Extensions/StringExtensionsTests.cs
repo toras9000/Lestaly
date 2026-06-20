@@ -498,6 +498,20 @@ public class StringExtensionsTests
     }
 
     [TestMethod]
+    public void AsTextRawLines()
+    {
+        "".AsTextRawLines().Should().Equal("");
+        "a".AsTextRawLines().Should().Equal("a");
+        "a\rb\nc".AsTextRawLines().Should().Equal("a\r", "b\n", "c");
+        "a\r\nb\n\rc".AsTextRawLines().Should().Equal("a\r\n", "b\n", "\r", "c");
+        "\ra\n".AsTextRawLines().Should().Equal("\r", "a\n", "");
+        "\r".AsTextRawLines().Should().Equal("\r", "");
+        "\n".AsTextRawLines().Should().Equal("\n", "");
+        "\r\n".AsTextRawLines().Should().Equal("\r\n", "");
+        "\n\r".AsTextRawLines().Should().Equal("\n", "\r", "");
+    }
+
+    [TestMethod]
     public void AsTextLineRanges()
     {
         var source = "abc\rdef\nghi\r\njkl";
@@ -511,6 +525,42 @@ public class StringExtensionsTests
             "abc",
             "def",
             "ghi",
+            "jkl",
+        ]);
+    }
+
+    [TestMethod]
+    public void AsTextRawLineRanges()
+    {
+        var source = "abc\rdef\nghi\r\njkl";
+        var lines = new List<string>();
+        foreach (var range in source.AsSpan().AsTextRawLineRanges())
+        {
+            lines.Add(source[range]);
+        }
+
+        lines.Should().Equal([
+            "abc\r",
+            "def\n",
+            "ghi\r\n",
+            "jkl",
+        ]);
+    }
+
+    [TestMethod]
+    public void EnumerateRawLines()
+    {
+        var source = "abc\rdef\nghi\r\njkl";
+        var lines = new List<string>();
+        foreach (var line in source.EnumerateRawLines())
+        {
+            lines.Add(line.ToString());
+        }
+
+        lines.Should().Equal([
+            "abc\r",
+            "def\n",
+            "ghi\r\n",
             "jkl",
         ]);
     }

@@ -1,19 +1,19 @@
 ﻿namespace LestalyTest;
 
 [TestClass]
-public class StringLineSpanEnumeratorTests
+public class StringLineRangeEnumeratorTests
 {
     [TestMethod]
     public void Enumerate()
     {
         var source = "abc\rdef\nghi\r\njkl";
-        var enumerator = new StringLineSpanEnumerator(source);
-        enumerator.Current.Length.Should().Be(0);
+        var enumerator = new StringLineRangeEnumerator(source);
+        source[enumerator.Current].Length.Should().Be(0);
 
         var lines = new List<string>();
-        foreach (var line in enumerator)
+        foreach (var range in enumerator)
         {
-            lines.Add(line.ToString());
+            lines.Add(source[range]);
         }
 
         lines.Should().Equal([
@@ -28,12 +28,13 @@ public class StringLineSpanEnumeratorTests
     public void EmptyLine()
     {
         var source = "a\r\rb\n\nc\r\n\r\nd\r\n\n\re";
-        var enumerator = new StringLineSpanEnumerator(source, raw: false);
+        var enumerator = new StringLineRangeEnumerator(source);
+        source[enumerator.Current].Length.Should().Be(0);
 
         var lines = new List<string>();
-        foreach (var line in enumerator)
+        foreach (var range in enumerator)
         {
-            lines.Add(line.ToString());
+            lines.Add(source[range]);
         }
 
         lines.Should().Equal([
@@ -54,12 +55,13 @@ public class StringLineSpanEnumeratorTests
     public void EmptyLine_Raw()
     {
         var source = "a\r\rb\n\nc\r\n\r\nd\r\n\n\re";
-        var enumerator = new StringLineSpanEnumerator(source, raw: true);
+        var enumerator = new StringLineRangeEnumerator(source, raw: true);
+        source[enumerator.Current].Length.Should().Be(0);
 
         var lines = new List<string>();
-        foreach (var line in enumerator)
+        foreach (var range in enumerator)
         {
-            lines.Add(line.ToString());
+            lines.Add(source[range]);
         }
 
         lines.Should().Equal([
