@@ -46,107 +46,66 @@ public class MemoryExtensionsTests
     }
 
     [TestMethod()]
-    public void AtLittleEndian_BinaryInteger()
+    public void AsLittleEndian_BinaryInteger()
     {
         var data = new byte[] { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, };
 
-        data.AsReadOnlySpan(0, 1).AtLittleEndian<byte>().Should().Be(0x12);
-        data.AsReadOnlySpan(1, 1).AtLittleEndian<byte>().Should().Be(0x34);
-        data.AsReadOnlySpan(0, 2).AtLittleEndian<ushort>().Should().Be(0x3412);
-        data.AsReadOnlySpan(1, 2).AtLittleEndian<ushort>().Should().Be(0x5634);
-        data.AsReadOnlySpan(0, 2).AtLittleEndian<short>().Should().Be(0x3412);
-        data.AsReadOnlySpan(1, 2).AtLittleEndian<short>().Should().Be(0x5634);
-        data.AsReadOnlySpan(0, 4).AtLittleEndian<uint>().Should().Be(0x78563412);
-        data.AsReadOnlySpan(1, 4).AtLittleEndian<uint>().Should().Be(0x9A785634);
+        data.AsReadOnlySpan(0).AsLittleEndian<byte>().Should().Be(0x12);
+        data.AsReadOnlySpan(1).AsLittleEndian<byte>().Should().Be(0x34);
+        data.AsReadOnlySpan(0).AsLittleEndian<ushort>().Should().Be(0x3412);
+        data.AsReadOnlySpan(1).AsLittleEndian<ushort>().Should().Be(0x5634);
+        data.AsReadOnlySpan(0).AsLittleEndian<short>().Should().Be(0x3412);
+        data.AsReadOnlySpan(1).AsLittleEndian<short>().Should().Be(0x5634);
+        data.AsReadOnlySpan(0).AsLittleEndian<uint>().Should().Be(0x78563412);
+        data.AsReadOnlySpan(1).AsLittleEndian<uint>().Should().Be(0x9A785634);
 
-        data.AsReadOnlySpan(0, 3).AtLittleEndian<uint>().Should().Be(0x563412);
-        data.AsReadOnlySpan(1, 3).AtLittleEndian<uint>().Should().Be(0x785634);
-
-        data.AsSpan(0, 4).AtLittleEndian<uint>().Should().Be(0x78563412);
-        data[0..4].AtLittleEndian<uint>().Should().Be(0x78563412);
+        data.AsSpan(0).AsLittleEndian<uint>().Should().Be(0x78563412);
+        data.AsLittleEndian<uint>().Should().Be(0x78563412);
     }
 
     [TestMethod()]
-    public void AtLittleEndian_FloatingPoint()
+    public void AsBigEndian_BinaryInteger()
     {
         var data = new byte[] { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, };
 
-        BitConverter.HalfToUInt16Bits(data.AsReadOnlySpan(0, 2).AtHalfFloatLittleEndian()).Should().Be(0x3412);
-        BitConverter.SingleToUInt32Bits(data.AsReadOnlySpan(0, 4).AtSingleFloatLittleEndian()).Should().Be(0x78563412u);
-        BitConverter.DoubleToUInt64Bits(data.AsReadOnlySpan(0, 8).AtDoubleFloatLittleEndian()).Should().Be(0xF0DEBC9A78563412uL);
+        data.AsReadOnlySpan(0).AsBigEndian<byte>().Should().Be(0x12);
+        data.AsReadOnlySpan(1).AsBigEndian<byte>().Should().Be(0x34);
+        data.AsReadOnlySpan(0).AsBigEndian<ushort>().Should().Be(0x1234);
+        data.AsReadOnlySpan(1).AsBigEndian<ushort>().Should().Be(0x3456);
+        data.AsReadOnlySpan(0).AsBigEndian<short>().Should().Be(0x1234);
+        data.AsReadOnlySpan(1).AsBigEndian<short>().Should().Be(0x3456);
+        data.AsReadOnlySpan(0).AsBigEndian<uint>().Should().Be(0x12345678);
+        data.AsReadOnlySpan(1).AsBigEndian<uint>().Should().Be(0x3456789A);
+
+        data.AsSpan(0).AsBigEndian<uint>().Should().Be(0x12345678);
+        data.AsBigEndian<uint>().Should().Be(0x12345678);
     }
 
     [TestMethod()]
-    public void AtBigEndian_BinaryInteger()
+    public void AsEndian_BinaryInteger()
     {
         var data = new byte[] { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, };
 
-        data.AsReadOnlySpan(0, 1).AtBigEndian<byte>().Should().Be(0x12);
-        data.AsReadOnlySpan(1, 1).AtBigEndian<byte>().Should().Be(0x34);
-        data.AsReadOnlySpan(0, 2).AtBigEndian<ushort>().Should().Be(0x1234);
-        data.AsReadOnlySpan(1, 2).AtBigEndian<ushort>().Should().Be(0x3456);
-        data.AsReadOnlySpan(0, 2).AtBigEndian<short>().Should().Be(0x1234);
-        data.AsReadOnlySpan(1, 2).AtBigEndian<short>().Should().Be(0x3456);
-        data.AsReadOnlySpan(0, 4).AtBigEndian<uint>().Should().Be(0x12345678);
-        data.AsReadOnlySpan(1, 4).AtBigEndian<uint>().Should().Be(0x3456789A);
+        data.AsReadOnlySpan(0).AsEndian<byte>(little: true).Should().Be(0x12);
+        data.AsReadOnlySpan(1).AsEndian<byte>(little: true).Should().Be(0x34);
+        data.AsReadOnlySpan(0).AsEndian<ushort>(little: true).Should().Be(0x3412);
+        data.AsReadOnlySpan(1).AsEndian<ushort>(little: true).Should().Be(0x5634);
+        data.AsReadOnlySpan(0).AsEndian<short>(little: true).Should().Be(0x3412);
+        data.AsReadOnlySpan(1).AsEndian<short>(little: true).Should().Be(0x5634);
+        data.AsReadOnlySpan(0).AsEndian<uint>(little: true).Should().Be(0x78563412);
+        data.AsReadOnlySpan(1).AsEndian<uint>(little: true).Should().Be(0x9A785634);
 
-        data.AsReadOnlySpan(0, 3).AtBigEndian<uint>().Should().Be(0x123456);
-        data.AsReadOnlySpan(1, 3).AtBigEndian<uint>().Should().Be(0x345678);
+        data.AsReadOnlySpan(0).AsEndian<byte>(little: false).Should().Be(0x12);
+        data.AsReadOnlySpan(1).AsEndian<byte>(little: false).Should().Be(0x34);
+        data.AsReadOnlySpan(0).AsEndian<ushort>(little: false).Should().Be(0x1234);
+        data.AsReadOnlySpan(1).AsEndian<ushort>(little: false).Should().Be(0x3456);
+        data.AsReadOnlySpan(0).AsEndian<short>(little: false).Should().Be(0x1234);
+        data.AsReadOnlySpan(1).AsEndian<short>(little: false).Should().Be(0x3456);
+        data.AsReadOnlySpan(0).AsEndian<uint>(little: false).Should().Be(0x12345678);
+        data.AsReadOnlySpan(1).AsEndian<uint>(little: false).Should().Be(0x3456789A);
 
-        data.AsSpan(0, 4).AtBigEndian<uint>().Should().Be(0x12345678);
-        data[0..4].AtBigEndian<uint>().Should().Be(0x12345678);
-    }
-
-    [TestMethod()]
-    public void AtBigEndian_FloatingPoint()
-    {
-        var data = new byte[] { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, };
-
-        BitConverter.HalfToUInt16Bits(data.AsReadOnlySpan(0, 2).AtHalfFloatBigEndian()).Should().Be(0x1234);
-        BitConverter.SingleToUInt32Bits(data.AsReadOnlySpan(0, 4).AtSingleFloatBigEndian()).Should().Be(0x12345678u);
-        BitConverter.DoubleToUInt64Bits(data.AsReadOnlySpan(0, 8).AtDoubleFloatBigEndian()).Should().Be(0x123456789ABCDEF0uL);
-    }
-
-    [TestMethod()]
-    public void AtEndian_BinaryInteger()
-    {
-        var data = new byte[] { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, };
-
-        data.AsReadOnlySpan(0, 1).AtEndian<byte>(little: true).Should().Be(0x12);
-        data.AsReadOnlySpan(1, 1).AtEndian<byte>(little: true).Should().Be(0x34);
-        data.AsReadOnlySpan(0, 2).AtEndian<ushort>(little: true).Should().Be(0x3412);
-        data.AsReadOnlySpan(1, 2).AtEndian<ushort>(little: true).Should().Be(0x5634);
-        data.AsReadOnlySpan(0, 2).AtEndian<short>(little: true).Should().Be(0x3412);
-        data.AsReadOnlySpan(1, 2).AtEndian<short>(little: true).Should().Be(0x5634);
-        data.AsReadOnlySpan(0, 4).AtEndian<uint>(little: true).Should().Be(0x78563412);
-        data.AsReadOnlySpan(1, 4).AtEndian<uint>(little: true).Should().Be(0x9A785634);
-
-        data.AsReadOnlySpan(0, 1).AtEndian<byte>(little: false).Should().Be(0x12);
-        data.AsReadOnlySpan(1, 1).AtEndian<byte>(little: false).Should().Be(0x34);
-        data.AsReadOnlySpan(0, 2).AtEndian<ushort>(little: false).Should().Be(0x1234);
-        data.AsReadOnlySpan(1, 2).AtEndian<ushort>(little: false).Should().Be(0x3456);
-        data.AsReadOnlySpan(0, 2).AtEndian<short>(little: false).Should().Be(0x1234);
-        data.AsReadOnlySpan(1, 2).AtEndian<short>(little: false).Should().Be(0x3456);
-        data.AsReadOnlySpan(0, 4).AtEndian<uint>(little: false).Should().Be(0x12345678);
-        data.AsReadOnlySpan(1, 4).AtEndian<uint>(little: false).Should().Be(0x3456789A);
-
-        data.AsSpan(0, 4).AtEndian<uint>(little: true).Should().Be(0x78563412);
-        data[0..4].AtEndian<uint>(little: true).Should().Be(0x78563412);
-
-    }
-
-    [TestMethod()]
-    public void AtEndian_FloatingPoint()
-    {
-        var data = new byte[] { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, };
-
-        BitConverter.HalfToUInt16Bits(data.AsReadOnlySpan(0, 2).AtHalfFloatEndian(little: true)).Should().Be(0x3412);
-        BitConverter.SingleToUInt32Bits(data.AsReadOnlySpan(0, 4).AtSingleFloatEndian(little: true)).Should().Be(0x78563412u);
-        BitConverter.DoubleToUInt64Bits(data.AsReadOnlySpan(0, 8).AtDoubleFloatEndian(little: true)).Should().Be(0xF0DEBC9A78563412uL);
-
-        BitConverter.HalfToUInt16Bits(data.AsReadOnlySpan(0, 2).AtHalfFloatEndian(little: false)).Should().Be(0x1234);
-        BitConverter.SingleToUInt32Bits(data.AsReadOnlySpan(0, 4).AtSingleFloatEndian(little: false)).Should().Be(0x12345678u);
-        BitConverter.DoubleToUInt64Bits(data.AsReadOnlySpan(0, 8).AtDoubleFloatEndian(little: false)).Should().Be(0x123456789ABCDEF0uL);
+        data.AsSpan(0).AsEndian<uint>(little: true).Should().Be(0x78563412);
+        data.AsEndian<uint>(little: true).Should().Be(0x78563412);
     }
 
     [TestMethod()]

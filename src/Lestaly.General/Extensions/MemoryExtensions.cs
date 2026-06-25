@@ -1,6 +1,7 @@
 ﻿using System.Buffers.Binary;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
 namespace Lestaly;
@@ -94,21 +95,21 @@ public static class MemoryExtensions
         /// <summary>バイト列からリトルエンディアンで整数を読み取る</summary>
         /// <typeparam name="TResult">読み取り結果とする型</typeparam>
         /// <returns>読み取り結果</returns>
-        public TResult AtLittleEndian<TResult>() where TResult : struct, IBinaryInteger<TResult>, IMinMaxValue<TResult>
-            => TResult.ReadLittleEndian(self, 0 <= TResult.Sign(TResult.MinValue));
+        public TResult AsLittleEndian<TResult>() where TResult : struct, IBinaryInteger<TResult>, IMinMaxValue<TResult>
+            => TResult.ReadLittleEndian(self.Slice(0, Unsafe.SizeOf<TResult>()), 0 <= TResult.Sign(TResult.MinValue));
 
         /// <summary>バイト列からビッグエンディアンで整数を読み取る</summary>
         /// <typeparam name="TResult">読み取り結果とする型</typeparam>
         /// <returns>読み取り結果</returns>
-        public TResult AtBigEndian<TResult>() where TResult : struct, IBinaryInteger<TResult>, IMinMaxValue<TResult>
-            => TResult.ReadBigEndian(self, 0 <= TResult.Sign(TResult.MinValue));
+        public TResult AsBigEndian<TResult>() where TResult : struct, IBinaryInteger<TResult>, IMinMaxValue<TResult>
+            => TResult.ReadBigEndian(self.Slice(0, Unsafe.SizeOf<TResult>()), 0 <= TResult.Sign(TResult.MinValue));
 
         /// <summary>バイト列から指定のエンディアンで整数を読み取る</summary>
         /// <typeparam name="TResult">読み取り結果とする型</typeparam>
         /// <param name="little">リトルエンディアンか否か</param>
         /// <returns>読み取り結果</returns>
-        public TResult AtEndian<TResult>(bool little) where TResult : struct, IBinaryInteger<TResult>, IMinMaxValue<TResult>
-            => little ? TResult.ReadLittleEndian(self, 0 <= TResult.Sign(TResult.MinValue)) : TResult.ReadBigEndian(self, 0 <= TResult.Sign(TResult.MinValue));
+        public TResult AsEndian<TResult>(bool little) where TResult : struct, IBinaryInteger<TResult>, IMinMaxValue<TResult>
+            => little ? TResult.ReadLittleEndian(self.Slice(0, Unsafe.SizeOf<TResult>()), 0 <= TResult.Sign(TResult.MinValue)) : TResult.ReadBigEndian(self.Slice(0, Unsafe.SizeOf<TResult>()), 0 <= TResult.Sign(TResult.MinValue));
     }
 
     /// <summary>ReadOnlySpan に対するメソッド</summary>
@@ -118,69 +119,21 @@ public static class MemoryExtensions
         /// <summary>バイト列からリトルエンディアンで整数を読み取る</summary>
         /// <typeparam name="TResult">読み取り結果とする型</typeparam>
         /// <returns>読み取り結果</returns>
-        public TResult AtLittleEndian<TResult>() where TResult : struct, IBinaryInteger<TResult>, IMinMaxValue<TResult>
-            => TResult.ReadLittleEndian(self, 0 <= TResult.Sign(TResult.MinValue));
-
-        /// <summary>バイト列からリトルエンディアンで半精度浮動小数点数を読み取る</summary>
-        /// <returns>読み取り結果</returns>
-        public Half AtHalfFloatLittleEndian()
-            => BinaryPrimitives.ReadHalfLittleEndian(self);
-
-        /// <summary>バイト列からリトルエンディアンで単精度浮動小数点数を読み取る</summary>
-        /// <returns>読み取り結果</returns>
-        public Single AtSingleFloatLittleEndian()
-            => BinaryPrimitives.ReadSingleLittleEndian(self);
-
-        /// <summary>バイト列からリトルエンディアンで倍精度浮動小数点数を読み取る</summary>
-        /// <returns>読み取り結果</returns>
-        public Double AtDoubleFloatLittleEndian()
-            => BinaryPrimitives.ReadDoubleLittleEndian(self);
+        public TResult AsLittleEndian<TResult>() where TResult : struct, IBinaryInteger<TResult>, IMinMaxValue<TResult>
+            => TResult.ReadLittleEndian(self.Slice(0, Unsafe.SizeOf<TResult>()), 0 <= TResult.Sign(TResult.MinValue));
 
         /// <summary>バイト列からビッグエンディアンで整数を読み取る</summary>
         /// <typeparam name="TResult">読み取り結果とする型</typeparam>
         /// <returns>読み取り結果</returns>
-        public TResult AtBigEndian<TResult>() where TResult : struct, IBinaryInteger<TResult>, IMinMaxValue<TResult>
-            => TResult.ReadBigEndian(self, 0 <= TResult.Sign(TResult.MinValue));
-
-        /// <summary>バイト列からビッグエンディアンで半精度浮動小数点数を読み取る</summary>
-        /// <returns>読み取り結果</returns>
-        public Half AtHalfFloatBigEndian()
-            => BinaryPrimitives.ReadHalfBigEndian(self);
-
-        /// <summary>バイト列からビッグエンディアンで単精度浮動小数点数を読み取る</summary>
-        /// <returns>読み取り結果</returns>
-        public Single AtSingleFloatBigEndian()
-            => BinaryPrimitives.ReadSingleBigEndian(self);
-
-        /// <summary>バイト列からビッグエンディアンで倍精度浮動小数点数を読み取る</summary>
-        /// <returns>読み取り結果</returns>
-        public Double AtDoubleFloatBigEndian()
-            => BinaryPrimitives.ReadDoubleBigEndian(self);
+        public TResult AsBigEndian<TResult>() where TResult : struct, IBinaryInteger<TResult>, IMinMaxValue<TResult>
+            => TResult.ReadBigEndian(self.Slice(0, Unsafe.SizeOf<TResult>()), 0 <= TResult.Sign(TResult.MinValue));
 
         /// <summary>バイト列から指定のエンディアンで整数を読み取る</summary>
         /// <typeparam name="TResult">読み取り結果とする型</typeparam>
         /// <param name="little">リトルエンディアンか否か</param>
         /// <returns>読み取り結果</returns>
-        public TResult AtEndian<TResult>(bool little) where TResult : struct, IBinaryInteger<TResult>, IMinMaxValue<TResult>
-            => little ? TResult.ReadLittleEndian(self, 0 <= TResult.Sign(TResult.MinValue)) : TResult.ReadBigEndian(self, 0 <= TResult.Sign(TResult.MinValue));
-
-        /// <summary>バイト列から指定のエンディアンで半精度浮動小数点数を読み取る</summary>
-        /// <param name="little">リトルエンディアンか否か</param>
-        /// <returns>読み取り結果</returns>
-        public Half AtHalfFloatEndian(bool little)
-            => little ? BinaryPrimitives.ReadHalfLittleEndian(self) : BinaryPrimitives.ReadHalfBigEndian(self);
-
-        /// <summary>バイト列から指定のエンディアンで単精度浮動小数点数を読み取る</summary>
-        /// <param name="little">リトルエンディアンか否か</param>
-        /// <returns>読み取り結果</returns>
-        public Single AtSingleFloatEndian(bool little)
-            => little ? BinaryPrimitives.ReadSingleLittleEndian(self) : BinaryPrimitives.ReadSingleBigEndian(self);
-
-        /// <summary>バイト列から指定のエンディアンで倍精度浮動小数点数を読み取る</summary>
-        /// <param name="little">リトルエンディアンか否か</param>
-        /// <returns>読み取り結果</returns>
-        public Double AtDoubleFloatEndian(bool little)
-            => little ? BinaryPrimitives.ReadDoubleLittleEndian(self) : BinaryPrimitives.ReadDoubleBigEndian(self);
+        public TResult AsEndian<TResult>(bool little) where TResult : struct, IBinaryInteger<TResult>, IMinMaxValue<TResult>
+            => little ? TResult.ReadLittleEndian(self.Slice(0, Unsafe.SizeOf<TResult>()), 0 <= TResult.Sign(TResult.MinValue)) : TResult.ReadBigEndian(self.Slice(0, Unsafe.SizeOf<TResult>()), 0 <= TResult.Sign(TResult.MinValue));
     }
 
     /// <summary>配列 に対するメソッド</summary>
@@ -190,21 +143,21 @@ public static class MemoryExtensions
         /// <summary>バイト列からリトルエンディアンで整数を読み取る</summary>
         /// <typeparam name="TResult">読み取り結果とする型</typeparam>
         /// <returns>読み取り結果</returns>
-        public TResult AtLittleEndian<TResult>() where TResult : struct, IBinaryInteger<TResult>, IMinMaxValue<TResult>
-            => TResult.ReadLittleEndian(self, 0 <= TResult.Sign(TResult.MinValue));
+        public TResult AsLittleEndian<TResult>() where TResult : struct, IBinaryInteger<TResult>, IMinMaxValue<TResult>
+            => TResult.ReadLittleEndian(self.AsSpan(0, Unsafe.SizeOf<TResult>()), 0 <= TResult.Sign(TResult.MinValue));
 
         /// <summary>バイト列からビッグエンディアンで整数を読み取る</summary>
         /// <typeparam name="TResult">読み取り結果とする型</typeparam>
         /// <returns>読み取り結果</returns>
-        public TResult AtBigEndian<TResult>() where TResult : struct, IBinaryInteger<TResult>, IMinMaxValue<TResult>
-            => TResult.ReadBigEndian(self, 0 <= TResult.Sign(TResult.MinValue));
+        public TResult AsBigEndian<TResult>() where TResult : struct, IBinaryInteger<TResult>, IMinMaxValue<TResult>
+            => TResult.ReadBigEndian(self.AsSpan(0, Unsafe.SizeOf<TResult>()), 0 <= TResult.Sign(TResult.MinValue));
 
         /// <summary>バイト列から指定のエンディアンで整数を読み取る</summary>
         /// <typeparam name="TResult">読み取り結果とする型</typeparam>
         /// <param name="little">リトルエンディアンか否か</param>
         /// <returns>読み取り結果</returns>
-        public TResult AtEndian<TResult>(bool little) where TResult : struct, IBinaryInteger<TResult>, IMinMaxValue<TResult>
-            => little ? TResult.ReadLittleEndian(self, 0 <= TResult.Sign(TResult.MinValue)) : TResult.ReadBigEndian(self, 0 <= TResult.Sign(TResult.MinValue));
+        public TResult AsEndian<TResult>(bool little) where TResult : struct, IBinaryInteger<TResult>, IMinMaxValue<TResult>
+            => little ? TResult.ReadLittleEndian(self.AsSpan(0, Unsafe.SizeOf<TResult>()), 0 <= TResult.Sign(TResult.MinValue)) : TResult.ReadBigEndian(self.AsSpan(0, Unsafe.SizeOf<TResult>()), 0 <= TResult.Sign(TResult.MinValue));
     }
     #endregion
 
