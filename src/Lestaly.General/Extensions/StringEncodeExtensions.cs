@@ -173,25 +173,25 @@ public static class StringEncodeExtensions
     }
 
     /// <summary>HEX文字列をUTF8として文字列にデコードする。</summary>
-    /// <param name="self">Base64文字列。nullは空文字列と同じ扱い。</param>
+    /// <param name="self">HEX文字列。nullは空文字列と同じ扱い。</param>
     /// <returns>デコードした文字列</returns>
     public static string DecodeUtf8Hex(this string? self)
         => DecodeUtf8Hex(self.AsSpan());
 
     /// <summary>HEX文字列をUTF8として文字列にデコードする。</summary>
-    /// <param name="self">Base64文字列。nullは空シーケンスと同じ扱い。</param>
+    /// <param name="self">HEX文字列。nullは空シーケンスと同じ扱い。</param>
     /// <returns>デコードした文字列</returns>
     public static string DecodeUtf8Hex(this char[] self)
         => DecodeUtf8Hex(self.AsSpan());
 
     /// <summary>HEX文字列をUTF8として文字列にデコードする。</summary>
-    /// <param name="self">Base64文字列</param>
+    /// <param name="self">HEX文字列</param>
     /// <returns>デコードした文字列</returns>
     public static string DecodeUtf8Hex(this Span<char> self)
         => DecodeUtf8Hex(self.AsReadOnly());
 
     /// <summary>HEX文字列をUTF8として文字列にデコードする。</summary>
-    /// <param name="self">Base64文字列</param>
+    /// <param name="self">HEX文字列</param>
     /// <returns>デコードした文字列</returns>
     public static string DecodeUtf8Hex(this ReadOnlySpan<char> self)
         => Encoding.UTF8.GetString(Convert.FromHexString(self));
@@ -271,9 +271,9 @@ public static class StringEncodeExtensions
     public static string EncodeBase64Url(this ReadOnlySpan<byte> self)
     {
         var maxLen = Base64.GetMaxEncodedToUtf8Length(self.Length);
-        var buff = new byte[maxLen];
-        Base64.EncodeToUtf8(self, buff, out _, out var written);
-        var encoded = buff.AsSpan(..written).TrimEnd((byte)'=');
+        using var buff = new RentalArray<byte>(maxLen);
+        Base64.EncodeToUtf8(self, buff.Instance, out _, out var written);
+        var encoded = buff.Instance.AsSpan(..written).TrimEnd((byte)'=');
         encoded.Replace((byte)'+', (byte)'-');
         encoded.Replace((byte)'/', (byte)'_');
         return Encoding.UTF8.GetString(encoded);

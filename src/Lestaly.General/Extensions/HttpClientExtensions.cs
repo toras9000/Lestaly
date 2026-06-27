@@ -74,7 +74,7 @@ public static class HttpClientExtensions
         /// <returns>HTTP応答ステータスコード。アクセス不可/異常ステータスの場合はnull</returns>
         public async Task<int?> GetStatusAsync(Uri resource, CancellationToken cancelToken = default)
         {
-            var status = default(int);
+            var status = default(int?);
             try
             {
                 using var response = await self.GetAsync(resource, cancelToken).ConfigureAwait(false);

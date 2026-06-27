@@ -7,19 +7,19 @@ namespace Lestaly;
 /// </summary>
 public static class StringBuilderExtensions
 {
-    /// <summary>文字列がnullや空であるかを判定する。</summary>
+    /// <summary>文字列がnull/空や空であるかを判定する。</summary>
     /// <param name="self">対象文字列</param>
     /// <returns>nullや空ならば true</returns>
     public static bool IsEmpty(this StringBuilder self) => self.Length == 0;
 
-    /// <summary>文字列がnullや空以外であるかを判定する。</summary>
+    /// <summary>文字列がnull/空や空以外であるかを判定する。</summary>
     /// <param name="self">対象文字列</param>
     /// <returns>nullや空以外であれば true</returns>
     public static bool IsNotEmpty(this StringBuilder self) => !self.IsEmpty();
 
-    /// <summary>文字列がnullや空白文字であるかを判定する</summary>
+    /// <summary>文字列がnull/空や空白文字であるかを判定する</summary>
     /// <param name="self">対象文字列</param>
-    /// <returns>nullや空白文字ならば true</returns>
+    /// <returns>null/空や空白文字ならば true</returns>
     public static bool IsWhite(this StringBuilder self)
     {
         ArgumentNullException.ThrowIfNull(self);
@@ -32,9 +32,9 @@ public static class StringBuilderExtensions
         return true;
     }
 
-    /// <summary>文字列がnullや空白文字以外であるかを判定する</summary>
+    /// <summary>文字列がnull/空や空白文字以外であるかを判定する</summary>
     /// <param name="self">対象文字列</param>
-    /// <returns>nullや空白文字以外ならば true</returns>
+    /// <returns>null/空や空白文字以外ならば true</returns>
     public static bool IsNotWhite(this StringBuilder self) => !self.IsWhite();
 
     /// <summary>文字列が指定の文字列で始まるかを判定する。</summary>

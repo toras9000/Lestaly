@@ -75,4 +75,19 @@ public class StringLineSpanEnumeratorTests
             "e",
         ]);
     }
+
+    [TestMethod]
+    public void EmptySource()
+    {
+        var source = "";
+        var enumerator = new StringLineSpanEnumerator(source, raw: false);
+
+        var lines = new List<string>();
+        foreach (var line in enumerator)
+        {
+            lines.Add(line.ToString());
+        }
+
+        lines.Should().BeEmpty();
+    }
 }

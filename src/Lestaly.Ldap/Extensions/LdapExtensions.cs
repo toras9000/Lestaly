@@ -22,7 +22,7 @@ public static class LdapExtensions
             using var canceller = cancelToken.Register(() => self.Abort(asyncToken));
             try
             {
-                return self.EndSendRequest(asyncToken); ;
+                return self.EndSendRequest(asyncToken);
             }
             catch (ArgumentException)
             {
@@ -77,7 +77,7 @@ public static class LdapExtensions
 
         // Request a search.
         var searchRsp = await self.SendRequestAsync(searchReq, cancelToken: cancelToken);
-        if (searchRsp.ResultCode != 0) throw new LdapExtensionException($"failed to search: {searchRsp.ErrorMessage}");
+        if (searchRsp.ResultCode != 0) throw new LdapExtensionException($"failed to get entry: {searchRsp.ErrorMessage}");
         var searchResult = searchRsp as SearchResponse ?? throw new LdapExtensionException("unexpected result");
 
         return searchResult.Entries[0];
@@ -123,7 +123,7 @@ public static class LdapExtensions
         }
 
         var createEntryRsp = await self.SendRequestAsync(createEntryReq, cancelToken: cancelToken);
-        if (createEntryRsp.ResultCode != 0) throw new LdapExtensionException($"failed to search: {createEntryRsp.ErrorMessage}");
+        if (createEntryRsp.ResultCode != 0) throw new LdapExtensionException($"failed to create entry: {createEntryRsp.ErrorMessage}");
 
         return createEntryRsp;
     }
@@ -147,7 +147,7 @@ public static class LdapExtensions
         addAttrReq.Modifications.Add(attrModify);
 
         var addAttrRsp = await self.SendRequestAsync(addAttrReq, cancelToken: cancelToken);
-        if (addAttrRsp.ResultCode != 0) throw new LdapExtensionException($"failed to search: {addAttrRsp.ErrorMessage}");
+        if (addAttrRsp.ResultCode != 0) throw new LdapExtensionException($"failed to add attribute: {addAttrRsp.ErrorMessage}");
 
         return addAttrRsp;
     }
@@ -171,7 +171,7 @@ public static class LdapExtensions
         addAttrReq.Modifications.Add(attrModify);
 
         var addAttrRsp = await self.SendRequestAsync(addAttrReq, cancelToken: cancelToken);
-        if (addAttrRsp.ResultCode != 0) throw new LdapExtensionException($"failed to search: {addAttrRsp.ErrorMessage}");
+        if (addAttrRsp.ResultCode != 0) throw new LdapExtensionException($"failed to replace attribute: {addAttrRsp.ErrorMessage}");
 
         return addAttrRsp;
     }
@@ -195,7 +195,7 @@ public static class LdapExtensions
         addAttrReq.Modifications.Add(attrModify);
 
         var addAttrRsp = await self.SendRequestAsync(addAttrReq, cancelToken: cancelToken);
-        if (addAttrRsp.ResultCode != 0) throw new LdapExtensionException($"failed to search: {addAttrRsp.ErrorMessage}");
+        if (addAttrRsp.ResultCode != 0) throw new LdapExtensionException($"failed to delete attribute: {addAttrRsp.ErrorMessage}");
 
         return addAttrRsp;
     }
@@ -252,13 +252,13 @@ public static class LdapExtensions
             var buffer = new ArrayBufferWriter<byte>();
             Encoding.UTF8.GetBytes(password, buffer);
             // salt を追加
-            buffer.Write(salt);
+            buffer.Write(useSalt);
             // ハッシュ算出
             var hashed = hasher(buffer.WrittenSpan);
             // Base64文字列作成
             buffer.ResetWrittenCount();
             buffer.Write(hashed);
-            buffer.Write(salt);
+            buffer.Write(useSalt);
             var encoded = Convert.ToBase64String(buffer.WrittenSpan);
             // ハッシュ化文字列作成
             var value = $"{{{marker}}}{encoded}";

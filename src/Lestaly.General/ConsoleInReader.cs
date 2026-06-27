@@ -193,6 +193,7 @@ public class ConsoleInReader : TextReader
     {
         lock (this.callSync)
         {
+            if ((this.readLineTask != null && this.readLineTask.IsCompleted)) this.readLineTask = null;
             this.readLineTask ??= this.reader.ReadLineAsync(CancellationToken.None).AsTask();
         }
 
@@ -200,7 +201,7 @@ public class ConsoleInReader : TextReader
 
         lock (this.callSync)
         {
-            this.readLineTask = null;
+            if (this.readLineTask.IsCompleted) this.readLineTask = null;
         }
 
         return result;
@@ -212,6 +213,7 @@ public class ConsoleInReader : TextReader
 
         lock (this.callSync)
         {
+            if ((this.readBlockTask != null && this.readBlockTask.IsCompleted)) this.readBlockTask = null;
             this.readBlockTask ??= this.reader.ReadBlockAsync(buffer.Value, CancellationToken.None).AsTask();
         }
 
@@ -219,7 +221,7 @@ public class ConsoleInReader : TextReader
 
         lock (this.callSync)
         {
-            this.readBlockTask = null;
+            if (this.readBlockTask.IsCompleted) this.readBlockTask = null;
         }
 
         return result;
@@ -229,6 +231,7 @@ public class ConsoleInReader : TextReader
     {
         lock (this.callSync)
         {
+            if ((this.readToEndTask != null && this.readToEndTask.IsCompleted)) this.readToEndTask = null;
             this.readToEndTask ??= this.reader.ReadToEndAsync(CancellationToken.None);
         }
 
@@ -236,7 +239,7 @@ public class ConsoleInReader : TextReader
 
         lock (this.callSync)
         {
-            this.readToEndTask = null;
+            if (this.readToEndTask.IsCompleted) this.readToEndTask = null;
         }
 
         return result;

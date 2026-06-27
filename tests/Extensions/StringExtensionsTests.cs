@@ -363,12 +363,14 @@ public class StringExtensionsTests
             "abcd".TrimEndString("cd", ignoreCase: false).ToString().Should().Be("ab");
             "abcd".TrimEndString("CD", ignoreCase: true).ToString().Should().Be("ab");
             "abcd".TrimEndString("cd", ignoreCase: true).ToString().Should().Be("ab");
+            "abcd".TrimEndString("", ignoreCase: true).ToString().Should().Be("abcd");
         }
         {// Span
             "abcd".AsSpan().TrimEndString("CD", ignoreCase: false).ToString().Should().Be("abcd");
             "abcd".AsSpan().TrimEndString("cd", ignoreCase: false).ToString().Should().Be("ab");
             "abcd".AsSpan().TrimEndString("CD", ignoreCase: true).ToString().Should().Be("ab");
             "abcd".AsSpan().TrimEndString("cd", ignoreCase: true).ToString().Should().Be("ab");
+            "abcd".AsSpan().TrimEndString("", ignoreCase: true).ToString().Should().Be("abcd");
         }
     }
 
