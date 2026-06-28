@@ -1579,6 +1579,42 @@ public class FileExtensionsTests
 
         File.Exists(orgPath).Should().BeFalse();
     }
+
+    [TestMethod()]
+    public void RenameWithSuffix()
+    {
+        using var testDir = new TempDir();
+
+        var orgFile = testDir.Info.RelativeFile("a.txt");
+        orgFile.WriteAllText("a");
+        var orgPath = orgFile.FullName;
+
+        var newFile = orgFile.RenameWithSuffix(".bak");
+        newFile.Exists.Should().BeTrue();
+
+        orgFile.Should().BeSameAs(newFile);
+        orgFile.Name.Should().Be("a.txt.bak");
+
+        File.Exists(orgPath).Should().BeFalse();
+    }
+
+    [TestMethod()]
+    public void RenameBaseWithSuffix()
+    {
+        using var testDir = new TempDir();
+
+        var orgFile = testDir.Info.RelativeFile("a.txt");
+        orgFile.WriteAllText("a");
+        var orgPath = orgFile.FullName;
+
+        var newFile = orgFile.RenameBaseWithSuffix("-bak");
+        newFile.Exists.Should().BeTrue();
+
+        orgFile.Should().BeSameAs(newFile);
+        orgFile.Name.Should().Be("a-bak.txt");
+
+        File.Exists(orgPath).Should().BeFalse();
+    }
     #endregion
 
     #region Find

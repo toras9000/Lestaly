@@ -1104,12 +1104,41 @@ public static class FileInfoExtensions
 
         /// <summary>ファイルをリネームする</summary>
         /// <param name="name">新しい名前。元の場所を基準とした名前。</param>
+        /// <param name="overwrite">リネーム先ファイルが存在する場合に上書きするか否か。</param>
         /// <returns>リネームした対象ファイル情報。元のインスタンスと同一。</returns>
-        public FileInfo Rename(string name)
+        public FileInfo Rename(string name, bool overwrite = false)
         {
             if (self.DirectoryName == null) throw new InvalidOperationException();
             var newPath = Path.Combine(self.DirectoryName, name);
-            self.MoveTo(newPath);
+            self.MoveTo(newPath, overwrite);
+            return self;
+        }
+
+        /// <summary>ファイルをサフィックスを付与した名前にリネームする</summary>
+        /// <remarks>このメソッドでは、たとえば「a.txt」にサフィックス ".bak" を指定して呼び出すと、「a.txt.bak」にリネームされます。</remarks>
+        /// <param name="suffix">新しい名前に付けるサフィックス</param>
+        /// <param name="overwrite">リネーム先ファイルが存在する場合に上書きするか否か。</param>
+        /// <returns>リネームした対象ファイル情報。元のインスタンスと同一。</returns>
+        public FileInfo RenameWithSuffix(string suffix, bool overwrite = false)
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(suffix);
+            if (self.DirectoryName == null) throw new InvalidOperationException();
+            var newPath = Path.Combine(self.DirectoryName, $"{self.Name}{suffix}");
+            self.MoveTo(newPath, overwrite);
+            return self;
+        }
+
+        /// <summary>ファイルをベース名にサフィックスを付与した名称にリネームする</summary>
+        /// <remarks>このメソッドでは、たとえば「a.txt」にサフィックス "-bak" を指定して呼び出すと、「a-bak.txt」にリネームされます。</remarks>
+        /// <param name="suffix">新しい名前に付けるサフィックス</param>
+        /// <param name="overwrite">リネーム先ファイルが存在する場合に上書きするか否か。</param>
+        /// <returns>リネームした対象ファイル情報。元のインスタンスと同一。</returns>
+        public FileInfo RenameBaseWithSuffix(string suffix, bool overwrite = false)
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(suffix);
+            if (self.DirectoryName == null) throw new InvalidOperationException();
+            var newPath = Path.Combine(self.DirectoryName, $"{self.BaseName()}{suffix}{self.Extension}");
+            self.MoveTo(newPath, overwrite);
             return self;
         }
     }
