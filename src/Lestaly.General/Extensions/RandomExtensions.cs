@@ -24,16 +24,26 @@ public readonly struct RandomRange
     /// <param name="start">開始値</param>
     /// <param name="count">範囲数</param>
     /// <returns>乱数範囲</returns>
-    public RandomRange ByCount(int start, int count) => new(start, count);
+    public static RandomRange WithCount(int start, int count) => new(start, count);
 
     /// <summary>範囲の終端値によってインスタンスを作成する</summary>
     /// <param name="start">開始値</param>
     /// <param name="end">終端値</param>
     /// <returns>乱数範囲</returns>
-    public RandomRange ByEnd(int start, int end)
+    public static RandomRange WithEnd(int start, int end)
     {
-        if (end <= start) throw new ArgumentException("end must be grater than begin.");
+        if (end <= start) throw new ArgumentException("end must be grator than start.");
         return new(start, end - start);
+    }
+
+    /// <summary>範囲の最終値によってインスタンスを作成する</summary>
+    /// <param name="start">開始値</param>
+    /// <param name="last">最終値(最大値)</param>
+    /// <returns>乱数範囲</returns>
+    public static RandomRange WithLast(int start, int last)
+    {
+        if (last < start) throw new ArgumentException("last must be grator or equal start.");
+        return new(start, last - start + 1);
     }
 
     /// <summary>開始値</summary>

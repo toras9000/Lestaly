@@ -10,7 +10,7 @@ public class RandomExtensionsTests
     }
 
     [TestMethod()]
-    public void RandomRange()
+    public void Type_RandomRange()
     {
         new RandomRange(0, 100).Should().BeEquivalentTo(new
         {
@@ -34,10 +34,37 @@ public class RandomExtensionsTests
             Last = int.MaxValue - 1,
         });
 
+        RandomRange.WithCount(100, 200).Should().BeEquivalentTo(new
+        {
+            Start = 100,
+            Count = 200,
+            End = 300,
+            Last = 299,
+        });
+
+        RandomRange.WithEnd(100, 200).Should().BeEquivalentTo(new
+        {
+            Start = 100,
+            Count = 100,
+            End = 200,
+            Last = 199,
+        });
+
+        RandomRange.WithLast(100, 200).Should().BeEquivalentTo(new
+        {
+            Start = 100,
+            Count = 101,
+            End = 201,
+            Last = 200,
+        });
+
         FluentActions.Invoking(() => new RandomRange(int.MaxValue, 1)).Should().Throw<Exception>();
         FluentActions.Invoking(() => new RandomRange(0, int.MaxValue)).Should().NotThrow();
         FluentActions.Invoking(() => new RandomRange(1, int.MaxValue)).Should().Throw<Exception>();
         FluentActions.Invoking(() => new RandomRange(1, 0)).Should().Throw<Exception>();
+        FluentActions.Invoking(() => RandomRange.WithEnd(5, 5)).Should().Throw<Exception>();
+        FluentActions.Invoking(() => RandomRange.WithEnd(5, 4)).Should().Throw<Exception>();
+        FluentActions.Invoking(() => RandomRange.WithEnd(0, int.MaxValue)).Should().NotThrow();
     }
 
     [TestMethod()]
