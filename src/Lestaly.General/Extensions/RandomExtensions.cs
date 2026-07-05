@@ -6,6 +6,49 @@
 /// <param name="Weight">重み</param>
 public readonly record struct OptionWeight<TOption>(TOption Value, ushort Weight);
 
+/// <summary>乱数範囲</summary>
+public readonly struct RandomRange
+{
+    /// <summary>コンストラクタ</summary>
+    /// <param name="start">開始値</param>
+    /// <param name="count">範囲数</param>
+    public RandomRange(int start, int count)
+    {
+        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(count, 0);
+        checked { _ = start + count; }
+        this.Start = start;
+        this.Count = count;
+    }
+
+    /// <summary>範囲の大きさ(個数)によってインスタンスを作成する</summary>
+    /// <param name="start">開始値</param>
+    /// <param name="count">範囲数</param>
+    /// <returns>乱数範囲</returns>
+    public RandomRange ByCount(int start, int count) => new(start, count);
+
+    /// <summary>範囲の終端値によってインスタンスを作成する</summary>
+    /// <param name="start">開始値</param>
+    /// <param name="end">終端値</param>
+    /// <returns>乱数範囲</returns>
+    public RandomRange ByEnd(int start, int end)
+    {
+        if (end <= start) throw new ArgumentException("end must be grater than begin.");
+        return new(start, end - start);
+    }
+
+    /// <summary>開始値</summary>
+    public int Start { get; }
+
+    /// <summary>範囲数</summary>
+    public int Count { get; }
+
+    /// <summary>範囲の最後の値</summary>
+    public int Last => this.Start + this.Count - 1;
+
+    /// <summary>範囲の終端()</summary>
+    public int End => this.Start + this.Count;
+}
+
 /// <summary>重み付き選択肢データ型のヘルパ型</summary>
 public static class OptionWeight
 {
@@ -33,6 +76,12 @@ public static class RandomExtensions
             self.NextBytes(data);
             return data;
         }
+
+        /// <summary>範囲内のランダムな整数を1つ取得する</summary>
+        /// <param name="range">ランダム範囲</param>
+        /// <returns>範囲内のランダムな整数</returns>
+        public int GetNumber(RandomRange range)
+            => Random.Shared.Next(range.Start, range.End);
 
         /// <summary>コレクションからランダムに1つの要素を取得する</summary>
         /// <typeparam name="TItem">要素の型</typeparam>

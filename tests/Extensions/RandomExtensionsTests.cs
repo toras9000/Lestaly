@@ -10,6 +10,54 @@ public class RandomExtensionsTests
     }
 
     [TestMethod()]
+    public void RandomRange()
+    {
+        new RandomRange(0, 100).Should().BeEquivalentTo(new
+        {
+            Start = 0,
+            Count = 100,
+            End = 100,
+            Last = 99,
+        });
+        new RandomRange(20, 100).Should().BeEquivalentTo(new
+        {
+            Start = 20,
+            Count = 100,
+            End = 120,
+            Last = 119,
+        });
+        new RandomRange(int.MaxValue - 2, 2).Should().BeEquivalentTo(new
+        {
+            Start = int.MaxValue - 2,
+            Count = 2,
+            End = int.MaxValue,
+            Last = int.MaxValue - 1,
+        });
+
+        FluentActions.Invoking(() => new RandomRange(int.MaxValue, 1)).Should().Throw<Exception>();
+        FluentActions.Invoking(() => new RandomRange(0, int.MaxValue)).Should().NotThrow();
+        FluentActions.Invoking(() => new RandomRange(1, int.MaxValue)).Should().Throw<Exception>();
+        FluentActions.Invoking(() => new RandomRange(1, 0)).Should().Throw<Exception>();
+    }
+
+    [TestMethod()]
+    public void GetNumber()
+    {
+        for (var i = 0; i < 100; i++)
+        {
+            Random.Shared.GetNumber(new(10, 5)).Should().BeInRange(10, 14);
+        }
+
+        var numbers = Enumerable.Range(0, 10000).Select(_ => Random.Shared.GetNumber(new(0, 5))).ToArray();
+        numbers.Should().Contain(0);
+        numbers.Should().Contain(1);
+        numbers.Should().Contain(2);
+        numbers.Should().Contain(3);
+        numbers.Should().Contain(4);
+        numbers.Should().OnlyContain(n => 0 <= n && n < 15);
+    }
+
+    [TestMethod()]
     public void Pick()
     {
         var items = Enumerable.Range(1, 200).Select(n => n * 3).ToArray();
