@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
+using System.Security.Principal;
 
 namespace Lestaly;
 
@@ -9,6 +11,7 @@ public static partial class WinUAC
 {
     /// <summary>UAC昇格状態であるかを取得する</summary>
     /// <returns>昇格有無</returns>
+    [SupportedOSPlatform("Windows")]
     public static bool IsElevated()
     {
         // Windows 以外では利用不可
@@ -41,6 +44,22 @@ public static partial class WinUAC
                 NativeMethods.CloseHandle(tokenHandle);
             }
         }
+    }
+
+    /// <summary>UAC昇格状態であるかを取得する</summary>
+    /// <returns>昇格有無</returns>
+    [SupportedOSPlatform("Windows")]
+    public static bool IsAdminRole()
+    {
+        // 現在のユーザーの WindowsID を取得
+        using var identity = WindowsIdentity.GetCurrent();
+
+        // WindowsPrincipal オブジェクトを作成
+        var principal = new WindowsPrincipal(identity);
+
+        // 組み込みの管理者（Administrator）ロールに属しているか判定
+        return principal.IsInRole(WindowsBuiltInRole.Administrator);
+
     }
 
     private static partial class NativeMethods
