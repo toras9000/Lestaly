@@ -9,7 +9,7 @@ namespace Lestaly;
 /// <summary>Windows UAC関連ユーティリティ</summary>
 public static partial class WinUAC
 {
-    /// <summary>UAC昇格状態であるかを取得する</summary>
+    /// <summary>UAC昇格状態であるかを判定する</summary>
     /// <returns>昇格有無</returns>
     [SupportedOSPlatform("Windows")]
     public static bool IsElevated()
@@ -46,7 +46,7 @@ public static partial class WinUAC
         }
     }
 
-    /// <summary>UAC昇格状態であるかを取得する</summary>
+    /// <summary>管理者権限での実行中であるかを判定する</summary>
     /// <returns>昇格有無</returns>
     [SupportedOSPlatform("Windows")]
     public static bool IsAdminRole()
