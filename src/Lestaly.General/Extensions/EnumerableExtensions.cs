@@ -89,6 +89,12 @@ public static class EnumerableExtensions
             }
         }
 
+        /// <summary>シーケンスを指定の要素数までに制限する</summary>
+        /// <param name="count">最大要素数。nullの場合は制限なし</param>
+        /// <returns>要素数を制限されたシーケンス</returns>
+        public IEnumerable<TSource> Limit(int? count)
+            => count.HasValue ? self.Take(count.Value) : self;
+
         /// <summary>シーケンスを非同期シーケンス型に変換する</summary>
         /// <remarks>型は IAsyncEnumerable となるが、列挙は同期的であるため型合わせだけの意味の変換となる。</remarks>
         /// <returns>非同期シーケンス</returns>

@@ -59,6 +59,15 @@ public class EnumerableExtensionsTests
     }
 
     [TestMethod()]
+    public void Limit()
+    {
+        var list = new List<int>();
+        var source = new[] { 1, 2, 3, 4, 5, };
+        source.Limit(null).Should().Equal(source);
+        source.Limit(3).Should().Equal(source.Take(3));
+    }
+
+    [TestMethod()]
     public void Divide()
     {
         var lines = new[] {
@@ -190,9 +199,9 @@ public class EnumerableExtensionsTests
     [TestMethod()]
     public void SkipNull_struct()
     {
-            var source = new[] { 1, 2, default(int?), 3, 4, };
-            var filtered = source.SkipNull();
-            filtered.Should().Equal([1, 2, 3, 4]);
+        var source = new[] { 1, 2, default(int?), 3, 4, };
+        var filtered = source.SkipNull();
+        filtered.Should().Equal([1, 2, 3, 4]);
     }
 
 }
