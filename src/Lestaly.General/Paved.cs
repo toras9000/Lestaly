@@ -7,11 +7,28 @@ public static class Paved
 {
     /// <summary>例外を捕捉して処理を実行する。</summary>
     /// <typeparam name="T">戻り値の型</typeparam>
+    /// <param name="init">実行設定</param>
     /// <param name="action">実行処理</param>
     /// <returns>処理の戻り値</returns>
-    public static async Task<T?> RunAsync<T>(Func<PavedOptions<T>, ValueTask<T>> action)
+    public static async Task<T?> RunAsync<T>(PavedInit? init, Func<PavedOptions<T>, ValueTask<T>> action)
     {
+        using var outenc = init?.UseOutputUtf8 == true ? Console.OutputUtf8EncodingPeriod() : default;
+        using var inenc = init?.UseInputUtf8 == true ? Console.InputUtf8EncodingPeriod() : default;
+
         var options = new PavedOptions<T>();
+        if (init?.DetectPauseArgs == true)
+        {
+            var arguments = Environment.GetCommandLineArgs().Skip(1);
+            if (arguments.RoughContainsAny(["--no-pause", "--nopause"]))
+            {
+                options.PauseOn(PavedPause.None);
+            }
+            else if (arguments.RoughContainsAny(["--pause"]))
+            {
+                options.PauseOn(PavedPause.Any);
+            }
+        }
+
         var result = default(T?);
         var time = default(TimeSpan?);
         var pause = false;
@@ -106,13 +123,21 @@ public static class Paved
     }
 
     /// <summary>例外を捕捉して処理を実行する。</summary>
+    /// <typeparam name="T">戻り値の型</typeparam>
+    /// <param name="action">実行処理</param>
+    /// <returns>処理の戻り値</returns>
+    public static Task<T?> RunAsync<T>(Func<PavedOptions<T>, ValueTask<T>> action)
+        => RunAsync(null, action);
+
+    /// <summary>例外を捕捉して処理を実行する。</summary>
+    /// <param name="init">実行設定</param>
     /// <param name="action">実行処理</param>
     /// <returns>エラーコード</returns>
-    public static async Task<int> RunAsync(Func<PavedOptions<int>, ValueTask> action)
+    public static async Task<int> RunAsync(PavedInit? init, Func<PavedOptions<int>, ValueTask> action)
     {
         var exitCode = 0;
 
-        await RunAsync<int>(async (options) =>
+        await RunAsync<int>(init, async (options) =>
         {
             try
             {
@@ -142,6 +167,19 @@ public static class Paved
     /// <summary>例外を捕捉して処理を実行する。</summary>
     /// <param name="action">実行処理</param>
     /// <returns>エラーコード</returns>
+    public static Task<int> RunAsync(Func<PavedOptions<int>, ValueTask> action)
+        => RunAsync(null, action);
+
+    /// <summary>例外を捕捉して処理を実行する。</summary>
+    /// <param name="init">実行設定</param>
+    /// <param name="action">実行処理</param>
+    /// <returns>エラーコード</returns>
+    public static Task<int> RunAsync(PavedInit? init, Func<ValueTask> action)
+        => RunAsync(init, _ => action());
+
+    /// <summary>例外を捕捉して処理を実行する。</summary>
+    /// <param name="action">実行処理</param>
+    /// <returns>エラーコード</returns>
     public static Task<int> RunAsync(Func<ValueTask> action)
         => RunAsync(_ => action());
 
@@ -149,14 +187,14 @@ public static class Paved
     /// <param name="action">実行処理</param>
     /// <returns>エラーコード</returns>
     public static Task<int> ProceedAsync(Func<PavedOptions<int>, ValueTask> action)
-        => RunAsync(options => { options.AnyPause(); return action(options); });
+        => RunAsync(new PavedInit(DetectPauseArgs: true, UseInputUtf8: true, UseOutputUtf8: true), action);
 
     /// <summary>例外を捕捉して処理を実行する。デフォルトで一時停止。</summary>
     /// <param name="noPause">非停止フラグ</param>
     /// <param name="action">実行処理</param>
     /// <returns>エラーコード</returns>
     public static Task<int> ProceedAsync(bool noPause, Func<PavedOptions<int>, ValueTask> action)
-        => RunAsync(options =>
+        => RunAsync(new PavedInit(UseInputUtf8: true, UseOutputUtf8: true), options =>
         {
             options.PauseOn(noPause ? PavedPause.None : PavedPause.Any);
             return action(options);
