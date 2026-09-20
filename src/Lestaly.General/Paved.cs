@@ -16,6 +16,7 @@ public static class Paved
         using var inenc = init?.UseInputUtf8 == true ? Console.InputUtf8EncodingPeriod() : default;
 
         var options = new PavedOptions<T>();
+        if (init?.DefaultPause is { } defaultPause) options.PauseOn(defaultPause);
         if (init?.DetectPauseArgs == true)
         {
             var arguments = Environment.GetCommandLineArgs().Skip(1);
@@ -187,16 +188,16 @@ public static class Paved
     /// <param name="action">実行処理</param>
     /// <returns>エラーコード</returns>
     public static Task<int> ProceedAsync(Func<PavedOptions<int>, ValueTask> action)
-        => RunAsync(new PavedInit(DetectPauseArgs: true, UseInputUtf8: true, UseOutputUtf8: true), action);
+        => RunAsync(new PavedInit(DefaultPause: PavedPause.Any, DetectPauseArgs: true, UseInputUtf8: true, UseOutputUtf8: true), action);
 
     /// <summary>例外を捕捉して処理を実行する。デフォルトで一時停止。</summary>
     /// <param name="noPause">非停止フラグ</param>
     /// <param name="action">実行処理</param>
     /// <returns>エラーコード</returns>
     public static Task<int> ProceedAsync(bool noPause, Func<PavedOptions<int>, ValueTask> action)
-        => RunAsync(new PavedInit(UseInputUtf8: true, UseOutputUtf8: true), options =>
+        => ProceedAsync(options =>
         {
-            options.PauseOn(noPause ? PavedPause.None : PavedPause.Any);
+            if (noPause) options.NoPause();
             return action(options);
         });
 

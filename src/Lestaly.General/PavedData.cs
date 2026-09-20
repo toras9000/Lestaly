@@ -3,10 +3,12 @@
 /// <summary>実行設定</summary>
 /// <param name="UseOutputUtf8">出力エンコーディングをUTF8とするか否か</param>
 /// <param name="UseInputUtf8">入力エンコーディングをUTF8とするか否か</param>
+/// <param name="DefaultPause">デフォルトの一時停止オプション</param>
 /// <param name="DetectPauseArgs">引数の一時停止オプションを解釈するか否か</param>
 public record PavedInit(
     bool? UseOutputUtf8 = default,
     bool? UseInputUtf8 = default,
+    PavedPause? DefaultPause = default,
     bool? DetectPauseArgs = default
 );
 
