@@ -383,6 +383,70 @@ public class DirectoryInfoExtensionsTests
         found.Should().NotBeNull();
         found.RelativePathFrom(testDir.Info).Replace('\\', '/').Should().Be("abc/def");
     }
+
+    [TestMethod]
+    public async Task FindFileAncestor()
+    {
+        var testFiles = new[]
+        {
+            @"abc/aaa.txt",
+            @"abc/bbb.txt",
+            @"abc/ccc.txt",
+            @"abc/def/aaa.txt",
+            @"abc/def/bbb.txt",
+            @"abc/def/ghi/aaa.txt",
+        };
+
+        using var testDir = new TempDir();
+
+        // テストデータ作成
+        foreach (var path in testFiles)
+        {
+            await testDir.Info.RelativeFile(path).WithDirectoryCreate().WriteAllTextAsync(path);
+        }
+
+        // 起点ディレクトリ
+        var startDir = testDir.Info.RelativeDirectory("abc/def/ghi");
+
+        // 探索テスト
+        (startDir.FindFileAncestor("aaa.txt", maxUpCount: 3)?.ReadAllText()).Should().Be("abc/def/ghi/aaa.txt");
+        (startDir.FindFileAncestor("bbb.txt", maxUpCount: 3)?.ReadAllText()).Should().Be("abc/def/bbb.txt");
+        (startDir.FindFileAncestor("ccc.txt", maxUpCount: 3)?.ReadAllText()).Should().Be("abc/ccc.txt");
+        (startDir.FindFileAncestor("ddd.txt", maxUpCount: 3)?.ReadAllText()).Should().BeNull();
+        (startDir.FindFileAncestor("ccc.txt", maxUpCount: 1)?.ReadAllText()).Should().BeNull();
+    }
+
+    [TestMethod]
+    public void FindDirectoryAncestor()
+    {
+        var testFiles = new[]
+        {
+            @"abc/aaa",
+            @"abc/bbb",
+            @"abc/ccc",
+            @"abc/def/aaa",
+            @"abc/def/bbb",
+            @"abc/def/ghi/aaa",
+        };
+
+        using var testDir = new TempDir();
+
+        // テストデータ作成
+        foreach (var path in testFiles)
+        {
+            testDir.Info.RelativeDirectory(path).Create();
+        }
+
+        // 起点ディレクトリ
+        var startDir = testDir.Info.RelativeDirectory("abc/def/ghi");
+
+        // 探索テスト
+        (startDir.FindDirectoryAncestor("aaa", maxUpCount: 3)?.RelativePathFrom(testDir.Info).Replace('\\', '/')).Should().Be("abc/def/ghi/aaa");
+        (startDir.FindDirectoryAncestor("bbb", maxUpCount: 3)?.RelativePathFrom(testDir.Info).Replace('\\', '/')).Should().Be("abc/def/bbb");
+        (startDir.FindDirectoryAncestor("ccc", maxUpCount: 3)?.RelativePathFrom(testDir.Info).Replace('\\', '/')).Should().Be("abc/ccc");
+        (startDir.FindDirectoryAncestor("ddd", maxUpCount: 3)?.RelativePathFrom(testDir.Info).Replace('\\', '/')).Should().BeNull();
+        (startDir.FindDirectoryAncestor("ccc", maxUpCount: 1)?.RelativePathFrom(testDir.Info).Replace('\\', '/')).Should().BeNull();
+    }
     #endregion
 
     #region Find (dir)

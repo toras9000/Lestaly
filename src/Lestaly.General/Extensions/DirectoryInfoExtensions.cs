@@ -220,12 +220,77 @@ public static class DirectoryInfoExtensions
         public FileInfo? FindFile(string pattern, MatchCasing casing = MatchCasing.PlatformDefault)
             => self.PickFile(pattern, casing, first: true);
 
+        /// <summary>祖先ディレクトリを辿って指定のパターンにマッチする最初のファイルを取得する。</summary>
+        /// <param name="pattern">検索パターン。パターン解釈は MatchType.Simple による。パスが階層状の場合、途中のパスはプラットフォーム依存のマッチングのようなので注意。</param>
+        /// <param name="casing">キャラクタ照合方法</param>
+        /// <param name="maxUpCount">親階層を遡る最大数</param>
+        /// <returns>見つかった最初のファイル</returns>
+        public FileInfo? FindFileAncestor(string pattern, MatchCasing casing = MatchCasing.PlatformDefault, int maxUpCount = int.MaxValue)
+        {
+            ArgumentNullException.ThrowIfNull(self);
+            ArgumentException.ThrowIfNullOrWhiteSpace(pattern);
+            ArgumentOutOfRangeException.ThrowIfNegative(maxUpCount);
+
+            // 検索オプション
+            var options = new EnumerationOptions();
+            options.MatchCasing = casing;
+            options.MatchType = MatchType.Simple;
+            options.IgnoreInaccessible = true;
+            options.AttributesToSkip = FileAttributes.None;
+            options.ReturnSpecialDirectories = false;
+            options.RecurseSubdirectories = false;
+
+            // ディレクトリを祖先方向にたどりながら指定のファイルを探す
+            var scan = self;
+            var up = 0;
+            while (scan != null && up <= maxUpCount)
+            {
+                var file = scan.EnumerateFiles(pattern, options).FirstOrDefault();
+                if (file != null) return file;
+                scan = scan.Parent;
+                up++;
+            }
+            return null;
+        }
+
         /// <summary>ディレクトリ配下の指定のパターンにマッチする最初のディレクトリを取得する。</summary>
         /// <param name="pattern">検索パターン。パターン解釈は MatchType.Simple による。パスが階層状の場合、途中のパスはプラットフォーム依存のマッチングのようなので注意。</param>
         /// <param name="casing">キャラクタ照合方法</param>
         /// <returns>見つかった最初のディレクトリ</returns>
         public DirectoryInfo? FindDirectory(string pattern, MatchCasing casing = MatchCasing.PlatformDefault)
             => self.PickDirectory(pattern, casing, first: true);
+
+        /// <summary>祖先ディレクトリを辿って指定のパターンにマッチする最初のディレクトリを取得する。</summary>
+        /// <param name="pattern">検索パターン。パターン解釈は MatchType.Simple による。パスが階層状の場合、途中のパスはプラットフォーム依存のマッチングのようなので注意。</param>
+        /// <param name="casing">キャラクタ照合方法</param>
+        /// <param name="maxUpCount">親階層を遡る最大数</param>
+        /// <returns>見つかった最初のディレクトリ</returns>
+        public DirectoryInfo? FindDirectoryAncestor(string pattern, MatchCasing casing = MatchCasing.PlatformDefault, int maxUpCount = int.MaxValue)
+        {
+            ArgumentNullException.ThrowIfNull(self);
+            ArgumentException.ThrowIfNullOrWhiteSpace(pattern);
+
+            // 検索オプション
+            var options = new EnumerationOptions();
+            options.MatchCasing = casing;
+            options.MatchType = MatchType.Simple;
+            options.IgnoreInaccessible = true;
+            options.AttributesToSkip = FileAttributes.None;
+            options.ReturnSpecialDirectories = false;
+            options.RecurseSubdirectories = false;
+
+            // ディレクトリを祖先方向にたどりながら指定のディレクトリを探す
+            var scan = self;
+            var up = 0;
+            while (scan != null && up <= maxUpCount)
+            {
+                var dir = scan.EnumerateDirectories(pattern, options).FirstOrDefault();
+                if (dir != null) return dir;
+                scan = scan.Parent;
+                up++;
+            }
+            return null;
+        }
 
         /// <summary>指定の名前の祖先ディレクトリを探す</summary>
         /// <param name="name">ディレクトリ名</param>
