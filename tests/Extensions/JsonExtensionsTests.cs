@@ -164,7 +164,6 @@ public class JsonExtensionsTests
         """);
     }
 
-
     [TestMethod()]
     public void ToSortedNode()
     {
@@ -218,5 +217,81 @@ public class JsonExtensionsTests
           ]
         }
         """);
+    }
+
+    [TestMethod()]
+    public void Element_ToScalar()
+    {
+        JsonSerializer.SerializeToElement(true).ToScalar().Should().Be(true);
+        JsonSerializer.SerializeToElement(false).ToScalar().Should().Be(false);
+        JsonSerializer.SerializeToElement(123).ToScalar().Should().Be(123);
+        JsonSerializer.SerializeToElement<byte>(123).ToScalar().Should().Be(123);
+        JsonSerializer.SerializeToElement<sbyte>(123).ToScalar().Should().Be(123);
+        JsonSerializer.SerializeToElement<short>(123).ToScalar().Should().Be(123);
+        JsonSerializer.SerializeToElement<ushort>(123).ToScalar().Should().Be(123);
+        JsonSerializer.SerializeToElement<int>(123).ToScalar().Should().Be(123);
+        JsonSerializer.SerializeToElement<uint>(123).ToScalar().Should().Be(123);
+        JsonSerializer.SerializeToElement<long>(123).ToScalar().Should().Be(123);
+        JsonSerializer.SerializeToElement<ulong>(123).ToScalar().Should().Be(123);
+        JsonSerializer.SerializeToElement(1.4d).ToScalar().Should().Be(1.4d);
+        JsonSerializer.SerializeToElement(1.4f).ToScalar().Should().Be(1.4d);
+        JsonSerializer.SerializeToElement(1.4m).ToScalar().Should().Be(1.4d);
+        JsonSerializer.SerializeToElement("abc").ToScalar().Should().Be("abc");
+        JsonSerializer.SerializeToElement(new { a = "abc", }).ToScalar().Should().Be(null);
+        JsonSerializer.SerializeToElement<int[]>([1, 2, 3])!.ToScalar().Should().Be(null);
+        JsonSerializer.SerializeToElement<int?>(null).ToScalar().Should().Be(null);
+
+        var json = JsonSerializer.Deserialize<JsonElement>("""
+        {
+            "TrueProp": true,
+            "FalseProp": false,
+            "IntegerProp": 123,
+            "RealProp": 1.23,
+            "StringProp": "abc",
+            "ObjectProp": { "Prop": 123 },
+            "ArrayProp": [1, 2, 3],
+            "NullProp": null
+        }
+        """);
+        json.GetProperty("TrueProp").ToScalar().Should().Be(true);
+        json.GetProperty("FalseProp").ToScalar().Should().Be(false);
+        json.GetProperty("IntegerProp").ToScalar().Should().Be(123);
+        json.GetProperty("RealProp").ToScalar().Should().Be(1.23);
+        json.GetProperty("StringProp").ToScalar().Should().Be("abc");
+        json.GetProperty("ObjectProp").ToScalar().Should().Be(null);
+        json.GetProperty("NullProp").ToScalar().Should().Be(null);
+        new JsonElement().ToScalar().Should().Be(null);
+    }
+
+    [TestMethod()]
+    public void Node_ToScalar()
+    {
+        JsonValue.Create(true).ToScalar().Should().Be(true);
+        JsonValue.Create(false).ToScalar().Should().Be(false);
+        JsonValue.Create(123).ToScalar().Should().Be(123);
+        JsonValue.Create(1.4).ToScalar().Should().Be(1.4);
+        JsonValue.Create("abc").ToScalar().Should().Be("abc");
+        JsonNode.Parse("null")!.ToScalar().Should().Be(null);
+        JsonNode.Parse("[1,2,3]")!.ToScalar().Should().Be(null);
+
+        var json = JsonSerializer.Deserialize<JsonNode>("""
+        {
+            "TrueProp": true,
+            "FalseProp": false,
+            "IntegerProp": 123,
+            "RealProp": 1.23,
+            "StringProp": "abc",
+            "ObjectProp": { "Prop": 123 },
+            "ArrayProp": [1, 2, 3],
+            "NullProp": null
+        }
+        """)!;
+        json["TrueProp"]!.ToScalar().Should().Be(true);
+        json["FalseProp"]!.ToScalar().Should().Be(false);
+        json["IntegerProp"]!.ToScalar().Should().Be(123);
+        json["RealProp"]!.ToScalar().Should().Be(1.23);
+        json["StringProp"]!.ToScalar().Should().Be("abc");
+        json["ObjectProp"]!.ToScalar().Should().Be(null);
+        json["NullProp"]!.ToScalar().Should().Be(null);
     }
 }

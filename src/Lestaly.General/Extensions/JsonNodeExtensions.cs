@@ -85,6 +85,28 @@ public static class JsonExtensions
 
             visitNodeTree(self);
         }
+
+        /// <summary>JsonNode の持つスカラ値を取得する</summary>
+        /// <returns>スカラ値を内包するobject。Array や Object は null に変換される</returns>
+        public object? ToScalar()
+        {
+            if (self is JsonValue valueNode)
+            {
+                if (valueNode.TryGetValue<JsonElement>(out var element))
+                {
+                    return element.ToScalar();
+                }
+                return valueNode.GetValueKind() switch
+                {
+                    JsonValueKind.True => true,
+                    JsonValueKind.False => false,
+                    JsonValueKind.String => self.GetValue<string?>(),
+                    JsonValueKind.Number => self.GetValue<object?>(),
+                    _ => null,
+                };
+            }
+            return null;
+        }
     }
 
     /// <summary>JSONプロパティ更新インタフェース</summary>
@@ -176,6 +198,25 @@ public static class JsonExtensions
         /// <summary>プロパティ値</summary>
         private JsonNode? value;
         #endregion
+    }
+
+    /// <summary>JsonElement に対する拡張メソッド</summary>
+    /// <param name="self">対象の JsonElement</param>
+    extension(JsonElement self)
+    {
+        /// <summary>JsonElement の持つスカラ値を取得する</summary>
+        /// <returns>スカラ値を内包するobject。Array や Object は null に変換される</returns>
+        public object? ToScalar()
+            => self.ValueKind switch
+            {
+                JsonValueKind.True => true,
+                JsonValueKind.False => false,
+                JsonValueKind.String => self.GetString(),
+                JsonValueKind.Number => self.TryGetInt64(out var i64) ? i64
+                                      : self.TryGetDouble(out var real) ? real
+                                      : self.GetRawText(),
+                _ => null,
+            };
     }
 
     /// <summary>JsonArray に対する拡張メソッド</summary>
