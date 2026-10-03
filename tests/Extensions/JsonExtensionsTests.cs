@@ -268,8 +268,17 @@ public class JsonExtensionsTests
     {
         JsonValue.Create(true).ToScalar().Should().Be(true);
         JsonValue.Create(false).ToScalar().Should().Be(false);
-        JsonValue.Create(123).ToScalar().Should().Be(123);
-        JsonValue.Create(1.4).ToScalar().Should().Be(1.4);
+        JsonValue.Create((byte)123).ToScalar().Should().Be(123);
+        JsonValue.Create((sbyte)123).ToScalar().Should().Be(123);
+        JsonValue.Create((ushort)123).ToScalar().Should().Be(123);
+        JsonValue.Create((short)123).ToScalar().Should().Be(123);
+        JsonValue.Create((int)123).ToScalar().Should().Be(123);
+        JsonValue.Create((uint)123).ToScalar().Should().Be(123);
+        JsonValue.Create((long)123).ToScalar().Should().Be(123);
+        JsonValue.Create((ulong)123).ToScalar().Should().Be(123);
+        JsonValue.Create(1.4f).ToScalar().Should().Be(1.4f);
+        JsonValue.Create(1.4d).ToScalar().Should().Be(1.4d);
+        JsonValue.Create(1.4m).ToScalar().Should().Be(1.4m);
         JsonValue.Create("abc").ToScalar().Should().Be("abc");
         JsonNode.Parse("null")!.ToScalar().Should().Be(null);
         JsonNode.Parse("[1,2,3]")!.ToScalar().Should().Be(null);

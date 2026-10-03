@@ -96,14 +96,7 @@ public static class JsonExtensions
                 {
                     return element.ToScalar();
                 }
-                return valueNode.GetValueKind() switch
-                {
-                    JsonValueKind.True => true,
-                    JsonValueKind.False => false,
-                    JsonValueKind.String => self.GetValue<string?>(),
-                    JsonValueKind.Number => self.GetValue<object?>(),
-                    _ => null,
-                };
+                return valueNode.GetValue<object?>();
             }
             return null;
         }
