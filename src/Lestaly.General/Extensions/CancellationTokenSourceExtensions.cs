@@ -18,6 +18,11 @@ public static class CancellationTokenSourceExtensions
         }
 
         /// <summary>リンクトークンソースを作成する</summary>
+        /// <returns>リンクトークンソース</returns>
+        public CancellationTokenSource CreateLink()
+            => CancellationTokenSource.CreateLinkedTokenSource(self);
+
+        /// <summary>リンクトークンソースを作成する</summary>
         /// <param name="token">リンクするトークン</param>
         /// <returns>リンクトークンソース</returns>
         public CancellationTokenSource CreateLink(CancellationToken token)
