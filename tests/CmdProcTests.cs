@@ -27,7 +27,7 @@ public class CmdProcTests
         using var canceller = new CancellationTokenSource();
         canceller.CancelAfter(3000);
 
-        await FluentActions.Awaiting(() => CmdProc.ExecAsync("cmd", new[] { "/?", }, cancelToken: canceller.Token))
+        await FluentActions.Awaiting(() => CmdProc.ExecAsync("sleep", new[] { "10", }, cancelToken: canceller.Token))
               .Should().ThrowAsync<CmdProcCancelException>();
     }
 

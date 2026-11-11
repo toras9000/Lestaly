@@ -1302,7 +1302,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = new FileInfo(@"D:\temp\test.xlsx");
+        var target = tempDir.Info.RelativeFile(@"test.xlsx");
 
         // 保存データ
         var data = new[]
@@ -1349,7 +1349,7 @@ public class EnumerableDataExtensions_SaveToExcel_Tests
         using var tempDir = new TempDir();
 
         // テストファイル
-        var target = new FileInfo(@"D:\temp\test.xlsx");
+        var target = tempDir.Info.RelativeFile(@"test.xlsx");
 
         // 保存データ
         var data = new[]
