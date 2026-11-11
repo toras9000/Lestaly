@@ -20,7 +20,7 @@ public static class Paved
         if (init?.DetectPauseArgs == true)
         {
             var arguments = Environment.GetCommandLineArgs().Skip(1);
-            if (arguments.RoughContainsAny(["--no-pause", "--nopause"]))
+            if (arguments.RoughContainsAny(["--no-pause", "--nopause", "--no-interact", "--nointeract"]))
             {
                 options.PauseOn(PavedPause.None);
             }
