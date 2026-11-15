@@ -164,4 +164,47 @@ public static class StringBuilderExtensions
             return tail.Equals(value, comparison);
         }
     }
+
+    /// <summary>テキストを正規化してビルダに追加する</summary>
+    /// <param name="self">追加先ビルダ</param>
+    /// <param name="text">元のテキスト</param>
+    /// <param name="form">ノーマライズ</param>
+    /// <returns>レシーバビルダインスタンス</returns>
+    public static StringBuilder AppendNormalized(this StringBuilder self, ReadOnlySpan<char> text, NormalizationForm form = NormalizationForm.FormKC)
+    {
+        // 空ならばなにもせず
+        if (text.IsEmpty) return self;
+
+        // 正規化時の長さを算出
+        var normLen = text.GetNormalizedLength(form);
+        if (normLen < 32)
+        {
+            // 短い場合、スタック上を利用。
+            var buff = (stackalloc char[normLen]);
+            if (text.TryNormalize(buff, out var written, form))
+            {
+                // 処理出来たらビルダに追加して
+                self.Append(buff[..written]);
+                return self;
+            }
+        }
+
+        // 長い場合は普通にヒープを利用して処理
+        {
+            // 作業用メモリをプールから取得
+            using var buff = new RentalArray<char>(normLen);
+            if (text.TryNormalize(buff.Instance, out var written, form))
+            {
+                self.Append(buff.Instance.AsSpan(0, written));
+            }
+            else
+            {
+                // 念のため、失敗したら文字列変換して処理
+                var normalized = text.ToString().Normalize(form);
+                self.Append(normalized);
+            }
+        }
+
+        return self;
+    }
 }
